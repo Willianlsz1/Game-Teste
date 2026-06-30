@@ -192,3 +192,15 @@ Answer these before writing anything:
 4. Is the value I'm writing a constant? → it goes in `data.js`, not inline.
 5. Am I adding a feature not currently in the codebase? → confirm it's in scope first.
 6. Does `G.state.save()` need to be called? (Only for persistent state changes.)
+
+---
+
+## Revisão pós-implementação
+
+Após cada implementação, antes de encerrar o checkpoint:
+
+1. Releia o plano aprovado
+2. Liste os arquivos que mudaram e o que mudou em cada um
+3. Aponte qualquer desvio do plano ou risco introduzido
+4. Só encerre o checkpoint com confirmação explícita de que a
+   implementação bate com o plano
