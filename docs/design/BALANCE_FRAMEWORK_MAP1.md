@@ -63,7 +63,15 @@ Validação: decisão de produto do dono (sessão jul/2026). Consequência aritm
 | Okhra (fim do mapa) | 60–120 golpes (~45–90s) |
 | Nuance de tema | Tema B entra +1–2 golpes mais duro que Tema A |
 
-Implementação em golpes: `HP da área = HTK-alvo × dano esperado do jogador naquele ponto` (estável sob mudanças de atkSpeed). Sub-passos: 2.2 freio F3 → 2.3 curvas HP → 2.4 dano/ondas/morte → 2.5 threshold+boss mults.
+Implementação em golpes: `HP da área = HTK-alvo × dano esperado do jogador naquele ponto` (estável sob mudanças de atkSpeed).
+
+### P2.2 — Freio do runaway F3 ✅ TRAVADO (jul/2026): **A + C**
+**A — domar os expoentes** (freio principal):
+- `gearCostGrowth`: 1.013 → banda **1.020–1.035** (sim decide o valor);
+- Cloak lumensBonus: degraus com TETO (ex. +10%/50 níveis, cap ~+150%) em vez de +1/nível ilimitado;
+- Base por nível (`10 + 0.15×L` em state.js): ganha teto (~+100%) — nível alto não é impressora de dinheiro;
+- Income continua ∝ HP do mob (termo auto-escalante mantido).
+**C — materiais como segunda parede** (padrão Gaiadon, confirmado pelo dono): Gold generoso, mas o gear trava no cap de raridade e só passa **promovendo com materiais gated por grupo** (formalização no P4: raridade→grupo; cadência no P3). Rejeitado: goldRatio decrescente por área (feels-bad, pune avançar).
 
 Decide: TTK-alvo por posição (entrada de área 3–8s · fim de área 1–2s · Harbinger 15–30s · Okhra 45–90s) · TTD/papel da morte (hoje só existe nos min 0–15) · **o freio do runaway F3** (o loop income×lumensBonus composto — decisão estrutural: goldRatio decrescente por área, ou lumensBonus fora do gear, ou custo de gear mais íngreme) · curvas de HP das 18 áreas (vale-e-rampa por área, degrau por grupo).
 Insumos: PASSO 1 · achado F3 do sim (TTK colapsa pra 0.1s sem freio).
@@ -127,5 +135,6 @@ Valida: `sim baseline` com rarity find — frequência de Ember/Lumen/Corona por
 
 ## Log de decisões travadas
 - **jul/2026 — PASSO 0 (Relógio):** 18h ativas · sessão 30–50min c/ regra do beat · ~50/50 ativo/idle · 1º prestige 25–40min.
+- **jul/2026 — P2.2 (freio F3):** A+C — expoentes domados (custo de gear mais íngreme + tetos nos bônus de income) e materiais como segunda parede (padrão Gaiadon).
 - **jul/2026 — P2.1 (TTK-alvo):** Opção A em golpes — entrada 4–7 · fim 1–2 · Harbinger 20–40 · Okhra 60–120 · Tema B +1–2.
 - **jul/2026 — PASSO 1 (Esqueleto):** cap 6000 · 18 faixas (×1.15) · orçamento G1→G6 = 1.0/1.6/2.4/3.2/4.2/5.6h · unlock por nível dentro do grupo, Harbinger na fronteira · implementado e validado estruturalmente (tempos = contrato do P2).
