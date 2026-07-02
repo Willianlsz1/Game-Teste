@@ -79,6 +79,17 @@
   color: var(--gold); font-weight: 700; font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
+/* Lights panel (Rarity Find) — chance efetiva / teto por tier */
+.lights-panel {
+  display: flex; flex-direction: column; gap: 3px;
+  margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--card-border);
+}
+.lights-title {
+  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted); font-weight: 700; margin-bottom: 1px;
+}
+.lights-title .lights-sub { font-weight: 400; opacity: 0.6; text-transform: none; letter-spacing: 0; }
+.lights-panel .rate-row b { color: #cfd8ea; }
 
 /* ---- cena de batalha sobre o mundo ---- */
 .battle-stage {

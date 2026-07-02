@@ -44,7 +44,7 @@ G.data = {
         { id: "dmgRed", label: "Steadfast Guard", stat: "damageReduction", layer: "flat", base: 0, perLevel: 0.001 },
       ],
       uncommonAffixes: [
-        { id: "rarityFindLumen", label: "Second Sight", stat: "rarityFindLumen", layer: "flat", base: 0, perLevel: 0.001 }, // inerte até P8 (Rarity Find)
+        { id: "rarityFindLumen", label: "Second Sight", stat: "rarityFindLumen", layer: "flat", base: 0, perStep: 0.25, step: 50, cap: 15 }, // P8.1 Rarity Find — +0.25% Lumen chance por degrau de 50 níveis (teto 15%)
       ],
     },
     armor: {
@@ -71,7 +71,7 @@ G.data = {
       name: "Worn Boots",
       affixes: [
         { id: "atkspd",          label: "Pathfinder's Pace", stat: "atkSpeed",        layer: "flat", base: 0, perLevel: 0.0005, step: 25 },
-        { id: "rarityFindEmber", label: "Ember Trail",       stat: "rarityFindEmber", layer: "flat", base: 0, perLevel: 0.001 }, // inerte até P8 (Rarity Find)
+        { id: "rarityFindEmber", label: "Ember Trail",       stat: "rarityFindEmber", layer: "flat", base: 0, perStep: 0.5, step: 50, cap: 30 }, // P8.1 Rarity Find — +0.5% Ember chance por degrau de 50 níveis (teto 30%)
       ],
       uncommonAffixes: [
         { id: "xp", label: "Long Road", stat: "xpBonus", layer: "flat", base: 0, perLevel: 0.25 },
@@ -84,7 +84,7 @@ G.data = {
         { id: "lumensBP", label: "Fortune's Weave", stat: "lumensBonus", layer: "pct",  base: 0, perLevel: 0.01 },
       ],
       uncommonAffixes: [
-        { id: "rarityFindCorona", label: "Corona Call", stat: "rarityFindCorona", layer: "flat", base: 0, perLevel: 0.001 }, // inerte até P8 (Rarity Find)
+        { id: "rarityFindCorona", label: "Corona Call", stat: "rarityFindCorona", layer: "flat", base: 0, perStep: 0.085, step: 50, cap: 5 }, // P8.1 Rarity Find — +0.085% Corona chance por degrau de 50 níveis (teto 5%)
       ],
     },
   },
@@ -113,35 +113,30 @@ G.data = {
     },
   ],
 
-  // Variantes raras de mob comum (escala de raridade Éclats: a cor = quanta luz carregam).
-  // Ladder de lore: Common(cinza) → Kindled(teal) → Luminous(azul) → Radiant(violeta). Ver docs/design/ENEMY_POWER_PYRAMID.md
-  rareMobs: {
-    chance:     0.08,
-    plusChance: 0.15,
-    rare: {
-      tag: "Kindled", color: "#5ee0d2",
-      hpMult: 3, dmgMult: 1.5, rewardMult: 3,
-      names: ["Pale Wanderer", "Dusk Remnant", "Mist Shard", "Fractured Echo", "Gilded Wisp"],
-    },
-    plus: {
-      tag: "Luminous", color: "#4fa8ff",
-      hpMult: 6, dmgMult: 2, rewardMult: 6,
-      names: ["Luminal Wraith", "Éclat Splinter", "Hollow Sovereign", "Veil Incarnate", "Shard of Luce"],
-    },
-  },
-
-  // Elite: variante perigosa da Área 3+. Bate forte (o pico de ameaça onde você
-  // one-shota os comuns), sobrevive mais p/ revidar, e recompensa melhor (drop "elite").
-  // Dá propósito ao afixo Elite Damage e aos nodes Elite Chance/Damage das passivas.
-  eliteMob: {
-    chance:       0.06,   // base; somada ao bônus do node "Elite Chance"
-    minAreaIndex: 2,      // só Área 3+
-    hpMult:       10,     // sobrevive alguns golpes a mais
-    dmgMult:      3,      // bate 3× o ATK da área — o pico de perigo
-    rewardMult:   5,      // lumens & XP
-    tag: "Radiant", color: "#9d7bff",   // tier topo do fluxo (mecânica interna segue "elite"/isElite)
-    names: ["Lumin Tyrant", "Veilbreaker", "Hollow Warden", "Gilded Reaver", "Dawnscourge"],
-  },
+  // ---- Rarity Find (P8.1) — mobs "acesos" carregam luz roubada ----
+  // Base 0%: sem gear nem Marcos, só Common spawna. A cor conta a história: quanto mais
+  // luz a criatura carrega, mais rara e mais forte. Roll em combat._buildOne, do mais raro
+  // pro mais comum (Corona → Lumen → Ember → Common); cada tier: chance = min(find, cap).
+  //   • Gear ACHA  → rarityFind* (afixos em degraus de 50 níveis) sobe a chance.
+  //   • Marcos ABREM o teto → cada Harbinger morto pela 1ª vez levanta os caps em 1/6.
+  // Ladder de cor (assinatura): Ember(teal) → Lumen(azul) → Corona(violeta). Ver docs/design/RARITY_FIND.md
+  // Poder ~×3/×6/×10 (hp/atk; lumens acompanham a hp via goldRatio, xp via rewardMult).
+  rarityTiers: [
+    { key: "corona", findKey: "corona", tag: "Corona", color: "#9d7bff",
+      hpMult: 10, atkMult: 3, rewardMult: 10, modifier: null,   // modifier: hook do P8.2 (Lightshell etc.) — Parte 2
+      names: ["Lumin Tyrant", "Veilbreaker", "Hollow Warden", "Gilded Reaver", "Dawnscourge"] },
+    { key: "lumen", findKey: "lumen", tag: "Lumen", color: "#4fa8ff",
+      hpMult: 6, atkMult: 2, rewardMult: 6,
+      names: ["Luminal Wraith", "Éclat Splinter", "Hollow Sovereign", "Veil Incarnate", "Shard of Luce"] },
+    { key: "ember", findKey: "ember", tag: "Ember", color: "#5ee0d2",
+      hpMult: 3, atkMult: 1.5, rewardMult: 3,
+      names: ["Pale Wanderer", "Dusk Remnant", "Mist Shard", "Fractured Echo", "Gilded Wisp"] },
+  ],
+  // Tetos máximos (%) do Rarity Find — atingidos com os 6 Marcos. capPerHarbinger = cap/6:
+  // cada Harbinger morto pela 1ª vez levanta 1/6 (permanente, sobrevive à Convergence).
+  // HOJE só 5 Marcos no código (idx 2,5,8,11,14) → tetos chegam a 5/6 = 25 / 12.5 / 4.17
+  // (o 6º Marco da área 18 vem na Parte 2, que fecha os caps em 30/15/5).
+  rarityCaps: { ember: 30, lumen: 15, corona: 5 },
 
   // 6 Harbingers da floresta guardados (DECISOES_JUL26 §4) — sem função por enquanto
   reservedHarbingers: [

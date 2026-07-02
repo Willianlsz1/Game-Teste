@@ -7,6 +7,13 @@ G.gear = {
   affixValue(item, af) {
     const r = G.data.rarities.find(r => r.id === item.rarity);
     const mult = r ? (r.statMult || 1) : 1;
+    // Rarity Find (P8.1): valor em DEGRAUS — sobe perStep a cada `step` níveis (nível 50 = 1 degrau).
+    // Sem multiplicador de raridade (os valores já são calibrados p/ encher o teto no gear realista).
+    if (af.perStep != null) {
+      const steps = Math.floor((item.level || 1) / (af.step || 50));
+      const val = (af.base || 0) + af.perStep * steps;
+      return af.cap != null ? Math.min(val, af.cap) : val;
+    }
     const lv = (item.level || 1) - 1;
     const eff = af.step ? Math.floor(lv / af.step) * af.step : lv;
     const val = af.base + af.perLevel * mult * eff;
@@ -92,7 +99,7 @@ G.gear = {
     const base   = G.data.gearBase[slotId];
     const slot   = G.data.slots.find((s) => s.id === slotId);
     const rarity = G.data.rarities.find((r) => r.id === rarityId) || G.data.rarities[0];
-    const DISP_PCT = ["crit", "critDmg", "xpBonus", "lumensBonus"];
+    const DISP_PCT = ["crit", "critDmg", "xpBonus", "lumensBonus", "rarityFindEmber", "rarityFindLumen", "rarityFindCorona"];
     const rarityExtras = base[rarityId + "Affixes"] || [];
     const allAffixes = [...base.affixes, ...rarityExtras];
     return {
@@ -111,6 +118,7 @@ G.gear = {
         pct:      a.layer === "pct" || DISP_PCT.indexOf(a.stat) !== -1,
         base:     a.base,
         perLevel: a.perLevel,
+        perStep:  a.perStep,
         step:     a.step,
         cap:      a.cap,
       })),

@@ -28,6 +28,12 @@ G.state = {
       awakens:           [],
       awakensUnlocked:   [],
       awakenTier:        0,
+      // ---- Rarity Find (P8.1) ----
+      // Marcos abatidos (idx da área do Harbinger) — cada 1ª morte levanta os caps em 1/6.
+      // PERMANENTE: NÃO reseta na Convergence. Guardamos os ids p/ robustez de save.
+      harbingersFelled:  [],
+      // flags de onboarding: 1º spawn de cada tier já foi anunciado?
+      rarityFirstSeen:   {},
       // ---- Passivas (Árvore I — árvore única binária de 15 nós) ----
       passives:          { tree1: new Array(15).fill(0) },
       // ---- Materiais (fundação econômica) ----
@@ -109,6 +115,12 @@ G.state = {
 
     const fin = (k) => { const x = layer(k); return x.flat * (1 + x.pct / 100) * x.mult; };
 
+    // Rarity Find (P8.1): chance de gear (rarityFind, fração 0-1) e teto dos Marcos (rarityCaps).
+    // Cada Harbinger abatido levanta 1/6 do teto (capMax/6), clampado no máximo. Fração p/ chance().
+    const felled = (d.harbingersFelled && d.harbingersFelled.length) || 0;
+    const rcMax = G.data.rarityCaps;
+    const capFrac = (max) => Math.min(max, felled * (max / 6)) / 100;
+
     this._cache = {
       atk:              Math.round(fin("atk")),
       hp:               Math.round(fin("hp")),
@@ -122,9 +134,20 @@ G.state = {
       lightbane:        fin("lightbane"),             // passiva (Lightbane): +% dano vs acesos
       specialDmg:       fin("specialDmg"),            // gear (Marked Blade): vs rares & bosses
       siegeWard:        G.util.clamp(fin("siegeWard"), 0, G.data.balance.dmgReductionCap),  // dmgRed extra — combat aplica só com 2+ vivos
-      rarityFindLumen:  fin("rarityFindLumen"),       // inerte até P8 (Rarity Find)
-      rarityFindEmber:  fin("rarityFindEmber"),       // inerte até P8 (Rarity Find)
-      rarityFindCorona: fin("rarityFindCorona"),      // inerte até P8 (Rarity Find)
+      rarityFindLumen:  fin("rarityFindLumen"),       // % Lumen do gear (Second Sight)
+      rarityFindEmber:  fin("rarityFindEmber"),       // % Ember do gear (Ember Trail)
+      rarityFindCorona: fin("rarityFindCorona"),      // % Corona do gear (Corona Call)
+      // P8.1: chance efetiva (gear) e teto (Marcos) por tier, em fração 0-1 p/ o roll do combat
+      rarityFind: {
+        ember:  Math.max(0, fin("rarityFindEmber"))  / 100,
+        lumen:  Math.max(0, fin("rarityFindLumen"))  / 100,
+        corona: Math.max(0, fin("rarityFindCorona")) / 100,
+      },
+      rarityCaps: {
+        ember:  capFrac(rcMax.ember),
+        lumen:  capFrac(rcMax.lumen),
+        corona: capFrac(rcMax.corona),
+      },
       healOnKill:       fin("healOnKill"),
       hpRegen:          fin("hpRegen"),
       _layers:          L,

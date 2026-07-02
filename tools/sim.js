@@ -56,10 +56,18 @@ for (const f of LOAD_ORDER) {
 const G = global.G;
 
 // ---------- instrumentação (não toca nos arquivos do jogo) ----------
-const M = { income: 0, deaths: 0, matByGroup: {} };   // matByGroup[grupo] = { common, awaken }
+const M = { income: 0, deaths: 0, matByGroup: {}, litByGroup: {} };   // matByGroup[g]={common,awaken} · litByGroup[g]={common,ember,lumen,corona}
 const _onKill = G.combat.onKill;
 G.combat.onKill = function () {
   const before = G.state.data.lumens;
+  // frequência de acesos por grupo (P8.1): tally do tier do mob que está morrendo
+  const dying = this.enemies.find((e) => !e.dead);
+  if (dying && !dying.isBoss) {
+    const gs = G.data.balance.groupSize || 3;
+    const g = Math.floor((G.state.data.areaIndex || 0) / gs);
+    const b = M.litByGroup[g] || (M.litByGroup[g] = { common: 0, ember: 0, lumen: 0, corona: 0 });
+    b[(dying.rarity && dying.rarity.tier) || "common"]++;
+  }
   _onKill.call(this);
   M.income += G.state.data.lumens - before;
 };

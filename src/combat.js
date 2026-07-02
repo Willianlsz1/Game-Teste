@@ -72,7 +72,7 @@ G.combat = {
     const xpGroupMult = (b.xpMultByGroup && b.xpMultByGroup[grp] != null) ? b.xpMultByGroup[grp] : 1;
 
     let maxHp = hp, dmg = atk, xp = b.baseXp * level * xpGroupMult;
-    let isBoss = false, isElite = false, name, rarity = null;
+    let isBoss = false, name, rarity = null, modifier = null;
 
     if (isBossSpawn) {
       isBoss = true;
@@ -80,18 +80,20 @@ G.combat = {
       name = def.name;
     } else {
       name = def.name;
-      const em = G.data.eliteMob, rm = G.data.rareMobs;
-      const eliteBonus = G.passives ? (G.passives.effect("eliteChance") || 0) / 100 : 0;
-      if (em && aIdx >= em.minAreaIndex && G.util.chance(em.chance * (1 + eliteBonus))) {
-        maxHp *= em.hpMult; dmg *= em.dmgMult; xp *= em.rewardMult;
-        name = G.util.pick(em.names);
-        rarity = { tag: em.tag, color: em.color };
-        isElite = true;
-      } else if (rm && G.util.chance(rm.chance)) {
-        const r = G.util.chance(rm.plusChance) ? rm.plus : rm.rare;
-        maxHp *= r.hpMult; dmg *= r.dmgMult; xp *= r.rewardMult;
-        name = G.util.pick(r.names);
-        rarity = { tag: r.tag, color: r.color };
+      // Rarity Find (P8.1): roll do mais raro pro mais comum. chance = min(find do gear, teto dos Marcos).
+      const s = G.state.stats();
+      const find = s.rarityFind, caps = s.rarityCaps;
+      let tier = null;
+      for (const t of G.data.rarityTiers) {
+        const ch = Math.min(find[t.findKey], caps[t.findKey]);
+        if (ch > 0 && G.util.chance(ch)) { tier = t; break; }
+      }
+      if (tier) {
+        maxHp *= tier.hpMult; dmg *= tier.atkMult; xp *= tier.rewardMult;
+        name = G.util.pick(tier.names);
+        rarity = { tag: tier.tag, color: tier.color, tier: tier.key };
+        if (tier.key === "corona") modifier = tier.modifier != null ? tier.modifier : null;   // hook P8.2 (Parte 2)
+        this._noteFirstSpawn(tier.key);
       }
     }
 
@@ -101,13 +103,26 @@ G.combat = {
 
     return {
       name, sprite: def.sprite, img: def.img,
-      level, isBoss, isElite,
-      rarity: rarity ? { tag: rarity.tag, color: rarity.color } : null,
+      level, isBoss,
+      rarity: rarity ? { tag: rarity.tag, color: rarity.color, tier: rarity.tier } : null,
+      modifier,
       maxHp:  Math.ceil(maxHp), hp: Math.ceil(maxHp),
       dmg:    Math.max(1, Math.ceil(dmg)),
       lumens: Math.ceil(lumens), xp: Math.ceil(xp),
       atkTimer: 0,   // per-enemy attack timer
     };
+  },
+
+  // onboarding (P8.1 toque 3): log no 1º spawn de cada tier (flag persistida em state.data)
+  _noteFirstSpawn(tierKey) {
+    const d = G.state.data;
+    if (!d.rarityFirstSeen) d.rarityFirstSeen = {};
+    if (d.rarityFirstSeen[tierKey]) return;
+    d.rarityFirstSeen[tierKey] = true;
+    if (G.ui && G.ui.log) {
+      const T = { ember: "Ember", lumen: "Lumen", corona: "Corona" };
+      G.ui.log(`✦ A ${T[tierKey]} light kindles within a creature — rarer, fiercer, richer prey.`, "boss");
+    }
   },
 
   // spawna a próxima onda
@@ -153,8 +168,8 @@ G.combat = {
     // bossDmg: bosses only (passiva Harbinger's Bane)
     if (target.isBoss && G.passives)
       raw *= 1 + (G.passives.effect("bossDmg") || 0) / 100;
-    // lightbane: dano vs acesos (rares & elites, NÃO boss) — passiva Lightbane
-    if ((target.rarity || target.isElite) && !target.isBoss)
+    // lightbane: dano vs acesos (Ember/Lumen/Corona, NÃO boss) — passiva Lightbane
+    if (target.rarity && !target.isBoss)
       raw *= 1 + (s.lightbane || 0) / 100;
     const dmg = Math.ceil(raw);
     if (G.ui && G.ui.projectile) {
@@ -281,7 +296,24 @@ G.combat = {
   markBossCleared() {
     const d = G.state.data;
     d.runBosses = (d.runBosses || 0) + 1;
-    if (d.areaIndex < G.data.areas.length - 1) {
+
+    // Marco (Harbinger): a 1ª morte levanta os tetos do Rarity Find em 1/6 (permanente,
+    // sobrevive à Convergence). O Okhra (última área) é chefe de Mapa, NÃO um Marco.
+    const idx = d.areaIndex;
+    const isFinalArea = idx === G.data.areas.length - 1;
+    if (!isFinalArea && G.data.areas[idx].boss) {
+      if (!Array.isArray(d.harbingersFelled)) d.harbingersFelled = [];
+      if (d.harbingersFelled.indexOf(idx) === -1) {
+        d.harbingersFelled.push(idx);
+        G.state.invalidateStats();   // o teto mudou → recomputa rarityCaps
+        if (G.ui && G.ui.log) {
+          const rc = G.data.rarityCaps;
+          G.ui.log(`✦ The stolen light disperses — Rarity Find caps rise (Ember +${(rc.ember / 6).toFixed(1)}% · Lumen +${(rc.lumen / 6).toFixed(1)}% · Corona +${(rc.corona / 6).toFixed(2)}%).`, "boss");
+        }
+      }
+    }
+
+    if (idx < G.data.areas.length - 1) {
       this.unlockNext();
     } else if (!d.mapOneCleared) {
       d.mapOneCleared = true;

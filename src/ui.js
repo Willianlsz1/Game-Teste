@@ -255,6 +255,21 @@ G.ui = {
     set("rate-xp",    G.util.fmt(Math.round(r.xp)));
     set("rate-kills", (r.kills || 0).toFixed(1));
     set("rate-dmg",   G.util.fmt(dps));
+
+    // Lights panel (Rarity Find): aparece assim que houver qualquer chance OU teto.
+    const rf = s.rarityFind || { ember: 0, lumen: 0, corona: 0 };
+    const cap = s.rarityCaps || { ember: 0, lumen: 0, corona: 0 };
+    const lp = document.getElementById("lights-panel");
+    if (lp) {
+      const any = rf.ember || rf.lumen || rf.corona || cap.ember || cap.lumen || cap.corona;
+      lp.hidden = !any;
+      if (any) {
+        const line = (t) => (Math.min(rf[t], cap[t]) * 100).toFixed(1) + "% / " + (cap[t] * 100).toFixed(1) + "%";
+        set("light-ember",  line("ember"));
+        set("light-lumen",  line("lumen"));
+        set("light-corona", line("corona"));
+      }
+    }
   },
 
   toggleLog() {
@@ -443,9 +458,19 @@ G.ui = {
       const v    = G.gear.affixValue(item, a);
       const sign = a.pct ? "%" : "";
       const kind = a.layer === "pct" ? "Bonus" : "Primary";
-      const perLv = a.perLevel
-        ? `<span class="tip-perlv">+${this.fmtStat(a.perLevel)}${sign} per level</span>` : "";
-      return `<div class="tip-affix"><span class="tip-affix__main">+${this.fmtStat(v)}${sign} ${a.label} ${kind}</span>${perLv}</div>`;
+      let note = "";
+      if (a.perStep != null) {
+        // Rarity Find (P8.1): mostra o degrau atual e o próximo (valor + nível)
+        const step = a.step || 50;
+        const atCap = a.cap != null && v >= a.cap;
+        const nextLv = (Math.floor(lvl / step) + 1) * step;
+        note = atCap
+          ? `<span class="tip-perlv">max ${this.fmtStat(a.cap)}${sign}</span>`
+          : `<span class="tip-perlv">next step: +${this.fmtStat(a.perStep)}${sign} at Lv ${nextLv}</span>`;
+      } else if (a.perLevel) {
+        note = `<span class="tip-perlv">+${this.fmtStat(a.perLevel)}${sign} per level</span>`;
+      }
+      return `<div class="tip-affix"><span class="tip-affix__main">+${this.fmtStat(v)}${sign} ${a.label} ${kind}</span>${note}</div>`;
     }).join("");
     return `<div class="tip-name" style="color:${item.color}">${item.name}</div>
       <div class="tip-sub" style="color:${item.color}">${item.rarityName} ${item.slotLabel}</div>
