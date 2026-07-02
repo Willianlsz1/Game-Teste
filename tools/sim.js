@@ -238,13 +238,37 @@ function scenarioBaseline() {
   for (const m of sim.milestones)
     console.log(row([m.level, fmtT(m.t), m.kills, m.gear, fmtN(m.income), m.deaths], W1));
 
-  const W2 = [6, 9, 7, 10, 9, 9, 10, 10];
-  console.log('\n' + row(['área', 'entrada', 'nível', 'mobHP', 'TTK', 'TTD', 'ATK', 'HP'], W2));
+  const gs = G.data.balance.groupSize || 3;
+  const W2 = [6, 6, 9, 7, 10, 9, 9, 10, 10];
+  console.log('\n' + row(['área', 'grupo', 'entrada', 'nível', 'mobHP', 'TTK', 'TTD', 'ATK', 'HP'], W2));
   for (const a of sim.areaEntries) {
     const flag = a.ttk > 60 ? ' ⛔ WALL' : a.ttk > 15 ? ' ⚠' : '';
-    console.log(row([a.area, fmtT(a.t), a.level, fmtN(a.mobHp), a.ttk.toFixed(1) + 's', a.ttd.toFixed(1) + 's', fmtN(a.atk), fmtN(a.hp)], W2) + flag);
+    const grp = 'G' + (Math.floor((a.area - 1) / gs) + 1);
+    console.log(row([a.area, grp, fmtT(a.t), a.level, fmtN(a.mobHp), a.ttk.toFixed(1) + 's', a.ttd.toFixed(1) + 's', fmtN(a.atk), fmtN(a.hp)], W2) + flag);
   }
   if (sim.timedOut) console.log(`\n⚠ timeout em ${hours}h — nível final ${G.state.data.level} (área ${G.state.data.areaIndex + 1})`);
+
+  // ---- tempo por grupo: duração real (entrada do 1º da área do grupo → entrada do grupo seguinte) vs orçamento-alvo do PASSO 1 ----
+  const budget = [1.0, 1.6, 2.4, 3.2, 4.2, 5.6];   // horas-alvo por grupo (curva crescente)
+  const groupEntry = {};
+  for (const a of sim.areaEntries) {
+    const g = Math.floor((a.area - 1) / gs);
+    if (groupEntry[g] === undefined) groupEntry[g] = a.t;
+  }
+  const gseen = Object.keys(groupEntry).map(Number).sort((x, y) => x - y);
+  const W3 = [7, 10, 12, 16];
+  console.log('\n' + row(['grupo', 'entrada', 'duração', 'alvo (desvio)'], W3));
+  for (let gi = 0; gi < gseen.length; gi++) {
+    const g = gseen[gi], start = groupEntry[g], nextG = gseen[gi + 1];
+    const open = nextG === undefined;             // grupo ainda em andamento no fim da run
+    const end = open ? sim.t : groupEntry[nextG];
+    const durH = (end - start) / 3600;
+    const tgt = budget[g];
+    const dev = tgt ? (durH - tgt) / tgt * 100 : 0;
+    const devStr = tgt ? (dev >= 0 ? '+' : '') + dev.toFixed(0) + '%' : 'n/a';
+    console.log(row(['G' + (g + 1), fmtT(start), durH.toFixed(2) + 'h' + (open ? '*' : ' '), (tgt != null ? tgt + 'h ' : '—  ') + '(' + devStr + ')'], W3));
+  }
+  console.log('  * grupo não fechado no fim da run (duração parcial)');
 }
 
 function scenarioGates() {

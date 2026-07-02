@@ -1,6 +1,6 @@
 // combat.js — loop central: ataques automáticos, ondas de inimigos, kill, death
 //
-// Wave system: areas 0-1 = 1 enemy/wave, areas 2-4 = 2/wave, areas 5-8 = 3/wave.
+// Wave system: areas 0-1 = 1 enemy/wave, areas 2-4 = 2/wave, areas 5+ = 3/wave.
 // Boss (at level cap) is always solo. Each enemy in a wave attacks simultaneously.
 // Player targets enemies[0] (front); on kill the next enemy auto-engages.
 
@@ -256,8 +256,8 @@ G.combat = {
     } else if (!d.mapOneCleared) {
       d.mapOneCleared = true;
       if (G.ui && G.ui.log) {
-        G.ui.log("✦ The Dreaming Wood falls silent. The Gilded Hollow is undone — Map 1 complete.", "boss");
-        G.ui.log("✦ In the hush, a cold crystalline call echoes from deep below. Something deeper begins to wake.", "boss");
+        G.ui.log("✦ The Starving Tide is stilled. Okhra is undone at the bottom of the Sunken Port — Map 1 complete.", "boss");
+        G.ui.log("✦ In the hush, the tide recedes — but a colder current stirs far below. Something deeper begins to wake.", "boss");
       }
     }
   },
@@ -283,6 +283,25 @@ G.combat = {
       G.state.invalidateStats();
       G.state.data.hp = G.state.maxHp();
       if (G.ui && G.ui.log) G.ui.log(`★ Level ${G.state.data.level}!`, "level");
+    }
+    this.checkGroupUnlock();
+  },
+
+  // Dentro de um grupo, a próxima área destrava por NÍVEL (a fronteira de grupo continua
+  // travada pelo Harbinger via unlockNext). Estende a fronteira desbloqueada enquanto o
+  // nível qualificar e a área seguinte for do MESMO grupo.
+  checkGroupUnlock() {
+    const d  = G.state.data;
+    const gs = G.data.balance.groupSize;
+    if (typeof d.maxAreaUnlocked !== "number") d.maxAreaUnlocked = d.areaIndex;
+    while (true) {
+      const idx = d.maxAreaUnlocked, nextIdx = idx + 1;
+      if (nextIdx >= G.data.areas.length) return;
+      if (Math.floor(idx / gs) !== Math.floor(nextIdx / gs)) return;   // fronteira de grupo → gate do Harbinger
+      if (d.level < G.data.areas[nextIdx].levelRange[0]) return;
+      d.maxAreaUnlocked = nextIdx;
+      if (G.ui && G.ui.log) G.ui.log(`✦ ${G.data.areas[nextIdx].name} unlocked — the grove deepens.`, "good");
+      if (G.ui && G.ui.renderResources) G.ui.renderResources();
     }
   },
 
