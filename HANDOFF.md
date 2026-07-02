@@ -12,7 +12,7 @@
 
 - **PASSO 0 (Relógio): ✅** — 18h · 30–50min/beat · 50/50 · 1º prestige 25–40min.
 - **PASSO 1 (Esqueleto): ✅ TRAVADO E IMPLEMENTADO** (ciclo 10-80-10: Opus implementou, Sonnet achou+corrigiu 1 bug de migração de save, Fable revisou) — 18 áreas no código, cap 6000, Harbinger por grupo, Okhra fecha o mapa. Tempos por grupo = contrato a cumprir no P2.
-- **PASSOS 2–6: ✅ TODOS FECHADOS.** P2–P5: fricção calibrada · economia Gaiadon · matriz de gear · gate escalonado ×1.30. **P6 ✅ TRAVADO E IMPLEMENTADO** (Árvore I sequencial de 15 nós, coroa conquistável, save `eclats_v5`; ciclo 10-80-10 completo — review Sonnet achou+corrigiu 1 bug crítico de save NaN; âncoras validadas seeds 1 e 3: 1ª conv ~39min, coroa conv 8, árvore 100% conv 12, First Light 18h10–18h27). **Faltam só P7 (First Light re-mapeado) e P8 (Rarity Find + encontros).**
+- **PASSOS 2–7: ✅ TODOS FECHADOS.** P2–P5: fricção calibrada · economia Gaiadon · matriz de gear · gate escalonado ×1.30. P6: Árvore I sequencial (15 nós, coroa, save `eclats_v5`). **P7 ✅ TRAVADO E IMPLEMENTADO**: Awaken = rito de passagem 1/mapa (escada First Light → … → Lumière) · três provas (área 18 + coroa + 3 materiais) · portão limpo do Okhra · `xpMultByGroup [1,1,1,1,2.5,3.0]` · Okhra `hpMult 48`. Âncoras (seeds 1/3/5): 1ª conv 38.7–39.9min · coroa conv 8 · First Light 17h40–17h57 · Okhra 82–98 golpes · mapa completo ~18h. **Falta só o P8.**
 - **Modo de trabalho travado: 10-80-10** — 10% planejamento+pesquisa (Fable) · 80% implementação+review (Opus/Sonnet, nunca Haiku) · 10% review final (Fable).
 
 ## O que o simulador descobriu (fatos medidos — não re-descobrir)
@@ -32,8 +32,9 @@
 
 ## Pendências conhecidas (ordenadas)
 
-1. **P7 — Awaken/First Light EM TRAVAMENTO FATIADO**: P7.1 função ✅ (rito de passagem 1/mapa: CHAVE + PONTE + resquício de sistema) · P7.2 nome ✅ (Awaken + escada do amanhecer: First Light → Daybreak → … → Lumière) · P7.3 requisitos ✅ (três provas: área 18 + coroa acesa + N materiais). Na mesa: **P7.4** — magnitude via sim + forma da CHAVE + resquício do gear. Formato: 1 decisão por vez com o dono.
+1. **P8 — Encontros especiais (ÚLTIMO degrau da escada)**: Rarity Find (spec `RARITY_FIND.md`) · modificadores Corona+/Marcos · luta Harbinger · luta Okhra. Formato: 1 decisão por vez com o dono.
 1b. **Registrado (dono, não desenhar agora):** repensar sistema tipo Ascension antigo com **Mémoires** — 1 por mapa, história do mundo + bônus poderosos.
+1c. **Registrado pro Mapa 2 (P7.4):** promoção Uncommon→Rare exige First Light (o Awaken abre o próximo estágio do gear a cada mapa).
 2. **P8 — Encontros especiais**: Rarity Find (spec em `RARITY_FIND.md`) · modificadores Corona+/Marcos · luta Harbinger/Okhra.
 3. **Registrados pra Árvore II (Mapa 2):** Second Wind · Golden Wake e o banco · awakenEfficiency/awakenReqReduction (removidos do código no P6) · pós-cap da convergence aberto de propósito.
 4. **UI copy (do review):** `ui.js` mostra "Reach level X" pra áreas de fronteira (deveria indicar o Harbinger) — corrigir na fase de UI.

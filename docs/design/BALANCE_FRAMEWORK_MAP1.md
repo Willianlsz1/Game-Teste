@@ -215,7 +215,7 @@ Valida: `sim gates` + `sim campaign` — 1º prestige no alvo do P0; empurrar +1
 - **Validação (sim campaign, seeds 1 e 3):** 1ª conv 38.7m/39.4m ✓ · coroa na conv 8 (~10h22) ✓ · árvore 100% na conv 12 ✓ · First Light 18h10/18h27 (banda 15.3–20.7h) ✓ · Okhra ~21h.
 - **Review adversarial (Sonnet):** 1 bug crítico corrigido (save com valor não-numérico em `tree1` virava NaN permanente e drenava pontos sem subir nível — sanitizado no load) + higiene (CSS órfão das 3 árvores, CLAUDE.md v5, regra v4→v5 no canon-check, +24 asserts de teste). Suíte 197/197 verde.
 
-## PASSO 7 — Awaken / First Light (o exame final) — EM TRAVAMENTO FATIADO (jul/2026)
+## PASSO 7 — Awaken / First Light (o exame final) ✅ TRAVADO E IMPLEMENTADO (jul/2026)
 
 ### P7.1 — Função ✅ TRAVADO (jul/2026): **RITO DE PASSAGEM (Modelo 1) + resquícios de despertar-de-sistema (Modelo 3)**
 - **Um Awaken por mapa.** É a resposta de lore a "por que um Vessel fere um Nihelim?": não fere — até a luz que carrega despertar. O First Light é (a) a **CHAVE** que torna o Okhra ferível de verdade, (b) a **PONTE** estatística pro Mapa 2, (c) opcionalmente o evento que **acende o afixo de despertar do gear** (amarra a arquitetura despertar-em-estágios do P4 — "resquício do Modelo 3", forma exata decidida no P7.4).
@@ -242,7 +242,12 @@ Valida: `sim gates` + `sim campaign` — 1º prestige no alvo do P0; empurrar +1
 - **Resquício do Modelo 3:** os afixos de despertar do gear uncommon JÁ acendem na promoção (G2–G3, calibração do P5 rodou com eles — retro-amarrar quebraria o relógio). O resquício correto: **First Light é pré-requisito da promoção Uncommon→Rare do Mapa 2** (intenção registrada; implementa no Mapa 2). Cada mapa: o Awaken abre o próximo estágio do gear.
 - **Magnitude:** ponto de partida ×2.5 ATK · ×1.5 HP · +25 Lumens (a banda do Okhra do P2.5 já foi travada COM esse bônus). Sim valida: First Light na banda 15.3–20.7h com as três provas · N de materiais (chute 3) não atrasa o rito · Okhra ~90 golpes. Estourou → ajusta N ou magnitude e re-valida.
 
-**→ P7 COMPLETO EM DECISÕES. Implementação via 10-80-10 (números medidos entram aqui no fechamento).**
+### P7 — implementação ✅ (ciclo 10-80-10 completo, jul/2026)
+- **Código:** `awaken.js` com prova de coroa data-driven (awakens futuros usam qualquer subconjunto de area/level/kills/convergences/crown/materials) · portão do Okhra em `combat.spawn` (só a última área; threshold continua contando, boss vem no ciclo seguinte ao despertar; `mapOneCleared` intacto) · aviso do portão + prova da coroa na UI · instrumentação de HTK/duração do Okhra no sim.
+- **Calibração:** `xpMultByGroup [1,1,1,1,2.5,3.0]` (novo botão em balance, lido no único ponto de concessão de XP — repõe nos G5–G6 o boost que o awaken antigo dava à subida final) · Okhra `hpMult 10.74 → 48`.
+- **Validação (seeds 1/3/5, o 5 virgem):** First Light **17h40 / 17h57 / 17h49** (banda 15.3–20.7h) · Okhra **98 / 82 / 84 golpes** (banda 80–100) em 47–56s, sem loop de morte · 1ª conv 38.7–39.9min · coroa conv 8 · convergences por grupo NÃO deslocadas · material 3× com ~4h de folga (nunca gargalo) · mapa completo 17h44–18h02.
+- **Review adversarial (Sonnet): APROVADO, zero bugs críticos/altos.** Verificou off-by-one da prova de área (correto: `maxAreaUnlocked` sobrevive à Convergence — a prova não des-cumpre), caminho único de XP online/offline (sem divergência), portão só na última área, log "Map 1 complete" único. Provou experimentalmente que o `xpMultByGroup` é a lever real (removê-lo devolve First Light a 23h26). Menores corrigidos no fechamento: `try/finally` no monkeypatch do sim; ENGINE.md (seção Awaken atualizada + banner HISTÓRICO no resto).
+- Suíte 208/208 verde · canon-check exit 0.
 Insumos: PASSOS 1–6.
 Valida: `sim campaign` — First Light dentro do orçamento total do P0; Okhra viável só pós-Awaken; poder pós-Awaken vs HP hipotético do início do Mapa 2.
 
@@ -263,6 +268,7 @@ Valida: `sim baseline` com rarity find — frequência de Ember/Lumen/Corona por
 4. **Decisão travada não reabre** sem número novo do sim (mesma disciplina da lore).
 
 ## Log de decisões travadas
+- **jul/2026 — PASSO 7 (Awaken):** rito de passagem 1/mapa (chave anti-Nihelim + ponte) · escada do amanhecer (First Light → … → Lumière) · três provas (área 18 + coroa + 3 materiais) · portão limpo do Okhra · xpMultByGroup [1,1,1,1,2.5,3.0] · Okhra hpMult 48 · First Light ~17h49, Okhra 82–98 golpes (seeds 1/3/5).
 - **jul/2026 — PASSO 6 (Passivas):** Árvore I sequencial, 15 nós binários abre-ao-comprar, coroa conquistável · custos [80/120/200/350] + evo 0.4×1.5^n · tudo em % (F4 fechado) · save v5 · implementado+revisado, âncoras batidas em 2 seeds.
 - **jul/2026 — PASSO 0 (Relógio):** 18h ativas · sessão 30–50min c/ regra do beat · ~50/50 ativo/idle · 1º prestige 25–40min.
 - **jul/2026 — P2.5 (threshold/boss):** threshold 25+5×grupo · mults derivados das bandas HTK (Harbinger ~30 golpes/dano ×2 · Okhra ~90/×2.5).

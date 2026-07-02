@@ -359,8 +359,11 @@ function scenarioCampaign() {
   };
 
   // não para no First Light — segue até Okhra (área 18) p/ medir o mapa inteiro
-  run(sim, { maxHours, stop: (s) => G.state.data.mapOneCleared });
-  G.combat.applyHitToEnemy = _applyHitEnemy;
+  try {
+    run(sim, { maxHours, stop: (s) => G.state.data.mapOneCleared });
+  } finally {
+    G.combat.applyHitToEnemy = _applyHitEnemy;
+  }
 
   const W = [5, 9, 8, 7, 7, 5, 9, 7, 8, 7, 6];
   console.log(row(['run', 't', 'dur', 'gate', 'nível', 'gMax', 'pontos', 'razão', 'nós·lvls', 'árvore', 'coroa'], W));
