@@ -32,7 +32,7 @@
 
 ## Pendências conhecidas (ordenadas)
 
-1. **P3 — trava formal em curso** (diretrizes do dono já registradas). P2 ✅ fechado: fricção validada; RELÓGIO (43h vs 18h · 1ª conv 1h49 vs 25–40min) delegado ao P5 como critério de aceite.
+1. **P3 ✅ travado — implementação conjunta em andamento** (ciclo 10-80-10; inclui recalibração pós-remoção do Rare).
 2. **Diretrizes do dono pro P3/P4 registradas:** Mapa 1 só Common+Uncommon (Rare = Map 2) · Harbinger sem loot garantido · uncommon mat/Forge fora do Mapa 1.
 2. **P2.2–2.5** — travar em sequência; depois implementar o P2 inteiro junto (10-80-10).
 3. **UI copy (do review):** `ui.js` mostra "Reach level X" pra áreas de fronteira (deveria indicar o Harbinger) e o hint de Awaken material por área ficou obsoleto (idx>=5) — corrigir na fase de UI.

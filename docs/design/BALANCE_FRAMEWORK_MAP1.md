@@ -107,7 +107,17 @@ Decide: TTK-alvo por posição (entrada de área 3–8s · fim de área 1–2s �
 Insumos: PASSO 1 · achado F3 do sim (TTK colapsa pra 0.1s sem freio).
 Valida: `sim baseline` — TTK na entrada/fim de cada área dentro da banda; zero paredes não-planejadas; paredes planejadas nos fins de grupo.
 
-## PASSO 3 — A Economia (income vs sinks) ⬜
+## PASSO 3 — A Economia (income vs sinks) ✅ TRAVADO (jul/2026, "prosseguir; ajustes depois")
+
+| Sub | Decisão travada |
+|---|---|
+| P3.1 Income | `goldRatio 0.35` âncora (acoplado ao freio 1.022) · `gearCostBase 2500` mantido |
+| P3.2 Cadência | Common mat: G1 (3ª área)+ · Awaken mat: **G5+** · uncommon mat/Forge **fora do Mapa 1** |
+| P3.3 Promoção | 6 promoções Common→Uncommon caindo ~G2–G4; custo/peça e drops dimensionados no sim |
+| P3.4 Harbinger | drop por chance elevada (~35–50%), **nunca 100%** |
+
+⚠️ Interação registrada: remover o Rare do alcance do Mapa 1 muda a curva de poder que o P2 calibrou (a política do sim promovia a Rare) → a implementação do P3 INCLUI recalibração (`calibrate --write`) e cap provisório do Uncommon até o P4 dimensionar raridade→grupo.
+
 
 **Pergunta central:** quanto o jogador ganha, e em que ele é OBRIGADO a gastar, área por área?
 
