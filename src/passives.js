@@ -24,7 +24,9 @@ G.passives = {
   // Tier 1 = additive warm-up, Tier 2 = boss/elite specialization, Tier 3 = multiplicative capstone
   UNIT: {
     // ---- Éclat (combat) ----
-    atkFlat:    100,  // T1 — flat ATK per level (×10 = +1,000 ATK at max)
+    atkFlat:    100,  // (sem nó no roster atual — chave preservada)
+    hpRegen:    0.4,  // T1 — % do HP máx regenerado por segundo (×10 = 4%/s)
+    healOnKill:   2,  // T1 — % do HP máx curado por kill (×10 = 20%/kill)
     atkPct:       5,  // T1/T3 — +% ATK per level (2+1 nodes × 10 = +150% total)
     critRate:     3,  // T1 — +% crit chance per level (×10 = +30%)
     critDmg:     50,  // T1/T2/T3 — +% crit damage per level (3 nodes × 10 = +1,500%)
@@ -70,9 +72,10 @@ G.passives = {
     eclat: {
       label: "Éclat", sub: "Combat & Vitality", cls: "t-eclat", stat: "power",
       list: [
-        // Tier 1 — galho de dano (flat → increased → crit pair → spike)
-        ["Flat Power", "atkFlat"], ["Increased Power", "atkPct"],
-        ["Crit Rate", "critRate"], ["Crit Damage", "critDmg"],
+        // Tier 1 — galho de dano + sustain
+        // P2.4: nós de sustain — roster/magnitudes revisados no P6
+        ["Regeneration", "hpRegen"], ["Increased Power", "atkPct"],
+        ["Crit Rate", "critRate"], ["Heal on Kill", "healOnKill"],
         ["Giant Slayer", "specialDmg"],
         // Tiers 2–3 (a redesenhar) — travados na slice
         ["Crit Damage", "critDmg"],
@@ -114,6 +117,8 @@ G.passives = {
 
   EFFECT_DESC: {
     atkFlat: "Adds flat ATK — strongest in the early game.",
+    hpRegen: "Regenerates % of max HP per second.",
+    healOnKill: "Restores % of max HP on each kill.",
     specialDmg: "Deals more damage to Rares and Bosses.",
     atkPct: "Increases your ATK.", hpPct: "Increases your HP.",
     critRate: "Increases your critical chance.", critDmg: "Increases your critical damage.",

@@ -63,7 +63,7 @@ G.state = {
     add("critDmg", "flat", 50, "Base");
     add("atkSpeed", "flat", G.data.balance.atkSpeedBase, "Base");
     add("lumensBonus", "flat", 10, "Base");
-    add("lumensBonus", "flat", d.level * 0.15, "Character Level");
+    add("lumensBonus", "flat", Math.min(100, d.level * 0.15), "Character Level");
 
     // equipment
     for (const slot of G.data.slots) {
@@ -91,6 +91,8 @@ G.state = {
       add("hp",  "pct",  passEff.hpPct    || 0, "Passives");
       add("crit", "flat", passEff.critRate || 0, "Passives");
       add("critDmg", "flat", passEff.critDmg || 0, "Passives");
+      add("healOnKill", "flat", passEff.healOnKill || 0, "Passives");
+      add("hpRegen", "flat", passEff.hpRegen || 0, "Passives");
       add("lumensBonus", "flat", passEff.lumensPct || 0, "Passives");
       add("xpBonus", "flat", passEff.xpPct || 0, "Passives");
       add("atk", "mult", 1 + (passEff.capstoneEclat || 0) / 100, "Passives");
@@ -117,6 +119,7 @@ G.state = {
       damageReduction:  G.util.clamp(fin("damageReduction"), 0, 75),
       eliteDmg:         fin("eliteDmg"),
       healOnKill:       fin("healOnKill"),
+      hpRegen:          fin("hpRegen"),
       _layers:          L,
       _breakdown:       BD,
     };

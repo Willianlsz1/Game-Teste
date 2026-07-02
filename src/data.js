@@ -51,7 +51,7 @@ G.data = {
         { id: "xp",  label: "XP",  stat: "xpBonus", layer: "flat", base: 0, perLevel: 0.5 },
       ],
       uncommonAffixes: [
-        { id: "healKill", label: "Heal on Kill",    stat: "healOnKill",      layer: "flat", base: 0, perLevel: 0.002 },
+        { id: "dmgRedA", label: "Dmg Reduction", stat: "damageReduction", layer: "flat", base: 0, perLevel: 0.0008 }, // P4 revisa o roster de afixos
       ],
     },
     gloves: {
@@ -77,7 +77,7 @@ G.data = {
     cloak: {
       name: "Worn Cloak",
       affixes: [
-        { id: "lumens", label: "Lumens", stat: "lumensBonus", layer: "flat", base: 5, perLevel: 1 },
+        { id: "lumens", label: "Lumens", stat: "lumensBonus", layer: "flat", base: 5, perLevel: 0.2, step: 50, cap: 150 },
         { id: "atkp",   label: "Attack", stat: "atk",         layer: "pct",  base: 0, perLevel: 1 },
       ],
       uncommonAffixes: [
@@ -191,7 +191,7 @@ G.data = {
         { name: "Dreamhorn Warden",  sprite: "🦌", img: "assets/enemies/dreamhorn_warden.png"  },
         { name: "Mirelight Drifter", sprite: "🏮", img: "assets/enemies/mirelight_drifter.png" },
       ],
-      boss: { name: "The Hollow Cantor", sprite: "🎶", img: "assets/enemies/hollow_cantor.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar
+      boss: { name: "The Hollow Cantor", sprite: "🎶", hpMult: 20, dmgMult: 2.0, img: "assets/enemies/hollow_cantor.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar
     },
     {
       id: 4, name: "The Moonlit Canopy",
@@ -228,7 +228,7 @@ G.data = {
         { name: "Candlewisp Shade",   sprite: "🔥", img: "assets/enemies/candlewisp_shade.png"   },
         { name: "Glasswater Wraith",  sprite: "💧", img: "assets/enemies/glasswater_wraith.png"  },
       ],
-      boss: { name: "The Bramble King", sprite: "🥀", img: "assets/enemies/bramble_king.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar
+      boss: { name: "The Bramble King", sprite: "🥀", hpMult: 20, dmgMult: 2.0, img: "assets/enemies/bramble_king.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar
     },
     {
       id: 7, name: "The Hollow Cathedral",
@@ -265,7 +265,7 @@ G.data = {
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
         { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
       ],
-      boss: { name: "The Gilded Hollow", sprite: "👁", img: "assets/enemies/gilded_hollow.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar
+      boss: { name: "The Gilded Hollow", sprite: "👁", hpMult: 20, dmgMult: 2.0, img: "assets/enemies/gilded_hollow.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
@@ -302,7 +302,7 @@ G.data = {
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
         { name: "Husklight Murmur",   sprite: "🌳", img: "assets/enemies/husklight_murmur.png"   },
       ],
-      boss: { name: "The Drowned Bell", sprite: "🔔" }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar
+      boss: { name: "The Drowned Bell", sprite: "🔔", hpMult: 20, dmgMult: 2.0 }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
@@ -339,7 +339,7 @@ G.data = {
         { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
         { name: "Husklight Murmur",   sprite: "🌳", img: "assets/enemies/husklight_murmur.png"   },
       ],
-      boss: { name: "The Hollow Fleet", sprite: "🚢" }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar
+      boss: { name: "The Hollow Fleet", sprite: "🚢", hpMult: 20, dmgMult: 2.0 }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
@@ -376,7 +376,7 @@ G.data = {
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
         { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
       ],
-      boss: { name: "Okhra, the Starving Tide", sprite: "🌊" }, // PLACEHOLDER (lore): chefe de Mapa — matar Okhra completa o Mapa 1
+      boss: { name: "Okhra, the Starving Tide", sprite: "🌊", hpMult: 60, dmgMult: 2.5 }, // PLACEHOLDER (lore): chefe de Mapa — matar Okhra completa o Mapa 1
     },
   ],
 
@@ -415,12 +415,13 @@ G.data = {
     mobAtkByArea:      [80, 1750, 3500, 4200, 7000, 21000, 28000, 31500, 36400,
                         41860, 48139, 55360, 63664, 73214, 84196, 96825, 111349, 128051],
     groupSize:         3,     // Harbinger (boss) a cada 3 áreas — fronteira de grupo
+    packByGroup:       [1, 2, 2, 3, 3, 3],   // P2.4: ondas por grupo (teto 3 = restrição de UI)
     atkSpeedBase:      0.9,
     atkSpeedCap:       15,    // teto-assíntota FINAL do jogo (futuros mapas; nunca alcançado em Mapa 1/2)
     map1AtkSpeedCap:   2,     // teto-assíntota Mapa 1
     map2AtkSpeedCap:   4,     // teto-assíntota Mapa 2 (placeholder — Mapa 2 fora de escopo)
     atkSpeedSoftFrac:  0.85,  // soft cap começa a comprimir em ceil×frac (Mapa1≈1.7, Mapa2≈3.4)
-    healOnKillFrac:    0.10,
+    healOnKillFrac:    0,      // P2.4: sustain é 100% construído pelo jogador (passivas)
     bossHpMult:        4,
     bossDmgMult:       1.5,
     bossRewardMult:    6,
@@ -430,9 +431,10 @@ G.data = {
     xpCurveBase:       14,      // XP p/ próximo nível = xpCurveBase × nível^xpCurveExp
     xpCurveExp:        1.62,    // expoente: late-game pesa (XP% vira decisão); subir = mais íngreme
     respawnDelay:      0.5,     // respawn mais ágil → kills/min sem precisar de one-shot
-    bossKillThreshold: 50,      // ⏳ PLACEHOLDER (medir no sim): kills SEM MORRER p/ invocar o Boss de Área (vem com escolta de mobs). Morte zera o contador. Ver docs/design/ENEMY_POWER_PYRAMID.md
+    bossKillThresholdBase:     25,   // P2.5: threshold do Harbinger = base + perGroup×(grupo+1) → 30..55 kills sem morrer
+    bossKillThresholdPerGroup: 5,    // P2.5: escalada por grupo. Morte zera o contador. Ver docs/design/ENEMY_POWER_PYRAMID.md
     gearCostBase:      2500,
-    gearCostGrowth:    1.013,   // custo mais íngreme → gear platô (sem one-shot) e maxa só na Área 3
+    gearCostGrowth:    1.028,   // P2.2: freio principal — testado no sim
     promoteCommonCost:    50,   // common material  (common → uncommon)
     promoteUncommonCost:  25,   // uncommon material (uncommon → rare)
     convertCommonToUncommon: 10, // Forge: junta 10 Common → 1 Uncommon (subir de tier)

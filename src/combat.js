@@ -43,10 +43,19 @@ G.combat = {
     return pool;
   },
 
-  // quantos inimigos por onda (boss é sempre solo)
+  // quantos inimigos por onda (boss é sempre solo) — P2.4: por grupo
   _packSize() {
+    const b   = G.data.balance;
     const idx = G.util.clamp(G.state.data.areaIndex || 0, 0, G.data.areas.length - 1);
-    return idx < 2 ? 1 : idx < 5 ? 2 : 3;
+    const g   = G.util.clamp(Math.floor(idx / b.groupSize), 0, b.packByGroup.length - 1);
+    return b.packByGroup[g];
+  },
+
+  // P2.5: threshold do Harbinger escalado por grupo (base + perGroup×(grupo+1))
+  _bossThreshold() {
+    const b = G.data.balance;
+    const g = Math.floor((G.state.data.areaIndex || 0) / b.groupSize);
+    return b.bossKillThresholdBase + b.bossKillThresholdPerGroup * (g + 1);
   },
 
   // constrói um inimigo individual (boss ou mob comum)
@@ -63,7 +72,7 @@ G.combat = {
 
     if (isBossSpawn) {
       isBoss = true;
-      maxHp *= b.bossHpMult; dmg *= b.bossDmgMult; xp *= b.bossRewardMult;
+      maxHp *= (def.hpMult || b.bossHpMult); dmg *= (def.dmgMult || b.bossDmgMult); xp *= b.bossRewardMult;
       name = def.name;
     } else {
       name = def.name;
@@ -112,7 +121,7 @@ G.combat = {
     this.enemies = [];
 
     // Boss de Área aparece por THRESHOLD DE KILL — nunca solo, sempre com escolta de mobs.
-    const bossTime = area.boss && this._bossKills >= G.data.balance.bossKillThreshold;
+    const bossTime = area.boss && this._bossKills >= this._bossThreshold();
     if (bossTime) this.enemies.push(this._buildOne(true, area.boss));   // boss à frente
     const pool = this.enemyPool();
     for (let i = 0; i < n; i++)
@@ -316,6 +325,13 @@ G.combat = {
       this.respawnTimer -= dt;
       if (this.respawnTimer <= 0) this.spawn();
       return;
+    }
+
+    // P2.4: regen contínuo (sustain via passiva) — só quando vivo, em combate e ferido
+    const rs = G.state.stats();
+    if (rs.hpRegen > 0) {
+      const d = G.state.data, maxHp = G.state.maxHp();
+      if (d.hp < maxHp) d.hp = Math.min(maxHp, d.hp + maxHp * (rs.hpRegen / 100) * dt);
     }
 
     // player attacks first living enemy

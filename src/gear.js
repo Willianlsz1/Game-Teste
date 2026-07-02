@@ -9,7 +9,8 @@ G.gear = {
     const mult = r ? (r.statMult || 1) : 1;
     const lv = (item.level || 1) - 1;
     const eff = af.step ? Math.floor(lv / af.step) * af.step : lv;
-    return af.base + af.perLevel * mult * eff;
+    const val = af.base + af.perLevel * mult * eff;
+    return af.cap != null ? Math.min(val, af.cap) : val;
   },
 
   // teto de nível pela raridade
@@ -112,6 +113,7 @@ G.gear = {
         base:     a.base,
         perLevel: a.perLevel,
         step:     a.step,
+        cap:      a.cap,
       })),
     };
   },
