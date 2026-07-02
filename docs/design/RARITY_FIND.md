@@ -1,6 +1,11 @@
 # Éclats of Lumière — Rarity Find (chance de mob raro)
 
-> Como o jogador aumenta a chance de aparecer mobs raros (Ember/Lumen/Corona — antes Ember/Lumen/Corona). Decisão do dono (jun/2026).
+> Como o jogador aumenta a chance de aparecer mobs raros (Ember/Lumen/Corona). Decisão do dono (jun/2026).
+> ⚠️ **ATUALIZADO pelo P8.1 (jul/2026, canon):** "passiva levanta o teto" foi SUPERADO — a Árvore I (P6)
+> não tem nós de rarity. **O teto agora é dos MARCOS:** cada Harbinger morto pela 1ª vez (permanente)
+> levanta os caps em 1/6 (Ember +5% · Lumen +2.5% · Corona +0.83% → máx 30/15/5 após os 6).
+> Gear enche em **degraus a cada 50 níveis** (não perLevel liso). Nós de rarity cap = Árvore II.
+> Detalhes: `BALANCE_FRAMEWORK_MAP1.md` P8.1. O corpo abaixo vale onde não conflitar.
 
 ## Princípio
 - **Base = 0%.** Sem gear nem passiva, NENHUM raro spawna — só Common. A chance é construída do zero pelo jogador.

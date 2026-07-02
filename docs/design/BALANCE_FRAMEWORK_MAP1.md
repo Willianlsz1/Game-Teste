@@ -251,13 +251,22 @@ Valida: `sim gates` + `sim campaign` — 1º prestige no alvo do P0; empurrar +1
 Insumos: PASSOS 1–6.
 Valida: `sim campaign` — First Light dentro do orçamento total do P0; Okhra viável só pós-Awaken; poder pós-Awaken vs HP hipotético do início do Mapa 2.
 
-## PASSO 8 — Encontros especiais (a textura) ⬜
+## PASSO 8 — Encontros especiais (a textura) — EM TRAVAMENTO FATIADO (jul/2026)
 
 **Pergunta central:** o que quebra a monotonia do grind, e com que frequência?
 
-Decide: **Rarity Find entra** (spec pronta em `RARITY_FIND.md`: base 0%, gear acha, passiva sobe teto — precisa dos afixos/nós novos do P4/P6) · menu de modificadores do Corona+ e dos Marcos (pesquisar e listar) · design da luta de Harbinger (escolta, threshold, recompensa especial?) · luta do Okhra.
-Insumos: PASSOS 4–6 (onde os afixos/nós de rarity moram).
-Valida: `sim baseline` com rarity find — frequência de Ember/Lumen/Corona por grupo; recompensa de Harbinger vs orçamento do P3.
+### P8.1 — Rarity Find ✅ TRAVADO (jul/2026): **Marco abre o teto, gear enche em degraus, a UI conta a história**
+- **Teto por Marco (permanente, 1ª morte de cada Harbinger, sobrevive à Convergence):** cada um levanta os caps em 1/6 — Ember +5% · Lumen +2.5% · Corona +0.83%. Após os 6: **30/15/5** (caps máximos da spec mantidos). Temático: cada ladrão de luz que cai devolve luz ao mundo. Dá alvo cedo pro Lightbane (G2+).
+- **ATUALIZA a spec `RARITY_FIND.md`:** "passiva levanta o teto" morreu com o roster travado do P6 (sem nós de rarity na Árvore I) — o teto agora é dos Marcos. Nós de rarity cap = candidatos à Árvore II.
+- **Gear enche em DEGRAUS (decisão do dono, precedente da capa/P2.2):** afixos sobem a cada **50 níveis** de gear, teto = cap global. Ordem de grandeza (sim calibra): Ember Trail +0.5%/degrau · Second Sight +0.25% · Corona Call ~+0.085% — gear realista no fim do mapa enche os tetos; meio do mapa ≈ metade. Legibilidade: o degrau é visível na ficha.
+- **Onboarding = 4 toques nos momentos (sem tutorial):** log destacado na 1ª morte de cada Marco ("The stolen light disperses... Ember cap +5%") · painel Lights com **chance / teto** por tier (ensina as duas alavancas) · log no 1º spawn de cada tier · tooltip do afixo com "next step: +X% at Lv N".
+- Recompensas dos acesos ~×3/×6/×10 (espelham o poder) — sim valida contra a economia do P3 na implementação.
+- Rejeitado: unlock único via coroa/First Light (tarde demais) · tetos fixos desde o início (teto invisível, perde a dupla alavanca) · perLevel liso 0.001 (invisível, nunca produz momento perceptível).
+
+### Fatias restantes
+- **P8.2** — menu de modificadores do Corona+ (e se Marcos ganham assinatura → P8.3). **P8.3** — luta de Harbinger. **P8.4** — luta do Okhra.
+Insumos: PASSOS 4–7.
+Valida: `sim baseline/campaign` com rarity find — frequência de acesos por grupo; recompensa vs orçamento do P3; âncoras do relógio intactas.
 
 ---
 
