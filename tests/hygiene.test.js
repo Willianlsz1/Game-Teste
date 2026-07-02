@@ -20,9 +20,8 @@ for (const f of ["util", "data", "gear", "passives", "awaken", "state", "economy
 let failed = 0;
 function ok(c, m) { console.log((c ? "PASS" : "FAIL") + " — " + m); if (!c) failed++; }
 function fresh() { store = {}; G.state.data = null; G.state.load(); }
-// liga um efeito de passiva por nó (bypass de gating) com magnitude de teste
-function setEffect(tree, idx, key, mag) { G.passives.UNIT[key] = mag; G.state.data.passives[tree][idx] = 1; G.state.invalidateStats(); }
-function clearEffect(tree, idx, key) { G.passives.UNIT[key] = 0; G.state.data.passives[tree][idx] = 0; G.state.invalidateStats(); }
+// seta o nível de um nó da Árvore I direto (bypass de gating) para medir efeito
+function setNode(idx, lv) { G.state.data.passives.tree1[idx] = lv; G.state.invalidateStats(); }
 
 // ---------- Task 1: slots ----------
 ok(G.gear.buildPiece("gloves", "common").affixes[0].stat === "crit", "Gloves primário = Crit");
@@ -44,85 +43,132 @@ ok(G.state.stats().atkSpeed <= G.data.balance.map2AtkSpeedCap && G.state.stats()
   "Attack Speed Mapa 2: teto sobe para map2AtkSpeedCap");
 ok(G.state.attackInterval() >= 1 / G.data.balance.map2AtkSpeedCap - 1e-9, "attackInterval respeita o teto do Mapa 2");
 
-// ---------- Task 3: bossDmg / eliteDmg agora aplicados inline em combat.playerHit ----------
-// (a função typeDamageMult foi removida; o bônus entra direto no cálculo do golpe)
-fresh();
-G.passives.UNIT.bossDmg = 100; G.state.data.passives.eclat[6] = 1; G.state.invalidateStats();
-ok(G.passives.effect("bossDmg") === 100, "bossDmg: efeito da passiva = +100% (×2 contra Boss no playerHit)");
-G.passives.UNIT.bossDmg = 0; G.state.data.passives.eclat[6] = 0;
-G.passives.UNIT.eliteDmg = 50; G.state.data.passives.eclat[7] = 1; G.state.invalidateStats();
-ok(G.passives.effect("eliteDmg") === 50, "eliteDmg: efeito da passiva = +50% (×1.5 contra Elite/Rare)");
-G.passives.UNIT.eliteDmg = 0; G.state.data.passives.eclat[7] = 0;
+// ---------- PASSO 6: a ÁRVORE I (árvore única binária) ----------
 
-// capstoneEclat -> atk & hp ×
+// save v5: passives.tree1 = 15 zeros; árvores antigas (eclat/vestige/fracture) morreram
+fresh();
+ok(G.state.SAVE_KEY === "eclats_v5", "SAVE_KEY = eclats_v5 (bump estrutural do P6)");
+ok(Array.isArray(G.state.data.passives.tree1) && G.state.data.passives.tree1.length === 15 &&
+  G.state.data.passives.tree1.every((v) => v === 0), "fresh: passives.tree1 = 15 zeros");
+ok(!G.state.data.passives.eclat && !G.state.data.passives.vestige && !G.state.data.passives.fracture,
+  "fresh: árvores antigas removidas do save");
+
+// topologia: 1 raiz + 2 (D2) + 4 (D3) + 8 folhas (D4) = 15; raiz sem pai
+ok(G.passives.nodes.length === 15, "15 nós na Árvore I");
+ok(G.passives.nodes[0].parent === -1 && G.passives.nodes[0].depth === 1, "nó 0 é a raiz (parent -1, depth 1)");
+ok(G.passives.leaves().length === 8, "8 folhas (depth 4)");
+ok(G.passives.nodes.filter((n) => n.depth === 2).length === 2 &&
+  G.passives.nodes.filter((n) => n.depth === 3).length === 4, "2 nós em D2, 4 em D3");
+
+// gating abre-ao-comprar: nada sem Convergence; raiz 1ª; filho abre com pai ≥1
+fresh();
+ok(G.passives.canBuy(0) === false, "sem Convergence: nada comprável");
+G.state.data.convergences = 1; G.state.data.convergencePoints = 1e12;
+ok(G.passives.canBuy(0) === true, "com Convergence + pontos: a raiz é comprável");
+ok(G.passives.canBuy(1) === false && G.passives.canBuy(3) === false, "filhos bloqueados com o pai no nível 0");
+G.passives.buy(0);
+ok(G.passives.canBuy(1) === true && G.passives.canBuy(2) === true, "comprar a raiz ABRE os 2 filhos D2");
+ok(G.passives.canBuy(3) === false, "neto D3 ainda bloqueado (pai D2 no nível 0)");
+G.passives.buy(1);
+ok(G.passives.canBuy(3) === true && G.passives.canBuy(4) === true, "comprar o D2 abre seus 2 filhos D3");
+
+// custo: maxLevel 10, unlock por profundidade, upgrade geométrico
+fresh(); G.state.data.convergences = 1; G.state.data.convergencePoints = 1e12;
+ok(G.passives.nodeMax() === 10, "maxLevel = 10 por nó");
+ok(G.passives.unlockCost(0) === G.passives.unlockByDepth[0], "unlock da raiz = unlockByDepth[D1]");
+ok(G.passives.unlockCost(7) === G.passives.unlockByDepth[3], "unlock de folha = unlockByDepth[D4]");
+ok(G.passives.nextCost(0) === G.passives.unlockCost(0), "nível 0: nextCost = unlockCost");
+G.passives.buy(0);
+ok(G.passives.nextCost(0) === Math.ceil(G.passives.unlockCost(0) * G.passives.evoFactor),
+  "nível 1→2: nextCost = unlock × evoFactor");
+
+// First Spark (raiz): efeito DUPLO ATK% + HP%
 fresh();
 const atk0 = G.state.stats().atk, hp0 = G.state.stats().hp;
-setEffect("eclat", 14, "capstoneEclat", 100);
-ok(Math.abs(G.state.stats().atk - atk0 * 2) < 2 && Math.abs(G.state.stats().hp - hp0 * 2) < 2, "capstoneEclat: ATK e HP ×2");
-clearEffect("eclat", 14, "capstoneEclat");
+setNode(0, 10);
+ok(G.passives.effects().firstSpark === 10 * G.passives.unit("firstSpark"), "firstSpark agrega nível × unit");
+ok(G.state.stats().atk > atk0 && G.state.stats().hp > hp0, "firstSpark eleva ATK e HP (duplo)");
 
-// capstoneVestige -> lumens & xp ×
+// Hardened Light: damageReduction como fonte de passiva (NOVO)
+fresh(); G.passives.UNIT.damageReduction = 10; setNode(4, 3);
+ok(Math.abs(G.state.stats().damageReduction - 30) < 1e-9, "Hardened Light: damageReduction passivo (10×3=30%)");
+G.passives.UNIT.damageReduction = 1;
+
+// Lightbane: exposto no cache; aplica vs acesos (rare/elite), NÃO vs boss
 fresh();
-const lum0 = G.state.stats().lumensBonus;
-setEffect("vestige", 14, "capstoneVestige", 100);
-ok(Math.abs(G.state.stats().lumensBonus - lum0 * 2) < 1e-6, "capstoneVestige: Lumens Bonus ×2");
-clearEffect("vestige", 14, "capstoneVestige");
+G.state.data.equipped.weapon.affixes = []; // isola: sem specialDmg de gear
+G.passives.UNIT.lightbane = 8; setNode(12, 10); // +80%
+ok(Math.abs(G.state.stats().lightbane - 80) < 1e-9, "lightbane exposto em stats (8×10=80%)");
+(function () {
+  const realUi = G.ui, realChance = G.util.chance;
+  G.ui = null; G.util.chance = () => false;   // sem projétil, sem crit
+  const atk = G.state.stats().atk;
+  G.combat.enemies = [{ hp: 1e9, maxHp: 1e9, rarity: { tag: "R" }, isBoss: false, dead: false }];
+  let b = G.combat.enemies[0].hp; G.combat.playerHit(); const dmgRare = b - G.combat.enemies[0].hp;
+  G.combat.enemies = [{ hp: 1e9, maxHp: 1e9, rarity: null, isBoss: true, dead: false }];
+  b = G.combat.enemies[0].hp; G.combat.playerHit(); const dmgBoss = b - G.combat.enemies[0].hp;
+  G.combat.enemies = []; G.ui = realUi; G.util.chance = realChance;
+  ok(Math.abs(dmgRare - Math.ceil(atk * 1.8)) <= 1, "lightbane +80% aplicado vs aceso (rare)");
+  ok(Math.abs(dmgBoss - atk) <= 1, "lightbane NÃO aplica vs boss");
+})();
+G.passives.UNIT.lightbane = 8;
 
-// capstoneFracture -> pontos de Convergence ×
-fresh(); G.state.data.level = 200;
-const pts0 = G.convergence.points();
-G.passives.UNIT.capstoneFracture = 100; G.state.data.passives.fracture[14] = 1;
-ok(G.convergence.points() === pts0 * 2, "capstoneFracture: pontos de Convergence ×2");
-G.passives.UNIT.capstoneFracture = 0; G.state.data.passives.fracture[14] = 0;
+// Overkill Echo: excedente do golpe fatal → Lumens extra, capado em 100% dos lumens base
+function killWith(echoLvl, hp) {
+  fresh(); setNode(10, echoLvl);
+  G.state.data.lumens = 0;
+  const realUi = G.ui; G.ui = null;
+  const mob = { name: "m", level: 1, maxHp: 1000, hp: hp, dmg: 1, lumens: 100, xp: 1, isBoss: false, rarity: null };
+  G.combat.enemies = [mob]; G.combat.enemy = mob;
+  G.combat.onKill();
+  G.ui = realUi;
+  return G.state.data.lumens;
+}
+G.passives.UNIT.overkillEcho = 10;
+const echoBase = killWith(0, -500);                          // sem echo
+const echoBig = killWith(10, -500);                          // +100%, overkill 500 → cap 100
+ok(echoBig - echoBase === Math.min(Math.ceil(500 * G.data.balance.goldRatio), 100),
+  "Overkill Echo: excedente vira Lumens extra, capado em 100% dos lumens base do mob");
+const echoSmall = killWith(10, -50);                         // overkill 50 → sob o cap
+ok(echoSmall - echoBase === Math.ceil(50 * G.data.balance.goldRatio),
+  "Overkill Echo: overkill pequeno (sob o cap) escala 1:1 com goldRatio");
 
-// (upgradeCostReduction foi cortado da árvore Fracture — nó 10 hoje é "Refined Methods" → xpPct)
+// Deep Memory: convPointsPct eleva os pontos de Convergence
+fresh(); G.state.data.level = 276; G.state.data.convergences = 0;
+const dmPts0 = G.convergence.rawPoints();
+G.passives.UNIT.convPointsPct = 5; setNode(9, 10);           // +50%
+ok(G.convergence.points() === Math.floor(dmPts0 * 1.5), "Deep Memory: convPointsPct +50% nos pontos");
 
-// awakenReqReduction -> reduz limiares numéricos do Awaken
+// Harbinger's Bane: bossDmg (chave existente, lida no playerHit)
+fresh(); G.passives.UNIT.bossDmg = 100; setNode(14, 1);
+ok(G.passives.effect("bossDmg") === 100, "Harbinger's Bane: bossDmg +100% (×2 vs Boss no playerHit)");
+G.passives.UNIT.bossDmg = 10;
+
+// Quickened Pulse: atkSpeed flat (soft cap comprime o excesso)
 fresh();
-const needLv0 = G.awaken.requirements("first_light").find((r) => r.key === "level").need;
-G.passives.UNIT.awakenReqReduction = 50; G.state.data.passives.fracture[5] = 1;
-const needLv1 = G.awaken.requirements("first_light").find((r) => r.key === "level").need;
-ok(needLv1 === Math.ceil(needLv0 * 0.5), "awakenReqReduction 50%: requisito de nível pela metade");
-const areaReq = G.awaken.requirements("first_light").find((r) => r.key === "area").need;
-ok(areaReq === G.awaken.def("first_light").requirements.area, "awakenReqReduction NÃO reduz o requisito de Área");
-G.passives.UNIT.awakenReqReduction = 0; G.state.data.passives.fracture[5] = 0;
+const as0 = G.state.stats().atkSpeed;
+G.passives.UNIT.atkSpeed = 0.03; setNode(13, 10);
+ok(G.state.stats().atkSpeed > as0, "Quickened Pulse: atkSpeed sobe (soft cap comprime)");
 
-// awakenEfficiency -> amplifica o bônus do Awaken
-fresh();
-const req = G.awaken.def("first_light").requirements;
-G.state.data.maxAreaUnlocked = req.area - 1; G.state.data.level = req.level;
-G.state.data.totalKills = req.kills; G.state.data.convergences = req.convergences;
-G.state.data.awakenMaterials.firstLight = req.materials.firstLight;
-G.state.invalidateStats();                       // nível mudou → recomputar baseline
-const atkNoAwk = G.state.stats().atk;
-G.awaken.awaken("first_light"); G.state.invalidateStats();
-const atkAwk = G.state.stats().atk;            // base × 2.5
-G.passives.UNIT.awakenEfficiency = 100; G.state.data.passives.fracture[13] = 1; G.state.invalidateStats();
-const atkEff = G.state.stats().atk;            // base × (1 + 1.5×2) = ×4
-ok(atkEff > atkAwk && Math.abs(atkEff / atkNoAwk - 4) < 0.01, "awakenEfficiency 100%: bônus 2.5× vira 4×");
-G.passives.UNIT.awakenEfficiency = 0; G.state.data.passives.fracture[13] = 0;
+// A COROA "The Ring Closes": auto-concedida com as 8 folhas ≥1; mult em ATK/HP/Lumens/XP
+fresh(); G.state.data.convergences = 1;
+ok(G.passives.crownActive() === false, "coroa apagada com a árvore vazia");
+for (const i of G.passives.leaves()) setNode(i, 1);
+ok(G.passives.crownActive() === true, "coroa acende com as 8 folhas ≥1");
+ok(G.passives.effects().ringCloses === G.passives.unit("ringCloses"), "effects() injeta ringCloses com a coroa acesa");
+const leaf0 = G.passives.leaves()[0];   // idx 7 = lumensPct (não toca ATK) → isola o mult da coroa
+setNode(leaf0, 0); const atkNoCrown = G.state.stats().atk;
+setNode(leaf0, 1); const atkCrown = G.state.stats().atk;
+ok(atkCrown > atkNoCrown, "coroa eleva ATK via mult ×(1+ringCloses%)");
+ok(Math.abs(atkCrown / atkNoCrown - (1 + G.passives.unit("ringCloses") / 100)) < 0.02,
+  "coroa: mult de ATK ≈ 1+ringCloses%");
 
-// ---------- Task 4: unificação matPct / matGeneralPct ----------
-fresh();
-ok(G.passives.trees.vestige.list[13][1] === "matGeneralPct", "nó 'Materials %' agora usa matGeneralPct");
-ok(G.passives.UNIT.matPct === undefined, "chave matPct removida do UNIT");
-G.passives.UNIT.matGeneralPct = 100; G.state.data.passives.vestige[8] = 1;
-ok(Math.abs(G.economy.passiveQtyMult("commonMaterial") - 2) < 1e-9, "matGeneralPct 100%: quantidade de material ×2 (unificado)");
-G.passives.UNIT.matGeneralPct = 0; G.state.data.passives.vestige[8] = 0;
-
-// ---------- Task 3 (deferidos): moreEnemies / gearXp -> Mapa 2 ----------
-fresh();
-ok(G.passives.isDeferred("fracture", 8) && G.passives.isDeferred("fracture", 9), "moreEnemies e gearXp marcados como Mapa 2");
-G.state.data.convergences = 1; // árvore desbloqueada
-ok(G.passives.canBuy("fracture", 8) === false && G.passives.canBuy("fracture", 9) === false, "nós Mapa 2 não são compráveis");
-ok(G.passives.treeProgress("fracture").total === 13, "treeProgress ignora os 2 nós Mapa 2 (15→13)");
-// efeito 0 mesmo se houvesse nível
-G.passives.UNIT.moreEnemies = 100; G.state.data.passives.fracture[8] = 5;
-ok(G.passives.effect("moreEnemies") === 0, "nó Mapa 2 não produz efeito (excluído de effects())");
-G.passives.UNIT.moreEnemies = 0; G.state.data.passives.fracture[8] = 0;
-// gating de grupo ignora os deferidos
-G.state.data.passives.fracture[5] = 12; G.state.data.passives.fracture[6] = 12; G.state.data.passives.fracture[7] = 12;
-ok(G.passives.groupUnlocked("fracture", 2) === true, "grupo 2 libera com 5/6/7 no máx (8/9 Mapa 2 ignorados)");
+// chaves mortas removidas do UNIT (capstones, matPct, hpToDamage, eliteDmg, deferidos)
+ok(G.passives.UNIT.capstoneEclat === undefined && G.passives.UNIT.matCommonPct === undefined &&
+  G.passives.UNIT.hpToDamage === undefined && G.passives.UNIT.eliteDmg === undefined,
+  "UNIT sem as chaves mortas (capstones, matCommonPct, hpToDamage, eliteDmg)");
+ok(G.passives.isDeferred === undefined && G.passives.groupUnlocked === undefined,
+  "helpers do modelo antigo (isDeferred/groupUnlocked) removidos");
 
 // ---------- PASSO 4: a MATRIZ de afixos (P4.2a) ----------
 // primários (Common) por peça
@@ -151,7 +197,7 @@ ok(hasStat("helmet", "rarityFindLumen"),   "Helmet despertar = rarityFindLumen (
 ok(hasStat("boots",  "xpBonus"),           "Boots despertar = XP menor (Long Road)");
 ok(hasStat("cloak",  "rarityFindCorona"),  "Cloak despertar = rarityFindCorona (Corona Call)");
 
-// specialDmg NÃO dobra: stats() expõe gear (Marked Blade) + passiva (Giant Slayer) como soma ÚNICA
+// specialDmg agora é SÓ de gear (Marked Blade) — a passiva Giant Slayer morreu no P6
 fresh();
 G.state.data.equipped.weapon = G.gear.buildPiece("weapon", "uncommon");
 G.state.data.equipped.weapon.level = 100;
@@ -159,10 +205,7 @@ G.state.invalidateStats();
 const wSD = G.state.data.equipped.weapon.affixes.find((a) => a.stat === "specialDmg");
 const gearSD = G.gear.affixValue(G.state.data.equipped.weapon, wSD);
 ok(gearSD > 0, "specialDmg de gear > 0 no Uncommon");
-G.state.data.passives.eclat[4] = 1; G.state.invalidateStats();       // Giant Slayer (UNIT.specialDmg = 12)
-const passSD = G.passives.effect("specialDmg");
-ok(Math.abs(G.state.stats().specialDmg - (gearSD + passSD)) < 1e-6, "specialDmg = gear + passiva (soma única, sem dobrar)");
-G.state.data.passives.eclat[4] = 0; G.state.invalidateStats();
+ok(Math.abs(G.state.stats().specialDmg - gearSD) < 1e-6, "specialDmg = só gear (Giant Slayer removido)");
 
 // siegeWard: exposto, e a redução extra SÓ conta com 2+ inimigos vivos (combat.applyHitToHero)
 fresh();

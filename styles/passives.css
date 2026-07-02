@@ -33,6 +33,13 @@
 
 .pv-body { position: absolute; inset: 0; z-index: 2; }
 .pv-body.t-eclat { --tree-c: var(--eclat); } .pv-body.t-vest { --tree-c: var(--vest); } .pv-body.t-frac { --tree-c: var(--frac); }
+.pv-body.pv-tree1 { --tree-c: var(--eclat); }   /* Árvore I — árvore única */
+/* Coroa "The Ring Closes": auto-concedida, não clicável */
+.pv-node.pv-crown { --c: #ffd98a; cursor: default; }
+.pv-node.pv-crown .pv-node-name { color: #ffe6a8; }
+.pv-node.pv-crown.crown-on .pv-disc { box-shadow: 0 0 0 2px #ffd98a, 0 0 34px 0 #ffd98a; }
+.pv-node.pv-crown.locked .pv-disc { filter: grayscale(.55) brightness(.7); }
+.pv-node.pv-crown.locked .pv-node-name { color: #8a97ad; }
 .pv-summary { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 3;
   display: flex; align-items: center; gap: 12px; padding: 9px 22px; border-radius: 999px;
   background: rgba(8,12,24,.86); border: 1px solid color-mix(in srgb, var(--tree-c) 38%, transparent);

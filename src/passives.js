@@ -1,195 +1,151 @@
 // =============================================================
-// passives.js — Árvores de Passivas (Éclat · Vestige · Fracture)
+// passives.js — Árvore I (Mapa 1) · árvore ÚNICA binária de 15 nós
 // =============================================================
-// 3 árvores × 15 nós. Cada nó declara um EFEITO (chave semântica). A MAGNITUDE
-// de cada efeito é um PLACEHOLDER configurável (ver UNIT).
+// P6 (jul/2026): as 3 árvores paralelas (Éclat/Vestige/Fracture) MORRERAM.
+// Entra a Árvore I: 1 raiz → 2 → 4 → 8 folhas (=15 nós), abre-ao-comprar
+// (um filho fica comprável quando o pai tem nível ≥1), maxLevel 10 por nó.
 //
-// Efeitos "LIVE" (atkPct/hpPct/critRate/critDmg/lumensPct/xpPct/hpToDamage) já
-// têm alvo no motor de stats (state.stats()). Os demais existem estruturalmente
-// e são expostos por effect(key) para os sistemas futuros, hoje com magnitude 0.
+// Coroa "The Ring Closes": AUTO-CONCEDIDA (não comprável) quando as 8 folhas
+// têm nível ≥1 — bônus multiplicativo pequeno em ATK, HP, Lumens e XP. É
+// permanente na prática (folhas não des-compram). Marca "Árvore I completa".
+//
+// Cada nó declara um EFEITO (chave semântica) com magnitude configurável (UNIT).
+// Árvore II (Mapa 2) traz versões amplificadas + poucas novas — fora de escopo.
 
 G.passives = {
-  TREES: ["eclat", "vestige", "fracture"],
-  GROUP_SIZE: 5,
   maxLevel: 10,
 
-  // ---- gating / custo (placeholders) ----
-  // custo de unlock por POSIÇÃO no tier — escalonado: cada nó custa mais que o anterior.
-  // tier mais fundo escala via groupMult (tier2 ×10, tier3 ×100).
-  unlockLadder: [40, 90, 160, 250, 360],
-  groupMult: [1, 10, 100],
-  evoFactor: 0.3, evoRamp: 1.3,
+  // ---- gating / custo ----
+  // custo de UNLOCK (1º nível) por PROFUNDIDADE do nó (D1..D4). Upgrades por nível
+  // seguem o padrão geométrico: unlock × evoFactor × evoRamp^(nível-1).
+  unlockByDepth: [80, 120, 200, 350],
+  evoFactor: 0.4, evoRamp: 1.5,
 
-  // ================= MAGNITUDES POR NÍVEL =================
-  // Tier 1 = additive warm-up, Tier 2 = boss/elite specialization, Tier 3 = multiplicative capstone
+  // ================= MAGNITUDES POR NÍVEL (UNIT) =================
+  // apenas o que a Árvore I usa. ringCloses = bônus da coroa (aplicado 1× ao acender).
+  // Magnitudes finais = sugeridas do framework × ESCALA GLOBAL ~1.25 (a grade do P6
+  // ajustou a escala p/ os âncoras do P5 segurarem com a Árvore I dentro — ver relatório).
   UNIT: {
-    // ---- Éclat (combat) ----
-    atkFlat:    100,  // (sem nó no roster atual — chave preservada)
-    hpRegen:    0.4,  // T1 — % do HP máx regenerado por segundo (×10 = 4%/s)
-    healOnKill:   2,  // T1 — % do HP máx curado por kill (×10 = 20%/kill)
-    atkPct:       5,  // T1/T3 — +% ATK per level (2+1 nodes × 10 = +150% total)
-    critRate:     3,  // T1 — +% crit chance per level (×10 = +30%)
-    critDmg:     50,  // T1/T2/T3 — +% crit damage per level (3 nodes × 10 = +1,500%)
-    specialDmg:  12,  // T1 — vs rares & bosses (×10 = +120%)
-    hpPct:        8,  // T2/T3 — +% HP per level (2 nodes × 10 = +160%)
-    bossDmg:     15,  // T2 — +% damage to bosses per level (2 nodes × 10 = +300%)
-    eliteDmg:    10,  // T2 — +% damage to elites per level (×10 = +100%)
-    hpToDamage:   4,  // T3 — converts 4% max HP to flat ATK per level (×10 = 40% HP→ATK)
-    capstoneEclat: 150, // T3 capstone — ATK ×2.5
-
-    // ---- Vestige (economy) ----
-    lumensPct:   10,  // T1 — +% Lumens per level (4 nodes × 10 = +400%)
-    xpPct:       10,  // T1/T3 — +% XP per level (3+1 nodes × 10 = +400%)
-    matCommonPct:   25, // T2 — +% common material quantity (×10 = +250%)
-    matUncommonPct: 30, // T2 — +% uncommon material quantity (×10 = +300%)
-    matGeneralPct:  15, // T2/T3 — +% all materials (2 nodes × 10 = +300%)
-    dropRate:    10,  // T2 — +% material drop chance per level (2 nodes × 10 = +200%)
-    matQuantity: 20,  // T3 — +% material quantity dropped per level (×10 = +200%)
-    capstoneVestige: 100, // T3 capstone — Lumens & XP ×2
-
-    // ---- Fracture (meta) ----
-    convPointsPct:  10, // T1 — +% convergence points per level (2 nodes × 10 = +200%)
-    convPointsMin: 100, // T1 — minimum convergence points per level (×10 = 1,000 guaranteed)
-    awakenMatPct:   20, // T2 — +% awaken material per level (2 nodes × 10 = +400%)
-    awakenReqReduction: 3, // T2 — reduce awaken requirement % (×10 = 30% reduction)
-    eliteChance:    3,  // T2 — +% elite spawn chance per level (×10 = +30%)
-    miniBossThreshold: 3, // T2 — lowers kill threshold for mini-boss
-    moreEnemies:    0,  // Map 2 — requires multi-enemy combat (future)
-    gearXp:         0,  // Map 2 — requires Gear XP system (future)
-    convEfficiency: 15, // T3 — +% convergence efficiency per level (×10 = +150%)
-    awakenEfficiency: 15, // T3 — +% awaken efficiency per level (×10 = +150%)
-    capstoneFracture: 50, // T3 capstone — Conv Points ×1.5
-
+    firstSpark:     2.5,   // raiz — +% ATK e +% HP por nível (efeito duplo)
+    hpRegen:        0.5,   // % do HP máx regenerado por segundo
+    healOnKill:     2.5,   // % do HP máx curado por kill
+    hpPct:            5,   // +% HP por nível
+    damageReduction: 1.25, // +% redução de dano por nível (fonte passiva NOVA)
+    atkPct:           5,   // +% ATK por nível
+    critRate:       2.5,   // +% chance de crítico por nível
+    lumensPct:       10,   // +% Lumens por nível
+    xpPct:          7.5,   // +% XP por nível
+    convPointsPct:    6,   // +% Pontos de Convergence por nível (Deep Memory)
+    overkillEcho:    12,   // dano excedente do golpe fatal → Lumens extra (mecânica NOVA)
+    critDmg:         18,   // +% dano crítico por nível
+    lightbane:       10,   // +% dano vs acesos (rares & elites, não boss) — NOVO
+    atkSpeed:     0.037,   // +atkSpeed flat por nível (soft cap cuida do resto)
+    bossDmg:         12,   // +% dano vs Marcos (Harbinger's Bane) — chave existente
+    ringCloses:      18,   // COROA — ×(1+18/100) em ATK, HP, Lumens e XP (aplicado 1×)
     _default: 0,
   },
-  // efeitos ADIADOS para o Mapa 2 (exigem sistemas inexistentes) — nós indisponíveis
-  MAP2: ["moreEnemies", "gearXp"],
-  LIVE: ["atkFlat", "atkPct", "hpPct", "critRate", "critDmg", "lumensPct", "xpPct"],
-  PRIMARY: { eclat: "atkPct", vestige: "lumensPct", fracture: "convPointsPct" },
 
-  // ---- definição das árvores (15 nós cada): list[i] = [nome, effectKey] ----
-  trees: {
-    eclat: {
-      label: "Éclat", sub: "Combat & Vitality", cls: "t-eclat", stat: "power",
-      list: [
-        // Tier 1 — galho de dano + sustain
-        // P2.4: nós de sustain — roster/magnitudes revisados no P6
-        ["Regeneration", "hpRegen"], ["Increased Power", "atkPct"],
-        ["Crit Rate", "critRate"], ["Heal on Kill", "healOnKill"],
-        ["Giant Slayer", "specialDmg"],
-        // Tiers 2–3 (a redesenhar) — travados na slice
-        ["Crit Damage", "critDmg"],
-        ["Boss Damage", "bossDmg"], ["Elite Damage", "eliteDmg"], ["Boss Damage", "bossDmg"],
-        ["HP %", "hpPct"], ["HP %", "hpPct"], ["HP → Damage", "hpToDamage"],
-        ["ATK %", "atkPct"], ["Crit Damage", "critDmg"],
-        ["Hybrid Capstone", "capstoneEclat"],
-      ],
-    },
-    vestige: {
-      label: "Vestige", sub: "Economy & Farm", cls: "t-vest", stat: "gains",
-      list: [
-        ["Lumens %", "lumensPct"], ["Lumens %", "lumensPct"], ["Lumens %", "lumensPct"],
-        ["XP %", "xpPct"], ["XP %", "xpPct"], ["XP %", "xpPct"],
-        ["Material Common %", "matCommonPct"], ["Material Uncommon %", "matUncommonPct"],
-        ["General Materials %", "matGeneralPct"],
-        ["Drop Rate", "dropRate"], ["Drop Rate", "dropRate"],
-        ["Material Quantity", "matQuantity"],
-        ["Lumens %", "lumensPct"], ["Materials %", "matGeneralPct"],
-        ["Infinite Prosperity Capstone", "capstoneVestige"],
-      ],
-    },
-    fracture: {
-      label: "Fracture", sub: "Metaprogression & World Rules", cls: "t-frac", stat: "account",
-      list: [
-        ["Convergence Points %", "convPointsPct"], ["Convergence Points %", "convPointsPct"],
-        ["Guaranteed Min Points", "convPointsMin"],
-        ["Awaken Materials %", "awakenMatPct"], ["Awaken Materials %", "awakenMatPct"],
-        ["Awaken Requirement Reduction", "awakenReqReduction"],
-        ["Elite Chance", "eliteChance"], ["Lower Mini Boss Threshold", "miniBossThreshold"],
-        ["More Simultaneous Enemies", "moreEnemies"],
-        ["Gear XP", "gearXp"], ["Refined Methods", "xpPct"],
-        ["Battle Hardened", "atkPct"],
-        ["Convergence Efficiency", "convEfficiency"], ["Awaken Efficiency", "awakenEfficiency"],
-        ["Hybrid Capstone", "capstoneFracture"],
-      ],
-    },
+  // efeitos LIVE (têm alvo no motor de stats). ringCloses é injetado à parte.
+  LIVE: ["firstSpark", "hpPct", "damageReduction", "atkPct", "critRate",
+         "lumensPct", "xpPct", "critDmg", "lightbane", "atkSpeed",
+         "hpRegen", "healOnKill"],
+
+  // ---- topologia: nodes[i] = { name, key, parent (índice, -1 = raiz), depth } ----
+  // 0=raiz · 1,2=D2 · 3..6=D3 · 7..14=D4 (folhas). Binária: cada nó tem 2 filhos.
+  nodes: [
+    { name: "First Spark",      key: "firstSpark",      parent: -1, depth: 1 }, // 0 raiz
+    { name: "Regeneration",     key: "hpRegen",         parent: 0,  depth: 2 }, // 1  sustain: Provisão
+    { name: "Heal on Kill",     key: "healOnKill",      parent: 0,  depth: 2 }, // 2  sustain: Caça
+    { name: "Vessel's Growth",  key: "hpPct",           parent: 1,  depth: 3 }, // 3  Provisão
+    { name: "Hardened Light",   key: "damageReduction", parent: 1,  depth: 3 }, // 4  Provisão
+    { name: "Whetted Light",    key: "atkPct",          parent: 2,  depth: 3 }, // 5  Caça
+    { name: "Bare Instinct",    key: "critRate",        parent: 2,  depth: 3 }, // 6  Caça
+    { name: "Prospector's Eye", key: "lumensPct",       parent: 3,  depth: 4 }, // 7  folha
+    { name: "Pilgrim's Wisdom", key: "xpPct",           parent: 3,  depth: 4 }, // 8  folha
+    { name: "Deep Memory",      key: "convPointsPct",   parent: 4,  depth: 4 }, // 9  folha
+    { name: "Overkill Echo",    key: "overkillEcho",    parent: 4,  depth: 4 }, // 10 folha
+    { name: "Deepcrack",        key: "critDmg",         parent: 5,  depth: 4 }, // 11 folha
+    { name: "Lightbane",        key: "lightbane",       parent: 5,  depth: 4 }, // 12 folha
+    { name: "Quickened Pulse",  key: "atkSpeed",        parent: 6,  depth: 4 }, // 13 folha
+    { name: "Harbinger's Bane", key: "bossDmg",         parent: 6,  depth: 4 }, // 14 folha
+  ],
+  CROWN: { name: "The Ring Closes", key: "ringCloses" },
+
+  // índices das 8 folhas (depth 4) — acender todas concede a coroa
+  leaves() {
+    const out = [];
+    for (let i = 0; i < this.nodes.length; i++) if (this.nodes[i].depth === 4) out.push(i);
+    return out;
   },
 
   EFFECT_DESC: {
-    atkFlat: "Adds flat ATK — strongest in the early game.",
-    hpRegen: "Regenerates % of max HP per second.",
-    healOnKill: "Restores % of max HP on each kill.",
-    specialDmg: "Deals more damage to Rares and Bosses.",
-    atkPct: "Increases your ATK.", hpPct: "Increases your HP.",
-    critRate: "Increases your critical chance.", critDmg: "Increases your critical damage.",
-    hpToDamage: "Converts part of your HP into ATK.",
-    bossDmg: "Increases damage dealt to Bosses.", eliteDmg: "Increases damage dealt to Elites.",
-    capstoneEclat: "Hybrid capstone — combined combat power.",
-    lumensPct: "Increases Lumens gained.", xpPct: "Increases XP gained.",
-    matCommonPct: "Increases Common material gains.", matUncommonPct: "Increases Uncommon material gains.",
-    matGeneralPct: "Increases all material gains.", dropRate: "Increases drop rate.",
-    matQuantity: "Increases the quantity of materials dropped.",
-    capstoneVestige: "Infinite Prosperity — ultimate economy bonus (Lumens & XP).",
-    convPointsPct: "Increases Convergence Points earned.",
-    convPointsMin: "Guarantees a minimum of Convergence Points.",
-    awakenMatPct: "Increases Awaken material gains.",
-    awakenReqReduction: "Reduces Awaken requirements.",
-    eliteChance: "Increases the chance for Elites to appear.",
-    miniBossThreshold: "Lowers the kill threshold for Mini Bosses.",
-    moreEnemies: "Planned for Map 2 — requires multi-enemy combat.",
-    gearXp: "Planned for Map 2 — requires the Gear XP system.",
-    convEfficiency: "Improves Convergence efficiency.", awakenEfficiency: "Improves Awaken efficiency.",
-    capstoneFracture: "Hybrid capstone — combined account power.",
+    firstSpark:      "The first ember — raises both ATK and HP.",
+    hpRegen:         "Regenerates % of max HP per second.",
+    healOnKill:      "Restores % of max HP on each kill.",
+    hpPct:           "Increases your HP.",
+    damageReduction: "Reduces the damage you take.",
+    atkPct:          "Increases your ATK.",
+    critRate:        "Increases your critical chance.",
+    lumensPct:       "Increases Lumens gained.",
+    xpPct:           "Increases XP gained.",
+    convPointsPct:   "Increases Convergence Points earned.",
+    overkillEcho:    "Damage spilled past a killing blow returns as extra Lumens.",
+    critDmg:         "Increases your critical damage.",
+    lightbane:       "Deals more damage to the kindled (rares & elites).",
+    atkSpeed:        "Increases your attack speed.",
+    bossDmg:         "Increases damage dealt to Harbingers & Bosses.",
+    ringCloses:      "The ring closes — a lasting boost to ATK, HP, Lumens and XP.",
   },
 
-  // posição de cada nó (%x,%y) sobre a Árvore-Mundo: G1 base → G2 meio → G3 copa
+  // posição de cada nó (%x,%y) na Árvore-Mundo: raiz embaixo, folhas na copa,
+  // coroa como 16º marcador no topo. Topologia 1/2/4/8 espelhada nos filhos.
   POSITIONS: [
-    { x: 31, y: 70 }, { x: 41, y: 65 }, { x: 50, y: 63 }, { x: 61, y: 63 }, { x: 73, y: 66 },
-    { x: 25, y: 48 }, { x: 37, y: 42 }, { x: 50, y: 39 }, { x: 66, y: 39 }, { x: 79, y: 44 },
-    { x: 35, y: 26 }, { x: 43, y: 20 }, { x: 50, y: 16 }, { x: 59, y: 18 }, { x: 69, y: 23 },
+    { x: 50, y: 84 },                                    // 0 raiz
+    { x: 26, y: 65 }, { x: 74, y: 65 },                  // 1,2 D2
+    { x: 13, y: 46 }, { x: 38, y: 46 }, { x: 62, y: 46 }, { x: 87, y: 46 },  // 3-6 D3
+    { x: 4, y: 25 }, { x: 17, y: 25 }, { x: 30, y: 25 }, { x: 43, y: 25 },   // 7-10 folhas
+    { x: 57, y: 25 }, { x: 70, y: 25 }, { x: 83, y: 25 }, { x: 96, y: 25 },  // 11-14 folhas
   ],
+  CROWN_POS: { x: 50, y: 7 },
 
   // ---- estado / metadados de nó ----
-  freshSet() { return { eclat: Array(15).fill(0), vestige: Array(15).fill(0), fracture: Array(15).fill(0) }; },
-  groupOf(i) { return Math.floor(i / this.GROUP_SIZE); },
-  posOf(i) { return i % this.GROUP_SIZE; },
+  freshSet() { return new Array(15).fill(0); },
   unlocked() { return (G.state.data.convergences || 0) >= 1; },
-  level(tree, i) { const p = G.state.data.passives; return (p && p[tree] && p[tree][i]) || 0; },
-  effectOf(tree, i) { return this.trees[tree].list[i][1]; },
-  isCapstone(key) { return /^capstone/.test(key); },
-  isDeferred(tree, i) { return this.MAP2.indexOf(this.effectOf(tree, i)) !== -1; },
-  nodeMax(tree, i) { return this.isCapstone(this.effectOf(tree, i)) ? 1 : this.maxLevel; },
+  level(i) {
+    const p = G.state.data.passives;
+    return (p && p.tree1 && p.tree1[i]) || 0;
+  },
+  keyOf(i) { return this.nodes[i].key; },
+  depthOf(i) { return this.nodes[i].depth; },
+  parentOf(i) { return this.nodes[i].parent; },
+  nodeMax() { return this.maxLevel; },
+  isMax(i) { return this.level(i) >= this.maxLevel; },
+  parentBought(i) { const p = this.nodes[i].parent; return p === -1 || this.level(p) >= 1; },
 
   // ---- custo / gating ----
-  unlockCost(i) { return this.unlockLadder[this.posOf(i)] * this.groupMult[this.groupOf(i)]; },
-  nextCost(tree, i) {
-    const lv = this.level(tree, i);
+  unlockCost(i) { return this.unlockByDepth[this.nodes[i].depth - 1]; },
+  nextCost(i) {
+    const lv = this.level(i);
     if (lv === 0) return this.unlockCost(i);
     return Math.ceil(this.unlockCost(i) * this.evoFactor * Math.pow(this.evoRamp, lv - 1));
   },
-  isMax(tree, i) { return this.level(tree, i) >= this.nodeMax(tree, i); },
-  groupUnlocked(tree, g) {
-    if (g === 0) return true;
-    const arr = G.state.data.passives && G.state.data.passives[tree];
-    if (!arr) return false;
-    for (let p = 0; p < this.GROUP_SIZE; p++) {
-      const idx = (g - 1) * this.GROUP_SIZE + p;
-      if (this.isDeferred(tree, idx)) continue;
-      if (arr[idx] < this.nodeMax(tree, idx)) return false;
-    }
-    return true;
+  canBuy(i) {
+    return this.unlocked() && !this.isMax(i) && this.parentBought(i) &&
+      (G.state.data.convergencePoints || 0) >= this.nextCost(i);
   },
-  canBuy(tree, i) {
-    return this.unlocked() && !this.isDeferred(tree, i) && !this.isMax(tree, i) &&
-      this.groupUnlocked(tree, this.groupOf(i)) &&
-      (G.state.data.convergencePoints || 0) >= this.nextCost(tree, i);
-  },
-  buy(tree, i) {
-    if (!this.canBuy(tree, i)) return false;
-    G.state.data.convergencePoints -= this.nextCost(tree, i);
-    G.state.data.passives[tree][i] += 1;
+  buy(i) {
+    if (!this.canBuy(i)) return false;
+    G.state.data.convergencePoints -= this.nextCost(i);
+    G.state.data.passives.tree1[i] += 1;
     G.state.invalidateStats();
     G.state.save();
+    return true;
+  },
+
+  // ---- coroa ----
+  crownActive() {
+    const leaves = this.leaves();
+    for (let k = 0; k < leaves.length; k++) if (this.level(leaves[k]) < 1) return false;
     return true;
   },
 
@@ -197,63 +153,55 @@ G.passives = {
   unit(key) { return this.UNIT[key] != null ? this.UNIT[key] : this.UNIT._default; },
   effects() {
     const out = {};
-    for (const tree of this.TREES) {
-      const list = this.trees[tree].list;
-      for (let i = 0; i < list.length; i++) {
-        if (this.isDeferred(tree, i)) continue;
-        const lv = this.level(tree, i);
-        if (!lv) continue;
-        const key = list[i][1];
-        out[key] = (out[key] || 0) + lv * this.unit(key);
-      }
+    for (let i = 0; i < this.nodes.length; i++) {
+      const lv = this.level(i);
+      if (!lv) continue;
+      const key = this.nodes[i].key;
+      out[key] = (out[key] || 0) + lv * this.unit(key);
     }
+    if (this.crownActive()) out.ringCloses = this.unit("ringCloses");
     return out;
   },
   effect(key) { return this.effects()[key] || 0; },
 
   // texto da magnitude real de um nó (p/ o tooltip): { perLevel, current }
-  magnitude(tree, i) {
-    const key = this.effectOf(tree, i);
+  magnitude(i) {
+    const key = this.nodes[i].key;
     const per = this.unit(key);
     const FMT = {
-      atkFlat:    (v) => `+${v} ATK`,
-      atkPct:     (v) => `+${v}% ATK`,
-      critRate:   (v) => `+${v}% Crit Rate`,
-      critDmg:    (v) => `+${v}% Crit Damage`,
-      specialDmg: (v) => `+${v}% vs Rares & Bosses`,
-      lumensPct:  (v) => `+${v}% Lumens`,
-      xpPct:      (v) => `+${v}% XP`,
-      hpPct:      (v) => `+${v}% HP`,
-      hpToDamage: (v) => `${v}% of HP as ATK`,
-      hpRegen:    (v) => `+${v}% max HP / s`,
-      healOnKill: (v) => `+${v}% max HP on kill`,
+      firstSpark:      (v) => `+${v}% ATK & HP`,
+      hpRegen:         (v) => `+${v}% max HP / s`,
+      healOnKill:      (v) => `+${v}% max HP on kill`,
+      hpPct:           (v) => `+${v}% HP`,
+      damageReduction: (v) => `+${v}% Damage Reduction`,
+      atkPct:          (v) => `+${v}% ATK`,
+      critRate:        (v) => `+${v}% Crit Rate`,
+      lumensPct:       (v) => `+${v}% Lumens`,
+      xpPct:           (v) => `+${v}% XP`,
+      convPointsPct:   (v) => `+${v}% Convergence Points`,
+      overkillEcho:    (v) => `+${v}% of overkill as Lumens`,
+      critDmg:         (v) => `+${v}% Crit Damage`,
+      lightbane:       (v) => `+${v}% vs kindled`,
+      atkSpeed:        (v) => `+${v} Attack Speed`,
+      bossDmg:         (v) => `+${v}% vs Harbingers`,
     };
     const fmt = FMT[key];
     if (!fmt || per === 0) return null;
     const r = (x) => +(+x).toFixed(2);
-    const lvl = this.level(tree, i);
+    const lvl = this.level(i);
     return { perLevel: fmt(r(per)), current: lvl > 0 ? fmt(r(per * lvl)) : null };
   },
 
-  materialsMult() { return 1 + this.effect("awakenMatPct") / 100; },
-
-  // ---- helpers de UI (estilo) ----
-  isEngine(tree, key) { return this.isCapstone(key); },
-  leverOf(key) {
-    if (this.isCapstone(key)) return null;
-    return this.LIVE.indexOf(key) === -1 ? key : null;
-  },
-  treeMult(tree) { return 1 + this.effect(this.PRIMARY[tree]) / 100; },
-
-  treeProgress(tree) {
-    const arr = G.state.data.passives[tree];
-    let u = 0, m = 0, total = 0;
-    for (let i = 0; i < arr.length; i++) {
-      if (this.isDeferred(tree, i)) continue;
-      total++;
-      if (arr[i] > 0) u++;
-      if (arr[i] >= this.nodeMax(tree, i)) m++;
+  // ---- progresso (UI/sim) ----
+  treeProgress() {
+    const arr = (G.state.data.passives && G.state.data.passives.tree1) || [];
+    let unlocked = 0, maxed = 0, levels = 0;
+    for (let i = 0; i < this.nodes.length; i++) {
+      const lv = arr[i] || 0;
+      levels += lv;
+      if (lv > 0) unlocked++;
+      if (lv >= this.maxLevel) maxed++;
     }
-    return { unlocked: u, maxed: m, total };
+    return { unlocked, maxed, levels, total: this.nodes.length, crown: this.crownActive() };
   },
 };

@@ -4,7 +4,7 @@ G.state = {
   data: null,
   _cache: null,
 
-  SAVE_KEY: "eclats_v4",
+  SAVE_KEY: "eclats_v5",   // P6: bump estrutural (Árvore I única). Sem migração de v4 — não há saves reais.
 
   fresh() {
     return {
@@ -28,8 +28,8 @@ G.state = {
       awakens:           [],
       awakensUnlocked:   [],
       awakenTier:        0,
-      // ---- Passivas (3 árvores) ----
-      passives:          { eclat: Array(15).fill(0), vestige: Array(15).fill(0), fracture: Array(15).fill(0) },
+      // ---- Passivas (Árvore I — árvore única binária de 15 nós) ----
+      passives:          { tree1: new Array(15).fill(0) },
       // ---- Materiais (fundação econômica) ----
       gearMaterials:     { common: 0, uncommon: 0 },
       awakenMaterials:   { firstLight: 0 },
@@ -82,31 +82,32 @@ G.state = {
       add("hp",  "pct", G.convergence.legacyHpPct(),  "Convergence Legacy");
     }
 
-    // Passivas — efeitos LIVE somam nas camadas; demais expostos via effect()
+    // Passivas (Árvore I) — efeitos somam nas camadas; a coroa injeta mults ×(1+ringCloses%)
     let passEff = null;
     if (G.passives) {
       passEff = G.passives.effects();
-      add("atk", "flat", passEff.atkFlat  || 0, "Passives");
+      add("atk", "pct",  passEff.firstSpark || 0, "Passives");   // raiz: ATK% + HP%
+      add("hp",  "pct",  passEff.firstSpark || 0, "Passives");
       add("atk", "pct",  passEff.atkPct   || 0, "Passives");
       add("hp",  "pct",  passEff.hpPct    || 0, "Passives");
       add("crit", "flat", passEff.critRate || 0, "Passives");
       add("critDmg", "flat", passEff.critDmg || 0, "Passives");
-      add("specialDmg", "flat", passEff.specialDmg || 0, "Passives");
+      add("atkSpeed", "flat", passEff.atkSpeed || 0, "Passives");
+      add("damageReduction", "flat", passEff.damageReduction || 0, "Passives");
+      add("lightbane", "flat", passEff.lightbane || 0, "Passives");
       add("healOnKill", "flat", passEff.healOnKill || 0, "Passives");
       add("hpRegen", "flat", passEff.hpRegen || 0, "Passives");
       add("lumensBonus", "flat", passEff.lumensPct || 0, "Passives");
       add("xpBonus", "flat", passEff.xpPct || 0, "Passives");
-      add("atk", "mult", 1 + (passEff.capstoneEclat || 0) / 100, "Passives");
-      add("hp",  "mult", 1 + (passEff.capstoneEclat || 0) / 100, "Passives");
-      add("lumensBonus", "mult", 1 + (passEff.capstoneVestige || 0) / 100, "Passives");
-      add("xpBonus", "mult", 1 + (passEff.capstoneVestige || 0) / 100, "Passives");
+      // coroa "The Ring Closes": bônus multiplicativo pequeno em ATK, HP, Lumens e XP
+      const crown = 1 + (passEff.ringCloses || 0) / 100;
+      add("atk", "mult", crown, "Passives");
+      add("hp",  "mult", crown, "Passives");
+      add("lumensBonus", "mult", crown, "Passives");
+      add("xpBonus", "mult", crown, "Passives");
     }
 
     const fin = (k) => { const x = layer(k); return x.flat * (1 + x.pct / 100) * x.mult; };
-
-    // HP → Dano (Éclat): injeta uma fração do HP final no ATK antes de finalizar
-    if (passEff && passEff.hpToDamage)
-      add("atk", "flat", fin("hp") * (passEff.hpToDamage / 100), "Passives");
 
     this._cache = {
       atk:              Math.round(fin("atk")),
@@ -117,9 +118,9 @@ G.state = {
       atkSpeed:         G.util.softCap(fin("atkSpeed"), this.currentAtkSpeedSoft(), this.currentAtkSpeedCap()),
       xpBonus:          fin("xpBonus"),
       lumensBonus:      fin("lumensBonus"),
-      damageReduction:  G.util.clamp(fin("damageReduction"), 0, G.data.balance.dmgReductionCap),
-      eliteDmg:         fin("eliteDmg"),
-      specialDmg:       fin("specialDmg"),            // gear (Marked Blade) + passiva (Giant Slayer), somados
+      damageReduction:  G.util.clamp(fin("damageReduction"), 0, G.data.balance.dmgReductionCap),  // gear (Steadfast Guard) + passiva (Hardened Light)
+      lightbane:        fin("lightbane"),             // passiva (Lightbane): +% dano vs acesos
+      specialDmg:       fin("specialDmg"),            // gear (Marked Blade): vs rares & bosses
       siegeWard:        G.util.clamp(fin("siegeWard"), 0, G.data.balance.dmgReductionCap),  // dmgRed extra — combat aplica só com 2+ vivos
       rarityFindLumen:  fin("rarityFindLumen"),       // inerte até P8 (Rarity Find)
       rarityFindEmber:  fin("rarityFindEmber"),       // inerte até P8 (Rarity Find)
@@ -182,16 +183,14 @@ G.state = {
     if (typeof this.data.awakenTier !== "number" || this.data.awakenTier < this.data.awakens.length)
       this.data.awakenTier = this.data.awakens.length;
 
-    // Passivas: preserva níveis salvos por índice, clampando ao teto atual do nó
+    // Passivas (Árvore I): preserva níveis salvos por índice, clampando ao teto do nó
     if (G.passives) {
-      const fresh = G.passives.freshSet();
+      const arr = G.passives.freshSet();
       const saved = this.data.passives;
-      if (saved && typeof saved === "object") {
-        for (const tree of Object.keys(fresh))
-          if (Array.isArray(saved[tree]))
-            fresh[tree] = fresh[tree].map((_, i) => Math.min(saved[tree][i] || 0, G.passives.nodeMax(tree, i)));
-      }
-      this.data.passives = fresh;
+      if (saved && Array.isArray(saved.tree1))
+        for (let i = 0; i < arr.length; i++)
+          arr[i] = Math.min(saved.tree1[i] || 0, G.passives.nodeMax(i));
+      this.data.passives = { tree1: arr };
     }
 
     this.invalidateStats();

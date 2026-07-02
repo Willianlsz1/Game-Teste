@@ -53,14 +53,13 @@ function spendLumens() {
   }
 }
 
-// compra passivas acessíveis (prioriza nó primário de cada árvore)
+// compra passivas acessíveis na Árvore I (respeita topologia via canBuy)
 function spendPassives() {
   let bought = 0, guard = 5000;
   while (guard-- > 0) {
     let did = false;
-    for (const tree of G.passives.TREES)
-      for (let i = 0; i < 15; i++)
-        if (G.passives.canBuy(tree, i)) { G.passives.buy(tree, i); bought++; did = true; }
+    for (let i = 0; i < 15; i++)
+      if (G.passives.canBuy(i)) { G.passives.buy(i); bought++; did = true; }
     if (!did) break;
   }
   return bought;
@@ -178,30 +177,34 @@ function partB() {
     if (!finite(pts)) flag("BUG", "B", `Pontos não-finitos no nível ${L}`);
     console.log(`  Lv ${String(L).padStart(4)} → ${num(pts)} pts`);
   }
-  // custo do tier 1 de UMA árvore (5 nós × nível 10)
-  let tier1Cost = 0;
-  for (let i = 0; i < 5; i++) {
-    tier1Cost += G.passives.unlockCost(i);
-    for (let lv = 1; lv < G.passives.nodeMax("eclat", i); lv++)
-      tier1Cost += Math.ceil(G.passives.unlockCost(i) * G.passives.evoFactor * Math.pow(G.passives.evoRamp, lv - 1));
+  // custo p/ ABRIR a Árvore I inteira (15 nós no nível 1) e p/ MAXAR (todos no nível 10)
+  let openCost = 0, maxCost = 0;
+  for (let i = 0; i < 15; i++) {
+    openCost += G.passives.unlockCost(i);
+    let c = G.passives.unlockCost(i);
+    for (let lv = 1; lv < G.passives.nodeMax(i); lv++)
+      c += Math.ceil(G.passives.unlockCost(i) * G.passives.evoFactor * Math.pow(G.passives.evoRamp, lv - 1));
+    maxCost += c;
   }
-  console.log(`Custo do tier 1 de uma árvore (maxado): ${num(tier1Cost)} pts`);
+  console.log(`Custo p/ abrir a Árvore I inteira (15 nós, nível 1): ${num(openCost)} pts`);
+  console.log(`Custo p/ MAXAR a Árvore I (todos nível 10): ${num(maxCost)} pts`);
 
-  // simula convergences repetidas na política P5: converge no gate escalonado corrente
+  // simula convergences (política P5: gate escalonado) até a coroa acender e até maxar
   store = {}; G.state.data = null; G.state.load();
-  let conv = 0, guard = 500;
+  let conv = 0, guard = 500, crownConv = null, maxedConv = null;
   while (guard-- > 0) {
     G.state.data.level = G.convergence.currentGate(); // P5: gate escalonado sobe a cada convergence
     if (!G.convergence.converge()) break;
     conv++;
     spendPassives();
-    const prog = G.passives.treeProgress("eclat");
-    if (prog.maxed >= 5) break; // tier 1 da Éclat (índices 0-4) maxado
+    if (crownConv == null && G.passives.crownActive()) crownConv = conv;
+    const prog = G.passives.treeProgress();
+    if (prog.maxed === prog.total) { maxedConv = conv; break; }
   }
-  console.log(`Convergences até maximizar o tier 1 da Éclat: ${conv}`);
-  if (conv < 8)  flag("BAL", "B", `Tier 1 maximiza rápido demais (${conv} convergences; alvo 10-15)`);
-  if (conv > 20) flag("BAL", "B", `Tier 1 maximiza lento demais (${conv} convergences; alvo 10-15)`);
-  return { conv, tier1Cost };
+  console.log(`Coroa "The Ring Closes" acesa na convergence: ${crownConv == null ? "não acendeu" : crownConv} (alvo 8-11)`);
+  console.log(`Árvore I 100% maxada na convergence: ${maxedConv == null ? "não maxou" : maxedConv} (alvo 11-12)`);
+  if (crownConv != null && (crownConv < 8 || crownConv > 11)) flag("BAL", "B", `Coroa fora da janela 8-11 (conv ${crownConv})`);
+  return { conv, crownConv, maxedConv };
 }
 
 // ============================================================

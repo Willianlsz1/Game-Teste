@@ -142,12 +142,12 @@ G.combat = {
     // specialDmg: rares & bosses (gear + passiva, já somados em s.specialDmg)
     if (target.isBoss || target.rarity)
       raw *= 1 + (s.specialDmg || 0) / 100;
-    // bossDmg: bosses only
+    // bossDmg: bosses only (passiva Harbinger's Bane)
     if (target.isBoss && G.passives)
       raw *= 1 + (G.passives.effect("bossDmg") || 0) / 100;
-    // eliteDmg: elites only (gear stat / passive) — agora tem alvo de verdade
-    if (target.isElite)
-      raw *= 1 + (s.eliteDmg || 0) / 100;
+    // lightbane: dano vs acesos (rares & elites, NÃO boss) — passiva Lightbane
+    if ((target.rarity || target.isElite) && !target.isBoss)
+      raw *= 1 + (s.lightbane || 0) / 100;
     const dmg = Math.ceil(raw);
     if (G.ui && G.ui.projectile) {
       G.ui.projectile("seeker", targetIdx);
@@ -223,10 +223,19 @@ G.combat = {
     const lumens = Math.ceil(e.lumens * (1 + s.lumensBonus / 100));
     const xp     = Math.round(e.xp    * (1 + s.xpBonus    / 100));
 
+    // Overkill Echo (passiva): dano excedente ALÉM da morte vira Lumens extra.
+    // e.hp já está negativo aqui (o golpe fatal ainda não foi zerado). Cap = lumens base do mob.
+    let overkillLumens = 0;
+    const echo = G.passives ? (G.passives.effect("overkillEcho") || 0) : 0;
+    if (echo > 0) {
+      const overkill = Math.max(0, -e.hp);
+      overkillLumens = Math.min(Math.ceil(overkill * G.data.balance.goldRatio * (echo / 100)), e.lumens);
+    }
+
     const d = G.state.data;
-    d.lumens    += lumens;
+    d.lumens    += lumens + overkillLumens;
     d.xp        += xp;
-    if (G.ui) this._gains.push({ t: this._clock, lumens, xp });
+    if (G.ui) this._gains.push({ t: this._clock, lumens: lumens + overkillLumens, xp });
     d.totalKills = (d.totalKills || 0) + 1;
     d.runKills   = (d.runKills  || 0) + 1;
     if (!e.isBoss) this._bossKills++;   // progresso rumo ao Boss de Área (mortes de boss não contam)

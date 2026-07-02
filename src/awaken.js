@@ -35,8 +35,8 @@ G.awaken = {
     if (!a || !a.requirements) return [];
     const r = a.requirements;
     const out = [];
-    const red = G.passives ? (G.passives.effect("awakenReqReduction") || 0) / 100 : 0;
-    const factor = Math.max(0, 1 - red);
+    // awakenReqReduction: sem nó na Árvore I — volta na Árvore II (Mapa 2). Fator neutro.
+    const factor = 1;
     for (const key of ["area", "level", "kills", "convergences"]) {
       if (r[key] == null) continue;
       const need = key === "area" ? r[key] : Math.ceil(r[key] * factor);
@@ -76,7 +76,8 @@ G.awaken = {
 
   // injeta os bônus de TODOS os awakens concluídos nas camadas de stat.
   applyTo(layer) {
-    const eff = 1 + (G.passives ? (G.passives.effect("awakenEfficiency") || 0) / 100 : 0);
+    // awakenEfficiency: sem nó na Árvore I — volta na Árvore II (Mapa 2). Eficiência plena.
+    const eff = 1;
     for (const a of G.data.awakens) {
       if (!this.isDone(a.id)) continue;
       const b = a.bonus;

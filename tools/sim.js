@@ -173,28 +173,29 @@ function policyTick(sim) {
     const gate = G.convergence.currentGate();
     const lvl = d.level, kills = d.runKills, areaMax = (d.runMaxAreaIndex || 0) + 1;
     const grpMax = Math.floor((d.runMaxAreaIndex || 0) / (G.data.balance.groupSize || 3)) + 1;
+    const prog = G.passives.treeProgress();
     G.convergence.converge();
-    sim.runs.push({ n: d.convergences, t: sim.t, dur: sim.t - (sim.lastConvT || 0), gate, level: lvl, areaMax, grpMax, kills, pts, cum: d.convergencePoints, nodesBought: sim.nodeLevelsBought });
+    sim.runs.push({ n: d.convergences, t: sim.t, dur: sim.t - (sim.lastConvT || 0), gate, level: lvl, areaMax, grpMax, kills, pts, cum: d.convergencePoints, nodesBought: sim.nodeLevelsBought,
+      treePct: Math.round(prog.levels / (prog.total * G.passives.maxLevel) * 100), treeNodes: prog.unlocked, crown: prog.crown });
     sim.lastConvT = sim.t;
     sim.lastAreaEntered = -1;
     if (sim.onConverge) sim.onConverge(sim);
   }
 
-  // 6. comprar passivas (greedy: nó mais barato da ordem de foco)
+  // 6. comprar passivas na Árvore I (greedy: nó comprável mais barato, respeita topologia
+  //    via canBuy — filho só abre com o pai ≥1). Registra quando a coroa acende.
   if ((d.convergences || 0) >= 1) {
     for (let i = 0; i < 200; i++) {
-      let bought = false;
-      for (const tree of sim.treeFocus) {
-        let cheapest = -1, cost = Infinity;
-        for (let n = 0; n < 15; n++) {
-          if (!G.passives.canBuy(tree, n)) continue;
-          const c = G.passives.nextCost(tree, n);
-          if (c < cost) { cost = c; cheapest = n; }
-        }
-        if (cheapest !== -1) { G.passives.buy(tree, cheapest); sim.nodeLevelsBought++; bought = true; break; }
+      let cheapest = -1, cost = Infinity;
+      for (let n = 0; n < 15; n++) {
+        if (!G.passives.canBuy(n)) continue;
+        const c = G.passives.nextCost(n);
+        if (c < cost) { cost = c; cheapest = n; }
       }
-      if (!bought) break;
+      if (cheapest === -1) break;
+      G.passives.buy(cheapest); sim.nodeLevelsBought++;
     }
+    if (sim.crownAt == null && G.passives.crownActive()) sim.crownAt = sim.t;
   }
 }
 
@@ -216,11 +217,10 @@ function freshSim(opts) {
     convergeEnabled: !!opts.converge,
     push: opts.push || 1,
     allowAwaken: !!opts.allowAwaken,
-    treeFocus: opts.treeFocus || ['eclat', 'vestige', 'fracture'],
     onConverge: opts.onConverge || null,
     milestones: [], areaEntries: [], runs: [],
     lastAreaEntered: -1, lastConvT: 0, nodeLevelsBought: 0, firstLightAt: null,
-    promotions: [], awakenMatAt: null,
+    promotions: [], awakenMatAt: null, crownAt: null,
   };
 }
 
@@ -347,13 +347,16 @@ function scenarioCampaign() {
   // não para no First Light — segue até Okhra (área 18) p/ medir o mapa inteiro
   run(sim, { maxHours, stop: (s) => G.state.data.mapOneCleared });
 
-  const W = [5, 9, 9, 7, 7, 5, 9, 8, 9];
-  console.log(row(['run', 't', 'duração', 'gate', 'nível', 'gMax', 'pontos', 'razão', 'nós·lvls'], W));
+  const W = [5, 9, 8, 7, 7, 5, 9, 7, 8, 7, 6];
+  console.log(row(['run', 't', 'dur', 'gate', 'nível', 'gMax', 'pontos', 'razão', 'nós·lvls', 'árvore', 'coroa'], W));
   for (let i = 0; i < sim.runs.length; i++) {
     const r = sim.runs[i];
     const ratio = i > 0 ? (r.pts / sim.runs[i - 1].pts).toFixed(2) : '—';
-    console.log(row([r.n, fmtT(r.t), fmtT(r.dur), r.gate, r.level, 'G' + r.grpMax, fmtN(r.pts), ratio, r.nodesBought], W));
+    console.log(row([r.n, fmtT(r.t), fmtT(r.dur), r.gate, r.level, 'G' + r.grpMax, fmtN(r.pts), ratio, r.nodesBought,
+      (r.treePct || 0) + '% (' + r.treeNodes + '/15)', r.crown ? '✦' : '—'], W));
   }
+  const crownRun = sim.runs.find(r => r.crown);
+  console.log(`  coroa "The Ring Closes": ${sim.crownAt != null ? 'acesa em ' + fmtT(sim.crownAt) + (crownRun ? ` (conv ${crownRun.n})` : '') : 'NÃO acendeu'} · alvo: 8ª–11ª convergence`);
   const gateRatios = sim.runs.slice(1).map((r, i) => r.pts / sim.runs[i].pts);
   if (gateRatios.length) {
     const avgR = gateRatios.reduce((a, b) => a + b, 0) / gateRatios.length;

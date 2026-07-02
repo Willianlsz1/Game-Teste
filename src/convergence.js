@@ -9,8 +9,8 @@
 // Cada convergence sobe o requisito de nível → as convergences se espalham pelos grupos.
 // P5.3 — Pontos = convPointsBase × (nível/convGateBase)^convPointsExp: convergir no gate rende
 // ~×1.5 a anterior; empurrar 1 grupo além do gate ≈ ×2.1 (mata a decisão degenerada de convergir).
-// Os multiplicadores de passiva (convPointsPct/convEfficiency/capstoneFracture/convPointsMin)
-// aplicam POR CIMA da fórmula base.
+// convPointsPct vem do nó Deep Memory (Árvore I). convEfficiency/capstoneFracture/convPointsMin
+// não têm nó na Árvore I (voltam na Árvore II) — ficam inertes (effect()=0), aplicados por cima.
 //
 // Reseta: nível, XP, Lumens, área da run e os contadores da run.
 // Mantém: gear, materiais, passivas, awaken, áreas liberadas, Pontos, recordes.

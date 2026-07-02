@@ -57,20 +57,24 @@ ok(Object.keys(d0).length === 0, "gate: Área 1 (idx 0) não dropa material algu
 let d2 = G.economy.rollDrops({ isBoss: true }, Object.assign({ areaIndex: 2 }, R0));
 ok(d2.commonMaterial && !d2.uncommonMaterial && !d2.awakenMaterial, "gate: Área 3 (idx 2) só Common (Awaken=G5+/idx 12)");
 
-// 7) passivas Vestige: matCommonPct dobra quantidade (set direto p/ ignorar gating)
+// 7) as passivas de material NÃO existem na Árvore I (voltam na Árvore II) — logo os
+// multiplicadores da economia são inertes (=1). O PLUMBING segue correto: injetar um
+// efeito via mock ainda multiplica (à prova de futuro p/ a Árvore II).
 store = {}; G.state.data = null; G.state.load();
-G.passives.UNIT.matCommonPct = 100; G.state.data.passives.vestige[6] = 1; G.state.invalidateStats();
-ok(G.passives.effect("matCommonPct") === 100, "passiva matCommonPct ativa (placeholder de teste)");
-ok(Math.abs(G.economy.passiveQtyMult("commonMaterial") - 2) < 1e-9, "matCommonPct 100% -> quantidade ×2");
-G.passives.UNIT.matCommonPct = 0;
+ok(Math.abs(G.economy.passiveQtyMult("commonMaterial") - 1) < 1e-9, "Árvore I sem nós de material: passiveQtyMult inerte (=1)");
+const realEffects = G.passives.effects.bind(G.passives);
+const realEffect = G.passives.effect.bind(G.passives);
+G.passives.effects = () => ({ matGeneralPct: 100 });
+ok(Math.abs(G.economy.passiveQtyMult("commonMaterial") - 2) < 1e-9, "plumbing: matGeneralPct 100% -> quantidade ×2");
+G.passives.effects = realEffects;
 
-// 8) passivas Vestige: dropRate -> chance; Fracture: awakenMatPct -> awaken qty
-G.passives.UNIT.dropRate = 50; G.state.data.passives.vestige[9] = 1;
-ok(Math.abs(G.economy.passiveChanceMult() - 1.5) < 1e-9, "dropRate 50% -> chance ×1.5");
-G.passives.UNIT.dropRate = 0;
-G.passives.UNIT.awakenMatPct = 100; G.state.data.passives.fracture[3] = 1;
-ok(Math.abs(G.economy.passiveQtyMult("awakenMaterial") - 2) < 1e-9, "awakenMatPct 100% -> awaken qty ×2");
-G.passives.UNIT.awakenMatPct = 0;
+// 8) plumbing de chance (dropRate) e de awaken (awakenMatPct) via mock — inertes no roster atual
+G.passives.effect = (key) => (key === "dropRate" ? 50 : realEffect(key));
+ok(Math.abs(G.economy.passiveChanceMult() - 1.5) < 1e-9, "plumbing: dropRate 50% -> chance ×1.5");
+G.passives.effect = realEffect;
+G.passives.effects = () => ({ awakenMatPct: 100 });
+ok(Math.abs(G.economy.passiveQtyMult("awakenMaterial") - 2) < 1e-9, "plumbing: awakenMatPct 100% -> awaken qty ×2");
+G.passives.effects = realEffects;
 
 // 9) save/load preserva materiais
 store = {}; G.state.data = null; G.state.load();
