@@ -387,7 +387,10 @@ function scenarioCalibrate() {
       if (!ENTRY[idx]) ENTRY[idx] = snapNow();
       if (!END[idx] && d.level >= area.levelRange[1]) END[idx] = snapNow();
     };
-    run(sim, { maxHours: measHours, stop: () => BOSS[17] != null });
+    // para quando Okhra cai (amostra completa) OU quando área 18 foi alcançada e
+    // já se deu tempo de tentar Okhra (o teto de XP trava o nível ~5150, então Okhra
+    // raramente é amostrável — fallback analítico no relatório).
+    run(sim, { maxHours: measHours, stop: (s) => BOSS[17] != null || (ENTRY[17] != null && s.t > (s.pushStart || 0) + 4 * 3600) });
     sim._entry = ENTRY; sim._end = END; sim._boss = BOSS;
     return sim;
   }
@@ -445,14 +448,15 @@ function scenarioCalibrate() {
     let devSum = 0, devN = 0;
     for (let gi = 0; gi < 6; gi++) { if (groupDur[gi] == null) { devSum += 100; devN++; continue; } devSum += Math.abs((groupDur[gi] - budget[gi]) / budget[gi]) * 100; devN++; }
     const meanDev = devSum / devN;
-    const totalH = (sim.firstLightAt != null ? sim.firstLightAt : sim.t) / 3600;
+    const reached = Math.max(...Object.keys(sim._entry).map(Number)) + 1;
+    const totalH = sim.t / 3600;
 
     results.push({ growth, meanDev, totalH, groupDur, entry, end, boss, missing,
       hp: G.data.areas.map(a => a.hp.slice()), atk: G.data.balance.mobAtkByArea.slice(),
       bossHp: (() => { const o = {}; G.data.areas.forEach((a, i) => { if (a.boss) o[i] = a.boss.hpMult; }); return o; })(),
       firstLight: sim.firstLightAt, deaths: M.deaths });
 
-    console.log(`growth ${growth}: 1st Light ${sim.firstLightAt != null ? fmtT(sim.firstLightAt) : 'NÃO (' + fmtT(sim.t) + ')'} · total ${totalH.toFixed(1)}h · desvio médio grupos ${meanDev.toFixed(0)}%` + (missing.length ? ` · sem amostra: ${missing.join(',')}` : ''));
+    console.log(`growth ${growth}: alcançou área ${reached} · total ${totalH.toFixed(1)}h · desvio médio grupos ${meanDev.toFixed(0)}%` + (missing.length ? ` · sem amostra: ${missing.join(',')}` : ''));
   }
 
   // escolhe o melhor (menor desvio médio absoluto vs contrato)
@@ -496,7 +500,7 @@ function scenarioCalibrate() {
     const dev = d == null ? 'n/a' : ((d - budget[gi] >= 0 ? '+' : '') + ((d - budget[gi]) / budget[gi] * 100).toFixed(0) + '%');
     console.log(row(['G' + (gi + 1), d == null ? '—' : d.toFixed(2) + 'h', budget[gi] + 'h', dev], [7, 10, 8, 10]));
   }
-  console.log(`\n  total até First Light: ${best.totalH.toFixed(1)}h (contrato-soma 18h) · mortes ${best.deaths}`);
+  console.log(`\n  total até alcançar área 18: ${best.totalH.toFixed(1)}h (contrato-soma 18h) · mortes ${best.deaths}`);
   console.log('  ⚠ política gate-fixo-276: as 8 convergências acontecem todas no G1 (área 3), inflando G1 e comprimindo G2–G6.');
 
   if (doWrite) {
@@ -507,7 +511,7 @@ function scenarioCalibrate() {
     const atkStr = best.atk.map(x => Math.round(x)).join(', ');
     text = text.replace(/mobAtkByArea:\s*\[[\s\S]*?\]/, `mobAtkByArea:      [${atkStr}]`);
     let hi = 0;
-    text = text.replace(/hp:\s*\[[^\]]*\](,?)[^\n]*/g, (m, comma) => {
+    text = text.replace(/hp:\s*\[\s*\d[^\]]*\](,?)[^\n]*/g, (m, comma) => {
       const pair = best.hp[hi]; hi++;
       return `hp: [${Math.round(pair[0])}, ${Math.round(pair[1])}]${comma}  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar`;
     });

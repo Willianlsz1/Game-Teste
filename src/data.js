@@ -161,7 +161,7 @@ G.data = {
       blurb: "Where the Seeker first wakes. Soft auroras drip through ancient boughs, and here the light still dreams.",
       img: "assets/areas/dreaming_wood.png",
       levelRange: [1, 80],
-      hp: [5000, 180000],
+      hp: [10253, 25351],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
         { name: "Candlewisp Shade",  sprite: "🔥", img: "assets/enemies/candlewisp_shade.png"  },
         { name: "Mothlight Herald",  sprite: "🦋", img: "assets/enemies/mothlight_herald.png"  },
@@ -173,7 +173,7 @@ G.data = {
       blurb: "A drowned bog of guttering lanterns, where Fragmented souls lost themselves chasing the light.",
       img: "assets/areas/lantern_mire.png",
       levelRange: [81, 171],
-      hp: [130000, 1600000],
+      hp: [95633, 138446],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
         { name: "Mirelight Drifter", sprite: "🏮", img: "assets/enemies/mirelight_drifter.png" },
         { name: "Candlewisp Shade",  sprite: "🔥", img: "assets/enemies/candlewisp_shade.png"  },
@@ -185,20 +185,20 @@ G.data = {
       blurb: "Hollow trees that sing the trapped light, their murmurs curling endlessly through the dark.",
       img: "assets/areas/whispering_hollows.png",
       levelRange: [172, 276],
-      hp: [1100000, 6000000],
+      hp: [602331, 335030],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
         { name: "Husklight Murmur",  sprite: "🌳", img: "assets/enemies/husklight_murmur.png"  },
         { name: "Dreamhorn Warden",  sprite: "🦌", img: "assets/enemies/dreamhorn_warden.png"  },
         { name: "Mirelight Drifter", sprite: "🏮", img: "assets/enemies/mirelight_drifter.png" },
       ],
-      boss: { name: "The Hollow Cantor", sprite: "🎶", hpMult: 20, dmgMult: 2.0, img: "assets/enemies/hollow_cantor.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar
+      boss: { name: "The Hollow Cantor", sprite: "🎶", hpMult: 13.49, dmgMult: 2.0, img: "assets/enemies/hollow_cantor.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar
     },
     {
       id: 4, name: "The Moonlit Canopy",
       blurb: "The high canopy, nearest the aurora, where moths and wardens drift through a pale, restless glow.",
       img: "assets/areas/moonlit_canopy.png",
       levelRange: [277, 396],
-      hp: [4200000, 9500000],
+      hp: [19025439, 3233024],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
         { name: "Boughlight Creeper", sprite: "🍃", img: "assets/enemies/boughlight_creeper.png" },
         { name: "Mothlight Herald",   sprite: "🦋", img: "assets/enemies/mothlight_herald.png"   },
@@ -210,7 +210,7 @@ G.data = {
       blurb: "A flooded, mirrored grove — every still pool reflects the creeping Mist back at the Seeker.",
       img: "assets/areas/sunken_grove.png",
       levelRange: [397, 534],
-      hp: [6600000, 11000000],
+      hp: [11871587, 3620341],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
         { name: "Glasswater Wraith",  sprite: "💧", img: "assets/enemies/glasswater_wraith.png"  },
         { name: "Mirelight Drifter",  sprite: "🏮", img: "assets/enemies/mirelight_drifter.png"  },
@@ -222,20 +222,20 @@ G.data = {
       blurb: "A bramble of thorns where the golden corruption climbs — beautiful, and entirely wrong.",
       img: "assets/areas/gilded_thicket.png",
       levelRange: [535, 693],
-      hp: [7700000, 29000000],
+      hp: [15690050, 18120217],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
         { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
         { name: "Candlewisp Shade",   sprite: "🔥", img: "assets/enemies/candlewisp_shade.png"   },
         { name: "Glasswater Wraith",  sprite: "💧", img: "assets/enemies/glasswater_wraith.png"  },
       ],
-      boss: { name: "The Bramble King", sprite: "🥀", hpMult: 20, dmgMult: 2.0, img: "assets/enemies/bramble_king.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar
+      boss: { name: "The Bramble King", sprite: "🥀", hpMult: 4.65, dmgMult: 2.0, img: "assets/enemies/bramble_king.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar
     },
     {
       id: 7, name: "The Hollow Cathedral",
       blurb: "A cathedral grown of living wood, where the Fragmented kneel and worship the captured light.",
       img: "assets/areas/hollow_cathedral.png",
       levelRange: [694, 876],
-      hp: [20000000, 43000000],
+      hp: [121010857, 21285839],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
         { name: "Husklight Murmur",   sprite: "🌳", img: "assets/enemies/husklight_murmur.png"   },
@@ -247,7 +247,7 @@ G.data = {
       blurb: "The deep roots, where the forest bleeds light and mourns everything it has lost.",
       img: "assets/areas/weeping_roots.png",
       levelRange: [877, 1086],
-      hp: [30000000, 48000000],
+      hp: [78059195, 24020870],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
         { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
         { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
@@ -259,20 +259,20 @@ G.data = {
       blurb: "The heart of the wood — the climax of the Dreaming, where the Gilded Hollow waits in the hush.",
       img: "assets/areas/hollow_sanctum.png",
       levelRange: [1087, 1328],
-      hp: [34000000, 110000000],
+      hp: [104097550, 29998781],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
         { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
         { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
       ],
-      boss: { name: "The Gilded Hollow", sprite: "👁", hpMult: 20, dmgMult: 2.0, img: "assets/enemies/gilded_hollow.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar
+      boss: { name: "The Gilded Hollow", sprite: "👁", hpMult: 5.02, dmgMult: 2.0, img: "assets/enemies/gilded_hollow.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
       id: 10, name: "The Sunken Port — Descent I",
       blurb: "The forest gives way to drowned wharves, where cold currents carry a light that has forgotten the sun.",
       levelRange: [1329, 1606],
-      hp: [77000000, 216000000], // PLACEHOLDER P2 (fricção) — números serão tunados no Passo 2
+      hp: [230358830, 33872703],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
         { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
@@ -284,7 +284,7 @@ G.data = {
       id: 11, name: "The Sunken Port — Descent II",
       blurb: "Flooded galleries of a harbour long lost, its lanterns still burning green beneath the tide.",
       levelRange: [1607, 1926],
-      hp: [151000000, 438000000], // PLACEHOLDER P2 (fricção) — números serão tunados no Passo 2
+      hp: [158082186, 37066324],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
         { name: "Husklight Murmur",   sprite: "🌳", img: "assets/enemies/husklight_murmur.png"   },
         { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
@@ -296,20 +296,20 @@ G.data = {
       id: 12, name: "The Sunken Port — Descent III",
       blurb: "The drowned bell-tower, where a single toll still rolls out through the black water.",
       levelRange: [1927, 2294],
-      hp: [307000000, 921000000], // PLACEHOLDER P2 (fricção) — números serão tunados no Passo 2
+      hp: [197698596, 43453701],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
         { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
         { name: "Husklight Murmur",   sprite: "🌳", img: "assets/enemies/husklight_murmur.png"   },
       ],
-      boss: { name: "The Drowned Bell", sprite: "🔔", hpMult: 20, dmgMult: 2.0 }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar
+      boss: { name: "The Drowned Bell", sprite: "🔔", hpMult: 3.98, dmgMult: 2.0 }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
       id: 13, name: "The Sunken Port — Descent IV",
       blurb: "Wharf after wharf sinks deeper, the pressure of the deep pressing the light thin.",
       levelRange: [2295, 2717],
-      hp: [645000000, 2000000000], // PLACEHOLDER P2 (fricção) — números serão tunados no Passo 2
+      hp: [333163385, 48053293],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
         { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
         { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
@@ -321,7 +321,7 @@ G.data = {
       id: 14, name: "The Sunken Port — Descent V",
       blurb: "The wreck-fields, where drowned hulls drift in a slow, luminous procession.",
       levelRange: [2718, 3203],
-      hp: [1400000000, 4480000000], // PLACEHOLDER P2 (fricção) — números serão tunados no Passo 2
+      hp: [224260508, 52065274],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
         { name: "Husklight Murmur",   sprite: "🌳", img: "assets/enemies/husklight_murmur.png"   },
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
@@ -333,20 +333,20 @@ G.data = {
       id: 15, name: "The Sunken Port — Descent VI",
       blurb: "A graveyard of ships fused into a single hollow fleet, crewed by the light of the lost.",
       levelRange: [3204, 3762],
-      hp: [3136000000, 10350000000], // PLACEHOLDER P2 (fricção) — números serão tunados no Passo 2
+      hp: [277695562, 59953202],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
         { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
         { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
         { name: "Husklight Murmur",   sprite: "🌳", img: "assets/enemies/husklight_murmur.png"   },
       ],
-      boss: { name: "The Hollow Fleet", sprite: "🚢", hpMult: 20, dmgMult: 2.0 }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar
+      boss: { name: "The Hollow Fleet", sprite: "🚢", hpMult: 3.88, dmgMult: 2.0 }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
       id: 16, name: "The Sunken Port — Descent VII",
       blurb: "The abyssal shelf, where the last daylight dies and the deep begins to hunger.",
       levelRange: [3763, 4405],
-      hp: [7245000000, 24600000000], // PLACEHOLDER P2 (fricção) — números serão tunados no Passo 2
+      hp: [459663375, 65980457],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
         { name: "Husklight Murmur",   sprite: "🌳", img: "assets/enemies/husklight_murmur.png"   },
@@ -358,7 +358,7 @@ G.data = {
       id: 17, name: "The Sunken Port — Descent VIII",
       blurb: "The trench mouth, where the water itself glows with a slow, starving pulse.",
       levelRange: [4406, 5144],
-      hp: [17220000000, 60300000000], // PLACEHOLDER P2 (fricção) — números serão tunados no Passo 2
+      hp: [307922842, 71692846],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
         { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
@@ -370,13 +370,13 @@ G.data = {
       id: 18, name: "The Sunken Port — Descent IX",
       blurb: "The bottom of the world, where the Starving Tide coils around the last of the light.",
       levelRange: [5145, 6000],
-      hp: [42210000000, 148000000000], // PLACEHOLDER P2 (fricção) — números serão tunados no Passo 2
+      hp: [382378568, 71695981],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
         { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
         { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
       ],
-      boss: { name: "Okhra, the Starving Tide", sprite: "🌊", hpMult: 60, dmgMult: 2.5 }, // PLACEHOLDER (lore): chefe de Mapa — matar Okhra completa o Mapa 1
+      boss: { name: "Okhra, the Starving Tide", sprite: "🌊", hpMult: 60.00, dmgMult: 2.5 }, // PLACEHOLDER (lore): chefe de Mapa — matar Okhra completa o Mapa 1
     },
   ],
 
@@ -412,8 +412,7 @@ G.data = {
     // → ondas custam ~12-20% da vida, tornando HP/defesa uma decisão real.
     // (Substitui a fórmula global mobAtkBase×growth^level, que ou sumia ou explodia.)
     // 1-9 (floresta) mantidos; 10-18 (porto) = continuação PLACEHOLDER P2 (~+15%/área, tunado no Passo 2)
-    mobAtkByArea:      [80, 1750, 3500, 4200, 7000, 21000, 28000, 31500, 36400,
-                        41860, 48139, 55360, 63664, 73214, 84196, 96825, 111349, 128051],
+    mobAtkByArea:      [62, 240, 775, 2055, 1481, 1361, 6710, 4889, 4530, 3703, 2384, 2227, 4927, 3113, 2941, 6384, 4036, 3835],
     groupSize:         3,     // Harbinger (boss) a cada 3 áreas — fronteira de grupo
     packByGroup:       [1, 2, 2, 3, 3, 3],   // P2.4: ondas por grupo (teto 3 = restrição de UI)
     atkSpeedBase:      0.9,
@@ -434,7 +433,7 @@ G.data = {
     bossKillThresholdBase:     25,   // P2.5: threshold do Harbinger = base + perGroup×(grupo+1) → 30..55 kills sem morrer
     bossKillThresholdPerGroup: 5,    // P2.5: escalada por grupo. Morte zera o contador. Ver docs/design/ENEMY_POWER_PYRAMID.md
     gearCostBase:      2500,
-    gearCostGrowth:    1.028,   // P2.2: freio principal — testado no sim
+    gearCostGrowth:    1.022,   // P2.2: freio principal — testado no sim
     promoteCommonCost:    50,   // common material  (common → uncommon)
     promoteUncommonCost:  25,   // uncommon material (uncommon → rare)
     convertCommonToUncommon: 10, // Forge: junta 10 Common → 1 Uncommon (subir de tier)
