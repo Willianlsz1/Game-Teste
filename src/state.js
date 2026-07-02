@@ -32,8 +32,9 @@ G.state = {
       // Marcos abatidos (idx da área do Harbinger) — cada 1ª morte levanta os caps em 1/6.
       // PERMANENTE: NÃO reseta na Convergence. Guardamos os ids p/ robustez de save.
       harbingersFelled:  [],
-      // flags de onboarding: 1º spawn de cada tier já foi anunciado?
+      // flags de onboarding: 1º spawn de cada tier / modificador já foi anunciado?
       rarityFirstSeen:   {},
+      modifierFirstSeen: {},
       // ---- Passivas (Árvore I — árvore única binária de 15 nós) ----
       passives:          { tree1: new Array(15).fill(0) },
       // ---- Materiais (fundação econômica) ----

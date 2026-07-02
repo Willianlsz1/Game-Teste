@@ -123,7 +123,7 @@ G.data = {
   // Poder ~×3/×6/×10 (hp/atk; lumens acompanham a hp via goldRatio, xp via rewardMult).
   rarityTiers: [
     { key: "corona", findKey: "corona", tag: "Corona", color: "#9d7bff",
-      hpMult: 10, atkMult: 3, rewardMult: 10, modifier: null,   // modifier: hook do P8.2 (Lightshell etc.) — Parte 2
+      hpMult: 10, atkMult: 3, rewardMult: 10,   // P8.2: cada Corona rola exatamente 1 modificador (combat._buildOne)
       names: ["Lumin Tyrant", "Veilbreaker", "Hollow Warden", "Gilded Reaver", "Dawnscourge"] },
     { key: "lumen", findKey: "lumen", tag: "Lumen", color: "#4fa8ff",
       hpMult: 6, atkMult: 2, rewardMult: 6,
@@ -132,10 +132,28 @@ G.data = {
       hpMult: 3, atkMult: 1.5, rewardMult: 3,
       names: ["Pale Wanderer", "Dusk Remnant", "Mist Shard", "Fractured Echo", "Gilded Wisp"] },
   ],
+  // ---- Modificadores de combate (P8.2/P8.3/P8.4) ----
+  // SÓ Corona (rola exatamente 1, uniforme) e os Harbingers (assinatura FIXA) os carregam.
+  // Aplicados em combat.js. Magnitudes de MOB e de BOSS separadas (boss estoura a banda HTK
+  // 20–40 se usar a do mob; ajusta-se a magnitude do boss, nunca o hpMult calibrado).
+  //   • Lightshell — absorve os primeiros N golpes do jogador (0 dano até acabar).
+  //   • Quickened  — mob ataca +40% mais rápido (intervalo ÷ atkSpeedFactor).
+  //   • Siphoning  — cura-se de healFrac do dano que causa ao herói (clamp no maxHp dele).
+  //   • Escorted   — chega com onda CHEIA de comuns (enche até fullWave; se já cheia, +extra até cap).
+  modifiers: {
+    order:      ["lightshell", "quickened", "siphoning", "escorted"],
+    lightshell: { label: "Lightshell", absorb: 3,   bossAbsorb: 8 },
+    quickened:  { label: "Quickened",  atkSpeedFactor: 1.4 },
+    siphoning:  { label: "Siphoning",  healFrac: 0.5, bossHealFrac: 0.5 },
+    escorted:   { label: "Escorted",   fullWave: 3, extra: 1, cap: 4 },
+    // The Tide Rises (P8.4): mecânica exclusiva do Okhra — re-invoca a escolta a cada `interval`s,
+    // enchendo até `maxEscort` comuns vivos. Ajustado p/ ~4–5 subidas por luta.
+    tide:       { interval: 10, maxEscort: 6 },
+  },
+
   // Tetos máximos (%) do Rarity Find — atingidos com os 6 Marcos. capPerHarbinger = cap/6:
   // cada Harbinger morto pela 1ª vez levanta 1/6 (permanente, sobrevive à Convergence).
-  // HOJE só 5 Marcos no código (idx 2,5,8,11,14) → tetos chegam a 5/6 = 25 / 12.5 / 4.17
-  // (o 6º Marco da área 18 vem na Parte 2, que fecha os caps em 30/15/5).
+  // 6 Marcos (idx 2,5,8,11,14 + H6 na área 18) → a 6ª morte fecha os caps em 30/15/5.
   rarityCaps: { ember: 30, lumen: 15, corona: 5 },
 
   // 6 Harbingers da floresta guardados (DECISOES_JUL26 §4) — sem função por enquanto
@@ -187,7 +205,7 @@ G.data = {
         { name: "Dreamhorn Warden",  sprite: "🦌", img: "assets/enemies/dreamhorn_warden.png"  },
         { name: "Mirelight Drifter", sprite: "🏮", img: "assets/enemies/mirelight_drifter.png" },
       ],
-      boss: { name: "The Hollow Cantor", sprite: "🎶", hpMult: 17.42, dmgMult: 2.0, img: "assets/enemies/hollow_cantor.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar
+      boss: { name: "The Hollow Cantor", sprite: "🎶", hpMult: 17.42, dmgMult: 2.0, signature: ["lightshell"], img: "assets/enemies/hollow_cantor.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H1 = Lightshell
     },
     {
       id: 4, name: "The Moonlit Canopy",
@@ -224,7 +242,7 @@ G.data = {
         { name: "Candlewisp Shade",   sprite: "🔥", img: "assets/enemies/candlewisp_shade.png"   },
         { name: "Glasswater Wraith",  sprite: "💧", img: "assets/enemies/glasswater_wraith.png"  },
       ],
-      boss: { name: "The Bramble King", sprite: "🥀", hpMult: 4.49, dmgMult: 2.0, img: "assets/enemies/bramble_king.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar
+      boss: { name: "The Bramble King", sprite: "🥀", hpMult: 4.49, dmgMult: 2.0, signature: ["escorted"], img: "assets/enemies/bramble_king.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H2 = Escorted
     },
     {
       id: 7, name: "The Hollow Cathedral",
@@ -261,7 +279,7 @@ G.data = {
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
         { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
       ],
-      boss: { name: "The Gilded Hollow", sprite: "👁", hpMult: 4.49, dmgMult: 2.0, img: "assets/enemies/gilded_hollow.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar
+      boss: { name: "The Gilded Hollow", sprite: "👁", hpMult: 4.49, dmgMult: 2.0, signature: ["siphoning"], img: "assets/enemies/gilded_hollow.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H3 = Siphoning
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
@@ -298,7 +316,7 @@ G.data = {
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
         { name: "Husklight Murmur",   sprite: "🌳", img: "assets/enemies/husklight_murmur.png"   },
       ],
-      boss: { name: "The Drowned Bell", sprite: "🔔", hpMult: 3.60, dmgMult: 2.0 }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar
+      boss: { name: "The Drowned Bell", sprite: "🔔", hpMult: 3.60, dmgMult: 2.0, signature: ["quickened"] }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar. P8.3 H4 = Quickened
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
@@ -335,7 +353,7 @@ G.data = {
         { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
         { name: "Husklight Murmur",   sprite: "🌳", img: "assets/enemies/husklight_murmur.png"   },
       ],
-      boss: { name: "The Hollow Fleet", sprite: "🚢", hpMult: 3.65, dmgMult: 2.0 }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar
+      boss: { name: "The Hollow Fleet", sprite: "🚢", hpMult: 3.65, dmgMult: 2.0, signature: ["lightshell", "quickened"] }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar. P8.3 H5 = par Lightshell+Quickened (burst→velocidade; sem stacking de dano recebido)
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
@@ -372,7 +390,10 @@ G.data = {
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
         { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
       ],
-      boss: { name: "Okhra, the Starving Tide", sprite: "🌊", hpMult: 48, dmgMult: 2.5 }, // PLACEHOLDER (lore): chefe de Mapa — matar Okhra completa o Mapa 1
+      // P8.4 — o finale encenado (dois estágios): H6 (Harbinger, ungated) → Okhra (mapBoss, gated pelo First Light).
+      // Matar H6 pela 1ª vez fecha os Marcos 6/6. Okhra manifesta após o H6 SÓ com First Light desperto.
+      boss:    { name: "The Tidebound Choir", sprite: "🎼", hpMult: 3.65, dmgMult: 2.0, signature: ["siphoning", "escorted"] }, // PLACEHOLDER (lore): Harbinger H6 do Porto Afundado. P8.3 par Siphoning+Escorted (ensaio geral do Okhra: cura + onda, sem acelerar ataque)
+      mapBoss: { name: "Okhra, the Starving Tide", sprite: "🌊", hpMult: 48, dmgMult: 2.5, signature: ["siphoning"] }, // PLACEHOLDER (lore): chefe de Mapa — Siphoning + The Tide Rises; matar Okhra completa o Mapa 1
     },
   ],
 

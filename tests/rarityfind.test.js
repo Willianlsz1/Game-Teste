@@ -80,7 +80,8 @@ G.util.chance = realChance;
 G.state.stats = realStats;
 const corona = G.data.rarityTiers.find((t) => t.key === "corona");
 ok(lit.rarity && lit.rarity.tier === "corona" && lit.rarity.tag === "Corona", "roll vencido: mob vira Corona (tag/tier)");
-ok(lit.modifier === null, "Corona traz o campo modifier: null (hook do P8.2 / Parte 2)");
+ok(Array.isArray(lit.modifiers) && lit.modifiers.length === 1 &&
+  G.data.modifiers.order.indexOf(lit.modifiers[0]) !== -1, "Corona rola EXATAMENTE 1 modificador do pool (P8.2)");
 
 // ---------- 3) markBossCleared: 1ª morte do Marco levanta o teto, 2ª NÃO ----------
 fresh();
@@ -93,11 +94,16 @@ ok(near(G.state.stats().rarityCaps.ember, 0.05), "1ª morte: teto Ember sobe par
 G.combat.markBossCleared();       // mata o MESMO Harbinger de novo
 ok(G.state.data.harbingersFelled.length === 1, "2ª morte do MESMO Harbinger: NÃO levanta o teto de novo");
 
-// Okhra (última área) NÃO é Marco — não levanta teto
+// P8.4: na área 18, o H6 (Harbinger) É Marco — fecha os caps 6/6
 G.state.data.areaIndex = G.data.areas.length - 1;
-G.combat.markBossCleared();
-ok(G.state.data.harbingersFelled.indexOf(G.data.areas.length - 1) === -1,
-  "Okhra (última área) NÃO conta como Marco — não entra em harbingersFelled");
+G.combat.markBossCleared({ isBoss: true });   // H6 (não mapBoss)
+ok(G.state.data.harbingersFelled.indexOf(G.data.areas.length - 1) !== -1,
+  "H6 (Harbinger da área 18) É Marco — entra em harbingersFelled");
+// Okhra (mapBoss) NÃO é Marco — não levanta teto, mas completa o Mapa 1
+G.combat.markBossCleared({ isBoss: true, isMapBoss: true });
+ok(G.state.data.harbingersFelled.filter((x) => x === G.data.areas.length - 1).length === 1,
+  "Okhra (mapBoss) NÃO conta como Marco — não re-credita a área 18");
+ok(G.state.data.mapOneCleared === true, "matar o Okhra (mapBoss) completa o Mapa 1");
 G.ui = realUi;
 
 // ---------- 4) caps sobrevivem à Convergence ----------

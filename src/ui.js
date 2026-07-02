@@ -929,10 +929,18 @@ G.ui = {
     this.el["wmap-info-enemies"].textContent = pack + " per wave";
     if (a.boss) {
       this.el["wmap-info-boss-row"].hidden = false;
-      const okhraGated = i === total - 1 && !(G.awaken && G.awaken.isDone("first_light"));
-      this.el["wmap-info-boss"].textContent = okhraGated
-        ? "The tide stirs... but your light sleeps. Awaken the First Light."
-        : a.boss.name;
+      // P8.4: a área 18 mostra o H6 (area.boss) como boss; o Okhra (mapBoss) é o 2º estágio.
+      this.el["wmap-info-boss"].textContent = a.boss.name;
+      // linha extra do Okhra pós-H6 (com a mensagem do portão se o First Light não despertou)
+      if (i === total - 1 && a.mapBoss) {
+        const awake    = !!(G.awaken && G.awaken.isDone("first_light"));
+        const h6Felled = Array.isArray(d.harbingersFelled) && d.harbingersFelled.indexOf(i) !== -1;
+        let extra = "";
+        if (!h6Felled)   extra = `Then: ${a.mapBoss.name} stirs beyond the Choir.`;
+        else if (awake)  extra = `${a.mapBoss.name} — the Starving Tide, risen.`;
+        else             extra = "The tide stirs... but your light sleeps. Awaken the First Light.";
+        this.el["wmap-info-boss"].textContent = `${a.boss.name} — ${extra}`;
+      }
     } else {
       this.el["wmap-info-boss-row"].hidden = true;
     }
@@ -956,6 +964,11 @@ G.ui = {
     else { tbtn.disabled = false; tbtn.textContent = "Travel here"; }
 
     this.el["wmap-info"].hidden = false;
+  },
+
+  // P8.4: palco do Okhra — combat avisa (ui só LÊ estado e aplica a classe cosmética).
+  setOkhraStage(on) {
+    if (document.body) document.body.classList.toggle("okhra-manifest", !!on);
   },
 
   materialDrop(drops) {

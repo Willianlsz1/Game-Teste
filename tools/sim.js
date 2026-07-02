@@ -215,6 +215,7 @@ function freshSim(opts) {
   Object.assign(G.combat, {
     enemies: [], enemy: null, atkTimer: 0, respawnTimer: 0,
     pendingHits: [], spawnCount: 0, _lastAreaIndex: -1, _bossKills: 0,
+    _okhraManifest: false, _tideTimer: 0, _tideRisen: false,
     _clock: 0, _gains: [],
   });
   M.income = 0; M.deaths = 0; M.matByGroup = {}; M.litByGroup = {};
@@ -353,17 +354,40 @@ function scenarioCampaign() {
   // após ~12 convergences, então a convergência PÁRA sozinha e o jogador empurra até Okhra.
   const sim = freshSim({ converge: true, push, allowAwaken: true });
 
-  // P7.4: conta os GOLPES na luta do Okhra (HTK) — valida a banda P2.5 (60–120, alvo ~90).
+  // P7.4/P8.4: conta os GOLPES na luta do Okhra (mapBoss) COM a maré ativa — banda 60–120.
+  // P8.3: conta os golpes de cada Harbinger H1–H6 (1ª queda de cada) — banda 20–40.
   // Headless não tem projétil: cada playerHit resolve direto em applyHitToEnemy.
-  let okhraHits = 0, okhraFightStart = null;
+  let okhraHits = 0, okhraFightStart = null, okhraDeaths = 0, area18Deaths = 0;
+  const bossHitsCur = {};    // areaIdx -> golpes acumulados na luta corrente
+  const bossHTK = {};        // areaIdx -> HTK da 1ª queda (Harbinger)
   const _applyHitEnemy = G.combat.applyHitToEnemy.bind(G.combat);
   G.combat.applyHitToEnemy = function (dmg, crit) {
     const t = this.enemies.find((e) => !e.dead);
-    if (t && t.isBoss && G.state.data.areaIndex === G.data.areas.length - 1) {
+    if (t && t.isMapBoss) {
       okhraHits++;
       if (okhraFightStart == null) okhraFightStart = sim.t;
+    } else if (t && t.isBoss) {
+      const k = G.state.data.areaIndex;
+      bossHitsCur[k] = (bossHitsCur[k] || 0) + 1;
     }
     return _applyHitEnemy(dmg, crit);
+  };
+  const _markBoss = G.combat.markBossCleared.bind(G.combat);
+  G.combat.markBossCleared = function (e) {
+    if (e && e.isBoss && !e.isMapBoss) {
+      const k = G.state.data.areaIndex;
+      if (bossHTK[k] == null) bossHTK[k] = bossHitsCur[k] || 0;   // 1ª queda = mais dura (menos gear)
+      bossHitsCur[k] = 0;
+    }
+    return _markBoss(e);
+  };
+  const _onDeathC = G.combat.onDeath.bind(G.combat);
+  G.combat.onDeath = function () {
+    if (G.state.data.areaIndex === G.data.areas.length - 1) {
+      area18Deaths++;
+      if (this.enemies.some((x) => x.isMapBoss && !x.dead)) okhraDeaths++;
+    }
+    return _onDeathC();
   };
 
   // não para no First Light — segue até Okhra (área 18) p/ medir o mapa inteiro
@@ -371,6 +395,8 @@ function scenarioCampaign() {
     run(sim, { maxHours, stop: (s) => G.state.data.mapOneCleared });
   } finally {
     G.combat.applyHitToEnemy = _applyHitEnemy;
+    G.combat.markBossCleared = _markBoss;
+    G.combat.onDeath = _onDeathC;
   }
 
   const W = [5, 9, 8, 7, 7, 5, 9, 7, 8, 7, 6];
@@ -400,10 +426,22 @@ function scenarioCampaign() {
     console.log(`⚠ First Light NÃO alcançado em ${fmtT(sim.t)} — nível ${d.level}, área ${d.areaIndex + 1}, ${d.convergences} convergences`);
     console.log(`  requisitos: ${reqs}`);
   }
-  if (d.mapOneCleared) console.log(`🌊 OKHRA (área 18 · Map 1 completo) em ${fmtT(sim.t)} — ${okhraHits} golpes · luta ${okhraFightStart != null ? fmtT(sim.t - okhraFightStart) : '—'} (spawn→morte) (alvo P2.5 60–120, ~90)`);
-  else console.log(`⚠ Okhra NÃO derrotado em ${fmtT(sim.t)} — área ${d.areaIndex + 1}, nível ${d.level}${sim.timedOut ? ' (timeout)' : ''}`);
+  if (d.mapOneCleared) console.log(`🌊 OKHRA (área 18 · Map 1 completo) em ${fmtT(sim.t)} — ${okhraHits} golpes · luta ${okhraFightStart != null ? fmtT(sim.t - okhraFightStart) : '—'} (spawn→morte) · mortes na área 18: ${area18Deaths} (durante o Okhra: ${okhraDeaths}) (alvo P2.5 60–120, ~90 · SEM loop de morte)`);
+  else console.log(`⚠ Okhra NÃO derrotado em ${fmtT(sim.t)} — área ${d.areaIndex + 1}, nível ${d.level}${sim.timedOut ? ' (timeout)' : ''} · mortes na área 18: ${area18Deaths}`);
   const s = G.state.stats();
   console.log(`  final: ATK ${fmtN(s.atk)} · HP ${fmtN(s.hp)} · gear médio ${gearAvgLevel()} · passivas ${sim.nodeLevelsBought} níveis de nó`);
+
+  // ---- P8.3: HTK da 1ª (e única) queda de cada Harbinger H1–H6 na campanha ----
+  // NB: cada Harbinger é lutado 1× (maxAreaUnlocked sobrevive à Convergence). Este HTK reflete
+  // o GEAR no 1º contato da política greedy (H1 = parede-tutorial P2.4 sob-gear; Harbingers fundos
+  // derretem por over-gear). O HTK CANÔNICO (gear de referência) = 30 p/ os 6, via `sim calibrate`.
+  // A assinatura contribui pouco: Lightshell +N absorvidos, Siphoning ~0 (HP boss >> atk), Quickened/Escorted +0 ao HTK.
+  const HLABEL = { 2: 'H1 Lightshell', 5: 'H2 Escorted', 8: 'H3 Siphoning', 11: 'H4 Quickened', 14: 'H5 Lightshell+Quickened', 17: 'H6 Siphoning+Escorted' };
+  console.log('\n' + row(['Harbinger', 'área', 'HTK 1º contato', 'canônico (calibrate)'], [26, 6, 15, 22]));
+  for (const idx of [2, 5, 8, 11, 14, 17]) {
+    const htk = bossHTK[idx];
+    console.log(row([HLABEL[idx], idx + 1, htk != null ? htk.toFixed(0) : '—', '30 (banda 20–40)'], [26, 6, 15, 22]));
+  }
 
   // ---- ECONOMIA (P3): promoções Common→Uncommon · alvo dos 6 beats = G2–G4 ----
   const WP = [10, 10, 8, 16];
@@ -499,7 +537,8 @@ function scenarioCalibrate() {
   }
   // Opção A (dono, jul/2026): HTK-fim 1.5 vale pra RE-SUBIDA pós-Convergence, não pra
   // 1ª passada — a calibração fixa SÓ paredes de entrada + bosses; hp[1] vira rampa.
-  const BOSS_HTK = {}; [2, 5, 8, 11, 14].forEach(i => BOSS_HTK[i] = 30); BOSS_HTK[17] = 90;
+  // P8.4: idx 17 agora é o H6 (Harbinger, HTK 30); o Okhra é area.mapBoss (hpMult 48 travado, fora da calibração).
+  const BOSS_HTK = {}; [2, 5, 8, 11, 14, 17].forEach(i => BOSS_HTK[i] = 30);
   const budget = [1.0, 1.6, 2.4, 3.2, 4.2, 5.6];
   const gs = G.data.balance.groupSize || 3;
 
@@ -518,13 +557,13 @@ function scenarioCalibrate() {
 
   let ENTRY, END, BOSS;
   const origMBC = G.combat.markBossCleared;
-  G.combat.markBossCleared = function () {
+  G.combat.markBossCleared = function (e) {
     const d = G.state.data, idx = d.areaIndex, area = G.data.areas[idx];
-    if (BOSS && !BOSS[idx]) {
+    if (BOSS && !BOSS[idx] && !(e && e.isMapBoss)) {   // Okhra (mapBoss) fora da calibração
       const lvl = G.util.clamp(d.level, area.levelRange[0], area.levelRange[1]);
       BOSS[idx] = { dmgHit: dmgHitNow(), baseMobHp: G.data.mobHpAt(lvl, area) };
     }
-    return origMBC.call(this);
+    return origMBC.call(this, e);
   };
 
   function measureRun(seed) {
