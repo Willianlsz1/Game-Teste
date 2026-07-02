@@ -163,7 +163,13 @@ Insumos: PASSO 3 (custos/materiais definem o ritmo de promoção).
 - **P4.3 Escalas:** perLevel/statMult atuais ficam — a calibração deriva o mundo do dano do jogador e absorve.
 Valida: `sim baseline` — nível médio do gear por grupo segue o plano; promoções acontecem nos grupos planejados.
 
-## PASSO 5 — Convergence (o loop de prestige) ⬜
+## PASSO 5 — Convergence (o loop de prestige) — P5.1/P5.3 ✅ TRAVADOS (jul/2026)
+
+**P5.1+P5.3 (decisão do dono — "converge em X nível; cada convergence sobe o requisito e rende mais pontos; nem poucas nem muitas"):**
+- **Gate escalonado:** `gate₁ = 276 (fim do G1) · gateₙ₊₁ = gateₙ × 1.30` → **~12 convergences** até o cap 6000, espalhadas pelos grupos POR CONSTRUÇÃO (escada: 276·359·466·606·788·1024·1332·1731·2251·2926·3803·4944).
+- **Pontos:** cada convergence rende **~×1.5 a anterior** → expoente derivado α = ln1.5/ln1.3 ≈ **1.55**; fórmula candidata `pontos = 400 × (nível/276)^1.55` (P5.2 valida no sim). Empurrar 1 grupo além do gate ≈ ×2.1 pontos (mata o F2).
+- Legibilidade (a queixa do dono com o sistema antigo): UI mostra UM número — "Próxima Convergence: nível Y".
+- P5.2 (fórmula no sim) e P5.4 (Legacy) e P5.5 (política realista do sim): em andamento.
 
 **Pergunta central:** quando convergir vale a pena, e quanto pagar por empurrar mais fundo?
 
