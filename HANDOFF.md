@@ -10,12 +10,10 @@
 
 **Trilha ativa: reconstrução do balance do Mapa 1** via `docs/design/BALANCE_FRAMEWORK_MAP1.md` (escada de 9 passos, um por vez, sim valida antes de travar).
 
-- **PASSO 0 (Relógio): ✅ TRAVADO** — 18h ativas · sessão 30–50min c/ regra do beat · ~50/50 ativo/idle · 1º prestige 25–40min.
-- **PASSO 1 (Esqueleto): 🔶 PROPOSTA NA MESA, aguardando OK do Willian** em 3 pontos:
-  1. Cap nível **6000** + faixas das 18 áreas (largura ×1.15/área; área 1 = 1–80; fins de grupo: G1=276, G2=693, G3=1328, G4=2294, G5=3762, G6=6000);
-  2. Tempo por grupo: G1 1.0h · G2 1.6h · G3 2.4h (Tema A=5h/28%) · G4 3.2h · G5 4.2h · G6 5.6h (Tema B=13h/72%);
-  3. Regra estrutural: **áreas destravam por nível dentro do grupo; Harbinger trava a fronteira de grupo** (spawn por threshold na 3ª área; nº do threshold = Passo 2).
-- **Depois vem: PASSO 2 (Fricção)** — inclui o conserto do runaway F3 (achado nº1 do sim).
+- **PASSO 0 (Relógio): ✅** — 18h · 30–50min/beat · 50/50 · 1º prestige 25–40min.
+- **PASSO 1 (Esqueleto): ✅ TRAVADO E IMPLEMENTADO** (ciclo 10-80-10: Opus implementou, Sonnet achou+corrigiu 1 bug de migração de save, Fable revisou) — 18 áreas no código, cap 6000, Harbinger por grupo, Okhra fecha o mapa. Tempos por grupo = contrato a cumprir no P2.
+- **PASSO 2 (Fricção): EM ANDAMENTO, FATIADO** — 2.1 TTK-alvo (❗OPÇÕES A/B/C NA MESA, aguardando escolha do Willian) → 2.2 freio F3 → 2.3 curvas HP → 2.4 dano/ondas/morte → 2.5 threshold+boss mults. Travar cada sub em conversa; IMPLEMENTAR TUDO JUNTO no fim (decisão do Willian).
+- **Modo de trabalho travado: 10-80-10** — 10% planejamento+pesquisa (Fable) · 80% implementação+review (Opus/Sonnet, nunca Haiku) · 10% review final (Fable).
 
 ## O que o simulador descobriu (fatos medidos — não re-descobrir)
 
@@ -34,13 +32,15 @@
 
 ## Pendências conhecidas (ordenadas)
 
-1. **PASSO 1** — colher OK do Willian nos 3 pontos acima.
-2. **PASSO 2** — desenhar fricção + freio do F3; validar tempos do P1 no sim.
-3. **Import** do `mapa1_tema_b_porto_afundado.md` (criado fora do repo) + ajuste Nebulor→Okhra (área 17).
-4. **Sweep de termos** nos docs (Archon→Nihelim etc.) — `node tools/check_canon.js` lista; exports consolidados (`GAME_CONTEXT`, `LORE_COMPLETE`) têm banner mas corpo antigo.
-5. Escolher **quais 3 Harbingers** da floresta viram titulares de grupo (lore, sem pressa).
-6. Fila da lore: **Séraphine + final/Convergence (Parte IX)** ← próximo item de lore; depois Mapa 2 (Naameth).
-7. Renomes no código (Ember/Lumen/Corona, save key etc.) — **só quando o balance mandar** (decisão: lore não entra no código ainda).
+1. **P2.1** — Willian escolher banda de TTK (A recomendada / B / C).
+2. **P2.2–2.5** — travar em sequência; depois implementar o P2 inteiro junto (10-80-10).
+3. **UI copy (do review):** `ui.js` mostra "Reach level X" pra áreas de fronteira (deveria indicar o Harbinger) e o hint de Awaken material por área ficou obsoleto (idx>=5) — corrigir na fase de UI.
+4. **Observação de balance (review):** no baseline, área 3 pode reter o jogador ~2h40 no grind do threshold com mobs capados — cruzar `bossKillThreshold` × TTK no P2.5.
+5. **Import** do `mapa1_tema_b_porto_afundado.md` (criado fora do repo) + ajuste Nebulor→Okhra (área 17).
+6. **Sweep de termos** nos docs (Archon→Nihelim etc.) — `node tools/check_canon.js` lista; exports consolidados (`GAME_CONTEXT`, `LORE_COMPLETE`) têm banner mas corpo antigo.
+7. Escolher **quais 3 Harbingers** da floresta viram titulares de grupo (lore, sem pressa).
+8. Fila da lore: **Séraphine + final/Convergence (Parte IX)** ← próximo item de lore; depois Mapa 2 (Naameth).
+9. Renomes no código (Ember/Lumen/Corona, save key etc.) — **só quando o balance mandar** (decisão: lore não entra no código ainda).
 
 ## Infra & contexto operacional
 

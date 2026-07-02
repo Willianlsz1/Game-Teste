@@ -35,15 +35,22 @@ A cadência natural de beats: **fim de grupo = parede + Harbinger** (6×), **tro
 
 Validação: decisão de produto do dono (sessão jul/2026). Consequência aritmética: ~25–35 sessões pra fechar o mapa; calendário casual ≈ 2–3 semanas com idle.
 
-## PASSO 1 — O Esqueleto (áreas × níveis × tempo) ⬜ ← ESTAMOS AQUI
+## PASSO 1 — O Esqueleto (áreas × níveis × tempo) ✅ TRAVADO (jul/2026)
 
 **Pergunta central:** que faixa de nível cobre cada uma das 18 áreas, e quanto tempo cada grupo custa?
 
-Decide: level cap do mapa · faixas por área (redistribuir — hoje 9 áreas cobrem 1–5000) · orçamento de tempo por grupo (curva crescente, ex. G1=5% … G6=30% do total) · curva de XP (`xpCurveExp`) que entrega isso · threshold de kills do Harbinger.
-Insumos: PASSO 0 · TTK-alvo provisório (~3s).
-Valida: `sim baseline` — tempo real até cada área/grupo bate o orçamento (±20%).
+| Decisão | Valor travado |
+|---|---|
+| Cap do mapa | **nível 6000** |
+| Faixas (largura ×1.15/área) | fins de grupo: G1=276 · G2=693 · G3=1328 · G4=2294 · G5=3762 · G6=6000 (tabela completa em `src/data.js`) |
+| Orçamento de tempo | G1 1.0h · G2 1.6h · G3 2.4h (Tema A=5h/28%) · G4 3.2h · G5 4.2h · G6 5.6h (Tema B=13h/72%) — **contrato que o P2 tuna até cumprir** |
+| Regra estrutural | dentro do grupo, área destrava por NÍVEL; **Harbinger trava a fronteira de grupo** (só idx 2,5,8,11,14,17 têm boss) |
+| Curva de XP | mantém `14 × L^1.62` como default de trabalho (revisável no P2/P3) |
 
-## PASSO 2 — A Fricção (onde ficam as paredes) ⬜
+**Implementado** (ciclo 10-80-10): `data.js` (18 áreas; 10–18 placeholders de lore/HP marcados P2; `reservedHarbingers` guarda os 6 da floresta) · `combat.js` (`checkGroupUnlock` por nível; fronteira via Harbinger; Okhra fecha o mapa) · `state.js` (fix de migração: `mapOneCleared` obsoleto de saves de 9 áreas é rebaixado) · `sim.js` (relatório por grupo vs orçamento).
+**Validação:** sim baseline/campaign rodam limpos nas 18 áreas; cadência de grupos correta (review adversarial confirmou off-by-one, converge, saves antigos, `_bossKills`). Tempos por grupo AINDA fora do alvo — esperado: HP é placeholder, é o trabalho do P2.
+
+## PASSO 2 — A Fricção (onde ficam as paredes) ⬜ ← ESTAMOS AQUI *(fatiado: 2.1 TTK-alvo → 2.2 freio F3 → 2.3 curvas de HP → 2.4 dano/ondas/morte → 2.5 threshold+boss mults; travar cada sub, implementar tudo junto)*
 
 **Pergunta central:** onde o jogador DEVE parar de avançar de graça — e o que o segura?
 
@@ -109,3 +116,4 @@ Valida: `sim baseline` com rarity find — frequência de Ember/Lumen/Corona por
 
 ## Log de decisões travadas
 - **jul/2026 — PASSO 0 (Relógio):** 18h ativas · sessão 30–50min c/ regra do beat · ~50/50 ativo/idle · 1º prestige 25–40min.
+- **jul/2026 — PASSO 1 (Esqueleto):** cap 6000 · 18 faixas (×1.15) · orçamento G1→G6 = 1.0/1.6/2.4/3.2/4.2/5.6h · unlock por nível dentro do grupo, Harbinger na fronteira · implementado e validado estruturalmente (tempos = contrato do P2).

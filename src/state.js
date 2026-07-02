@@ -160,6 +160,13 @@ G.state = {
     this.data.equipped = G.gear.reconcile(this.data.equipped);
     if (G.economy) G.economy.reconcile(this.data);
 
+    // Mapa 1 cresceu de 9 → 18 áreas (P1). Saves antigos podem trazer mapOneCleared=true
+    // (mapa velho de 9 áreas concluído), mas o mapa novo (Okhra, última área) não foi batido.
+    // Sem isto, o jogador herdaria o teto de atkSpeed de mapa 2 cedo demais e a mensagem
+    // de "Map 1 complete" nunca voltaria a disparar ao derrotar Okhra de verdade.
+    if (this.data.mapOneCleared && (this.data.maxAreaUnlocked || 0) < G.data.areas.length - 1)
+      this.data.mapOneCleared = false;
+
     // Awaken: garante a lista canônica e o tier em saves antigos
     if (!Array.isArray(this.data.awakens)) this.data.awakens = [];
     this.data.awakensUnlocked = this.data.awakens;
