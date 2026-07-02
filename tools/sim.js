@@ -404,7 +404,11 @@ function scenarioCalibrate() {
       if (!e) { missing.push(i + 1); continue; }
       const hp0 = HTK_ENTRY[i] * e.dmgHit;
       const endDmg = end[i] ? end[i].dmgHit : (entry[i + 1] ? entry[i + 1].dmgHit : e.dmgHit);
-      const hp1 = HTK_END * endDmg;
+      // P2.3 trava: "alívio vem do jogador crescer, não do HP cair" — hp nunca decresce
+      // dentro da área. Quando o alvo de HTK_END exigiria queda de HP (jogador não
+      // cresceu rápido o bastante), o piso vira hp0 — sinal visível (HTK fim > alvo)
+      // em vez de violação silenciosa da regra travada.
+      const hp1 = Math.max(hp0, HTK_END * endDmg);
       area.hp = [Math.max(1, hp0), Math.max(1, hp1)];
       const hitsRecv = 0.6 * e.pack * (e.pack * HTK_ENTRY[i] * e.atkInt) / G.combat.enemyInterval;
       const mobAtk = WAVECOST[i] * e.hp / Math.max(1e-6, hitsRecv);
@@ -515,17 +519,19 @@ function scenarioCalibrate() {
       const pair = best.hp[hi]; hi++;
       return `hp: [${Math.round(pair[0])}, ${Math.round(pair[1])}]${comma}  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar`;
     });
-    const bossOrder = [2, 5, 8, 11, 14, 17]; let bi = 0;
+    const bossOrder = [2, 5, 8, 11, 14, 17]; let bi = 0, bossOk = 0;
     text = text.replace(/boss:\s*\{[^}]*\}/g, (blk) => {
       const idx = bossOrder[bi]; bi++;
       const mult = best.bossHp[idx];
-      return (mult == null) ? blk : blk.replace(/hpMult:\s*[\d.]+/, `hpMult: ${(+mult).toFixed(2)}`);
+      if (mult == null || !/hpMult:\s*[\d.]+/.test(blk)) return blk;   // sem placeholder p/ injetar — não conta como sucesso
+      bossOk++;
+      return blk.replace(/hpMult:\s*[\d.]+/, `hpMult: ${(+mult).toFixed(2)}`);
     });
     // safety: o data.js reescrito precisa avaliar sem erro
     let ok = true;
     try { vm.runInNewContext('var G={};\n' + text, {}); } catch (e) { ok = false; console.error('\n✗ ABORTADO: data.js reescrito não avalia — ' + e.message); }
-    if (ok && hi === N && bi === bossOrder.length) { fs.writeFileSync(p, text); console.log(`\n✓ escrito em src/data.js (${hi} áreas · mobAtk · ${bi} bosses · growth ${best.growth})`); }
-    else if (ok) console.error(`\n✗ ABORTADO: contagem inesperada (hp ${hi}/${N}, boss ${bi}/${bossOrder.length}) — data.js não tocado`);
+    if (ok && hi === N && bossOk === bossOrder.length) { fs.writeFileSync(p, text); console.log(`\n✓ escrito em src/data.js (${hi} áreas · mobAtk · ${bossOk} bosses · growth ${best.growth})`); }
+    else if (ok) console.error(`\n✗ ABORTADO: contagem inesperada (hp ${hi}/${N}, boss ${bossOk}/${bossOrder.length} — blocos vistos ${bi}) — data.js não tocado`);
   } else {
     console.log('\n(dry-run — use --write para gravar em src/data.js)');
   }

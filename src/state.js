@@ -63,7 +63,7 @@ G.state = {
     add("critDmg", "flat", 50, "Base");
     add("atkSpeed", "flat", G.data.balance.atkSpeedBase, "Base");
     add("lumensBonus", "flat", 10, "Base");
-    add("lumensBonus", "flat", Math.min(100, d.level * 0.15), "Character Level");
+    add("lumensBonus", "flat", Math.min(G.data.balance.lumensLevelCap, d.level * G.data.balance.lumensLevelPerLevel), "Character Level");
 
     // equipment
     for (const slot of G.data.slots) {
@@ -197,6 +197,7 @@ G.state = {
     if (this.storageOk()) try { localStorage.removeItem(this.SAVE_KEY); } catch (e) {}
     delete this._mem[this.SAVE_KEY];
     this.data = this.fresh();
+    this.invalidateStats();
     this.data.hp = this.maxHp();
   },
 };

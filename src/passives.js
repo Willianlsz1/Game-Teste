@@ -225,6 +225,8 @@ G.passives = {
       xpPct:      (v) => `+${v}% XP`,
       hpPct:      (v) => `+${v}% HP`,
       hpToDamage: (v) => `${v}% of HP as ATK`,
+      hpRegen:    (v) => `+${v}% max HP / s`,
+      healOnKill: (v) => `+${v}% max HP on kill`,
     };
     const fmt = FMT[key];
     if (!fmt || per === 0) return null;

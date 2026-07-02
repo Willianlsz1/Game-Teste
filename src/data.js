@@ -408,10 +408,9 @@ G.data = {
   },
 
   balance: {
-    // ATK do mob POR ÁREA (idx 0-8). Calibrado p/ ~3% da vida do jogador por golpe
-    // → ondas custam ~12-20% da vida, tornando HP/defesa uma decisão real.
-    // (Substitui a fórmula global mobAtkBase×growth^level, que ou sumia ou explodia.)
-    // 1-9 (floresta) mantidos; 10-18 (porto) = continuação PLACEHOLDER P2 (~+15%/área, tunado no Passo 2)
+    // ATK do mob POR ÁREA (idx 0-17), as 18 áreas. Calibrado (custo de onda alvo: entrada
+    // de grupo 35-50% da vida, interna 10-20% — ver P2.4). Derivado por `tools/sim.js calibrate`
+    // (HTK C3) a partir do dano recebido esperado — não editar à mão, recalibrar.
     mobAtkByArea:      [62, 240, 775, 2055, 1481, 1361, 6710, 4889, 4530, 3703, 2384, 2227, 4927, 3113, 2941, 6384, 4036, 3835],
     groupSize:         3,     // Harbinger (boss) a cada 3 áreas — fronteira de grupo
     packByGroup:       [1, 2, 2, 3, 3, 3],   // P2.4: ondas por grupo (teto 3 = restrição de UI)
@@ -421,6 +420,8 @@ G.data = {
     map2AtkSpeedCap:   4,     // teto-assíntota Mapa 2 (placeholder — Mapa 2 fora de escopo)
     atkSpeedSoftFrac:  0.85,  // soft cap começa a comprimir em ceil×frac (Mapa1≈1.7, Mapa2≈3.4)
     healOnKillFrac:    0,      // P2.4: sustain é 100% construído pelo jogador (passivas)
+    lumensLevelCap:    100,    // P2.2: teto do bônus de lumensBonus por nível (level × lumensLevelPerLevel, capado)
+    lumensLevelPerLevel: 0.15,
     bossHpMult:        4,
     bossDmgMult:       1.5,
     bossRewardMult:    6,

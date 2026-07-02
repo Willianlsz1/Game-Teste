@@ -72,7 +72,7 @@ G.combat = {
 
     if (isBossSpawn) {
       isBoss = true;
-      maxHp *= (def.hpMult || b.bossHpMult); dmg *= (def.dmgMult || b.bossDmgMult); xp *= b.bossRewardMult;
+      maxHp *= (def.hpMult != null ? def.hpMult : b.bossHpMult); dmg *= (def.dmgMult != null ? def.dmgMult : b.bossDmgMult); xp *= b.bossRewardMult;
       name = def.name;
     } else {
       name = def.name;
