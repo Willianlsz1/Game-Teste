@@ -12,7 +12,7 @@
 
 - **PASSO 0 (Relógio): ✅** — 18h · 30–50min/beat · 50/50 · 1º prestige 25–40min.
 - **PASSO 1 (Esqueleto): ✅ TRAVADO E IMPLEMENTADO** (ciclo 10-80-10: Opus implementou, Sonnet achou+corrigiu 1 bug de migração de save, Fable revisou) — 18 áreas no código, cap 6000, Harbinger por grupo, Okhra fecha o mapa. Tempos por grupo = contrato a cumprir no P2.
-- **PASSO 2 (Fricção): EM ANDAMENTO, FATIADO** — 2.1 TTK-alvo (❗OPÇÕES A/B/C NA MESA, aguardando escolha do Willian) → 2.2 freio F3 → 2.3 curvas HP → 2.4 dano/ondas/morte → 2.5 threshold+boss mults. Travar cada sub em conversa; IMPLEMENTAR TUDO JUNTO no fim (decisão do Willian).
+- **PASSO 2 (Fricção): EM ANDAMENTO, FATIADO** — 2.1 TTK-alvo ✅ (Opção A, em golpes) → 2.2 freio F3 → 2.3 curvas HP → 2.4 dano/ondas/morte → 2.5 threshold+boss mults. Travar cada sub em conversa; IMPLEMENTAR TUDO JUNTO no fim (decisão do Willian).
 - **Modo de trabalho travado: 10-80-10** — 10% planejamento+pesquisa (Fable) · 80% implementação+review (Opus/Sonnet, nunca Haiku) · 10% review final (Fable).
 
 ## O que o simulador descobriu (fatos medidos — não re-descobrir)
@@ -32,7 +32,7 @@
 
 ## Pendências conhecidas (ordenadas)
 
-1. **P2.1** — Willian escolher banda de TTK (A recomendada / B / C).
+1. **P2.2** — travar o freio do runaway F3 (opções na mesa).
 2. **P2.2–2.5** — travar em sequência; depois implementar o P2 inteiro junto (10-80-10).
 3. **UI copy (do review):** `ui.js` mostra "Reach level X" pra áreas de fronteira (deveria indicar o Harbinger) e o hint de Awaken material por área ficou obsoleto (idx>=5) — corrigir na fase de UI.
 4. **Observação de balance (review):** no baseline, área 3 pode reter o jogador ~2h40 no grind do threshold com mobs capados — cruzar `bossKillThreshold` × TTK no P2.5.

@@ -50,9 +50,20 @@ Validação: decisão de produto do dono (sessão jul/2026). Consequência aritm
 **Implementado** (ciclo 10-80-10): `data.js` (18 áreas; 10–18 placeholders de lore/HP marcados P2; `reservedHarbingers` guarda os 6 da floresta) · `combat.js` (`checkGroupUnlock` por nível; fronteira via Harbinger; Okhra fecha o mapa) · `state.js` (fix de migração: `mapOneCleared` obsoleto de saves de 9 áreas é rebaixado) · `sim.js` (relatório por grupo vs orçamento).
 **Validação:** sim baseline/campaign rodam limpos nas 18 áreas; cadência de grupos correta (review adversarial confirmou off-by-one, converge, saves antigos, `_bossKills`). Tempos por grupo AINDA fora do alvo — esperado: HP é placeholder, é o trabalho do P2.
 
-## PASSO 2 — A Fricção (onde ficam as paredes) ⬜ ← ESTAMOS AQUI *(fatiado: 2.1 TTK-alvo → 2.2 freio F3 → 2.3 curvas de HP → 2.4 dano/ondas/morte → 2.5 threshold+boss mults; travar cada sub, implementar tudo junto)*
+## PASSO 2 — A Fricção (onde ficam as paredes) ⬜ ← ESTAMOS AQUI *(fatiado: travar cada sub, implementar tudo junto)*
 
 **Pergunta central:** onde o jogador DEVE parar de avançar de graça — e o que o segura?
+
+### P2.1 — TTK-alvo ✅ TRAVADO (jul/2026): **Opção A**, medida em GOLPES (HTK)
+| Posição | Alvo |
+|---|---|
+| Entrada de área | 4–7 golpes (~3–6s) |
+| Fim de área | 1–2 golpes (~1s) |
+| Harbinger (fim de grupo) | 20–40 golpes (~15–30s) |
+| Okhra (fim do mapa) | 60–120 golpes (~45–90s) |
+| Nuance de tema | Tema B entra +1–2 golpes mais duro que Tema A |
+
+Implementação em golpes: `HP da área = HTK-alvo × dano esperado do jogador naquele ponto` (estável sob mudanças de atkSpeed). Sub-passos: 2.2 freio F3 → 2.3 curvas HP → 2.4 dano/ondas/morte → 2.5 threshold+boss mults.
 
 Decide: TTK-alvo por posição (entrada de área 3–8s · fim de área 1–2s · Harbinger 15–30s · Okhra 45–90s) · TTD/papel da morte (hoje só existe nos min 0–15) · **o freio do runaway F3** (o loop income×lumensBonus composto — decisão estrutural: goldRatio decrescente por área, ou lumensBonus fora do gear, ou custo de gear mais íngreme) · curvas de HP das 18 áreas (vale-e-rampa por área, degrau por grupo).
 Insumos: PASSO 1 · achado F3 do sim (TTK colapsa pra 0.1s sem freio).
@@ -116,4 +127,5 @@ Valida: `sim baseline` com rarity find — frequência de Ember/Lumen/Corona por
 
 ## Log de decisões travadas
 - **jul/2026 — PASSO 0 (Relógio):** 18h ativas · sessão 30–50min c/ regra do beat · ~50/50 ativo/idle · 1º prestige 25–40min.
+- **jul/2026 — P2.1 (TTK-alvo):** Opção A em golpes — entrada 4–7 · fim 1–2 · Harbinger 20–40 · Okhra 60–120 · Tema B +1–2.
 - **jul/2026 — PASSO 1 (Esqueleto):** cap 6000 · 18 faixas (×1.15) · orçamento G1→G6 = 1.0/1.6/2.4/3.2/4.2/5.6h · unlock por nível dentro do grupo, Harbinger na fronteira · implementado e validado estruturalmente (tempos = contrato do P2).
