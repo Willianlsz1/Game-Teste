@@ -72,6 +72,13 @@ G.convergence = {
     G.combat.enemy = null;
     G.combat.pendingHits = [];
     G.combat.respawnTimer = G.data.balance.respawnDelay;
+    // P8.4: converger NO MEIO do finale do Okhra não pode deixar o palco/maré presos —
+    // sem isto, `.okhra-manifest` (classe no body) e a maré ficam ativos sobre a área 1
+    // até o próximo spawn() (nunca, se o jogo estiver pausado; ver combat.paused em main.js).
+    if (G.combat._okhraManifest || G.combat._tideTimer || G.combat._tideRisen) {
+      G.combat._okhraManifest = false; G.combat._tideTimer = 0; G.combat._tideRisen = false;
+      if (G.ui && G.ui.setOkhraStage) G.ui.setOkhraStage(false);
+    }
 
     if (G.ui && G.ui.log)
       G.ui.log(`✦ Convergence — the Seeker breaks and begins anew. +${G.util.fmt(gained)} Convergence Points.`, "boss");

@@ -8,11 +8,11 @@
 
 ## Onde o trabalho está AGORA
 
-**Trilha ativa: reconstrução do balance do Mapa 1** via `docs/design/BALANCE_FRAMEWORK_MAP1.md` (escada de 9 passos, um por vez, sim valida antes de travar).
+**A ESCADA P0–P8 ESTÁ COMPLETA (jul/2026)** — balance do Mapa 1 travado, implementado e revisado de ponta a ponta (`docs/design/BALANCE_FRAMEWORK_MAP1.md`). **Trilha seguinte declarada pelo dono: playtest humano + fase de design — mapas, mobs e UI.**
 
 - **PASSO 0 (Relógio): ✅** — 18h · 30–50min/beat · 50/50 · 1º prestige 25–40min.
 - **PASSO 1 (Esqueleto): ✅ TRAVADO E IMPLEMENTADO** (ciclo 10-80-10: Opus implementou, Sonnet achou+corrigiu 1 bug de migração de save, Fable revisou) — 18 áreas no código, cap 6000, Harbinger por grupo, Okhra fecha o mapa. Tempos por grupo = contrato a cumprir no P2.
-- **PASSOS 2–7: ✅ TODOS FECHADOS.** P2–P5: fricção calibrada · economia Gaiadon · matriz de gear · gate escalonado ×1.30. P6: Árvore I sequencial (15 nós, coroa, save `eclats_v5`). **P7 ✅ TRAVADO E IMPLEMENTADO**: Awaken = rito de passagem 1/mapa (escada First Light → … → Lumière) · três provas (área 18 + coroa + 3 materiais) · portão limpo do Okhra · `xpMultByGroup [1,1,1,1,2.5,3.0]` · Okhra `hpMult 48`. Âncoras (seeds 1/3/5): 1ª conv 38.7–39.9min · coroa conv 8 · First Light 17h40–17h57 · Okhra 82–98 golpes · mapa completo ~18h. **Falta só o P8.**
+- **PASSOS 2–7: ✅ TODOS FECHADOS.** P2–P5: fricção calibrada · economia Gaiadon · matriz de gear · gate escalonado ×1.30. P6: Árvore I sequencial (15 nós, coroa, save `eclats_v5`). **P7 ✅ TRAVADO E IMPLEMENTADO**: Awaken = rito de passagem 1/mapa (escada First Light → … → Lumière) · três provas (área 18 + coroa + 3 materiais) · portão limpo do Okhra · `xpMultByGroup [1,1,1,1,2.5,3.0]` · Okhra `hpMult 48`. Âncoras (seeds 1/3/5): 1ª conv 38.7–39.9min · coroa conv 8 · First Light 17h40–17h57 · Okhra 82–98 golpes · mapa completo ~18h. **P8 ✅ também fechado — escada completa** (Rarity Find, 4 modificadores, assinaturas H1–H6, finale: H6 invoca Okhra + The Tide Rises; mapa completo 17h01–17h13 seeds 1/3/7; suíte 278/278).
 - **Modo de trabalho travado: 10-80-10** — 10% planejamento+pesquisa (Fable) · 80% implementação+review (Opus/Sonnet, nunca Haiku) · 10% review final (Fable).
 
 ## O que o simulador descobriu (fatos medidos — não re-descobrir)
@@ -32,7 +32,7 @@
 
 ## Pendências conhecidas (ordenadas)
 
-1. **P8 — Encontros especiais (ÚLTIMO degrau da escada)**: Rarity Find (spec `RARITY_FIND.md`) · modificadores Corona+/Marcos · luta Harbinger · luta Okhra. Formato: 1 decisão por vez com o dono.
+1. **P8 ✅ FECHADO** — Rarity Find + modificadores + assinaturas + finale encenado, tudo no PR #24. Números finais no framework. **Próximo da fila: fase de UI/design** (item 4) e playtest humano (item 4b).
 1b. **Registrado (dono, não desenhar agora):** repensar sistema tipo Ascension antigo com **Mémoires** — 1 por mapa, história do mundo + bônus poderosos.
 1c. **Registrado pro Mapa 2 (P7.4):** promoção Uncommon→Rare exige First Light (o Awaken abre o próximo estágio do gear a cada mapa).
 2. **P8 — Encontros especiais**: Rarity Find (spec em `RARITY_FIND.md`) · modificadores Corona+/Marcos · luta Harbinger/Okhra.

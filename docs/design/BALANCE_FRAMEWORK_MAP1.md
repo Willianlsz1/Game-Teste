@@ -251,7 +251,7 @@ Valida: `sim gates` + `sim campaign` — 1º prestige no alvo do P0; empurrar +1
 Insumos: PASSOS 1–6.
 Valida: `sim campaign` — First Light dentro do orçamento total do P0; Okhra viável só pós-Awaken; poder pós-Awaken vs HP hipotético do início do Mapa 2.
 
-## PASSO 8 — Encontros especiais (a textura) — EM TRAVAMENTO FATIADO (jul/2026)
+## PASSO 8 — Encontros especiais (a textura) ✅ TRAVADO E IMPLEMENTADO (jul/2026)
 
 **Pergunta central:** o que quebra a monotonia do grind, e com que frequência?
 
@@ -284,7 +284,14 @@ Valida: `sim campaign` — First Light dentro do orçamento total do P0; Okhra v
 - Sim valida na implementação: banda 60–120 golpes com a maré ativa · sem loop de morte no poder esperado · intervalo da maré ajustado pra ~4–5 subidas por luta.
 - Rejeitado: 3 modificadores do pool (boss final viraria "um Corona maior") · stats puros (anticlímax).
 
-**→ P8 COMPLETO EM DECISÕES — A ESCADA P0–P8 INTEIRA ESTÁ TRAVADA. Implementação via 10-80-10 (números medidos entram no fechamento).**
+### P8 — implementação ✅ (ciclo 10-80-10 em 2 partes, jul/2026)
+- **Parte 1 (Rarity Find):** rarityTiers ×3/×6/×10 (hp/atk/reward) · roll Corona→Lumen→Ember `min(find, cap)` · caps +1/6 por 1ª morte de Marco (`harbingersFelled`, permanente) · afixos em degraus (perStep 0.5/0.25/0.085, step 50, cap 30/15/5) · painel Lights + 4 toques de onboarding · **sistema antigo rareMobs/eliteMob morto** (mortes na campanha 64→12; relógio adiantou ~1h, na banda). Frequência medida: G1 Ember 2.25% → G6 Ember 6.3%/Lumen 4.6%/Corona 1.2%.
+- **Parte 2 (modificadores + finale):** `G.data.modifiers` (Lightshell N3/8boss · Quickened ÷1.4 · Siphoning 50% · Escorted onda cheia+1 cap 4) · Corona rola exatamente 1 · assinaturas H1 Lightshell / H2 Escorted / H3 Siphoning / H4 Quickened / H5 Lightshell+Quickened / H6 Siphoning+Escorted (regra medida: Quickened nunca pareia com Escorted/Siphoning — evita loop de morte) · área 18 = 2 estágios (boss **H6 novo**, PLACEHOLDER lore + mapBoss Okhra) · finale nos 3 caminhos (sem awaken / com / despertar depois) · **The Tide Rises** (escolta a cada 10s, ~5 subidas/luta) · palco `.okhra-manifest`.
+- **Validação (seeds 1/3/7, o 7 virgem):** 1ª conv 35.9–36.4min · coroa conv 8 · First Light 16h56–17h09 · **Okhra 83–90 golpes COM a maré** (48–52s) · mapa completo 17h01–17h13 · **0 mortes na área 18**.
+- **Review adversarial (Sonnet): APROVADO.** 1 bug ALTO achado+corrigido: converge com o jogo pausado no meio da luta do Okhra deixava o palco/maré presos sobre a Área 1 (`converge()` agora limpa `_okhraManifest`/tide/classe). Baixos registrados sem correção: reload no meio do finale re-exige threshold (padrão pré-existente de todo Marco) · siphoning boss=mob 0.5 (placeholder de balance, inerte em boss por escala) · escoltas podem rolar raridade (filosofia "mesma maquinaria", aceito).
+- Suíte **278/278** · canon 0 drift.
+
+**→ P8 ✅ — A ESCADA P0–P8 INTEIRA ESTÁ TRAVADA E IMPLEMENTADA. O balance do Mapa 1 deixou de ser gargalo; próximo = playtest humano + fase de design (mapas, mobs, UI).**
 Insumos: PASSOS 4–7.
 Valida: `sim baseline/campaign` com rarity find — frequência de acesos por grupo; recompensa vs orçamento do P3; âncoras do relógio intactas.
 
@@ -297,6 +304,7 @@ Valida: `sim baseline/campaign` com rarity find — frequência de acesos por gr
 4. **Decisão travada não reabre** sem número novo do sim (mesma disciplina da lore).
 
 ## Log de decisões travadas
+- **jul/2026 — PASSO 8 (Encontros):** Rarity Find (Marco abre teto 1/6, gear enche em degraus 50, ×3/×6/×10) · pool de 4 modificadores (só Corona, 1 de 4) · assinatura fixa por Marco (pares no H5/H6) · finale encenado (H6 novo invoca Okhra + The Tide Rises 10s) · sistema antigo de raros/elites morto · mapa completo 17h01–17h13 (seeds 1/3/7).
 - **jul/2026 — PASSO 7 (Awaken):** rito de passagem 1/mapa (chave anti-Nihelim + ponte) · escada do amanhecer (First Light → … → Lumière) · três provas (área 18 + coroa + 3 materiais) · portão limpo do Okhra · xpMultByGroup [1,1,1,1,2.5,3.0] · Okhra hpMult 48 · First Light ~17h49, Okhra 82–98 golpes (seeds 1/3/5).
 - **jul/2026 — PASSO 6 (Passivas):** Árvore I sequencial, 15 nós binários abre-ao-comprar, coroa conquistável · custos [80/120/200/350] + evo 0.4×1.5^n · tudo em % (F4 fechado) · save v5 · implementado+revisado, âncoras batidas em 2 seeds.
 - **jul/2026 — PASSO 0 (Relógio):** 18h ativas · sessão 30–50min c/ regra do beat · ~50/50 ativo/idle · 1º prestige 25–40min.

@@ -146,5 +146,21 @@ ok(G.convergence.points() === expectedWithNode,
   `Deep Memory real (nível 1) eleva points() de ${rawAtGate1} para ${expectedWithNode} (obtido ${G.convergence.points()})`);
 ok(G.convergence.points() > rawAtGate1, "points() com Deep Memory comprado > rawPoints() sem passiva nenhuma");
 
+// 10) P8.4: converge() no MEIO do finale do Okhra limpa o estágio (senão `.okhra-manifest`
+// e a maré ficam presos sobre a área 1 até o próximo spawn() — que pode nunca vir se pausado).
+store = {}; G.state.data = null; G.state.load();
+const realUi = G.ui;
+let stageCalls = [];
+G.ui = { setOkhraStage: (on) => stageCalls.push(on), onAreaChange() {}, renderAll() {}, log() {} };
+G.state.data.areaIndex = G.data.areas.length - 1;
+G.state.data.level = G.convergence.currentGate();
+Object.assign(G.combat, { _okhraManifest: true, _tideTimer: 4.2, _tideRisen: true, _lastAreaIndex: G.data.areas.length - 1 });
+const didFinale = G.convergence.converge();
+G.ui = realUi;
+ok(didFinale === true, "converge() executou com Okhra manifesto (nível >= gate)");
+ok(G.combat._okhraManifest === false, "converge() no meio do finale: _okhraManifest desliga");
+ok(G.combat._tideTimer === 0 && G.combat._tideRisen === false, "converge() no meio do finale: _tideTimer/_tideRisen zeram");
+ok(stageCalls.indexOf(false) !== -1, "converge() no meio do finale: setOkhraStage(false) chamado (classe CSS não fica presa)");
+
 console.log(failed === 0 ? "\nALL PASS" : `\n${failed} FAIL`);
 process.exit(failed === 0 ? 0 : 1);
