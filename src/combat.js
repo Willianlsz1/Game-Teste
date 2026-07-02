@@ -556,12 +556,11 @@ G.combat = {
     const step   = Math.max(G.state.attackInterval(), G.data.balance.respawnDelay);
     const ticks  = Math.floor(capped / step);
     if (ticks <= 0) return null;
-    const maxTicks = Math.ceil(capped / step) + 8;   // teto dinâmico derivado do tempo (≤ ~57.6k @ 8h/0.5s) — não trunca as 8h
-
+    // sem cap de ticks: step tem piso de 0.5s (respawnDelay), então ticks ≤ ~57.6k @ 8h — CPU ok
     const realUi = G.ui;
     G.ui = null;
     let done = 0;
-    try { for (; done < ticks && done < maxTicks; done++) this.tick(step); }
+    try { for (; done < ticks; done++) this.tick(step); }
     finally { G.ui = realUi; }
     return { seconds: done * step };
   },
