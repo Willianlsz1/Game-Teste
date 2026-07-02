@@ -194,6 +194,15 @@ Valida: `sim gates` + `sim campaign` — 1º prestige no alvo do P0; empurrar +1
 - **"The Ring Closes"** (nó-coroa): ao acender as 8 folhas, completa GRÁTIS — bônus multiplicativo pequeno em tudo; conquista, não compra. Marco de "Árvore I completa" e gancho da Árvore II.
 - Rejeitado: abre-ao-maxar (quebraria o beat da 1ª convergence).
 
+### P6.2 — Roster da Árvore I ✅ TRAVADO (jul/2026): os 15 nós
+- **Raiz:** First Spark (+ATK% e +HP% pequenos; barata — a 1ª convergence sempre compra).
+- **D2 (a escolha de sustain):** Regeneration (%HP/s) ⟷ Heal on Kill (%HP/kill) — os exigidos pelo P2.4; a ordem é o build.
+- **D3 Galho da PROVISÃO** (sob Regen): Vessel's Growth (HP%) · Hardened Light (DmgRed). **D3 Galho da CAÇA** (sob HoK): Whetted Light (ATK%) · Bare Instinct (Crit Rate).
+- **D4 Provisão:** Prospector's Eye (Lumens%) · Pilgrim's Wisdom (XP%) · Deep Memory (+% Pontos de Convergence) · **Overkill Echo** (dano excedente do golpe fatal → Lumens extra; mecânica nova pequena).
+- **D4 Caça:** Deepcrack (CritDmg) · **Lightbane** (dano vs acesos — o eliteDmg realocado, sinergia com Finds) · Quickened Pulse (AtkSpeed) · Harbinger's Bane (dano vs Marcos).
+- **Copa:** The Ring Closes (grátis ao completar — P6.1).
+- Magnitudes e custos: derivados no ciclo de implementação contra a renda real do P5 (400→84K pts; alvo "Árvore I completa ≈ fim do mapa").
+
 **Pergunta central:** quanto poder permanente o Mapa 1 inteiro deve render, e em que ordem o jogador o compra?
 
 Decide: orçamento total de pontos do mapa (= convergences × pontos médios, sai do P5) · custo dos tiers re-calibrado pra esse orçamento (intenção: tier 1 de UMA árvore ≈ o mapa inteiro? ou mais?) · **UNIT re-derivado da escala real** (achado F4: flats mortos — converter pra % ou escalar) · elenco final dos nós (crit stack ×3 → ×2? atkSpeed node? nós de custo de gear na Fracture? `miniBossThreshold` adiado?) · orçamento de poder por tier (T1 ≈ ×2–3 no eixo · T2 especializado · T3 = Mapa 2).
