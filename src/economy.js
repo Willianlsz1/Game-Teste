@@ -35,9 +35,7 @@ G.economy = {
 
   // ---- conversão de materiais (Forge): subir de tier ----
   // recipe: junta `rate` do material de baixo → 1 do de cima.
-  CONVERSIONS: [
-    { from: "common", to: "uncommon", rateKey: "convertCommonToUncommon", fromLabel: "Common", toLabel: "Uncommon" },
-  ],
+  CONVERSIONS: [],   // Forge volta no Mapa 2 (diretriz do dono jul/2026)
   conversionRate(c) { return G.data.balance[c.rateKey]; },
   maxConversions(c) { return Math.floor(this.getGear(c.from) / this.conversionRate(c)); },
 
@@ -54,22 +52,21 @@ G.economy = {
 
   // ================= SISTEMA DE DROP (configurável) =================
   // dropTable POR TIPO de inimigo. Cada material: { chance, min, max, minAreaIndex }.
+  // P3: Mapa 1 só tem Common + Awaken. uncommonMaterial/Forge = Mapa 2 (fora daqui).
+  // Common mat: G1 3ª área+ (idx≥2). Awaken mat: G5+ (idx≥12). Harbinger SEM garantia (chance<1).
   dropTable: {
-    common:   { commonMaterial: { chance: 0.03, min: 1, max: 1, minAreaIndex: 2 } },
-    rare:     { commonMaterial: { chance: 0.10, min: 1, max: 2, minAreaIndex: 2 } },
+    common:   { commonMaterial: { chance: 0.05, min: 1, max: 1, minAreaIndex: 2 } },
+    rare:     { commonMaterial: { chance: 0.15, min: 1, max: 2, minAreaIndex: 2 } },
     elite:    {
       commonMaterial:   { chance: 1,   min: 1, max: 2, minAreaIndex: 2 },
-      uncommonMaterial: { chance: 0.5, min: 1, max: 1, minAreaIndex: 4 },
     },
     miniBoss: {
       commonMaterial:   { chance: 1,   min: 2, max: 4, minAreaIndex: 2 },
-      uncommonMaterial: { chance: 1,   min: 1, max: 2, minAreaIndex: 4 },
-      awakenMaterial:   { chance: 0.5, min: 1, max: 1, minAreaIndex: 5 },
+      awakenMaterial:   { chance: 0.5, min: 1, max: 1, minAreaIndex: 12 },
     },
     boss:     {
-      commonMaterial:   { chance: 1,   min: 2, max: 4, minAreaIndex: 2 },
-      uncommonMaterial: { chance: 1,   min: 1, max: 2, minAreaIndex: 4 },
-      awakenMaterial:   { chance: 1,   min: 1, max: 1, minAreaIndex: 5 },
+      commonMaterial:   { chance: 0.45, min: 2, max: 4, minAreaIndex: 2 },
+      awakenMaterial:   { chance: 0.5,  min: 1, max: 1, minAreaIndex: 12 },
     },
   },
 

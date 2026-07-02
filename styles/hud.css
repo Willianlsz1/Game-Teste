@@ -79,6 +79,17 @@
   color: var(--gold); font-weight: 700; font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
+/* Lights panel (Rarity Find) — chance efetiva / teto por tier */
+.lights-panel {
+  display: flex; flex-direction: column; gap: 3px;
+  margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--card-border);
+}
+.lights-title {
+  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted); font-weight: 700; margin-bottom: 1px;
+}
+.lights-title .lights-sub { font-weight: 400; opacity: 0.6; text-transform: none; letter-spacing: 0; }
+.lights-panel .rate-row b { color: #cfd8ea; }
 
 /* ---- cena de batalha sobre o mundo ---- */
 .battle-stage {
@@ -88,6 +99,19 @@
 }
 .battle-stage .battle-hero, .battle-stage .enemies-container { pointer-events: auto; align-self: center; }
 .battle-stage .hero-figure .floaters { z-index: 6; }
+
+/* ---- P8.4: palco do Okhra (tint barato; a arte real vem depois) ---- */
+.okhra-manifest::before {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 50% 115%, rgba(60, 210, 200, 0.28), rgba(20, 40, 80, 0) 60%),
+    linear-gradient(180deg, rgba(6, 10, 26, 0.55), rgba(4, 18, 40, 0.78));
+  animation: okhra-tide 6s ease-in-out infinite alternate;
+}
+@keyframes okhra-tide {
+  from { opacity: 0.72; }
+  to   { opacity: 1; }
+}
 
 /* ---- herói (sem card — corpo inteiro) ---- */
 .battle-hero {

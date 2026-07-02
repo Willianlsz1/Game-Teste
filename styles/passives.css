@@ -2,7 +2,7 @@
    passives.css — Tela Árvore de Passivas (tela própria full-screen)
    ============================================================= */
 .passives-screen {
-  --eclat: #f0e3b0; --vest: #8be0a0; --frac: #9d7bff;
+  --eclat: #f0e3b0;
   --pv-display: "Cormorant Garamond", serif;
   --pv-ink: #e7eefb; --pv-dim: #9aa3b8; --pv-faint: #6a7488; --pv-line: rgba(255,255,255,.12);
   position: fixed; inset: 0; z-index: 200; background: #070b16; overflow: hidden;
@@ -19,20 +19,16 @@
 
 .pv-tabs { position: absolute; left: 3%; top: 50%; transform: translateY(-50%); z-index: 6;
   display: flex; flex-direction: column; gap: 32px; align-items: center; }
-.pv-tab { cursor: pointer; appearance: none; background: none; border: 0; padding: 0;
-  display: flex; flex-direction: column; align-items: center; gap: 8px; --c: #aac8ff; transition: transform .12s; }
-.pv-tab.t-eclat { --c: var(--eclat); } .pv-tab.t-vest { --c: var(--vest); } .pv-tab.t-frac { --c: var(--frac); }
-.pv-tab:hover { transform: translateY(-2px); }
-.pv-emblem { position: relative; width: 80px; height: 80px; display: grid; place-items: center; }
-.pv-fruit { width: 100%; height: 100%; object-fit: contain; }
-.pv-tab-name { font-family: var(--pv-display); font-weight: 700; font-size: 22px; color: #f0dca6;
-  text-shadow: 0 1px 4px #000, 0 0 14px rgba(240,220,166,.45); }
-.pv-tab-count { font-size: 12px; font-weight: 600; color: #c5d3ea; text-shadow: 0 1px 3px #000; }
-.pv-tab.active .pv-fruit { filter: drop-shadow(0 0 18px color-mix(in srgb, var(--c) 75%, transparent)); }
-.pv-tab:not(.active) .pv-emblem { filter: saturate(.8) brightness(.82); }
+/* P6: as tabs das 3 árvores antigas saem (ui.js esconde #pv-tabs) — sem seletores .pv-tab* órfãos */
 
 .pv-body { position: absolute; inset: 0; z-index: 2; }
-.pv-body.t-eclat { --tree-c: var(--eclat); } .pv-body.t-vest { --tree-c: var(--vest); } .pv-body.t-frac { --tree-c: var(--frac); }
+.pv-body.pv-tree1 { --tree-c: var(--eclat); }   /* Árvore I — árvore única */
+/* Coroa "The Ring Closes": auto-concedida, não clicável */
+.pv-node.pv-crown { --c: #ffd98a; cursor: default; }
+.pv-node.pv-crown .pv-node-name { color: #ffe6a8; }
+.pv-node.pv-crown.crown-on .pv-disc { box-shadow: 0 0 0 2px #ffd98a, 0 0 34px 0 #ffd98a; }
+.pv-node.pv-crown.locked .pv-disc { filter: grayscale(.55) brightness(.7); }
+.pv-node.pv-crown.locked .pv-node-name { color: #8a97ad; }
 .pv-summary { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 3;
   display: flex; align-items: center; gap: 12px; padding: 9px 22px; border-radius: 999px;
   background: rgba(8,12,24,.86); border: 1px solid color-mix(in srgb, var(--tree-c) 38%, transparent);

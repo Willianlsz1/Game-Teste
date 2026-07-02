@@ -1,5 +1,10 @@
 # 🌌 Éclats of Lumière — Documentação dos Motores
 
+> ⚠️ **HISTÓRICO (pré-rebalance):** este doc descreve a era de 9 áreas. Números,
+> tabelas e sistemas (HP, passivas 3-árvores, raridades, curvas) foram superados
+> pela escada P0–P8 — o canon vivo é `docs/design/BALANCE_FRAMEWORK_MAP1.md` +
+> o próprio `src/`. A seção de Awaken foi atualizada (P7); o resto, ler com esse filtro.
+
 Documentação dos arquivos-motor do jogo: arquitetura, fórmulas, e cada sistema
 (stats, combat, HP, gear, passives, convergence, awaken).
 
@@ -19,7 +24,7 @@ Cada arquivo "pendura" seu sistema nele — nunca há colisão de nomes.
 | `gear.js` | Level-up das 6 peças fixas (custo geométrico) |
 | `passives.js` | Árvore-Mundo (3 árvores × 15 nós) |
 | `convergence.js` | Prestige / rebirth |
-| `awaken.js` | 3ª fonte de poder (desbloqueia na Área 7+) |
+| `awaken.js` | 3ª fonte de poder (rito de passagem, 1 por mapa — P7) |
 | `loot.js` | Geração de itens (⚠️ **dormente** — gear virou peças fixas) |
 | `inventory.js` | Inventário (dormente junto com loot) |
 | `main.js` | Init + game loop (relógio) |
@@ -281,17 +286,18 @@ awakens.
 
 ## ✨ Awaken — 3ª fonte de poder (`awaken.js` + `data.awakens`)
 
-Pacotes de bônus **permanentes** (sobrevivem à Convergence). Desbloqueiam uma vez
-gastando nível + Awakening Essence + Lumens. Essence dropa na **Área 7+**
-(`awakenDropChance` 2% × `materialsMult`).
+Rito de passagem **permanente** (sobrevive à Convergence), 1 por mapa (P7).
+First Light (Mapa 1) exige as **três provas**; o material dropa de bosses do
+G5+ (`dropTable`, 50%, sem garantia). O boss da última área (Okhra) só se
+manifesta com o first_light desbloqueado (portão em `combat.spawn`).
 
-### Requisitos
+### Requisitos (data-driven — cada awaken usa um subconjunto)
 
 ```js
-canUnlock = maxAreaUnlocked ≥ areaIndex
-          && level ≥ a.level
-          && awakenEssence ≥ a.essence
-          && lumens ≥ a.lumens
+requirements: { area: 18,                      // área alcançada (maxAreaUnlocked)
+                crown: true,                   // G.passives.crownActive()
+                materials: { firstLight: 3 } } // awakenMaterials
+// campos aceitos: area · level · kills · convergences · crown · materials
 ```
 
 ### Aplicação (injeta nas camadas de stat)
