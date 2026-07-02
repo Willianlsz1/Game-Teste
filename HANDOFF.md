@@ -35,7 +35,6 @@
 1. **P8 ✅ FECHADO** — Rarity Find + modificadores + assinaturas + finale encenado, tudo no PR #24. Números finais no framework. **Próximo da fila: fase de UI/design** (item 4) e playtest humano (item 4b).
 1b. **Registrado (dono, não desenhar agora):** repensar sistema tipo Ascension antigo com **Mémoires** — 1 por mapa, história do mundo + bônus poderosos.
 1c. **Registrado pro Mapa 2 (P7.4):** promoção Uncommon→Rare exige First Light (o Awaken abre o próximo estágio do gear a cada mapa).
-2. **P8 — Encontros especiais**: Rarity Find (spec em `RARITY_FIND.md`) · modificadores Corona+/Marcos · luta Harbinger/Okhra.
 3. **Registrados pra Árvore II (Mapa 2):** Second Wind · Golden Wake e o banco · awakenEfficiency/awakenReqReduction (removidos do código no P6) · pós-cap da convergence aberto de propósito.
 4. **UI copy (do review):** `ui.js` mostra "Reach level X" pra áreas de fronteira (deveria indicar o Harbinger) — corrigir na fase de UI.
 4b. **Pergunta aberta PRO PLAYTEST (não pro sim):** HP bruto cai em algumas fronteiras (13→14, 16→17 etc.) porque o cruzamento acontece pós-Convergence (dano esperado menor; golpes sentidos são monótonos). Se humanos estranharem, plano B pronto: piso cosmético `hp entrada ≥ hp fim anterior` no calibrador (custo: re-subidas ~8–10 golpes na entrada). Decisão atual: fidelidade de golpes > estética de número.
@@ -44,7 +43,7 @@
 7. **Sweep de termos** nos docs (Archon→Nihelim etc.) — `node tools/check_canon.js` lista; exports consolidados (`GAME_CONTEXT`, `LORE_COMPLETE`) têm banner mas corpo antigo.
 8. Escolher **quais 3 Harbingers** da floresta viram titulares de grupo (lore, sem pressa).
 9. Fila da lore: **Séraphine + final/Convergence (Parte IX)** ← próximo item de lore; depois Mapa 2 (Naameth).
-10. Renomes no código (Ember/Lumen/Corona etc.) — **só quando o balance mandar** (decisão: lore não entra no código ainda).
+10. Renomes no código (Kindled/Luminous/Radiant → Ember/Lumen/Corona etc.) — **DESBLOQUEADO: a escada fechou, o balance mandou.** Entra na fase de UI/design.
 
 ## Infra & contexto operacional
 
