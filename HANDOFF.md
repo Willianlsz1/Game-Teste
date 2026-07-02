@@ -32,7 +32,7 @@
 
 ## Pendências conhecidas (ordenadas)
 
-1. **P7 — Awaken/First Light EM TRAVAMENTO FATIADO**: P7.1 função ✅ (rito de passagem 1/mapa: CHAVE pra ferir o Nihelim + PONTE pro Mapa 2 + resquício de despertar-de-sistema). Na fila: P7.2 nome/escada · P7.3 requisitos · P7.4 magnitude via sim. Formato: 1 decisão por vez com o dono.
+1. **P7 — Awaken/First Light EM TRAVAMENTO FATIADO**: P7.1 função ✅ (rito de passagem 1/mapa: CHAVE + PONTE + resquício de sistema) · P7.2 nome ✅ (Awaken + escada do amanhecer: First Light → Daybreak → … → Lumière) · P7.3 requisitos ✅ (três provas: área 18 + coroa acesa + N materiais). Na mesa: **P7.4** — magnitude via sim + forma da CHAVE + resquício do gear. Formato: 1 decisão por vez com o dono.
 1b. **Registrado (dono, não desenhar agora):** repensar sistema tipo Ascension antigo com **Mémoires** — 1 por mapa, história do mundo + bônus poderosos.
 2. **P8 — Encontros especiais**: Rarity Find (spec em `RARITY_FIND.md`) · modificadores Corona+/Marcos · luta Harbinger/Okhra.
 3. **Registrados pra Árvore II (Mapa 2):** Second Wind · Golden Wake e o banco · awakenEfficiency/awakenReqReduction (removidos do código no P6) · pós-cap da convergence aberto de propósito.

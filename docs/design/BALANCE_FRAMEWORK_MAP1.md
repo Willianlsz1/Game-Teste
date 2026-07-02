@@ -230,8 +230,15 @@ Valida: `sim gates` + `sim campaign` — 1º prestige no alvo do P0; empurrar +1
 - Colisões proibidas em nomes de despertar: Ember/Lumen/Corona (tags de raridade).
 - Travado firme: esquema + First Light + Daybreak + Lumière-final. O miolo é rascunho.
 
-### Fatias restantes
-- **P7.3** — requisitos exatos (candidato: coroa acesa em vez de "12 conv" cru). **P7.4** — magnitude via sim + forma do resquício do Modelo 3.
+### P7.3 — Requisitos ✅ TRAVADO (jul/2026): **as três provas**
+- **O caminho:** alcançar a **área 18** (limiar do Okhra — embute 5 Harbingers mortos + nível 5145; requisito de nível cru REMOVIDO por redundância).
+- **O anel:** **coroa acesa** (`crownActive()`) — substitui "12 convergences" cru (a coroa já prova ≥8 conv e é temática: o anel se fecha → a luz desperta → o Okhra cai).
+- **A colheita:** **N × material First Light** (bosses G5+, drop 50%, sem garantia). N co-calibrado no P7.4 (chute inicial 3; hoje 1 = quase de graça).
+- Rejeitado: formato numérico re-mapeado (não conta história) · parede de material pesada (viraria o grind que o dono vetou nos Harbingers).
+- Timing transparente: a coroa acende ~10h22 — quem cronometra o despertar é a área 18 (~18–20h, banda do P0); se estourar, barateia-se a subida final, não as provas.
+
+### Fatia restante
+- **P7.4** — magnitude via sim + forma da CHAVE (Okhra ferível) + forma do resquício do Modelo 3 (gear).
 Insumos: PASSOS 1–6.
 Valida: `sim campaign` — First Light dentro do orçamento total do P0; Okhra viável só pós-Awaken; poder pós-Awaken vs HP hipotético do início do Mapa 2.
 
