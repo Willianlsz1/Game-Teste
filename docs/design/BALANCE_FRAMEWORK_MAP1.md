@@ -104,7 +104,13 @@ Valida: `sim baseline` — TTK na entrada/fim de cada área dentro da banda; zer
 
 **Pergunta central:** quanto o jogador ganha, e em que ele é OBRIGADO a gastar, área por área?
 
-Decide: goldRatio/bonus por área (consequência do freio do P2) · curva de custo do gear (`gearCostBase/Growth`) · **cadência de materiais re-mapeada pros 6 grupos** (hoje: elite A3+, uncommon A5+, awaken A6+ — re-ancorar em grupos, ex. G2/G4/G5) · custos de promoção.
+Decide: goldRatio/bonus por área (consequência do freio do P2) · curva de custo do gear (`gearCostBase/Growth`) · **cadência de materiais re-mapeada pros 6 grupos** · custos de promoção.
+
+**Diretrizes do dono (jul/2026 — pré-travadas, valem como input do P3/P4):**
+- **Harbinger SEM loot garantido** — chance elevada, nunca 100% (garantia + respawn por threshold = impressora de material, mataria a parede Gaiadon). Regra: garantia e custo de promoção são vasos comunicantes.
+- Fonte primária de materiais = farm de fluxo (mobs comuns/raros); a parede exige tempo real.
+- Cadência-alvo: material aparece ~1 grupo antes da parede que destrava (common mat G1-3ª área+ → promoção ~G2-G4 · awaken mat G5+ → First Light).
+- **Material uncommon e Forge saem do Mapa 1** (pertenciam à promoção pra Rare — ver P4).
 Insumos: PASSO 2 travado.
 Valida: `sim baseline` — surplus de Lumens por grupo (o jogador deve ficar "quase rico" antes de cada parede, nunca rico demais).
 
@@ -112,7 +118,9 @@ Valida: `sim baseline` — surplus de Lumens por grupo (o jogador deve ficar "qu
 
 **Pergunta central:** que fatia do poder vem do gear em cada grupo, e quando acontecem as promoções?
 
-Decide: mapa raridade→grupo (ex.: Common maxa no G2, promove; Uncommon carrega G3–G4, maxa no G4, promove; Rare carrega G5–G6) — **12 beats de promoção** (2 × 6 peças) distribuídos no mapa · caps por raridade re-derivados · papéis de afixo por slot (manter) + 2ºs afixos.
+Decide: caps por raridade re-derivados · distribuição dos beats de promoção · papéis de afixo por slot (manter) + 2ºs afixos (incl. substituto do Heal on Kill removido no P2.4).
+
+**Diretriz do dono (jul/2026 — pré-travada): MAPA 1 SÓ TEM COMMON + UNCOMMON.** (Confirma a spec original; o Rare no código era drift.) Consequências: **6 beats de promoção** (1/peça, Common→Uncommon, ~G2–G4) · Common carrega G1–G2, **Uncommon carrega G3–G6** (cap dimensionado pra maxar ≈ fim do mapa) · **Rare = conteúdo de Mapa 2** (fica no código, fora do alcance do Mapa 1).
 Insumos: PASSO 3 (custos/materiais definem o ritmo de promoção).
 Valida: `sim baseline` — nível médio do gear por grupo segue o plano; promoções acontecem nos grupos planejados.
 

@@ -33,6 +33,7 @@
 ## Pendências conhecidas (ordenadas)
 
 1. **P2 IMPLEMENTAÇÃO CONJUNTA** — em andamento (ciclo 10-80-10).
+2. **Diretrizes do dono pro P3/P4 registradas:** Mapa 1 só Common+Uncommon (Rare = Map 2) · Harbinger sem loot garantido · uncommon mat/Forge fora do Mapa 1.
 2. **P2.2–2.5** — travar em sequência; depois implementar o P2 inteiro junto (10-80-10).
 3. **UI copy (do review):** `ui.js` mostra "Reach level X" pra áreas de fronteira (deveria indicar o Harbinger) e o hint de Awaken material por área ficou obsoleto (idx>=5) — corrigir na fase de UI.
 4. **Observação de balance (review):** no baseline, área 3 pode reter o jogador ~2h40 no grind do threshold com mobs capados — cruzar `bossKillThreshold` × TTK no P2.5.
