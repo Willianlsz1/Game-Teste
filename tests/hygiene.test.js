@@ -33,13 +33,16 @@ ok(G.gear.buildPiece("cloak", "common").affixes[0].stat === "lumensBonus", "Cloa
 fresh();
 ok(Math.abs(G.state.stats().atkSpeed - 0.9) < 1e-9, "Attack Speed base = 0.9");
 G.state.data.equipped.boots.level = 3000; G.state.invalidateStats();
-// Mapa 1 (mapOneCleared = false): teto = map1AtkSpeedCap (2)
-ok(G.state.stats().atkSpeed === G.data.balance.map1AtkSpeedCap, "Attack Speed teto Mapa 1 = 2 (clampado)");
-ok(Math.abs(G.state.attackInterval() - 1 / G.data.balance.map1AtkSpeedCap) < 1e-9, "attackInterval respeita o teto do Mapa 1");
-// Mapa 2 (mapOneCleared = true): teto = atkSpeedCap (15)
+// Mapa 1 (mapOneCleared = false): teto-assíntota = map1AtkSpeedCap (softCap comprime, nunca encosta)
+const soft1 = G.data.balance.map1AtkSpeedCap * G.data.balance.atkSpeedSoftFrac;
+ok(G.state.stats().atkSpeed < G.data.balance.map1AtkSpeedCap && G.state.stats().atkSpeed > soft1,
+  "Attack Speed Mapa 1: comprimido entre soft e teto (assíntota)");
+ok(G.state.attackInterval() >= 1 / G.data.balance.map1AtkSpeedCap - 1e-9, "attackInterval respeita o teto do Mapa 1");
+// Mapa 2 (mapOneCleared = true): teto-assíntota = map2AtkSpeedCap
 G.state.data.mapOneCleared = true; G.state.invalidateStats();
-ok(G.state.stats().atkSpeed === G.data.balance.atkSpeedCap, "Attack Speed teto Mapa 2 = 15 (clampado)");
-ok(Math.abs(G.state.attackInterval() - 1 / G.data.balance.atkSpeedCap) < 1e-9, "attackInterval respeita o teto do Mapa 2");
+ok(G.state.stats().atkSpeed <= G.data.balance.map2AtkSpeedCap && G.state.stats().atkSpeed > soft1,
+  "Attack Speed Mapa 2: teto sobe para map2AtkSpeedCap");
+ok(G.state.attackInterval() >= 1 / G.data.balance.map2AtkSpeedCap - 1e-9, "attackInterval respeita o teto do Mapa 2");
 
 // ---------- Task 3: bossDmg / eliteDmg agora aplicados inline em combat.playerHit ----------
 // (a função typeDamageMult foi removida; o bônus entra direto no cálculo do golpe)

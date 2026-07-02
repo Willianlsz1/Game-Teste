@@ -118,6 +118,13 @@ Valida: `sim baseline` — TTK na entrada/fim de cada área dentro da banda; zer
 
 ⚠️ Interação registrada: remover o Rare do alcance do Mapa 1 muda a curva de poder que o P2 calibrou (a política do sim promovia a Rare) → a implementação do P3 INCLUI recalibração (`calibrate --write`) e cap provisório do Uncommon até o P4 dimensionar raridade→grupo.
 
+**→ P3 FECHADO (jul/2026), ciclo 10-80-10 completo:**
+- Vencedor da grade: **promoteCommonCost 50 × chance common 0.05** (rare 0.15; boss 0.45 nunca-garantido ✓). Custo 80 rejeitado (parede de material 48–60min); 30 rejeitado (material irrelevante). Cap uncommon **3000 provisório** (restaura o teto de poder do ex-Rare que a calibração do P2 assumia; P4 redimensiona).
+- Cadência ✓: common mat G1-3ª+ · awaken mat G5+ via Harbinger (chance 0.5) — disponível 10h44m ANTES do First Light.
+- Recalibração pós-Rare ✓: HTK de entrada nas bandas em todas as 18 áreas; parede-tutorial intacta; campanha completa.
+- Review adversarial: **zero bugs de correção**; teste novo pro caso "save com Rare" (rebaixa pra Common+clamp, sem crash — migração silenciosa REGISTRADA como aceitável: não há saves reais); teste stale de atkSpeed corrigido (softCap/chaves novas).
+- **Achado estrutural delegado ao P5:** as 6 promoções caem juntas no G2 — a promoção é gated pelo gear bater o cap 500 em lockstep sob gate-fixo, não por material. O espalhamento G2→G4 real depende do P5 distribuir as convergences (e a política greedy nivela as peças; jogador real prioriza arma).
+
 
 **Pergunta central:** quanto o jogador ganha, e em que ele é OBRIGADO a gastar, área por área?
 

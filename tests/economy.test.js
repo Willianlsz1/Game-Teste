@@ -98,5 +98,24 @@ ok(G.state.data.awakenMaterials && typeof G.state.data.awakenMaterials.firstLigh
 // 12) tipos elite/miniBoss já existem na tabela (prontos p/ inimigos futuros)
 ok(!!(G.economy.dropTable.elite && G.economy.dropTable.miniBoss), "dropTable tem elite e miniBoss (prontos p/ futuro)");
 
+// 13) save antigo com peça 'rare' equipada (Rare saiu de data.rarities no P3) -> reconcile
+// não crasha, rebaixa a peça pra Common e clampa o nível ao novo cap (500), sem travar stats()
+store = {};
+const oldRareSave = G.state.fresh();
+oldRareSave.equipped.weapon = {
+  slot: "weapon", slotLabel: "Weapon", name: "Old Rare Blade",
+  rarity: "rare", rarityName: "Rare", color: "#7fb0ff", level: 2800, affixes: [],
+};
+oldRareSave.lumens = 12345;
+store[G.state.SAVE_KEY] = JSON.stringify(oldRareSave);
+G.state.data = null; G.state.load();
+const wpn = G.state.data.equipped.weapon;
+ok(wpn.rarity === "common", "save antigo com peça 'rare': reconcile rebaixa para 'common' (rare saiu do Mapa 1)");
+ok(wpn.level === G.gear.cap(wpn), "save antigo com peça 'rare': nível clampado ao cap da nova raridade (common=500)");
+ok(G.state.data.lumens === 12345, "save antigo com peça 'rare': resto do save preservado (lumens)");
+let statsThrew = false;
+try { G.state.stats(); } catch (e) { statsThrew = true; }
+ok(!statsThrew, "save antigo com peça 'rare': G.state.stats() não crasha após reconcile");
+
 console.log(failed === 0 ? "\nALL PASS" : `\n${failed} FAIL`);
 process.exit(failed === 0 ? 0 : 1);
