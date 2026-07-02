@@ -237,8 +237,12 @@ Valida: `sim gates` + `sim campaign` — 1º prestige no alvo do P0; empurrar +1
 - Rejeitado: formato numérico re-mapeado (não conta história) · parede de material pesada (viraria o grind que o dono vetou nos Harbingers).
 - Timing transparente: a coroa acende ~10h22 — quem cronometra o despertar é a área 18 (~18–20h, banda do P0); se estourar, barateia-se a subida final, não as provas.
 
-### Fatia restante
-- **P7.4** — magnitude via sim + forma da CHAVE (Okhra ferível) + forma do resquício do Modelo 3 (gear).
+### P7.4 — Chave, gear e magnitude ✅ TRAVADO (jul/2026)
+- **CHAVE = portão limpo:** sem First Light, o Okhra **não se manifesta** — o contador da área 18 mostra "*The tide stirs... but your light sleeps. Awaken the First Light.*" em vez de invocar o boss. A área 18 farma normal. Rejeitado: véu de dano ×0.05 (jogador AFK batendo em boss imortal sem entender = anti-legibilidade).
+- **Resquício do Modelo 3:** os afixos de despertar do gear uncommon JÁ acendem na promoção (G2–G3, calibração do P5 rodou com eles — retro-amarrar quebraria o relógio). O resquício correto: **First Light é pré-requisito da promoção Uncommon→Rare do Mapa 2** (intenção registrada; implementa no Mapa 2). Cada mapa: o Awaken abre o próximo estágio do gear.
+- **Magnitude:** ponto de partida ×2.5 ATK · ×1.5 HP · +25 Lumens (a banda do Okhra do P2.5 já foi travada COM esse bônus). Sim valida: First Light na banda 15.3–20.7h com as três provas · N de materiais (chute 3) não atrasa o rito · Okhra ~90 golpes. Estourou → ajusta N ou magnitude e re-valida.
+
+**→ P7 COMPLETO EM DECISÕES. Implementação via 10-80-10 (números medidos entram aqui no fechamento).**
 Insumos: PASSOS 1–6.
 Valida: `sim campaign` — First Light dentro do orçamento total do P0; Okhra viável só pós-Awaken; poder pós-Awaken vs HP hipotético do início do Mapa 2.
 
