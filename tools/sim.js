@@ -167,12 +167,14 @@ function policyTick(sim) {
     sim.firstLightAt = sim.t;
   }
 
-  // 5. Convergence conforme estratégia
-  if (sim.convergeAt && d.level >= sim.convergeAt && G.convergence.canConverge()) {
+  // 5. Convergence: gate dinâmico (converge ao bater o gate corrente × push)
+  if (sim.convergeEnabled && G.convergence.canConverge() && d.level >= G.convergence.currentGate() * sim.push) {
     const pts = G.convergence.pending();
+    const gate = G.convergence.currentGate();
     const lvl = d.level, kills = d.runKills, areaMax = (d.runMaxAreaIndex || 0) + 1;
+    const grpMax = Math.floor((d.runMaxAreaIndex || 0) / (G.data.balance.groupSize || 3)) + 1;
     G.convergence.converge();
-    sim.runs.push({ n: d.convergences, t: sim.t, dur: sim.t - (sim.lastConvT || 0), level: lvl, areaMax, kills, pts, cum: d.convergencePoints, nodesBought: sim.nodeLevelsBought });
+    sim.runs.push({ n: d.convergences, t: sim.t, dur: sim.t - (sim.lastConvT || 0), gate, level: lvl, areaMax, grpMax, kills, pts, cum: d.convergencePoints, nodesBought: sim.nodeLevelsBought });
     sim.lastConvT = sim.t;
     sim.lastAreaEntered = -1;
     if (sim.onConverge) sim.onConverge(sim);
@@ -207,10 +209,12 @@ function freshSim(opts) {
     _clock: 0, _gains: [],
   });
   M.income = 0; M.deaths = 0; M.matByGroup = {};
-  G.convergence.gateLevel = opts.gate != null ? opts.gate : 1e9;
+  // P5: gate escalonado — a política converge quando canConverge() (o gate JÁ força
+  // profundidade). push = multiplicador opcional sobre o gate corrente (empurrar mais fundo).
   return {
     t: 0,
-    convergeAt: opts.convergeAt || null,
+    convergeEnabled: !!opts.converge,
+    push: opts.push || 1,
     allowAwaken: !!opts.allowAwaken,
     treeFocus: opts.treeFocus || ['eclat', 'vestige', 'fracture'],
     onConverge: opts.onConverge || null,
@@ -294,31 +298,36 @@ function scenarioBaseline() {
   console.log('  * grupo não fechado no fim da run (duração parcial)');
 }
 
+// P5: o gate agora é uma ESCADA (convGateBase × convGateGrowth^n). Este cenário compara
+// candidatos de convGateGrowth: nº de convergences no mapa, 1ª conv, spread por grupo, razões.
 function scenarioGates() {
-  const gates = String(arg('gates', '80,150,200,351')).split(',').map(Number);
-  console.log(`\n═══ GATES — tempo ativo até a 1ª Convergence · seed ${SEED} ═══\n`);
-  const W = [6, 9, 8, 8, 8, 14, 10];
-  console.log(row(['gate', 'tempo', 'kills', 'área', 'pontos', 'compra (nós·lvls)', 'legacy'], W));
-  for (const g of gates) {
-    const sim = freshSim({ gate: g, convergeAt: g });
-    run(sim, { maxHours: 60, stop: (s) => s.runs.length >= 1 });
-    if (!sim.runs.length) { console.log(row([g, 'timeout', '-', '-', '-', '-', '-'], W)); continue; }
-    const r = sim.runs[0];
-    // o que os pontos compraram (greedy já rodou no policyTick pós-converge)
-    const p = G.state.data.passives;
-    let nodes = 0, lvls = 0;
-    for (const tree of ['eclat', 'vestige', 'fracture'])
-      for (let n = 0; n < 15; n++) if (p[tree][n] > 0) { nodes++; lvls += p[tree][n]; }
-    console.log(row([g, fmtT(r.t), r.kills, r.areaMax, fmtN(r.pts), `${nodes} nós · ${lvls} lvls`, '+' + G.convergence.legacyAtkPct() + '%/+'+ G.convergence.legacyHpPct() + '%'], W));
+  const growths = String(arg('growths', '1.25,1.30,1.35')).split(',').map(Number);
+  const maxHours = +arg('max-hours', 60);
+  const origGrowth = G.data.balance.convGateGrowth;
+  console.log(`\n═══ GATES — comparação de convGateGrowth (gate escalonado) · seed ${SEED} ═══\n`);
+  const W = [8, 8, 9, 11, 9, 8, 20];
+  console.log(row(['growth', '#conv', '1ª conv', 'First Light', 'Okhra', 'razão méd', 'convs por grupoMax'], W));
+  for (const growth of growths) {
+    G.data.balance.convGateGrowth = growth;
+    const sim = freshSim({ converge: true, allowAwaken: true,
+      onConverge: (s) => { if (G.state.data.convergences >= 8) s.convergeEnabled = false; } });
+    run(sim, { maxHours, stop: (s) => G.state.data.mapOneCleared });
+    const nconv = sim.runs.length;
+    const firstConv = nconv ? fmtT(sim.runs[0].t) : '—';
+    const ratios = sim.runs.slice(1).map((r, i) => r.pts / sim.runs[i].pts);
+    const avgR = ratios.length ? (ratios.reduce((a, b) => a + b, 0) / ratios.length).toFixed(2) : '—';
+    const spread = {}; for (const r of sim.runs) spread['G' + r.grpMax] = (spread['G' + r.grpMax] || 0) + 1;
+    const okhra = G.state.data.mapOneCleared ? fmtT(sim.t) : (sim.timedOut ? 'timeout' : '—');
+    console.log(row([growth, nconv, firstConv, sim.firstLightAt != null ? fmtT(sim.firstLightAt) : '—', okhra, avgR,
+      Object.keys(spread).map(k => k + ':' + spread[k]).join(' ')], W));
   }
-  console.log('\n(alvo de gênero: 1º prestige em 20–40min · fonte: BALANCE_REPORT §1)');
+  G.data.balance.convGateGrowth = origGrowth;
+  console.log('\n(alvo: 1ª conv 25–40min · convergences espalhadas por G1–G5 · razão de pontos 1.4–1.7)');
 }
 
 function scenarioCampaign() {
-  const gate = +arg('gate', 150);
   const push = +arg('push', 1.0);
   const maxHours = +arg('max-hours', 200);
-  const convergeAt = Math.round(gate * push);
   // overrides em memória p/ testar candidatos do P3 (custo de promoção × chance de material)
   const promoteCost = arg('promote-cost', null);
   const commonChance = arg('common-chance', null);
@@ -331,24 +340,32 @@ function scenarioCampaign() {
   if (uncCap != null) { const r = G.data.rarities.find(r => r.id === 'uncommon'); if (r) r.cap = +uncCap; }
   const ovr = (promoteCost != null || commonChance != null || uncCap != null)
     ? ` · override[cost ${G.data.balance.promoteCommonCost}, chance ${G.economy.dropTable.common.commonMaterial.chance}, uncCap ${G.data.rarities.find(r=>r.id==='uncommon').cap}]` : '';
-  console.log(`\n═══ CAMPAIGN — Mapa 1 completo · gate ${gate} · converge no nível ${convergeAt} · seed ${SEED} · cap ${maxHours}h${ovr} ═══\n`);
+  console.log(`\n═══ CAMPAIGN — Mapa 1 completo · gate escalonado ×${G.data.balance.convGateGrowth} · push ${push} · seed ${SEED} · cap ${maxHours}h${ovr} ═══\n`);
 
   const sim = freshSim({
-    gate, convergeAt, allowAwaken: true,
+    converge: true, push, allowAwaken: true,
     onConverge: (s) => {
-      // depois de 8 convergences: para de convergir e empurra até o First Light
-      if (G.state.data.convergences >= 8) s.convergeAt = null;
+      // após 8 convergences (requisito do First Light): para de convergir e empurra o nível
+      if (G.state.data.convergences >= 8) s.convergeEnabled = false;
     },
   });
-  run(sim, {
-    maxHours,
-    stop: (s) => s.firstLightAt != null,
-  });
+  // não para no First Light — segue até Okhra (área 18) p/ medir o mapa inteiro
+  run(sim, { maxHours, stop: (s) => G.state.data.mapOneCleared });
 
-  const W = [5, 9, 9, 7, 6, 8, 9, 9];
-  console.log(row(['run', 't', 'duração', 'nível', 'área', 'pontos', 'acum.', 'nós·lvls'], W));
-  for (const r of sim.runs)
-    console.log(row([r.n, fmtT(r.t), fmtT(r.dur), r.level, r.areaMax, fmtN(r.pts), fmtN(r.cum), r.nodesBought], W));
+  const W = [5, 9, 9, 7, 7, 5, 9, 8, 9];
+  console.log(row(['run', 't', 'duração', 'gate', 'nível', 'gMax', 'pontos', 'razão', 'nós·lvls'], W));
+  for (let i = 0; i < sim.runs.length; i++) {
+    const r = sim.runs[i];
+    const ratio = i > 0 ? (r.pts / sim.runs[i - 1].pts).toFixed(2) : '—';
+    console.log(row([r.n, fmtT(r.t), fmtT(r.dur), r.gate, r.level, 'G' + r.grpMax, fmtN(r.pts), ratio, r.nodesBought], W));
+  }
+  const gateRatios = sim.runs.slice(1).map((r, i) => r.pts / sim.runs[i].pts);
+  if (gateRatios.length) {
+    const avgR = gateRatios.reduce((a, b) => a + b, 0) / gateRatios.length;
+    console.log(`  razão de pontos média entre convergences: ${avgR.toFixed(2)} (alvo do gate ~1.4–1.7)`);
+  }
+  const grpSeen = {}; for (const r of sim.runs) grpSeen[r.grpMax] = (grpSeen[r.grpMax] || 0) + 1;
+  console.log(`  convergences por grupoMax: ${JSON.stringify(grpSeen)}`);
 
   const d = G.state.data;
   console.log('');
@@ -359,6 +376,8 @@ function scenarioCampaign() {
     console.log(`⚠ First Light NÃO alcançado em ${fmtT(sim.t)} — nível ${d.level}, área ${d.areaIndex + 1}, ${d.convergences} convergences`);
     console.log(`  requisitos: ${reqs}`);
   }
+  if (d.mapOneCleared) console.log(`🌊 OKHRA (área 18 · Map 1 completo) em ${fmtT(sim.t)}`);
+  else console.log(`⚠ Okhra NÃO derrotado em ${fmtT(sim.t)} — área ${d.areaIndex + 1}, nível ${d.level}${sim.timedOut ? ' (timeout)' : ''}`);
   const s = G.state.stats();
   console.log(`  final: ATK ${fmtN(s.atk)} · HP ${fmtN(s.hp)} · gear médio ${gearAvgLevel()} · passivas ${sim.nodeLevelsBought} níveis de nó`);
 
@@ -472,8 +491,8 @@ function scenarioCalibrate() {
     ENTRY = {}; END = {}; BOSS = {};
     // allowAwaken:false → o push não para no First Light (área 9), segue até Okhra,
     // amostrando as 18 áreas + os 6 Marcos.
-    const sim = freshSim({ gate, convergeAt: gate, allowAwaken: false, seed,
-      onConverge: (s) => { if (G.state.data.convergences >= 8) { s.convergeAt = null; if (s.pushStart == null) s.pushStart = s.t; } } });
+    const sim = freshSim({ converge: true, allowAwaken: false, seed,
+      onConverge: (s) => { if (G.state.data.convergences >= 8) { s.convergeEnabled = false; if (s.pushStart == null) s.pushStart = s.t; } } });
     sim.onStep = (s) => {
       const d = G.state.data, idx = d.areaIndex, area = G.data.areas[idx];
       if (!ENTRY[idx]) ENTRY[idx] = snapNow();
@@ -610,7 +629,7 @@ function scenarioCalibrate() {
     console.log(row(['G' + (gi + 1), d == null ? '—' : d.toFixed(2) + 'h', budget[gi] + 'h', dev], [7, 10, 8, 10]));
   }
   console.log(`\n  total até alcançar área 18: ${best.totalH.toFixed(1)}h (contrato-soma 18h) · mortes ${best.deaths}`);
-  console.log('  ⚠ política gate-fixo-276: as 8 convergências acontecem todas no G1 (área 3), inflando G1 e comprimindo G2–G6.');
+  console.log('  (política P5: gate escalonado ×' + G.data.balance.convGateGrowth + ' — as 8 convergências se espalham pelos grupos.)');
 
   if (doWrite) {
     const p = path.join(__dirname, '..', 'src', 'data.js');

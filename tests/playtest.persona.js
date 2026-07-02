@@ -171,7 +171,7 @@ function partB() {
   console.log("\n===== PART B — Convergence × Passivas =====");
   store = {}; G.state.data = null; G.state.load();
   const levels = [80, 150, 400, 700, 1000, 2000, 5000];
-  console.log("Pontos por convergence (k=" + G.convergence.legacy.k + "):");
+  console.log("Pontos por convergence (P5: " + G.data.balance.convPointsBase + " × (nível/" + G.data.balance.convGateBase + ")^" + G.data.balance.convPointsExp + "):");
   for (const L of levels) {
     G.state.data.level = L;
     const pts = G.convergence.points();
@@ -187,13 +187,12 @@ function partB() {
   }
   console.log(`Custo do tier 1 de uma árvore (maxado): ${num(tier1Cost)} pts`);
 
-  // simula convergences repetidas no padrão de jogo do dono (Lv ~400-1000)
+  // simula convergences repetidas na política P5: converge no gate escalonado corrente
   store = {}; G.state.data = null; G.state.load();
   let conv = 0, guard = 500;
-  const convAtLevel = () => 400 + Math.min(conv * 60, 600); // empurra mais a cada run, satura em 1000
   while (guard-- > 0) {
-    G.state.data.level = convAtLevel();
-    G.convergence.converge();
+    G.state.data.level = G.convergence.currentGate(); // P5: gate escalonado sobe a cada convergence
+    if (!G.convergence.converge()) break;
     conv++;
     spendPassives();
     const prog = G.passives.treeProgress("eclat");
