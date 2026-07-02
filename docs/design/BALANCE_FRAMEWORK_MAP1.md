@@ -167,7 +167,7 @@ Valida: `sim baseline` — nível médio do gear por grupo segue o plano; promo�
 ## PASSO 5 — Convergence (o loop de prestige) — P5.1/P5.3 ✅ TRAVADOS (jul/2026)
 
 **P5.1+P5.3 (decisão do dono — "converge em X nível; cada convergence sobe o requisito e rende mais pontos; nem poucas nem muitas"):**
-- **Gate escalonado:** `gate₁ = 276 (fim do G1) · gateₙ₊₁ = gateₙ × 1.30` → **~12 convergences** até o cap 6000, espalhadas pelos grupos POR CONSTRUÇÃO (escada: 276·359·466·606·788·1024·1332·1731·2251·2926·3803·4944).
+- **Gate escalonado:** `gateₙ = round(276 × 1.30ⁿ)`, n = convergences já feitas (fórmula direta, não composta) → **~12 convergences** até o cap 6000, espalhadas pelos grupos POR CONSTRUÇÃO (escada: 276·359·466·606·788·1025·1332·1732·2251·2927·3805·4946 — validada em `tests/convergence.test.js`).
 - **Pontos:** cada convergence rende **~×1.5 a anterior** → expoente derivado α = ln1.5/ln1.3 ≈ **1.55**; fórmula candidata `pontos = 400 × (nível/276)^1.55` (P5.2 valida no sim). Empurrar 1 grupo além do gate ≈ ×2.1 pontos (mata o F2).
 - Legibilidade (a queixa do dono com o sistema antigo): UI mostra UM número — "Próxima Convergence: nível Y".
 - P5.2 (fórmula no sim) e P5.4 (Legacy) e P5.5 (política realista do sim): em andamento.
@@ -178,7 +178,15 @@ Decide: `gateLevel` (âncora natural: fim do G1 / entrada do G2) · fórmula com
 Insumos: PASSOS 1–2 (o gate é um beat do esqueleto) · achado F2 do sim (fórmula flat mata a decisão).
 Valida: `sim gates` + `sim campaign` — 1º prestige no alvo do P0; empurrar +1 grupo rende visivelmente mais; meta de convergences bate.
 
-## PASSO 6 — Passivas (o motor permanente) ⬜
+## PASSO 6 — Passivas (o motor permanente) — EM TRAVAMENTO FATIADO (jul/2026)
+
+**Direção travada pelo dono: MODELO SEQUENCIAL.** Em vez de 3 árvores paralelas: **Árvore I** (Mapa 1, 15 nós) → **Árvore II** (Mapa 2, versões amplificadas + poucas novas, custo ~×10, mais forte POR PONTO) → etc. Regra: cada árvore ≥ mais forte que a anterior. Racional medido: renda escalonada (×1.5/conv, até ~84K pts) exige sumidouro que escala; mesma arquitetura "evoluir, não adicionar" do gear (P4.2b). Identidade (combate/economia) vira RAMOS dentro da árvore. As 3 árvores paralelas atuais morrem.
+
+### P6.1 — Topologia ✅ TRAVADO (jul/2026): **binária, abre-ao-comprar + coroa conquistável**
+- Estrutura: 1 raiz → 2 → 4 → 8 folhas (=15). Comprar o pai (nível 1) ABRE os 2 filhos; maximizar é decisão de potência, não pedágio.
+- Racional: a 1ª Convergence (~400 pts) compra raiz + entra no sustain NA MESMA VISITA — fecha o tutorial de prestige do P2.4.
+- **"The Ring Closes"** (nó-coroa): ao acender as 8 folhas, completa GRÁTIS — bônus multiplicativo pequeno em tudo; conquista, não compra. Marco de "Árvore I completa" e gancho da Árvore II.
+- Rejeitado: abre-ao-maxar (quebraria o beat da 1ª convergence).
 
 **Pergunta central:** quanto poder permanente o Mapa 1 inteiro deve render, e em que ordem o jogador o compra?
 
