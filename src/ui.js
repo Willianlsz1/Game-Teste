@@ -327,15 +327,17 @@ G.ui = {
       mat("uncommon",   G.economy.getGear("uncommon"),     "Uncommon",    "#7ec8a0") +
       mat("firstLight", G.economy.getAwaken("firstLight"), "First Light", "#d4b4ff");
 
-    this.el["forge-convert"].innerHTML = G.economy.CONVERSIONS.map((c, i) => {
-      const rate = G.economy.conversionRate(c);
-      const max  = G.economy.maxConversions(c);
-      return `<div class="forge-recipe">
-        <span class="forge-recipe__line">${rate} ${c.fromLabel} <b>→</b> 1 ${c.toLabel}</span>
-        <span class="forge-recipe__avail">Can make: ${fmt(max)}</span>
-        <button class="forge-btn" data-convert="${i}" ${max > 0 ? "" : "disabled"}>Convert all</button>
-      </div>`;
-    }).join("");
+    this.el["forge-convert"].innerHTML = G.economy.CONVERSIONS.length
+      ? G.economy.CONVERSIONS.map((c, i) => {
+          const rate = G.economy.conversionRate(c);
+          const max  = G.economy.maxConversions(c);
+          return `<div class="forge-recipe">
+            <span class="forge-recipe__line">${rate} ${c.fromLabel} <b>→</b> 1 ${c.toLabel}</span>
+            <span class="forge-recipe__avail">Can make: ${fmt(max)}</span>
+            <button class="forge-btn" data-convert="${i}" ${max > 0 ? "" : "disabled"}>Convert all</button>
+          </div>`;
+        }).join("")
+      : `<span class="forge-recipe__avail">Unavailable in Map 1.</span>`;
 
     this.el["forge-promote"].innerHTML = G.data.slots.map((slot) => {
       const item = G.state.data.equipped[slot.id];

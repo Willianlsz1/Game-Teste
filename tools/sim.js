@@ -56,7 +56,7 @@ for (const f of LOAD_ORDER) {
 const G = global.G;
 
 // ---------- instrumentação (não toca nos arquivos do jogo) ----------
-const M = { income: 0, deaths: 0 };
+const M = { income: 0, deaths: 0, matByGroup: {} };   // matByGroup[grupo] = { common, awaken }
 const _onKill = G.combat.onKill;
 G.combat.onKill = function () {
   const before = G.state.data.lumens;
@@ -65,6 +65,17 @@ G.combat.onKill = function () {
 };
 const _onDeath = G.combat.onDeath;
 G.combat.onDeath = function () { M.deaths++; _onDeath.call(this); };
+// tally de materiais por grupo (grupo = área atual / groupSize)
+const _rollDrops = G.economy.rollDrops.bind(G.economy);
+G.economy.rollDrops = function (enemy, opts) {
+  const out = _rollDrops(enemy, opts);
+  const gs = G.data.balance.groupSize || 3;
+  const g = Math.floor((G.state.data.areaIndex || 0) / gs);
+  const bucket = M.matByGroup[g] || (M.matByGroup[g] = { common: 0, awaken: 0 });
+  if (out.commonMaterial) bucket.common += out.commonMaterial;
+  if (out.awakenMaterial) bucket.awaken += out.awakenMaterial;
+  return out;
+};
 
 // ---------- helpers ----------
 function fmtT(sec) {
@@ -137,11 +148,18 @@ function policyTick(sim) {
     G.gear.levelUp(cheapest);
   }
 
-  // 3. promover raridade quando possível
+  // 3. promover raridade quando possível (registra o beat: peça · tempo · grupo)
+  const gs = G.data.balance.groupSize || 3;
   for (const slot of G.data.slots) {
     const item = d.equipped[slot.id];
-    if (G.gear.canPromote(item)) G.gear.promote(item);
+    if (G.gear.canPromote(item)) {
+      const before = item.rarity;
+      if (G.gear.promote(item) && before === 'common')
+        sim.promotions.push({ slot: slot.id, t: sim.t, group: Math.floor((d.areaIndex || 0) / gs) + 1 });
+    }
   }
+  // marca quando o material de Awaken (First Light) fica disponível
+  if (sim.awakenMatAt == null && G.economy.getAwaken('firstLight') >= 1) sim.awakenMatAt = sim.t;
 
   // 4. Awaken quando possível
   if (sim.allowAwaken && G.awaken.canAwaken('first_light')) {
@@ -188,7 +206,7 @@ function freshSim(opts) {
     pendingHits: [], spawnCount: 0, _lastAreaIndex: -1, _bossKills: 0,
     _clock: 0, _gains: [],
   });
-  M.income = 0; M.deaths = 0;
+  M.income = 0; M.deaths = 0; M.matByGroup = {};
   G.convergence.gateLevel = opts.gate != null ? opts.gate : 1e9;
   return {
     t: 0,
@@ -198,6 +216,7 @@ function freshSim(opts) {
     onConverge: opts.onConverge || null,
     milestones: [], areaEntries: [], runs: [],
     lastAreaEntered: -1, lastConvT: 0, nodeLevelsBought: 0, firstLightAt: null,
+    promotions: [], awakenMatAt: null,
   };
 }
 
@@ -300,7 +319,19 @@ function scenarioCampaign() {
   const push = +arg('push', 1.0);
   const maxHours = +arg('max-hours', 200);
   const convergeAt = Math.round(gate * push);
-  console.log(`\n═══ CAMPAIGN — Mapa 1 completo · gate ${gate} · converge no nível ${convergeAt} · seed ${SEED} · cap ${maxHours}h ═══\n`);
+  // overrides em memória p/ testar candidatos do P3 (custo de promoção × chance de material)
+  const promoteCost = arg('promote-cost', null);
+  const commonChance = arg('common-chance', null);
+  const uncCap = arg('unc-cap', null);
+  if (promoteCost != null) G.data.balance.promoteCommonCost = +promoteCost;
+  if (commonChance != null) {
+    G.economy.dropTable.common.commonMaterial.chance = +commonChance;
+    G.economy.dropTable.rare.commonMaterial.chance = +commonChance * 3;
+  }
+  if (uncCap != null) { const r = G.data.rarities.find(r => r.id === 'uncommon'); if (r) r.cap = +uncCap; }
+  const ovr = (promoteCost != null || commonChance != null || uncCap != null)
+    ? ` · override[cost ${G.data.balance.promoteCommonCost}, chance ${G.economy.dropTable.common.commonMaterial.chance}, uncCap ${G.data.rarities.find(r=>r.id==='uncommon').cap}]` : '';
+  console.log(`\n═══ CAMPAIGN — Mapa 1 completo · gate ${gate} · converge no nível ${convergeAt} · seed ${SEED} · cap ${maxHours}h${ovr} ═══\n`);
 
   const sim = freshSim({
     gate, convergeAt, allowAwaken: true,
@@ -330,6 +361,35 @@ function scenarioCampaign() {
   }
   const s = G.state.stats();
   console.log(`  final: ATK ${fmtN(s.atk)} · HP ${fmtN(s.hp)} · gear médio ${gearAvgLevel()} · passivas ${sim.nodeLevelsBought} níveis de nó`);
+
+  // ---- ECONOMIA (P3): promoções Common→Uncommon · alvo dos 6 beats = G2–G4 ----
+  const WP = [10, 10, 8, 16];
+  console.log('\n' + row(['peça', 'tempo', 'grupo', 'alvo G2–G4'], WP));
+  const slotLabel = {}; G.data.slots.forEach(sl => slotLabel[sl.id] = sl.label);
+  for (const p of sim.promotions) {
+    const ok = p.group >= 2 && p.group <= 4;
+    console.log(row([slotLabel[p.slot] || p.slot, fmtT(p.t), 'G' + p.group, ok ? '✓' : '✗ (fora)'], WP));
+  }
+  if (!sim.promotions.length) console.log('  (nenhuma promoção ocorreu)');
+  else {
+    const groups = sim.promotions.map(p => p.group);
+    const spread = (Math.min(...groups) >= 2 && Math.max(...groups) <= 4) ? '✓ todas em G2–G4' : '✗ fora da janela';
+    const allG2 = groups.every(g => g === 2) ? ' ⚠ trivial (todas no G2)' : '';
+    console.log(`  → ${sim.promotions.length}/6 promoções · 1ª ${fmtT(sim.promotions[0].t)} (G${groups[0]}) · 6ª ${fmtT(sim.promotions[sim.promotions.length-1].t)} (G${groups[groups.length-1]}) · ${spread}${allG2}`);
+  }
+
+  // ---- materiais por grupo ----
+  const WM = [7, 12, 12];
+  console.log('\n' + row(['grupo', 'common mat', 'awaken mat'], WM));
+  const gKeys = Object.keys(M.matByGroup).map(Number).sort((a, b) => a - b);
+  for (const g of gKeys) {
+    const b = M.matByGroup[g];
+    console.log(row(['G' + (g + 1), fmtN(b.common), fmtN(b.awaken)], WM));
+  }
+  const awT = sim.awakenMatAt != null ? fmtT(sim.awakenMatAt) : '—';
+  const flT = sim.firstLightAt != null ? fmtT(sim.firstLightAt) : '—';
+  console.log(`  awaken mat ≥ 1 em ${awT} · First Light em ${flT}` +
+    (sim.awakenMatAt != null && sim.firstLightAt != null ? ` (folga ${fmtT(sim.firstLightAt - sim.awakenMatAt)})` : ''));
 
   // ---- TTK de RE-SUBIDA (Opção A): nas runs 2+, HTK real ao re-entrar em área já
   // visitada em run ANTERIOR — valida que "derreter" (HTK ≤ 2) vem do prestige.
@@ -365,6 +425,8 @@ function scenarioCalibrate() {
   const measHours = +arg('meas-hours', 150);
   const doWrite = argv.includes('--write');
   const gate = +arg('gate', 276);
+  const uncCap = arg('unc-cap', null);   // override do cap provisório do uncommon (P3/P4)
+  if (uncCap != null) { const r = G.data.rarities.find(r => r.id === 'uncommon'); if (r) r.cap = +uncCap; }
   const N = G.data.areas.length;
 
   // ---- alvos (P2.1/P2.3/P2.4/P2.5) ----

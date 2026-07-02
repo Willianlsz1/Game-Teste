@@ -46,16 +46,16 @@ let d = G.economy.rollDrops({}, Object.assign({ type: "common", areaIndex: 2 }, 
 ok(d.commonMaterial >= 1 && !d.uncommonMaterial && !d.awakenMaterial, "common dropa só Common material (Área 3)");
 ok(G.economy.getGear("common") >= 1, "Common material foi ao inventário");
 
-// 5) boss em área alta -> Common + Uncommon + Awaken
-d = G.economy.rollDrops({ isBoss: true }, Object.assign({ areaIndex: 5 }, R0));
-ok(d.commonMaterial && d.uncommonMaterial && d.awakenMaterial, "boss (área 6) dropa Common+Uncommon+Awaken");
+// 5) Harbinger em G5+ (idx>=12) -> Common + Awaken, NUNCA Uncommon (Rare/Forge = Mapa 2)
+d = G.economy.rollDrops({ isBoss: true }, Object.assign({ areaIndex: 14 }, R0));
+ok(d.commonMaterial && !d.uncommonMaterial && d.awakenMaterial, "Harbinger (G5+, idx 14) dropa Common+Awaken, sem Uncommon");
 ok(G.economy.getAwaken("firstLight") >= 1, "Awaken material (firstLight) foi ao inventário");
 
-// 6) gate de drops: Áreas 1-2 (idx 0-1) não dropam nada; Área 3 (idx 2) só Common
+// 6) gate de drops: Áreas 1-2 (idx 0-1) não dropam nada; Área 3 (idx 2) só Common (Awaken=G5+)
 let d0 = G.economy.rollDrops({ isBoss: true }, Object.assign({ areaIndex: 0 }, R0));
 ok(Object.keys(d0).length === 0, "gate: Área 1 (idx 0) não dropa material algum");
 let d2 = G.economy.rollDrops({ isBoss: true }, Object.assign({ areaIndex: 2 }, R0));
-ok(d2.commonMaterial && !d2.uncommonMaterial && !d2.awakenMaterial, "gate: Área 3 (idx 2) só Common (Uncommon=Área5, Awaken=Área6)");
+ok(d2.commonMaterial && !d2.uncommonMaterial && !d2.awakenMaterial, "gate: Área 3 (idx 2) só Common (Awaken=G5+/idx 12)");
 
 // 7) passivas Vestige: matCommonPct dobra quantidade (set direto p/ ignorar gating)
 store = {}; G.state.data = null; G.state.load();
@@ -79,8 +79,8 @@ G.state.data = null; G.state.load();
 ok(G.economy.getGear("common") === 12 && G.economy.getGear("uncommon") === 4 && G.economy.getAwaken("firstLight") === 3,
   "save/load preserva materiais");
 
-// 10) integração combat.onKill concede materiais
-store = {}; G.state.data = null; G.state.load(); G.state.data.areaIndex = 5;
+// 10) integração combat.onKill concede materiais (Harbinger em G5+/idx 12)
+store = {}; G.state.data = null; G.state.load(); G.state.data.areaIndex = 14;
 const cBefore = G.economy.getGear("common"), aBefore = G.economy.getAwaken("firstLight");
 const realRandom = Math.random; Math.random = () => 0;
 // onKill agora opera sobre o array enemies[] (encontra o primeiro vivo)
@@ -89,7 +89,7 @@ G.combat.enemies = [mob]; G.combat.enemy = mob;
 G.combat.onKill();
 Math.random = realRandom;
 ok(G.economy.getGear("common") > cBefore && G.economy.getAwaken("firstLight") > aBefore,
-  "combat.onKill (boss área 6) concede Common+Awaken via rollDrops");
+  "combat.onKill (Harbinger G5+) concede Common+Awaken via rollDrops");
 
 // 11) inventário de Awaken existe (awakenEssence legado virou awakenMaterials.firstLight)
 ok(G.state.data.awakenMaterials && typeof G.state.data.awakenMaterials.firstLight === "number",
