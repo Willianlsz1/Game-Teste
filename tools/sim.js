@@ -179,6 +179,7 @@ function policyTick(sim) {
 function freshSim(opts) {
   Math.random = mulberry32(opts.seed != null ? opts.seed : SEED);
   G.state.reset();
+  G.state.invalidateStats();
   Object.assign(G.combat, {
     enemies: [], enemy: null, atkTimer: 0, respawnTimer: 0,
     pendingHits: [], spawnCount: 0, _lastAreaIndex: -1, _bossKills: 0,
@@ -416,7 +417,12 @@ function scenarioCalibrate() {
     let sim, missing;
     for (let p = 0; p < passes; p++) {
       sim = measureRun(SEED);
+      const reached = Math.max(...Object.keys(sim._entry).map(Number)) + 1;
       missing = applySamples(sim._entry, sim._end, sim._boss);
+      if (VERBOSE) {
+        const e0 = sim._entry[0];
+        console.log(`  [growth ${growth} pass ${p}] reached área ${reached} · lvl ${G.state.data.level} · conv ${G.state.data.convergences} · 1L ${sim.firstLightAt != null ? fmtT(sim.firstLightAt) : '—'} · sampled ${Object.keys(sim._entry).length} · A1 hp[${fmtN(G.data.areas[0].hp[0])},${fmtN(G.data.areas[0].hp[1])}] atk ${fmtN(G.data.balance.mobAtkByArea[0])} · e0.dmgHit ${e0 ? fmtN(e0.dmgHit) : '—'} e0.hp ${e0 ? fmtN(e0.hp) : '—'}`);
+      }
     }
     // passada de medição final (tabelas já convergidas)
     sim = measureRun(SEED);
