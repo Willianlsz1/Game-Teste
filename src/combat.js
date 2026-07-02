@@ -46,13 +46,16 @@ G.combat = {
     return pool;
   },
 
-  // quantos inimigos por onda (boss é sempre solo) — P2.4: por grupo
-  _packSize() {
-    const b   = G.data.balance;
-    const idx = G.util.clamp(G.state.data.areaIndex || 0, 0, G.data.areas.length - 1);
-    const g   = G.util.clamp(Math.floor(idx / b.groupSize), 0, b.packByGroup.length - 1);
+  // quantos inimigos por onda para uma área dada (boss é sempre solo) — P2.4: por grupo.
+  // Fonte única do tamanho da onda (combat.spawn e ui.openAreaInfo consomem daqui).
+  packSizeFor(idx) {
+    const b = G.data.balance;
+    idx = G.util.clamp(idx || 0, 0, G.data.areas.length - 1);
+    const g = G.util.clamp(Math.floor(idx / b.groupSize), 0, b.packByGroup.length - 1);
     return b.packByGroup[g];
   },
+
+  _packSize() { return this.packSizeFor(G.state.data.areaIndex || 0); },
 
   // P8.2/P8.3: o inimigo carrega o modificador `key`?
   _hasMod(e, key) { return !!(e && e.modifiers && e.modifiers.indexOf(key) !== -1); },
@@ -553,11 +556,12 @@ G.combat = {
     const step   = Math.max(G.state.attackInterval(), G.data.balance.respawnDelay);
     const ticks  = Math.floor(capped / step);
     if (ticks <= 0) return null;
+    const maxTicks = Math.ceil(capped / step) + 8;   // teto dinâmico derivado do tempo (≤ ~57.6k @ 8h/0.5s) — não trunca as 8h
 
     const realUi = G.ui;
     G.ui = null;
     let done = 0;
-    try { for (; done < ticks && done < 50000; done++) this.tick(step); }
+    try { for (; done < ticks && done < maxTicks; done++) this.tick(step); }
     finally { G.ui = realUi; }
     return { seconds: done * step };
   },

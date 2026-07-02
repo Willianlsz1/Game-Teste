@@ -3,8 +3,8 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
-const ROOT = path.join(__dirname, "..", "gaiadon-clone");
-const PORT = 4321;
+const ROOT = path.join(__dirname, "..");
+const PORT = 3000;
 const TYPES = {
   ".html": "text/html", ".css": "text/css", ".js": "text/javascript",
   ".json": "application/json", ".svg": "image/svg+xml",

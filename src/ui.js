@@ -21,7 +21,7 @@ G.ui = {
       // Awaken
       "awaken-essence", "awaken-list", "awaken-preview",
       // Passives
-      "pv-points", "pv-tabs", "pv-body", "pv-lock",
+      "pv-points", "pv-body", "pv-lock",
     ];
     for (const id of ids) this.el[id] = document.getElementById(id);
   },
@@ -47,13 +47,6 @@ G.ui = {
     const pop = document.getElementById("stat-pop");
     if (pop) pop.addEventListener("click", (e) => {
       if (e.target === pop || e.target.closest("[data-close]")) this.closeStatPop();
-    });
-
-    const tabs = document.getElementById("log-tabs");
-    if (tabs) tabs.addEventListener("click", (e) => {
-      if (!e.target.classList.contains("tab")) return;
-      tabs.querySelectorAll(".tab").forEach((t) => t.classList.remove("is-active"));
-      e.target.classList.add("is-active");
     });
 
     // World Map: painel de info (fechar / viajar) e botão "◀ World"
@@ -534,7 +527,7 @@ G.ui = {
     const ni   = G.util.clamp(d.areaIndex + delta, 0, maxU);
     if (ni === d.areaIndex) return;
     d.areaIndex = ni;
-    G.combat.enemy = null; G.combat.pendingHits = []; G.combat.respawnTimer = G.data.balance.respawnDelay;
+    G.combat.enemies = []; G.combat.enemy = null; G.combat.pendingHits = []; G.combat.respawnTimer = G.data.balance.respawnDelay;
     this.onAreaChange();
   },
 
@@ -544,7 +537,7 @@ G.ui = {
     const close = () => { const m = document.getElementById("modal-worldmap"); if (m) m.hidden = true; };
     if (i < 0 || i > maxU || i === d.areaIndex) { close(); return; }
     d.areaIndex = i;
-    G.combat.enemy = null; G.combat.pendingHits = []; G.combat.respawnTimer = G.data.balance.respawnDelay;
+    G.combat.enemies = []; G.combat.enemy = null; G.combat.pendingHits = []; G.combat.respawnTimer = G.data.balance.respawnDelay;
     this.onAreaChange();
     close();
   },
@@ -564,6 +557,7 @@ G.ui = {
       if (container.innerHTML) container.innerHTML = "";
       container.className = "enemies-container";
       this._enemySig = "";
+      this._enemyFills = []; this._enemyLabels = []; this._enemyHpShown = [];
       return;
     }
 
@@ -594,9 +588,13 @@ G.ui = {
           </div>
         </div>`;
       }).join("");
+      // cacheia os elementos de HP por índice — evita 2×N getElementById por tick de 100ms
+      this._enemyFills   = list.map((e, i) => document.getElementById(`enemy-hp-fill-${i}`));
+      this._enemyLabels  = list.map((e, i) => document.getElementById(`enemy-hp-label-${i}`));
+      this._enemyHpShown = [];
     }
 
-    // por tick: HP + classes morto/ativo (sem rebuild → nada se reposiciona)
+    // por tick: classes morto/ativo (baratas) + HP só quando muda (pula a escrita se e.hp igual)
     const firstAlive = list.findIndex(e => !e.dead);
     list.forEach((e, i) => {
       const card = container.children[i];
@@ -604,8 +602,10 @@ G.ui = {
         card.classList.toggle("enemy-dead", !!e.dead);
         card.classList.toggle("enemy-active", i === firstAlive);
       }
-      const fill  = document.getElementById(`enemy-hp-fill-${i}`);
-      const label = document.getElementById(`enemy-hp-label-${i}`);
+      if (this._enemyHpShown[i] === e.hp) return;
+      this._enemyHpShown[i] = e.hp;
+      const fill  = this._enemyFills[i];
+      const label = this._enemyLabels[i];
       if (fill)  fill.style.width = G.util.clamp((e.hp / e.maxHp) * 100, 0, 100) + "%";
       if (label) label.textContent = `HP ${G.util.fmt(Math.max(0, e.hp))} / ${G.util.fmt(e.maxHp)}`;
     });
@@ -651,8 +651,6 @@ G.ui = {
     if (this.el["pv-points"]) this.el["pv-points"].textContent = G.util.fmt(G.state.data.convergencePoints || 0);
     const unlocked = P.unlocked();
     if (this.el["pv-lock"]) this.el["pv-lock"].hidden = unlocked;
-    const tabs = this.el["pv-tabs"];
-    if (tabs) { tabs.innerHTML = ""; tabs.style.display = "none"; }   // tabs das 3 árvores antigas saem
     const body = this.el["pv-body"];
     if (body) {
       body.style.visibility = unlocked ? "" : "hidden";
@@ -849,10 +847,14 @@ G.ui = {
   },
 
   // ---------- WORLD MAP ----------
-  // posições dos 9 nós no mapa (% x,y) — fonte única p/ nós E trilha
+  // posições dos 18 nós no mapa (% x,y) — fonte única p/ nós E trilha.
+  // Floresta (0-8): caminho descendente original. Porto Afundado (9-17): descida
+  // serpenteante na faixa inferior — dois sweeps (y79 direita→esquerda, y90 esquerda→direita).
   mapNodePos: [
     [10, 23], [36, 18], [66, 17], [82, 27], [61, 42],
     [35, 51], [10, 64], [28, 71], [71, 64],
+    [90, 79], [72, 79], [54, 79], [34, 79], [12, 79],
+    [23, 90], [44, 90], [64, 90], [82, 90],
   ],
 
   renderWorldMap() {
@@ -919,13 +921,14 @@ G.ui = {
       art.style.backgroundImage = a.img
         ? `linear-gradient(180deg, rgba(7,10,22,0.05), rgba(7,10,22,0.55)), url('${a.img}')`
         : "none";
-    const tints = ["#5ee0d2", "#e8b54a", "#9d7bff", "#7fb0ff", "#5ee0d2", "#e8b54a", "#cdb06a", "#c46a8a", "#e8d24a"];
+    const tints = ["#5ee0d2", "#e8b54a", "#9d7bff", "#7fb0ff", "#5ee0d2", "#e8b54a", "#cdb06a", "#c46a8a", "#e8d24a",
+      "#2a4d8f", "#2f5aa0", "#3a6bb5", "#4a5fbf", "#5a52c0", "#6b4fc0", "#7d4fbf", "#8f52b8", "#a05fb0"];
     this.el["wmap-info"].style.setProperty("--area-tint", tints[i % tints.length]);
 
     this.el["wmap-info-name"].textContent = `${a.name} · ${i + 1}/${total}`;
     this.el["wmap-info-lore"].textContent = a.blurb || "";
     this.el["wmap-info-level"].textContent = `${a.levelRange[0]}–${a.levelRange[1]}`;
-    const pack = i < 2 ? 1 : i < 5 ? 2 : 3;
+    const pack = G.combat.packSizeFor(i);
     this.el["wmap-info-enemies"].textContent = pack + " per wave";
     if (a.boss) {
       this.el["wmap-info-boss-row"].hidden = false;

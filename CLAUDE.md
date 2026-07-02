@@ -206,7 +206,7 @@ Unlock with Convergence Points. Passive effects aggregate in `passives.effects()
 
 **Do not implement Mémoires, Ascension, or Map 2 features.** These are not in scope for current work.
 
-**Awakening Essence (`awakenEssence`) is a legacy field.** It migrates to `awakenMaterials.firstLight` on load. Do not use it for new code.
+**Awakening Essence (`awakenEssence`) is a dead legacy field.** There is no migration code — it is simply unused; the live field is `awakenMaterials.firstLight`. Do not use `awakenEssence` for new code.
 
 ---
 

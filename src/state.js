@@ -222,7 +222,8 @@ G.state = {
     }
 
     this.invalidateStats();
-    if (this.data.hp <= 0) this.data.hp = this.maxHp();
+    const hp = Number(this.data.hp);
+    this.data.hp = (Number.isFinite(hp) && hp > 0) ? hp : this.maxHp();
     return !!loaded;
   },
 

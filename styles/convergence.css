@@ -26,17 +26,6 @@
   background: rgba(8, 10, 22, 0.5); border: 1px solid rgba(255, 255, 255, 0.2);
 }
 .conv-modal__x:hover { border-color: var(--bad); }
-.conv-banner {
-  position: relative; height: 175px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 12px;
-  background:
-    linear-gradient(180deg, rgba(8, 11, 24, 0) 38%, rgba(8, 11, 24, 0.9) 100%),
-    url('../assets/ui/convergence_bg.png') center / cover no-repeat, #0a1024;
-  border-bottom: 1px solid color-mix(in srgb, var(--conv-c) 40%, transparent);
-}
-.conv-banner__emblem { width: 96px; height: 96px; object-fit: contain;
-  filter: drop-shadow(0 0 22px color-mix(in srgb, var(--conv-c) 70%, transparent)); }
-.conv-banner__title { margin: 0; font-family: "Cormorant Garamond", serif; font-style: italic;
-  font-size: 26px; color: #e6efff; text-shadow: 0 2px 8px #000, 0 0 18px var(--conv-c); }
 .conv-desc { margin: 0; font-size: 18px; line-height: 1.6; color: #dde6f8; text-shadow: 0 1px 6px #000, 0 2px 12px #000; }
 .conv-keep { margin: 0; }
 .conv-keep__label { display: block; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: #b4bfcf; margin-bottom: 10px; text-shadow: 0 1px 4px #000; }
