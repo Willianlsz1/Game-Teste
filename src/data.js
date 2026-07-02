@@ -88,8 +88,8 @@ G.data = {
 
   rarities: [
     { id: "common",   name: "Common",   color: "#9aa7bd", cap: 500,  statMult: 1.0, costMult: 1.0 },
-    { id: "uncommon", name: "Uncommon", color: "#7ec8a0", cap: 1500, statMult: 1.5, costMult: 2.0 },
-    { id: "rare",     name: "Rare",     color: "#7fb0ff", cap: 3000, statMult: 2.5, costMult: 5.0 },
+    { id: "uncommon", name: "Uncommon", color: "#7ec8a0", cap: 3000, statMult: 1.5, costMult: 2.0 }, // PROVISÓRIO — P4 dimensiona caps raridade→grupo
+    // Rare volta no Mapa 2 (diretriz do dono jul/2026)
   ],
 
   // ---- Awaken definitions ----
@@ -435,9 +435,8 @@ G.data = {
     bossKillThresholdPerGroup: 5,    // P2.5: escalada por grupo. Morte zera o contador. Ver docs/design/ENEMY_POWER_PYRAMID.md
     gearCostBase:      2500,
     gearCostGrowth:    1.022,   // P2.2: freio principal — testado no sim
-    promoteCommonCost:    50,   // common material  (common → uncommon)
-    promoteUncommonCost:  25,   // uncommon material (uncommon → rare)
-    convertCommonToUncommon: 10, // Forge: junta 10 Common → 1 Uncommon (subir de tier)
+    promoteCommonCost:    50,   // common material (common → uncommon) — dimensionado no P3
+    // promoteUncommonCost / convertCommonToUncommon removidos — Rare e Forge voltam no Mapa 2
     convLegacyAtkPct:     8,    // +atk% direto POR convergence (empilha; sente forte no clique)
     convLegacyHpPct:      8,    // +hp%  direto POR convergence (empilha)
   },

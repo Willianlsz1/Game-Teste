@@ -59,9 +59,8 @@ G.gear = {
 
   // returns { kind, amount } for the promote cost of an item, or null if not promotable
   promoteCost(item) {
-    if (item.rarity === 'common')   return { kind: 'common',   amount: G.data.balance.promoteCommonCost };
-    if (item.rarity === 'uncommon') return { kind: 'uncommon', amount: G.data.balance.promoteUncommonCost };
-    return null;
+    if (item.rarity === 'common') return { kind: 'common', amount: G.data.balance.promoteCommonCost };
+    return null;   // uncommon é terminal no Mapa 1 (Rare volta no Mapa 2)
   },
 
   canPromote(item) {
