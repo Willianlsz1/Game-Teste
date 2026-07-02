@@ -89,11 +89,12 @@ function combatSnapshot() {
   const area = G.data.currentArea();
   const lvl = G.util.clamp(d.level, area.levelRange[0], area.levelRange[1]);
   const mobHp = G.data.mobHpAt(lvl, area);
-  const eDps = s.atk * (1 + (s.crit / 100) * (s.critMult - 1)) / G.state.attackInterval();
+  const dmgHit = s.atk * (1 + (s.crit / 100) * (s.critMult - 1));
+  const eDps = dmgHit / G.state.attackInterval();
   const aIdx = G.util.clamp(d.areaIndex, 0, G.data.balance.mobAtkByArea.length - 1);
   const pack = G.combat._packSize();
   const incoming = pack * G.data.balance.mobAtkByArea[aIdx] * (1 - (s.damageReduction || 0) / 100) / G.combat.enemyInterval;
-  return { ttk: mobHp / eDps, ttd: s.hp / incoming, mobHp, atk: s.atk, hp: s.hp };
+  return { ttk: mobHp / eDps, htk: mobHp / dmgHit, ttd: s.hp / incoming, mobHp, atk: s.atk, hp: s.hp };
 }
 
 // ---------- políticas do jogador ----------
@@ -114,11 +115,13 @@ function policyTick(sim) {
     d.areaIndex = best;
     G.combat.enemies = []; G.combat.enemy = null;
     G.combat.pendingHits = []; G.combat.respawnTimer = 0;
-    if (best > (sim.lastAreaEntered || -1)) {
-      sim.lastAreaEntered = best;
-      const snap = combatSnapshot();
-      sim.areaEntries.push({ area: best + 1, t: sim.t, level: d.level, ...snap });
-    }
+  }
+  // registra a entrada (inclusive área 1 — pós-converge best === areaIndex === 0,
+  // e a re-subida precisa da amostra), com o nº da run p/ a métrica de re-subida.
+  if (best > (sim.lastAreaEntered != null ? sim.lastAreaEntered : -1)) {
+    sim.lastAreaEntered = best;
+    const snap = combatSnapshot();
+    sim.areaEntries.push({ area: best + 1, t: sim.t, run: (d.convergences || 0) + 1, level: d.level, ...snap });
   }
 
   // 2. gastar Lumens em gear (greedy: peça mais barata primeiro)
@@ -327,6 +330,32 @@ function scenarioCampaign() {
   }
   const s = G.state.stats();
   console.log(`  final: ATK ${fmtN(s.atk)} · HP ${fmtN(s.hp)} · gear médio ${gearAvgLevel()} · passivas ${sim.nodeLevelsBought} níveis de nó`);
+
+  // ---- TTK de RE-SUBIDA (Opção A): nas runs 2+, HTK real ao re-entrar em área já
+  // visitada em run ANTERIOR — valida que "derreter" (HTK ≤ 2) vem do prestige.
+  const reclimb = {};   // areaIdx → { n, min, max, runs: [..] }
+  let maxAreaPrevRuns = -1, curRun = null, curRunMax = -1;
+  for (const e of sim.areaEntries) {
+    const r = e.run || 1;
+    if (r !== curRun) { maxAreaPrevRuns = Math.max(maxAreaPrevRuns, curRunMax); curRun = r; curRunMax = -1; }
+    curRunMax = Math.max(curRunMax, e.area - 1);
+    if (r >= 2 && e.area - 1 <= maxAreaPrevRuns && e.htk != null) {
+      const rc = reclimb[e.area - 1] || (reclimb[e.area - 1] = { n: 0, min: Infinity, max: -Infinity });
+      rc.n++; rc.min = Math.min(rc.min, e.htk); rc.max = Math.max(rc.max, e.htk);
+    }
+  }
+  const rcKeys = Object.keys(reclimb).map(Number).sort((a, b) => a - b);
+  if (rcKeys.length) {
+    const WR = [6, 12, 10, 10, 10];
+    console.log('\n' + row(['área', 're-entradas', 'HTK min', 'HTK máx', 'derrete?'], WR));
+    for (const i of rcKeys) {
+      const rc = reclimb[i];
+      console.log(row([i + 1, rc.n, rc.min.toFixed(2), rc.max.toFixed(2), rc.max <= 2 ? '✓ (≤2)' : '✗ (>2)'], WR));
+    }
+    console.log('  (re-subida = entrada em área já visitada em run anterior, runs 2+ · alvo do dono: HTK ≤ 2)');
+  } else {
+    console.log('\n  (sem re-subidas amostradas — nenhuma área re-entrada em runs 2+)');
+  }
 }
 
 // ---------- calibração (P2 — deriva HP/mobAtk/hpMult das bandas HTK C3) ----------
@@ -347,7 +376,8 @@ function scenarioCalibrate() {
     HTK_ENTRY[i] = htk;
     WAVECOST[i] = pos === 0 ? 0.42 : 0.15;               // entrada de grupo / interna
   }
-  const HTK_END = 1.5;
+  // Opção A (dono, jul/2026): HTK-fim 1.5 vale pra RE-SUBIDA pós-Convergence, não pra
+  // 1ª passada — a calibração fixa SÓ paredes de entrada + bosses; hp[1] vira rampa.
   const BOSS_HTK = {}; [2, 5, 8, 11, 14].forEach(i => BOSS_HTK[i] = 30); BOSS_HTK[17] = 90;
   const budget = [1.0, 1.6, 2.4, 3.2, 4.2, 5.6];
   const gs = G.data.balance.groupSize || 3;
@@ -398,18 +428,26 @@ function scenarioCalibrate() {
   // aplica as amostras às tabelas em memória (retorna quais áreas ficaram sem amostra)
   function applySamples(entry, end, boss) {
     const missing = [];
+    // 1ª varredura: paredes de entrada (hp0 = HTK alvo × dano esperado na entrada)
+    const hp0s = [];
+    for (let i = 0; i < N; i++) {
+      const e = entry[i];
+      hp0s[i] = e ? Math.max(1, HTK_ENTRY[i] * e.dmgHit) : null;
+    }
     for (let i = 0; i < N; i++) {
       const area = G.data.areas[i];
       const e = entry[i];
       if (!e) { missing.push(i + 1); continue; }
-      const hp0 = HTK_ENTRY[i] * e.dmgHit;
-      const endDmg = end[i] ? end[i].dmgHit : (entry[i + 1] ? entry[i + 1].dmgHit : e.dmgHit);
-      // P2.3 trava: "alívio vem do jogador crescer, não do HP cair" — hp nunca decresce
-      // dentro da área. Quando o alvo de HTK_END exigiria queda de HP (jogador não
-      // cresceu rápido o bastante), o piso vira hp0 — sinal visível (HTK fim > alvo)
-      // em vez de violação silenciosa da regra travada.
-      const hp1 = Math.max(hp0, HTK_END * endDmg);
-      area.hp = [Math.max(1, hp0), Math.max(1, hp1)];
+      const hp0 = hp0s[i];
+      // Opção A: hp1 = rampa interna suave rumo à parede seguinte —
+      // clamp(0.6 × hp0_da_área_seguinte, hp0×1.3, hp0×3.0); área 18 (sem seguinte): ×2.
+      // Invariante hp1 >= hp0 por construção; o HTK-fim da 1ª passada é EMERGENTE
+      // (reportado, não forçado) — o "derreter" (HTK ≤ 2) vem do prestige na re-subida.
+      const nextHp0 = hp0s[i + 1];
+      const hp1 = (i === N - 1 || nextHp0 == null)
+        ? hp0 * 2
+        : G.util.clamp(0.6 * nextHp0, hp0 * 1.3, hp0 * 3.0);
+      area.hp = [hp0, hp1];
       const hitsRecv = 0.6 * e.pack * (e.pack * HTK_ENTRY[i] * e.atkInt) / G.combat.enemyInterval;
       const mobAtk = WAVECOST[i] * e.hp / Math.max(1e-6, hitsRecv);
       G.data.balance.mobAtkByArea[i] = Math.max(1, mobAtk);
@@ -455,7 +493,7 @@ function scenarioCalibrate() {
     const reached = Math.max(...Object.keys(sim._entry).map(Number)) + 1;
     const totalH = sim.t / 3600;
 
-    results.push({ growth, meanDev, totalH, groupDur, entry, end, boss, missing,
+    results.push({ growth, meanDev, totalH, groupDur, entry, end, boss, missing, reached,
       hp: G.data.areas.map(a => a.hp.slice()), atk: G.data.balance.mobAtkByArea.slice(),
       bossHp: (() => { const o = {}; G.data.areas.forEach((a, i) => { if (a.boss) o[i] = a.boss.hpMult; }); return o; })(),
       firstLight: sim.firstLightAt, deaths: M.deaths });
@@ -463,19 +501,23 @@ function scenarioCalibrate() {
     console.log(`growth ${growth}: alcançou área ${reached} · total ${totalH.toFixed(1)}h · desvio médio grupos ${meanDev.toFixed(0)}%` + (missing.length ? ` · sem amostra: ${missing.join(',')}` : ''));
   }
 
-  // escolhe o melhor (menor desvio médio absoluto vs contrato)
-  results.sort((a, b) => a.meanDev - b.meanDev);
+  // escolhe o melhor: campanha COMPLETANDO (área 18 alcançada) primeiro,
+  // depois menor desvio médio absoluto vs contrato
+  results.sort((a, b) => {
+    const ca = a.reached >= N ? 0 : 1, cb = b.reached >= N ? 0 : 1;
+    return ca !== cb ? ca - cb : a.meanDev - b.meanDev;
+  });
   const best = results[0];
-  console.log(`\n➤ ESCOLHIDO: gearCostGrowth ${best.growth} (menor desvio médio de grupo: ${best.meanDev.toFixed(0)}%)\n`);
+  console.log(`\n➤ ESCOLHIDO: gearCostGrowth ${best.growth} (${best.reached >= N ? 'campanha completa' : '⚠ NENHUM candidato completa'} · desvio médio de grupo: ${best.meanDev.toFixed(0)}%)\n`);
 
   // aplica as tabelas do melhor candidato em memória p/ o relatório e a escrita
   restoreSeed();
   G.data.balance.gearCostGrowth = best.growth;
   applySamples(best.entry, best.end, best.boss);
 
-  // ---- tabela TTK por área ----
+  // ---- tabela TTK por área (HTK fim = EMERGENTE da 1ª passada; Opção A não o força) ----
   const W = [6, 6, 5, 12, 12, 9, 9, 8];
-  console.log(row(['área', 'grupo', 'pos', 'HP entrada', 'HP fim', 'HTK ent', 'HTK fim', 'mobAtk'], W));
+  console.log(row(['área', 'grupo', 'pos', 'HP entrada', 'HP fim', 'HTK ent', 'HTKfim*', 'mobAtk'], W));
   for (let i = 0; i < N; i++) {
     const area = G.data.areas[i], e = best.entry[i], en = best.end[i];
     const pos = i % 3, grp = 'G' + (Math.floor(i / gs) + 1);
@@ -487,6 +529,7 @@ function scenarioCalibrate() {
     console.log(row([i + 1, grp, pos === 0 ? 'entry' : pos === 1 ? 'mid' : 'boss', fmtN(area.hp[0]), fmtN(area.hp[1]),
       (isFinite(htkE) ? htkE.toFixed(1) : '—') + okE, isFinite(htkEnd) ? htkEnd.toFixed(1) : '—', fmtN(G.data.balance.mobAtkByArea[i])], W));
   }
+  console.log('  * HTKfim = emergente na 1ª passada (Opção A: o alvo 1–2 golpes vale pra RE-SUBIDA pós-Convergence)');
 
   // ---- bosses ----
   console.log('\n' + row(['boss área', 'HTK alvo', 'hpMult', 'HTK obtido', 'dmgMult'], [10, 9, 9, 11, 8]));

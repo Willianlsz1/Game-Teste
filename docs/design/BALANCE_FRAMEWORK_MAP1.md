@@ -50,7 +50,7 @@ Validação: decisão de produto do dono (sessão jul/2026). Consequência aritm
 **Implementado** (ciclo 10-80-10): `data.js` (18 áreas; 10–18 placeholders de lore/HP marcados P2; `reservedHarbingers` guarda os 6 da floresta) · `combat.js` (`checkGroupUnlock` por nível; fronteira via Harbinger; Okhra fecha o mapa) · `state.js` (fix de migração: `mapOneCleared` obsoleto de saves de 9 áreas é rebaixado) · `sim.js` (relatório por grupo vs orçamento).
 **Validação:** sim baseline/campaign rodam limpos nas 18 áreas; cadência de grupos correta (review adversarial confirmou off-by-one, converge, saves antigos, `_bossKills`). Tempos por grupo AINDA fora do alvo — esperado: HP é placeholder, é o trabalho do P2.
 
-## PASSO 2 — A Fricção (onde ficam as paredes) ⬜ ← ESTAMOS AQUI *(fatiado: travar cada sub, implementar tudo junto)*
+## PASSO 2 — A Fricção ✅ TRAVADO (jul/2026) — escopo: fricção validada; RELÓGIO delegado ao P5
 
 **Pergunta central:** onde o jogador DEVE parar de avançar de graça — e o que o segura?
 
@@ -94,7 +94,10 @@ Implementação em golpes: `HP da área = HTK-alvo × dano esperado do jogador n
 - **Mults derivados, não setados:** Harbinger HP = HTK 20–40 (alvo 30) × dano esperado no fim do grupo · dano ×2 sobre o mob da área. **Okhra:** HTK 60–120 (alvo 90) · dano ×2.5. O `bossHpMult` global ×4 morre; vira valor por Marco derivado das bandas.
 - Recompensa dos Marcos: mults atuais ficam; "bônus de formatura" (materiais garantidos) = P3.
 
-**→ P2: decisões completas · implementação FEITA · calibração final PENDENTE de 1 decisão do dono.**
+**→ P2 FECHADO (jul/2026), recalibração final sob a Opção A:**
+- **Validado com sim (seed 1):** HTK de entrada ✓ nas 18 áreas (10/5.5/6.5 +1.5 tema B) · Harbingers HTK 30 ✓ · parede-tutorial funciona (baseline sem prestige trava na entrada do G2, TTK 103s ⛔) · **derreter-via-prestige ✓** (A1/A2 derretem nas re-subidas; A3 ≤2 a partir da run 3) · threshold atingível com sustain comprado (125 mortes na campanha) · freio = `gearCostGrowth 1.022` (re-confirmado; 1.028/1.034 não completam saudável).
+- **HTK-fim emergente da 1ª passada:** 1.7–7 no Tema A, 6.5–16 no Tema B — fronteira carnuda por design (Opção A); o melt é das re-subidas.
+- **⚠️ RELÓGIO NÃO FECHA COM A POLÍTICA PROVISÓRIA (delegado ao P5, registrado como critério de aceite de lá):** total 43h13m vs 18h · 1ª convergence 1h49m vs 25–40min · desvio médio de grupo 206%. Causa estrutural: gate-fixo-276 concentra as 8 convergences no G1 e empurra G4–G6 com poder subdimensionado. O P5 (gate + fórmula que espalha convergences pelos grupos + meta de nº de convergences revista) é dono desses três números; se nem o P5 fechar, reabre-se a curva de XP (P1 previu revisão).
 Ciclo 10-80-10 executado: Opus implementou (freio 1.022 cravado por dado; sustain via passivas funcionando — baseline trava na parede do G2 e força a 1ª Convergence como desenhado; bandas HTK de ENTRADA todas ✓). Sonnet corrigiu: cache stale de stats no reset (corrompia sims multi-run), invariante `hp[1] ≥ hp[0]` na calibração (14/18 áreas violavam o P2.3 "HP nunca cai"), tooltips das passivas novas, fallbacks 0-safe, números mágicos → balance.
 **✅ IMPASSE RESOLVIDO (decisão do dono, jul/2026): OPÇÃO A.** O alvo "fim de área em 1–2 golpes" vale pras **re-subidas pós-Convergence**, não pra 1ª passada — a fronteira fica carnuda (HTK-fim flutua ~3–5 na 1ª passada) e o "derreter" vem do prestige. Formulação do dono: *o ritmo de avanço esperado = gear + Convergence/pontos de passiva JUNTOS* — convergir é o que acelera e é parte do requisito de avanço, não um extra. Calibração re-fixa: paredes de ENTRADA + bosses (bem-posto); hp[1] vira rampa interna suave em direção à parede seguinte; sim passa a reportar TTK de re-subida pra validar o "derreter". *(Registro histórico do impasse abaixo.)*
 
