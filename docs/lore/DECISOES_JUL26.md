@@ -68,6 +68,19 @@ Lógica do arco: braços externos primeiro (fome, voz, fim, sedução) → escal
 
 Pontas soltas herdadas (🔍 revisão futura): destino do **The Pale Reunion** (ex-chefe do Mapa 2) · **Claimed Queen** aparição dupla (Mapa 3 sub-boss + Mapa 4) ou só Mapa 4 · **Ashen King vs Cindrel** — quem é o chefe final do Mapa 3.
 
+### 3b. A Escada de Despertares ✅ (P7.2 do balance, jul/2026)
+
+Um **Awaken** por mapa — o rito que torna o Nihelim daquele mapa ferível (um Vessel comum não arranha um Nihelim; a luz precisa despertar primeiro). Nomeados como estágios do amanhecer — o jogador é o dia nascendo sobre o mundo apagado:
+
+| Mapa | Despertar | Status |
+|---|---|---|
+| 1 | **First Light** | ✅ travado |
+| 2 | **Daybreak** | ✅ travado |
+| 3–6 | Sunrise · Noontide · Zenith · Unsetting Sun | rascunho (ajusta com o design de cada mapa) |
+| Final | **Lumière** — o título do jogo como último degrau | ✅ travado (alinhamento M7 vs dimensão de Nihel a decidir) |
+
+Regra: nomes de despertar não podem usar **Ember/Lumen/Corona** (tags de raridade).
+
 ---
 
 ## 4. Mapa 1 — estrutura ✅

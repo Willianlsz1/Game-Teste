@@ -224,8 +224,14 @@ Valida: `sim gates` + `sim campaign` — 1º prestige no alvo do P0; empurrar +1
 - Rejeitado: cadeia de 3–4 awakens por mapa (dilui — marcos intermediários já são Harbingers + coroa).
 - **Nota do dono (fora de escopo por ora):** repensar depois um sistema tipo o antigo Ascension com **Mémoires** — 1 por mapa, conta a história do mundo e dá bônus poderosos. Não desenhar agora.
 
+### P7.2 — Nome ✅ TRAVADO (jul/2026): **sistema "Awaken" + escada do amanhecer**
+- Sistema mantém **Awaken** (autoexplicativo; rejeitado rebrand "Éveil" e nomes por-Nihelim).
+- Escada (1 despertar por mapa — o jogador É o amanhecer em câmera lenta): **First Light** (M1, Okhra) → **Daybreak** (M2, Naameth) → *rascunhos ajustáveis quando cada mapa for desenhado:* Sunrise (M3) · Noontide (M4) · Zenith (M5) · Unsetting Sun (M6) → **Lumière** = o despertar FINAL (o título do jogo se revela como último degrau; alinhamento exato M7-Vhorel vs dimensão de Nihel decide-se com o design desses mapas).
+- Colisões proibidas em nomes de despertar: Ember/Lumen/Corona (tags de raridade).
+- Travado firme: esquema + First Light + Daybreak + Lumière-final. O miolo é rascunho.
+
 ### Fatias restantes
-- **P7.2** — nome do sistema + escada de nomes por mapa. **P7.3** — requisitos exatos (candidato: coroa acesa em vez de "12 conv" cru). **P7.4** — magnitude via sim + forma do resquício do Modelo 3.
+- **P7.3** — requisitos exatos (candidato: coroa acesa em vez de "12 conv" cru). **P7.4** — magnitude via sim + forma do resquício do Modelo 3.
 Insumos: PASSOS 1–6.
 Valida: `sim campaign` — First Light dentro do orçamento total do P0; Okhra viável só pós-Awaken; poder pós-Awaken vs HP hipotético do início do Mapa 2.
 
