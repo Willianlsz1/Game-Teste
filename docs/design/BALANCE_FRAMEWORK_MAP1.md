@@ -81,6 +81,14 @@ Implementação em golpes: `HP da área = HTK-alvo × dano esperado do jogador n
 - Bounce-back natural: área anterior tem income capado (clamp de nível do mob) → voltar pra farmar é lento de propósito → converge fica atraente. Ciclo do grupo: **Harbinger morto → apanha na entrada → engrena → crescendo → Harbinger**.
 - Números finais das 18 curvas: derivados no sim (`HP = HTK × dano esperado da curva de referência`), na implementação conjunta do P2.
 
+### P2.4 — Dano, ondas e morte ✅ TRAVADO (jul/2026)
+- **Custo de onda** (no poder esperado): área interna 10–20% do HP · entrada de grupo 35–50% · escolta de Harbinger = risco real. `mobAtkByArea` passa a ser DERIVADO desses alvos (dado o TTK novo), não setado à mão.
+- **Ondas por grupo:** G1=1 · G2=2 · G3=2 · G4=3 · G5=3 · G6=3 (teto 3 = restrição de UI atual).
+- **Morte:** cura total, sem punição de recursos; zera o contador do Harbinger (regra dos Marcos mantida).
+- **SUSTAIN 100% CONSTRUÍDO PELO JOGADOR (decisão do dono):** `healOnKillFrac` base 0.10 → **0** (removido). SEM regen-piso gratuito. Curas restantes: level-up (cura total — chove no early, rareia rumo à 1ª parede) e morte. **Heal-on-kill e Regen %/s viram PASSIVAS de tier 1** (requisito registrado pro P6) e o afixo Heal on Kill do armor uncommon sai (troca no P4).
+- **Beat de design resultante:** a atrição crescente + a parede do G1 forçam a 1ª Convergence (~25–40min ✓ P0) — o jogador morre, entende, converge, compra sustain, atravessa. A 1ª parede é o tutorial de prestige.
+- ⚠️ Dependências registradas: P2.5 (threshold) co-tunado com "atingível COM passiva tier-1 de sustain, limítrofe sem" · P5 (gate ≤ fim do G1) · P6 (nós de sustain no tier 1, compráveis com a 1ª convergence).
+
 Decide: TTK-alvo por posição (entrada de área 3–8s · fim de área 1–2s · Harbinger 15–30s · Okhra 45–90s) · TTD/papel da morte (hoje só existe nos min 0–15) · **o freio do runaway F3** (o loop income×lumensBonus composto — decisão estrutural: goldRatio decrescente por área, ou lumensBonus fora do gear, ou custo de gear mais íngreme) · curvas de HP das 18 áreas (vale-e-rampa por área, degrau por grupo).
 Insumos: PASSO 1 · achado F3 do sim (TTK colapsa pra 0.1s sem freio).
 Valida: `sim baseline` — TTK na entrada/fim de cada área dentro da banda; zero paredes não-planejadas; paredes planejadas nos fins de grupo.
@@ -143,6 +151,7 @@ Valida: `sim baseline` com rarity find — frequência de Ember/Lumen/Corona por
 
 ## Log de decisões travadas
 - **jul/2026 — PASSO 0 (Relógio):** 18h ativas · sessão 30–50min c/ regra do beat · ~50/50 ativo/idle · 1º prestige 25–40min.
+- **jul/2026 — P2.4 (dano/ondas/morte):** custo de onda 10–20%/35–50% · ondas 1/2/2/3/3/3 · morte só zera contador · **sustain 100% via passivas** (heal-on-kill e regen%/s tier 1; sem regen grátis) — a 1ª parede força a 1ª Convergence.
 - **jul/2026 — P2.3 (curvas HP):** C3 híbrido Gaiadon — entrada de grupo 8–12 golpes (parede/sinal de converge; emenda ao P2.1), crescendo 5→7 dentro do grupo até o Harbinger.
 - **jul/2026 — P2.2 (freio F3):** A+C — expoentes domados (custo de gear mais íngreme + tetos nos bônus de income) e materiais como segunda parede (padrão Gaiadon).
 - **jul/2026 — P2.1 (TTK-alvo):** Opção A em golpes — entrada 4–7 · fim 1–2 · Harbinger 20–40 · Okhra 60–120 · Tema B +1–2.
