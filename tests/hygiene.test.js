@@ -191,18 +191,21 @@ G.combat.enemies = [];
 ok(dmgBoss1 === dmg1, "siegeWard: boss sozinho (1 vivo) não aplica, igual ao caso genérico de 1 vivo");
 ok(dmgBossEscort < dmgBoss1, "siegeWard: boss + 1 escolta (2 vivos) aplica a redução extra");
 
-// siegeWard: clamp do TOTAL (damageReduction + siegeWard) em 75, não de cada termo isolado
-G.state.data.equipped.helmet = G.gear.buildPiece("helmet", "uncommon");
-G.state.data.equipped.helmet.level = G.gear.cap(G.state.data.equipped.helmet);   // dmgRed alto do helmet
-G.state.invalidateStats();
-ok(G.state.stats().damageReduction + G.state.stats().siegeWard > 75,
+// siegeWard: clamp do TOTAL (damageReduction + siegeWard) em 75, não de cada termo isolado.
+// damageReduction e siegeWard já vêm CADA UM clampado a 75 individualmente em stats() (state.js);
+// forçamos os dois perto do teto individual (via cache) pra provar que a SOMA em combat.js
+// (dr += s.siegeWard; dr = clamp(dr, 0, 75)) reclampa o total, e não deixa a soma passar de 75.
+G.state.stats();   // popula o cache
+G.state._cache.damageReduction = 75;
+G.state._cache.siegeWard = 75;
+ok(G.state._cache.damageReduction + G.state._cache.siegeWard > 75,
   "setup: damageReduction + siegeWard isolados somam > 75 (pré-condição do clamp)");
 G.state.data.hp = 1e15;
 G.combat.enemies = [{ dead: false }, { dead: false }];   // 2 vivos → siegeWard entra na soma
 b0 = G.state.data.hp; G.combat.applyHitToHero(1e6);
 const reducedClamped = b0 - G.state.data.hp;
 G.combat.enemies = [];
-ok(Math.abs(reducedClamped - Math.ceil(1e6 * 0.25)) < 1, "siegeWard: total clampado em 75% (dano final = 25% do bruto), não cada termo isolado");
+ok(Math.abs(reducedClamped - Math.ceil(1e6 * 0.25)) < 1, "siegeWard: total clampado em 75% (dano final = 25% do bruto), não a soma de dois 75%s isolados");
 
 // rarityFind* expostos e INERTES (stats() os expõe; nada os consome até o P8)
 fresh();

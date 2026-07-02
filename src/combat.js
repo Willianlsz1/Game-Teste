@@ -193,10 +193,10 @@ G.combat = {
 
   applyHitToHero(dmg) {
     const s = G.state.stats();
-    // siegeWard (armor despertar): redução extra só quando há 2+ inimigos vivos na onda; clamp total 75
+    // siegeWard (armor despertar): redução extra só quando há 2+ inimigos vivos na onda; clamp total = dmgReductionCap
     let dr = s.damageReduction || 0;
     if (s.siegeWard && this.enemies.filter(e => !e.dead).length >= 2) dr += s.siegeWard;
-    dr = G.util.clamp(dr, 0, 75);
+    dr = G.util.clamp(dr, 0, G.data.balance.dmgReductionCap);
     const reduced = Math.max(1, Math.ceil(dmg * (1 - dr / 100)));
     if (G.ui && G.ui.floater) G.ui.floater(reduced, "enemy");
     G.state.data.hp -= reduced;

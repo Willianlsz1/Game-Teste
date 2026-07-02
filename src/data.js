@@ -442,5 +442,6 @@ G.data = {
     // promoteUncommonCost / convertCommonToUncommon removidos — Rare e Forge voltam no Mapa 2
     convLegacyAtkPct:     8,    // +atk% direto POR convergence (empilha; sente forte no clique)
     convLegacyHpPct:      8,    // +hp%  direto POR convergence (empilha)
+    dmgReductionCap:      75,   // teto de damageReduction, siegeWard e da SOMA dos dois (combat.applyHitToHero)
   },
 };

@@ -117,10 +117,10 @@ G.state = {
       atkSpeed:         G.util.softCap(fin("atkSpeed"), this.currentAtkSpeedSoft(), this.currentAtkSpeedCap()),
       xpBonus:          fin("xpBonus"),
       lumensBonus:      fin("lumensBonus"),
-      damageReduction:  G.util.clamp(fin("damageReduction"), 0, 75),
+      damageReduction:  G.util.clamp(fin("damageReduction"), 0, G.data.balance.dmgReductionCap),
       eliteDmg:         fin("eliteDmg"),
       specialDmg:       fin("specialDmg"),            // gear (Marked Blade) + passiva (Giant Slayer), somados
-      siegeWard:        G.util.clamp(fin("siegeWard"), 0, 75),  // dmgRed extra — combat aplica só com 2+ vivos
+      siegeWard:        G.util.clamp(fin("siegeWard"), 0, G.data.balance.dmgReductionCap),  // dmgRed extra — combat aplica só com 2+ vivos
       rarityFindLumen:  fin("rarityFindLumen"),       // inerte até P8 (Rarity Find)
       rarityFindEmber:  fin("rarityFindEmber"),       // inerte até P8 (Rarity Find)
       rarityFindCorona: fin("rarityFindCorona"),      // inerte até P8 (Rarity Find)
