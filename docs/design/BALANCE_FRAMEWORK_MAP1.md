@@ -276,8 +276,15 @@ Valida: `sim campaign` — First Light dentro do orçamento total do P0; Okhra v
 - Threshold/HP/dano/loot: inalterados (P2.5/P3). Custo no motor ≈ zero além do P8.2 (mesma maquinaria, fixa em vez de rolada).
 - Rejeitado: fases de HP (sistema novo, textura quase invisível em combate automático) · manter número puro (6 Marcos mecanicamente idênticos, e o pool do P8.2 sem palco de apresentação).
 
-### Fatia restante
-- **P8.4** — luta do Okhra.
+### P8.4 — Luta do Okhra ✅ TRAVADO (jul/2026): **a Maré + o finale encenado (emenda do dono)**
+- **Descoberta no travamento:** o código tinha só 5 Harbingers (idx 2,5,8,11,14) — o slot da área 18 era o Okhra direto. O diagrama (H6+Okhra) e o 1/6 dos caps (P8.1) exigiam um 6º Marco. A emenda do dono resolve: **a área 18 ganha o H6**, e matá-lo **invoca o Okhra em cena** (o background do palco muda pra assinatura visual dele — classe CSS agora, arte na fase de design).
+- **Sequência do finale:** threshold 55 → **H6** (par de assinaturas, ensaio geral; a morte fecha os caps 6/6) → **invocação**: com First Light → Okhra manifesta (cenário muda); sem → a invocação falha com a mensagem do portão do P7. Despertou depois: próximo threshold invoca Okhra direto (H6 não re-luta).
+- **EMENDA AO P7.4 (dono, jul/2026):** o portão desliza de "boss da área 18" pro **estágio do Okhra** — H6 fica livre pré-despertar. Semântica "Okhra só com luz desperta" intacta.
+- **A luta:** **The Tide Rises** — escolta re-invocada a cada ~10s (a maré sobe; única mecânica exclusiva do jogo) + assinatura **Siphoning** (o Starving devora). Pergunta final do mapa: seu dano supera a fome dele?
+- Sim valida na implementação: banda 60–120 golpes com a maré ativa · sem loop de morte no poder esperado · intervalo da maré ajustado pra ~4–5 subidas por luta.
+- Rejeitado: 3 modificadores do pool (boss final viraria "um Corona maior") · stats puros (anticlímax).
+
+**→ P8 COMPLETO EM DECISÕES — A ESCADA P0–P8 INTEIRA ESTÁ TRAVADA. Implementação via 10-80-10 (números medidos entram no fechamento).**
 Insumos: PASSOS 4–7.
 Valida: `sim baseline/campaign` com rarity find — frequência de acesos por grupo; recompensa vs orçamento do P3; âncoras do relógio intactas.
 
