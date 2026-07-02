@@ -146,6 +146,21 @@ Decide: caps por raridade re-derivados · distribuição dos beats de promoção
 
 **Diretriz do dono (jul/2026 — pré-travada): MAPA 1 SÓ TEM COMMON + UNCOMMON.** (Confirma a spec original; o Rare no código era drift.) Consequências: **6 beats de promoção** (1/peça, Common→Uncommon, ~G2–G4) · Common carrega G1–G2, **Uncommon carrega G3–G6** (cap dimensionado pra maxar ≈ fim do mapa) · **Rare = conteúdo de Mapa 2** (fica no código, fora do alcance do Mapa 1).
 Insumos: PASSO 3 (custos/materiais definem o ritmo de promoção).
+
+**✅ P4 TRAVADO (jul/2026):**
+- **P4.1 Caps:** Common 500 = G1–G2 (validado: promoções no G2 ✓) · Uncommon 3000 provisório = G3–G6, número final co-validado com o P5 (gear é pacing-limited, não cap-limited).
+- **P4.2a A MATRIZ do Mapa 1** (2 primários + 1 despertar; cada peça é uma CASA única):
+| Peça | Casa | P1 | P2 | Despertar (Uncommon) |
+|---|---|---|---|---|
+| Weapon · a Lâmina | força | ATK "Gilded Edge" | ATK% "Searing Light" | **Marked Blade** — specialDmg vs acesos+Marcos |
+| Gloves · a Mão Nua | a rachadura | Crit Rate "Bare Hand's Instinct" | Crit Dmg "Crackfinder" | **Fracture Sense** — Crit Rate% |
+| Armor · o Vaso Selado | não rachar | HP "Sealed Vessel" | HP% "Golden Seam" | **Siege Ward** — DmgRed extra vs onda 2+ |
+| Helmet · a Vigília | ver+aprender | XP% "Watcher's Lens" | DmgRed "Steadfast Guard" | **Second Sight** — Find: Lumen (inerte até P8) |
+| Boots · o Caminho | ritmo | AtkSpeed "Pathfinder's Pace" | **Find: Ember** "Ember Trail" (inerte até P8) | **Long Road** — XP% menor |
+| Cloak · a Fortuna | o pagamento | Lumens "Gilded Fringe" | Lumens% "Fortune's Weave" | **Corona Call** — Find: Corona (inerte até P8) |
+Única sobreposição deliberada: XP (helmet grande + boots menor). O ATK% do cloak MORRE (conserta o glass-cannon acidental). Nomes em inglês = mecânica travada; refino de nome = lore 🔍.
+- **P4.2b ARQUITETURA (à prova de futuro, revisável por mapa):** primários ETERNOS (escalam por statMult/cap) · **despertar ÚNICO que evolui em estágios** (I→II→III…, uma linha qualitativa nova por estágio, decidida quando o mapa chegar — NUNCA afixo irmão novo) · **escada de cor do gear = escada de luz dos mobs** (Common cinza → Uncommon teal → Rare azul → Épico violeta → **Converged prismático**, usando o canon parqueado "Converged reservado pra gear") · máximo **1 mecanismo de gear novo por MAPA**. Nota do dono: revisamos conforme mecânicas novas chegarem.
+- **P4.3 Escalas:** perLevel/statMult atuais ficam — a calibração deriva o mundo do dano do jogador e absorve.
 Valida: `sim baseline` — nível médio do gear por grupo segue o plano; promoções acontecem nos grupos planejados.
 
 ## PASSO 5 — Convergence (o loop de prestige) ⬜

@@ -32,7 +32,7 @@
 
 ## Pendências conhecidas (ordenadas)
 
-1. **P4 (Gear) — próximo na escada** (diretrizes do dono já cobrem metade: só Common+Uncommon, caps raridade→grupo, substituto do healOnKill no roster de afixos, colocação dos afixos de Rarity Find pro P8). P3 ✅ FECHADO (custo 50 × chance 5% · cap unc 3000 provisório · zero bugs no review).
+1. **P4 ✅ TRAVADO — implementação em andamento** (matriz de 6 casas + arquitetura despertar-em-estágios + escada de cor gear=luz). Depois: P5 (o pivô do relógio).
 2. **Diretrizes do dono pro P3/P4 registradas:** Mapa 1 só Common+Uncommon (Rare = Map 2) · Harbinger sem loot garantido · uncommon mat/Forge fora do Mapa 1.
 2. **P2.2–2.5** — travar em sequência; depois implementar o P2 inteiro junto (10-80-10).
 3. **UI copy (do review):** `ui.js` mostra "Reach level X" pra áreas de fronteira (deveria indicar o Harbinger) e o hint de Awaken material por área ficou obsoleto (idx>=5) — corrigir na fase de UI.
