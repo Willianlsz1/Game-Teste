@@ -442,6 +442,10 @@ G.data = {
     // promoteUncommonCost / convertCommonToUncommon removidos — Rare e Forge voltam no Mapa 2
     convLegacyAtkPct:     8,    // +atk% direto POR convergence (empilha; sente forte no clique)
     convLegacyHpPct:      8,    // +hp%  direto POR convergence (empilha)
+    convGateBase:       276,    // P5.1: gate₁ = fim do G1. gateₙ₊₁ = gateₙ × convGateGrowth (escada)
+    convGateGrowth:     1.30,   // P5.1: cada convergence sobe o requisito de nível → ~12 convergences até o cap
+    convPointsBase:     400,    // P5.3: pontos = convPointsBase × (nível/convGateBase)^convPointsExp
+    convPointsExp:      1.55,   // P5.3: α = ln1.5/ln1.3 → cada convergence no gate rende ~×1.5 a anterior
     dmgReductionCap:      75,   // teto de damageReduction, siegeWard e da SOMA dos dois (combat.applyHitToHero)
   },
 };
