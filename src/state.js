@@ -91,6 +91,7 @@ G.state = {
       add("hp",  "pct",  passEff.hpPct    || 0, "Passives");
       add("crit", "flat", passEff.critRate || 0, "Passives");
       add("critDmg", "flat", passEff.critDmg || 0, "Passives");
+      add("specialDmg", "flat", passEff.specialDmg || 0, "Passives");
       add("healOnKill", "flat", passEff.healOnKill || 0, "Passives");
       add("hpRegen", "flat", passEff.hpRegen || 0, "Passives");
       add("lumensBonus", "flat", passEff.lumensPct || 0, "Passives");
@@ -118,6 +119,11 @@ G.state = {
       lumensBonus:      fin("lumensBonus"),
       damageReduction:  G.util.clamp(fin("damageReduction"), 0, 75),
       eliteDmg:         fin("eliteDmg"),
+      specialDmg:       fin("specialDmg"),            // gear (Marked Blade) + passiva (Giant Slayer), somados
+      siegeWard:        G.util.clamp(fin("siegeWard"), 0, 75),  // dmgRed extra — combat aplica só com 2+ vivos
+      rarityFindLumen:  fin("rarityFindLumen"),       // inerte até P8 (Rarity Find)
+      rarityFindEmber:  fin("rarityFindEmber"),       // inerte até P8 (Rarity Find)
+      rarityFindCorona: fin("rarityFindCorona"),      // inerte até P8 (Rarity Find)
       healOnKill:       fin("healOnKill"),
       hpRegen:          fin("hpRegen"),
       _layers:          L,

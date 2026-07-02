@@ -139,9 +139,9 @@ G.combat = {
     const s    = G.state.stats();
     const crit = G.util.chance(s.crit / 100);
     let raw    = s.atk * (crit ? s.critMult : 1);
-    // specialDmg: rares & bosses
-    if ((target.isBoss || target.rarity) && G.passives)
-      raw *= 1 + (G.passives.effect("specialDmg") || 0) / 100;
+    // specialDmg: rares & bosses (gear + passiva, já somados em s.specialDmg)
+    if (target.isBoss || target.rarity)
+      raw *= 1 + (s.specialDmg || 0) / 100;
     // bossDmg: bosses only
     if (target.isBoss && G.passives)
       raw *= 1 + (G.passives.effect("bossDmg") || 0) / 100;
@@ -193,7 +193,11 @@ G.combat = {
 
   applyHitToHero(dmg) {
     const s = G.state.stats();
-    const reduced = Math.max(1, Math.ceil(dmg * (1 - (s.damageReduction || 0) / 100)));
+    // siegeWard (armor despertar): redução extra só quando há 2+ inimigos vivos na onda; clamp total 75
+    let dr = s.damageReduction || 0;
+    if (s.siegeWard && this.enemies.filter(e => !e.dead).length >= 2) dr += s.siegeWard;
+    dr = G.util.clamp(dr, 0, 75);
+    const reduced = Math.max(1, Math.ceil(dmg * (1 - dr / 100)));
     if (G.ui && G.ui.floater) G.ui.floater(reduced, "enemy");
     G.state.data.hp -= reduced;
     if (G.state.data.hp <= 0) this.onDeath();
