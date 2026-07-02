@@ -12,7 +12,7 @@
 
 - **PASSO 0 (Relógio): ✅** — 18h · 30–50min/beat · 50/50 · 1º prestige 25–40min.
 - **PASSO 1 (Esqueleto): ✅ TRAVADO E IMPLEMENTADO** (ciclo 10-80-10: Opus implementou, Sonnet achou+corrigiu 1 bug de migração de save, Fable revisou) — 18 áreas no código, cap 6000, Harbinger por grupo, Okhra fecha o mapa. Tempos por grupo = contrato a cumprir no P2.
-- **PASSO 2 (Fricção): EM ANDAMENTO, FATIADO** — 2.1 TTK-alvo ✅ (Opção A, em golpes) → 2.2 freio F3 ✅ (A+C) → 2.3 curvas HP ✅ (C3 Gaiadon-híbrido) → 2.4 dano/ondas/morte ✅ (sustain 100% via passivas) → 2.5 threshold+boss ✅ (25+5×grupo, mults derivados). TODOS TRAVADOS — implementação conjunta em andamento.
+- **PASSOS 2–5: ✅ TODOS FECHADOS** (fricção calibrada · economia Gaiadon · matriz de gear · gate escalonado ×1.30 com relógio validado: 1ª conv 38.7min, First Light 17h43). **P6 em travamento fatiado** (Árvore I sequencial: P6.1 ✅ topologia; P6.2 roster NA MESA; P6.3 banco/Second Wind na fila).
 - **Modo de trabalho travado: 10-80-10** — 10% planejamento+pesquisa (Fable) · 80% implementação+review (Opus/Sonnet, nunca Haiku) · 10% review final (Fable).
 
 ## O que o simulador descobriu (fatos medidos — não re-descobrir)

@@ -170,7 +170,13 @@ Valida: `sim baseline` — nível médio do gear por grupo segue o plano; promo�
 - **Gate escalonado:** `gateₙ = round(276 × 1.30ⁿ)`, n = convergences já feitas (fórmula direta, não composta) → **~12 convergences** até o cap 6000, espalhadas pelos grupos POR CONSTRUÇÃO (escada: 276·359·466·606·788·1025·1332·1732·2251·2927·3805·4946 — validada em `tests/convergence.test.js`).
 - **Pontos:** cada convergence rende **~×1.5 a anterior** → expoente derivado α = ln1.5/ln1.3 ≈ **1.55**; fórmula candidata `pontos = 400 × (nível/276)^1.55` (P5.2 valida no sim). Empurrar 1 grupo além do gate ≈ ×2.1 pontos (mata o F2).
 - Legibilidade (a queixa do dono com o sistema antigo): UI mostra UM número — "Próxima Convergence: nível Y".
-- P5.2 (fórmula no sim) e P5.4 (Legacy) e P5.5 (política realista do sim): em andamento.
+- **P5 FECHADO ✅ (jul/2026), ciclo 10-80-10 completo:**
+  - Implementação: gate escalonado + fórmula nova em `convergence.js` (weights/legacy{C,k}/gateLevel/levelTerm REMOVIDOS; multiplicadores de passiva e Legacy +8%/+8% intactos [P5.4 default]); UI "Next Convergence at Lv X"; política do sim = gate dinâmico (P5.5).
+  - **O RELÓGIO FECHOU** — grade venceu com `baseXp 200` (28→200; xpCurveExp 1.62 INTACTO — não precisou reabrir): 1ª conv **38.7min** ✓ · First Light **17h43** (contrato 18h, −1.4%) ✓ · Okhra 19h37 · convergences G1:1/G2:3/G3:2/G4:3/G5:1/G6:2 ✓ · razão de pontos média 1.64 (picos ×2.1 empurrando) ✓ · desvio de grupo médio ~22% (era 206–570%).
+  - Growth ×1.30 confirmado ótimo por medição (1.25→razão 1.51 grindy; 1.35→1.74 estoura banda).
+  - Review adversarial: **zero bugs**; robustez cross-seed (seed 2: 38.9min/17h27, variância <1%); +`tests/convergence.test.js` (27 asserts).
+  - **Decisão registrada (ratificar):** pós-cap — após a 12ª convergence o gate (6430) passa do teto de nível do mapa (6000); sem trava dura no código, inalcançável na prática. Recomendação: DEIXAR ABERTO — o Mapa 2 sobe o teto de nível e a 13ª convergence vira alcançável naturalmente (a escada atravessa mapas sem costura).
+  - Sobras corretamente endereçadas: promoções lockstep no G3 → cadência de gear (P3-achado, política realista futura) · custos de passiva invalidados pela renda nova → **P6** · miolo carnudo nas re-subidas → Opção A por design.
 
 **Pergunta central:** quando convergir vale a pena, e quanto pagar por empurrar mais fundo?
 
