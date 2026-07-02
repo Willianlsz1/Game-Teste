@@ -217,7 +217,7 @@ function freshSim(opts) {
     pendingHits: [], spawnCount: 0, _lastAreaIndex: -1, _bossKills: 0,
     _clock: 0, _gains: [],
   });
-  M.income = 0; M.deaths = 0; M.matByGroup = {};
+  M.income = 0; M.deaths = 0; M.matByGroup = {}; M.litByGroup = {};
   // P5: gate escalonado — a política converge quando canConverge() (o gate JÁ força
   // profundidade). push = multiplicador opcional sobre o gate corrente (empurrar mais fundo).
   return {
@@ -433,6 +433,22 @@ function scenarioCampaign() {
   const flT = sim.firstLightAt != null ? fmtT(sim.firstLightAt) : '—';
   console.log(`  awaken mat ≥ 1 em ${awT} · First Light em ${flT}` +
     (sim.awakenMatAt != null && sim.firstLightAt != null ? ` (folga ${fmtT(sim.firstLightAt - sim.awakenMatAt)})` : ''));
+
+  // ---- acesos por grupo (P8.1): frequência do Rarity Find (kills por tier) ----
+  const WL = [7, 11, 15, 15, 15];
+  console.log('\n' + row(['grupo', 'common', 'Ember', 'Lumen', 'Corona'], WL));
+  const lKeys = Object.keys(M.litByGroup).map(Number).sort((a, b) => a - b);
+  let tC = 0, tE = 0, tL = 0, tCo = 0;
+  const pctOf = (n, tot) => tot ? (100 * n / tot).toFixed(n / tot < 0.001 ? 3 : 2) + '%' : '0%';
+  for (const g of lKeys) {
+    const b = M.litByGroup[g];
+    tC += b.common; tE += b.ember; tL += b.lumen; tCo += b.corona;
+    const tot = b.common + b.ember + b.lumen + b.corona;
+    console.log(row(['G' + (g + 1), fmtN(b.common),
+      b.ember + ' (' + pctOf(b.ember, tot) + ')', b.lumen + ' (' + pctOf(b.lumen, tot) + ')', b.corona + ' (' + pctOf(b.corona, tot) + ')'], WL));
+  }
+  const totAll = tC + tE + tL + tCo;
+  console.log(`  total: common ${fmtN(tC)} · Ember ${tE} (${pctOf(tE, totAll)}) · Lumen ${tL} (${pctOf(tL, totAll)}) · Corona ${tCo} (${pctOf(tCo, totAll)})`);
 
   // ---- TTK de RE-SUBIDA (Opção A): nas runs 2+, HTK real ao re-entrar em área já
   // visitada em run ANTERIOR — valida que "derreter" (HTK ≤ 2) vem do prestige.
