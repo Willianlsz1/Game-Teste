@@ -89,6 +89,13 @@ Implementação em golpes: `HP da área = HTK-alvo × dano esperado do jogador n
 - **Beat de design resultante:** a atrição crescente + a parede do G1 forçam a 1ª Convergence (~25–40min ✓ P0) — o jogador morre, entende, converge, compra sustain, atravessa. A 1ª parede é o tutorial de prestige.
 - ⚠️ Dependências registradas: P2.5 (threshold) co-tunado com "atingível COM passiva tier-1 de sustain, limítrofe sem" · P5 (gate ≤ fim do G1) · P6 (nós de sustain no tier 1, compráveis com a 1ª convergence).
 
+### P2.5 — Threshold do Harbinger + mults de boss ✅ TRAVADO (jul/2026)
+- **Threshold escalado por grupo: `25 + 5×grupo`** → 30/35/40/45/50/55 kills sem morrer, contados na 3ª área do grupo (campo de invocação; trocar de área zera — comportamento atual mantido).
+- **Mults derivados, não setados:** Harbinger HP = HTK 20–40 (alvo 30) × dano esperado no fim do grupo · dano ×2 sobre o mob da área. **Okhra:** HTK 60–120 (alvo 90) · dano ×2.5. O `bossHpMult` global ×4 morre; vira valor por Marco derivado das bandas.
+- Recompensa dos Marcos: mults atuais ficam; "bônus de formatura" (materiais garantidos) = P3.
+
+**→ P2 COMPLETO EM DECISÕES. Implementação conjunta via 10-80-10 (jul/2026).**
+
 Decide: TTK-alvo por posição (entrada de área 3–8s · fim de área 1–2s · Harbinger 15–30s · Okhra 45–90s) · TTD/papel da morte (hoje só existe nos min 0–15) · **o freio do runaway F3** (o loop income×lumensBonus composto — decisão estrutural: goldRatio decrescente por área, ou lumensBonus fora do gear, ou custo de gear mais íngreme) · curvas de HP das 18 áreas (vale-e-rampa por área, degrau por grupo).
 Insumos: PASSO 1 · achado F3 do sim (TTK colapsa pra 0.1s sem freio).
 Valida: `sim baseline` — TTK na entrada/fim de cada área dentro da banda; zero paredes não-planejadas; paredes planejadas nos fins de grupo.
@@ -151,6 +158,7 @@ Valida: `sim baseline` com rarity find — frequência de Ember/Lumen/Corona por
 
 ## Log de decisões travadas
 - **jul/2026 — PASSO 0 (Relógio):** 18h ativas · sessão 30–50min c/ regra do beat · ~50/50 ativo/idle · 1º prestige 25–40min.
+- **jul/2026 — P2.5 (threshold/boss):** threshold 25+5×grupo · mults derivados das bandas HTK (Harbinger ~30 golpes/dano ×2 · Okhra ~90/×2.5).
 - **jul/2026 — P2.4 (dano/ondas/morte):** custo de onda 10–20%/35–50% · ondas 1/2/2/3/3/3 · morte só zera contador · **sustain 100% via passivas** (heal-on-kill e regen%/s tier 1; sem regen grátis) — a 1ª parede força a 1ª Convergence.
 - **jul/2026 — P2.3 (curvas HP):** C3 híbrido Gaiadon — entrada de grupo 8–12 golpes (parede/sinal de converge; emenda ao P2.1), crescendo 5→7 dentro do grupo até o Harbinger.
 - **jul/2026 — P2.2 (freio F3):** A+C — expoentes domados (custo de gear mais íngreme + tetos nos bônus de income) e materiais como segunda parede (padrão Gaiadon).
