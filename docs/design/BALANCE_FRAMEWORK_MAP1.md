@@ -203,6 +203,13 @@ Valida: `sim gates` + `sim campaign` — 1º prestige no alvo do P0; empurrar +1
 - **Copa:** The Ring Closes (grátis ao completar — P6.1).
 - Magnitudes e custos: derivados no ciclo de implementação contra a renda real do P5 (400→84K pts; alvo "Árvore I completa ≈ fim do mapa").
 
+### P6.3 — Banco, Second Wind e pós-cap ✅ TRAVADO (jul/2026)
+- **Second Wind → ÁRVORE II (Mapa 2).** A regra "morte zera o contador" fica ABSOLUTA no Mapa 1 (onde ela educa); nós que dobram regras do mundo = a novidade característica das árvores futuras.
+- **Banco (Golden Wake etc.) → candidatos registrados da Árvore II** — o banco é o embrião do design do Mapa 2.
+- **Pós-cap da Convergence: ABERTO** (sem trava) — o Mapa 2 sobe o teto de nível e a 13ª convergence vira alcançável naturalmente; a escada atravessa mapas sem costura.
+
+**→ P6 COMPLETO EM DECISÕES (P6.1 topologia · P6.2 roster · P6.3 banco). Implementação conjunta via 10-80-10 em andamento.**
+
 **Pergunta central:** quanto poder permanente o Mapa 1 inteiro deve render, e em que ordem o jogador o compra?
 
 Decide: orçamento total de pontos do mapa (= convergences × pontos médios, sai do P5) · custo dos tiers re-calibrado pra esse orçamento (intenção: tier 1 de UMA árvore ≈ o mapa inteiro? ou mais?) · **UNIT re-derivado da escala real** (achado F4: flats mortos — converter pra % ou escalar) · elenco final dos nós (crit stack ×3 → ×2? atkSpeed node? nós de custo de gear na Fracture? `miniBossThreshold` adiado?) · orçamento de poder por tier (T1 ≈ ×2–3 no eixo · T2 especializado · T3 = Mapa 2).
