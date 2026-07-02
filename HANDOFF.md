@@ -32,7 +32,7 @@
 
 ## Pendências conhecidas (ordenadas)
 
-1. **P2 — IMPASSE DE CALIBRAÇÃO na mesa do Willian:** HTK-fim 1.5 na 1ª passada é inatingível com HP-nunca-cai + freio → recomendação A: one-shot só nas re-subidas pós-Convergence (fronteira fica carnuda). Decidir → recalibrar → travar P2.
+1. **P2 — RECALIBRAÇÃO FINAL em andamento** (Opção A do dono: fim-de-área 1–2 golpes = re-subidas pós-Convergence; 1ª passada fica carnuda; avanço esperado = gear+prestige juntos). Depois: validar contrato → travar P2 ✅.
 2. **Diretrizes do dono pro P3/P4 registradas:** Mapa 1 só Common+Uncommon (Rare = Map 2) · Harbinger sem loot garantido · uncommon mat/Forge fora do Mapa 1.
 2. **P2.2–2.5** — travar em sequência; depois implementar o P2 inteiro junto (10-80-10).
 3. **UI copy (do review):** `ui.js` mostra "Reach level X" pra áreas de fronteira (deveria indicar o Harbinger) e o hint de Awaken material por área ficou obsoleto (idx>=5) — corrigir na fase de UI.
