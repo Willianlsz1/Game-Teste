@@ -366,5 +366,88 @@ ok(!!G.data.areas[lastIdx].boss && !!G.data.areas[lastIdx].mapBoss,
   G.combat.enemies = []; G.ui = realUi;
 })();
 
+// =============================================================
+// TRIAGE FIXES — regressão dos bugs 1-6 (correções da lista triada)
+// =============================================================
+
+// bug 2: simulateIdle não trunca as 8h (cap dinâmico derivado, não teto fixo de 50k ticks)
+(function () {
+  fresh();
+  const orig = G.state.stats.bind(G.state);
+  G.state.stats = function () { const s = orig(); s.atkSpeed = 1.999; return s; }; // lategame perto do soft-cap
+  const away = 8 * 3600;
+  const r = G.combat.simulateIdle(away);
+  G.state.stats = orig;
+  ok(r && r.seconds >= 7.99 * 3600,
+    `simulateIdle(8h) @ atkSpeed 1.999 simula ≥ 7.99h (foi ${r ? (r.seconds / 3600).toFixed(3) : "null"}h — sem truncar em 50k ticks)`);
+})();
+
+// bug 5: nível de gear negativo no save vira 1 (piso), ATK volta a ser positivo
+store = {};
+store[G.state.SAVE_KEY] = JSON.stringify({ level: 50, equipped: { weapon: { slot: "weapon", rarity: "common", level: -50 } } });
+G.state.data = null; G.state.load();
+ok(G.state.data.equipped.weapon.level === 1, "reconcile: gear level negativo (-50) clampado ao piso 1");
+ok(G.state.stats().atk > 0, "gear level clampado → ATK > 0 (não afixo negativo)");
+
+// bug 6: hp não-numérico no save é coagido para maxHp (mesmo padrão do tree1)
+store = {};
+store[G.state.SAVE_KEY] = JSON.stringify({ hp: "abc" });
+G.state.data = null; G.state.load();
+ok(Number.isFinite(G.state.data.hp) && G.state.data.hp === G.state.maxHp(),
+  "load: hp não-numérico ('abc') coagido para maxHp");
+store = {};
+store[G.state.SAVE_KEY] = JSON.stringify({ hp: 0 });
+G.state.data = null; G.state.load();
+ok(G.state.data.hp === G.state.maxHp(), "load: hp <= 0 ainda vira maxHp (comportamento preservado)");
+store = {};
+store[G.state.SAVE_KEY] = JSON.stringify({ level: 1, hp: 5 });
+G.state.data = null; G.state.load();
+ok(G.state.data.hp === 5, "load: hp válido (5) preservado");
+
+// ---- bugs 1, 3, 4 precisam do ui.js (DOM falso) ----
+function fakeEl() {
+  return { textContent: "", innerHTML: "", style: {},
+    classList: { toggle() {}, add() {}, remove() {}, contains() { return false; } },
+    getAttribute: () => null, setAttribute() {}, addEventListener() {},
+    querySelectorAll: () => [], appendChild() {}, children: [] };
+}
+global.document = {
+  getElementById: () => fakeEl(), querySelectorAll: () => [], querySelector: () => fakeEl(),
+  addEventListener() {}, body: { classList: { toggle() {} } },
+};
+eval(fs.readFileSync(path.join(SRC, "ui.js"), "utf8"));
+G.ui.cache();
+
+// bug 3: mapNodePos cobre todas as áreas, sem posições duplicadas
+ok(G.ui.mapNodePos.length === G.data.areas.length,
+  `mapNodePos cobre as ${G.data.areas.length} áreas (era 9)`);
+(function () {
+  const seenPos = new Set(); let dupPos = false;
+  for (const p of G.ui.mapNodePos) { const k = p.join(","); if (seenPos.has(k)) dupPos = true; seenPos.add(k); }
+  ok(!dupPos, "mapNodePos sem posições duplicadas");
+})();
+
+// bug 4: pack do painel (packSizeFor) === packByGroup para os 18 índices — fonte única com combat
+(function () {
+  const b = G.data.balance; let packOk = true;
+  for (let i = 0; i < G.data.areas.length; i++) {
+    const exp = b.packByGroup[G.util.clamp(Math.floor(i / b.groupSize), 0, b.packByGroup.length - 1)];
+    if (G.combat.packSizeFor(i) !== exp) packOk = false;
+  }
+  ok(packOk, "packSizeFor === packByGroup para os 18 índices (painel derivado da fonte de combat)");
+})();
+
+// bug 1: trocar de área (goToArea/travelTo) limpa a onda em G.combat.enemies
+fresh();
+G.state.data.maxAreaUnlocked = 5;
+G.state.data.areaIndex = 0;
+G.state.invalidateStats();
+G.state.data.hp = G.state.maxHp();
+G.combat.spawn();
+ok(G.combat.enemies.length > 0, "setup: onda spawnada na área 0");
+G.ui.goToArea(3);
+ok(G.combat.enemies.length === 0, "troca de área (goToArea) limpa G.combat.enemies");
+ok(G.combat.enemy === null, "troca de área zera o alias G.combat.enemy");
+
 console.log(failed === 0 ? "\nALL PASS" : `\n${failed} FAIL`);
 process.exit(failed === 0 ? 0 : 1);

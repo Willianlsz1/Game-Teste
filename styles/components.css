@@ -8,27 +8,11 @@
   color: var(--muted); margin: 16px 0 8px;
 }
 
-/* ---- painel genérico (legacy) ---- */
-.panel {
-  background: var(--card); border: 1px solid var(--card-border);
-  border-radius: 14px; padding: 16px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
-}
-.panel-title {
-  font-family: "Cormorant Garamond", serif; font-style: italic;
-  font-size: 22px; margin-bottom: 12px; color: var(--cyan);
-}
-.panel-title small { color: var(--muted); font-size: 14px; }
-
-/* ---- herói — tier e nível (modal do Seeker) ---- */
+/* ---- herói — card do Seeker (modal) ---- */
 .hero-card {
   background: linear-gradient(160deg, rgba(46, 124, 196, 0.15), transparent);
   border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; text-align: center;
 }
-.hero-tier {
-  font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 19px; color: var(--gold);
-}
-.hero-level { color: var(--muted); margin: 2px 0 10px; }
-.hero-level b { color: var(--text); }
 
 /* ---- lista de stats ---- */
 .stats { list-style: none; margin-top: 12px; }
@@ -53,25 +37,6 @@
   font-size: 11px; font-weight: 700; color: #fff; text-shadow: 0 1px 2px #000, 0 0 4px #000;
 }
 
-/* ---- slots de equipamento legacy ---- */
-.equip-slots { display: flex; flex-direction: column; gap: 8px; }
-.equip-slot {
-  border: 1px solid var(--card-border); border-radius: 8px; padding: 8px 10px;
-  cursor: pointer; transition: transform 0.1s, background 0.1s;
-}
-.equip-slot:not(.empty):hover { background: rgba(255, 255, 255, 0.04); transform: translateX(2px); }
-.equip-slot.empty { opacity: 0.5; cursor: default; }
-.slot-label { font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: 1px; }
-.equip-slot__head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-.equip-slot__lvl { font-size: 11px; font-weight: 600; color: var(--cyan); white-space: nowrap; }
-.equip-slot__actions { display: flex; gap: 6px; margin-top: 8px; }
-.equip-slot__actions .mini { flex: 1; }
-.mini[disabled] { opacity: 0.5; cursor: default; }
-.slot-empty { float: right; font-style: italic; color: var(--muted); }
-.item-name { display: block; font-weight: 600; margin: 2px 0; }
-.affixes, .inv-affixes { font-size: 12px; color: var(--teal); }
-.affix { display: inline-block; margin-right: 8px; }
-
 /* ---- botões ---- */
 .btn {
   width: 100%; border: none; border-radius: 10px; cursor: pointer;
@@ -79,13 +44,6 @@
   color: var(--text); transition: transform 0.08s, filter 0.1s;
 }
 .btn:active { transform: scale(0.97); }
-.attack-btn {
-  background: linear-gradient(135deg, var(--sky), var(--cyan));
-  font-size: 18px; margin-top: 12px; box-shadow: 0 4px 16px rgba(55, 200, 240, 0.35);
-}
-.attack-btn:hover { filter: brightness(1.1); }
-.upgrade-btn { background: linear-gradient(135deg, #6b4f1a, var(--gold)); color: #1a1206; }
-.upgrade-btn small { font-weight: 500; opacity: 0.85; }
 .btn.ghost {
   background: transparent; border: 1px solid var(--card-border); margin-top: 10px;
   color: var(--muted); font-size: 13px;
@@ -127,21 +85,6 @@
 }
 .btn-ornate::before { left: 9px; } .btn-ornate::after { right: 9px; }
 
-/* ---- chip / badge de raridade ---- */
-.chip {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px;
-  border: 1px solid var(--card-border); background: rgba(0, 0, 0, 0.35); color: var(--text);
-}
-.chip--common { border-color: var(--rarity-common); color: var(--rarity-common); }
-.chip--magic { border-color: var(--rarity-magic); color: var(--rarity-magic); }
-.chip--rare { border-color: var(--rarity-rare); color: var(--rarity-rare); }
-.chip--epic { border-color: var(--rarity-epic); color: var(--rarity-epic); }
-.chip--legendary {
-  border-color: var(--rarity-legendary); color: var(--rarity-legendary);
-  box-shadow: 0 0 10px rgba(232, 181, 74, 0.35);
-}
-
 /* ---- botão de ícone (toolbar / ações) ---- */
 .icon-btn {
   position: relative; width: 44px; height: 44px; border-radius: 10px; cursor: pointer;
@@ -172,80 +115,6 @@
 .res-pill--gold { border-color: var(--gold); }
 .res-pill--gold .res-pill__icon { color: var(--gold); }
 
-/* ---- banner de nome (pincelada/rasgado) ---- */
-.name-banner {
-  display: inline-block; position: relative; padding: 4px 24px;
-  font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 18px; color: var(--text);
-  background: linear-gradient(90deg, transparent, rgba(10, 16, 32, 0.95) 12%, rgba(10, 16, 32, 0.95) 88%, transparent);
-  clip-path: polygon(3% 0, 98% 7%, 96% 100%, 2% 90%);
-}
-
-/* ---- banner de área legacy ---- */
-.area-banner {
-  display: inline-flex; align-items: center; gap: 14px; padding: 8px 16px; border-radius: 10px;
-  background: linear-gradient(180deg, #101a30, rgba(16, 26, 48, 0.7)); border: 1px solid var(--card-border);
-}
-.area-banner__nav { background: none; border: none; color: var(--cyan); cursor: pointer; font-size: 16px; padding: 4px; }
-.area-banner__nav:hover { filter: brightness(1.4); }
-.area-banner__name { font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 20px; color: var(--text); }
-
-/* ---- painel colapsável ---- */
-.panel__header { display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
-.panel__caret { transition: transform 0.15s; color: var(--cyan); }
-.panel--collapsed .panel__caret { transform: rotate(-90deg); }
-.panel--collapsed .panel__body { display: none; }
-
-/* ---- linha de quest/objetivo ---- */
-.quest { display: flex; flex-direction: column; gap: 5px; padding: 8px 0; }
-.quest__row { display: flex; justify-content: space-between; font-size: 14px; }
-.quest__progress { color: var(--muted); }
-.quest .bar { height: 8px; }
-.quest .bar-fill { background: linear-gradient(90deg, var(--teal), var(--cyan)); }
-
-/* ---- abas ---- */
-.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--card-border); }
-.tab {
-  background: none; border: none; cursor: pointer; font-family: inherit; font-size: 13px;
-  padding: 8px 14px; color: var(--muted); border-bottom: 2px solid transparent;
-}
-.tab:hover { color: var(--text); }
-.tab.is-active { color: var(--cyan); border-bottom-color: var(--cyan); }
-
-/* ---- tooltip ---- */
-.tooltip { position: relative; display: inline-flex; }
-.tooltip__content {
-  position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
-  white-space: nowrap; padding: 6px 10px; border-radius: 6px; font-size: 12px;
-  background: rgba(10, 16, 32, 0.96); border: 1px solid var(--card-border); color: var(--text);
-  opacity: 0; pointer-events: none; transition: opacity 0.12s; z-index: 50;
-}
-.tooltip:hover .tooltip__content { opacity: 1; }
-
-/* ---- toggle (switch) ---- */
-.toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
-.toggle input { display: none; }
-.toggle__track {
-  width: 42px; height: 22px; border-radius: 999px; background: rgba(0, 0, 0, 0.5);
-  border: 1px solid var(--card-border); position: relative; transition: background 0.15s, border-color 0.15s;
-}
-.toggle__track::after {
-  content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
-  border-radius: 50%; background: var(--muted); transition: transform 0.15s, background 0.15s;
-}
-.toggle input:checked + .toggle__track { background: rgba(55, 200, 240, 0.3); border-color: var(--cyan); }
-.toggle input:checked + .toggle__track::after { transform: translateX(20px); background: var(--cyan); }
-
-/* ---- loot chip (ícone + quantidade) ---- */
-.loot-chip {
-  position: relative; width: 48px; height: 48px; border-radius: 8px;
-  display: inline-flex; align-items: center; justify-content: center; font-size: 24px;
-  background: var(--card); border: 1px solid var(--card-border);
-}
-.loot-chip__qty {
-  position: absolute; right: -4px; bottom: -4px; font-size: 11px; font-weight: 700;
-  background: var(--sky); color: var(--text); border-radius: 999px; padding: 1px 6px;
-}
-
 /* ---- modal / diálogo ---- */
 .modal-overlay {
   position: fixed; inset: 0; background: rgba(4, 6, 12, 0.7); backdrop-filter: blur(3px);
@@ -262,10 +131,6 @@
 }
 .modal__body { color: var(--text); font-size: 14px; line-height: 1.5; }
 .modal__actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
-.modal--wide { width: min(520px, 94vw); max-height: 86vh; overflow-y: auto; }
-.char-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; }
-.modal .equip-slots { margin-bottom: 6px; }
-.modal .inv-grid { max-height: 50vh; }
 .modal-close {
   position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 8px;
   cursor: pointer; background: var(--card); border: 1px solid var(--card-border); color: var(--text);
@@ -273,19 +138,3 @@
   transition: border-color 0.1s, filter 0.1s;
 }
 .modal-close:hover { border-color: var(--bad); }
-
-/* ---- inventário legacy ---- */
-.inv-grid { display: flex; flex-direction: column; gap: 8px; max-height: 70vh; overflow-y: auto; }
-.inv-item { border: 1px solid var(--card-border); border-left-width: 3px; border-radius: 8px; padding: 8px 10px; }
-.inv-top { display: flex; justify-content: space-between; align-items: baseline; }
-.inv-slot { font-size: 11px; color: var(--muted); }
-.inv-affixes { margin: 4px 0 8px; }
-.inv-actions { display: flex; gap: 6px; }
-.mini {
-  flex: 1; border: none; border-radius: 6px; padding: 6px; cursor: pointer;
-  font-family: inherit; font-size: 12px; font-weight: 600;
-}
-.mini.equip { background: var(--sky); color: var(--text); }
-.mini.equip:hover { filter: brightness(1.15); }
-.mini.sell { background: rgba(232, 181, 74, 0.2); color: var(--gold); }
-.mini.sell:hover { background: rgba(232, 181, 74, 0.35); }

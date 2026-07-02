@@ -140,7 +140,7 @@ G.gear = {
       const rarity = (prev && prev.rarity && G.data.rarities.find((r) => r.id === prev.rarity))
         ? prev.rarity : "common";
       const piece  = this.buildPiece(slot.id, rarity);
-      if (prev && prev.level) piece.level = Math.min(prev.level, this.cap(piece));
+      if (prev && prev.level) piece.level = Math.max(1, Math.min(prev.level, this.cap(piece)));
       out[slot.id] = piece;
     }
     return out;
