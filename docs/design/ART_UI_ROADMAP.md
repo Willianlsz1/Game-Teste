@@ -58,7 +58,10 @@ HUD · os 5 modais · World Map com os 18 nós (Porto precisa de traçado) · pa
 3. Prompt = linguagem visual da lore (§8) + as linhas das referências + a regra de luz da Etapa 0.
 4. Gerou/recebeu a arte → teste NO JOGO antes de aprovar (a arte que funciona isolada às vezes morre em cima do background).
 
-## Perguntas abertas (dono decide)
-1. Refazer TODOS os mobs da floresta ou só os 4 iniciais? (os 10 têm arte; "refazer" pode ser só os que destoarem da Etapa 0)
-2. Pipeline: arte por IA (prompts) ou artista? (muda o formato do doc de prompts)
-3. Os 6 Harbingers reservados da floresta com arte pronta — aproveitar 3 como titulares (decisão de lore pendente) economiza 3 artes novas.
+## Decisões do dono ✅ (jul/2026)
+1. **REBOOT TOTAL de arte** — com os Nihelim a temática do mapa mudou; todos os mobs ganham arte nova (⚠️ flag de lore: se além da ARTE o dono quiser trocar NOMES/roster do bestiário da floresta, é decisão de lore a travar antes dos prompts — os 10 nomes atuais são canon).
+2. **Pipeline: IA — ChatGPT imagens.** Kit de prompts em `ART_PROMPTS_MAP1.md` (bloco de estilo mestre + templates por categoria + fluxo de consistência).
+3. **Os 6 Harbingers reservados também são refeitos** (sem reaproveitamento). A decisão de lore "quais 3 viram titulares" segue aberta.
+
+## Vantagem herdada da lore (não redescobrir)
+A **chave de arte já está travada** em `DECISOES_JUL26.md §8`: cel-shaded limpo + detalhe deliberado, blocos de cor "água de vitral", filigrana onde importa, detalhe = forma (NUNCA ruído), silhueta vertical fechada, fundo neutro, 1 ponto focal luminoso. **Okhra e Nihel já têm design aprovado em arte.** Marca de família dos Nihelim: o eco do anel quebrado. A Etapa 0 então se reduz a: paleta por tema (Floresta vs Porto) + o bloco de estilo mestre em inglês pros prompts.
