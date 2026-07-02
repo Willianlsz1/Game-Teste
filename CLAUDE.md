@@ -62,6 +62,24 @@ To reset save from the browser console: `G.state.reset(); location.reload()`
 
 ---
 
+## Session Harness
+
+**`HANDOFF.md` (repo root) is the living state between sessions — read it before any work.** It says where work stopped, what is locked, and the ordered pending list. Do not re-derive established facts or reopen locked decisions.
+
+Project slash commands (`.claude/commands/`):
+
+| Command | When | What it does |
+|---------|------|--------------|
+| `/retomar` | start of session | read HANDOFF + active track doc, run canon check, report position in ≤10 lines |
+| `/handoff` | end of session | rewrite HANDOFF, verify definition-of-done, run canon check, commit+push |
+| `/travar <decisão>` | a decision is made | record it in the right SPEC + HANDOFF, with sim validation if numeric |
+| `/balance <pergunta>` | any balance question | answer ONLY via `tools/sim.js` (never from theory); in-memory overrides for candidates |
+| `/canon` | doc hygiene | run `tools/check_canon.js`, fix live drift (superseded terms), extend TERMS list |
+
+**Doc discipline:** SPEC (living, one per system) vs LOG (dated audit — act on it, then delete or banner). A doc that contradicts the code gets fixed or bannered within the session that notices it. `node tools/check_canon.js` exits 1 on live drift (docs only; `src/` is exempt until renames are ordered by the balance work).
+
+---
+
 ## Architecture Rules
 
 **The G object is the entire module system.** All modules live on `G`. Script load order in `index.html` is the dependency order — do not reorder.

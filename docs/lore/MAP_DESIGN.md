@@ -67,4 +67,4 @@ Pontas soltas herdadas (🔍): destino do **The Pale Reunion** (ex-chefe do Mapa
 - Total de Mapas + o que é o Mapa 4.
 - Mapa 1: confirmar/definir o Chefe de Mapa.
 - Mapa 2: definir os dois lugares (X, Y).
-- Mobs específicos, sub-bosses e Eidola de cada Mapa (fase de criação, com a pirâmide de poder).
+- Mobs específicos, sub-bosses e Harbingers de cada Mapa (fase de criação, com a pirâmide de poder).

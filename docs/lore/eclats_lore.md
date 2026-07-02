@@ -332,7 +332,7 @@ O jogo é em **inglês** (UI, textos, tooltips). A regra dos idiomas governa de 
 |---|---|---|
 | **Hebraico** | A verdade primordial — o que o mundo esqueceu | Or Ein Sof, HaShevirah |
 | **Francês** | O mundo de hoje — a civilização herdeira | Éclats, Lumière, Ordre des Éclairés, La Fracture, L'Éveillé |
-| **Inglês** | A taxonomia das criaturas + termos do mundo de hoje | The Fragmented, The Consumed, The Eidola, The Claimed, The Fracture, **The Mending** |
+| **Inglês** | A taxonomia das criaturas + termos do mundo de hoje | The Fragmented, The Consumed, The Harbingers, The Claimed, The Fracture, **The Mending** |
 | **Latim** | O Nada e seu território | Nil Aeternum, **Cortices** |
 
 Nihel é o único bilíngue: **La Fracture** (o mundo) e **The Fracture** (a entidade). Ele atravessa as camadas porque é a fenda entre elas.

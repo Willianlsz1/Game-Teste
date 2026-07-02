@@ -1,6 +1,6 @@
 # Éclats of Lumière — Rarity Find (chance de mob raro)
 
-> Como o jogador aumenta a chance de aparecer mobs raros (Kindled/Luminous/Radiant). Decisão do dono (jun/2026).
+> Como o jogador aumenta a chance de aparecer mobs raros (Ember/Lumen/Corona — antes Ember/Lumen/Corona). Decisão do dono (jun/2026).
 
 ## Princípio
 - **Base = 0%.** Sem gear nem passiva, NENHUM raro spawna — só Common. A chance é construída do zero pelo jogador.
@@ -8,7 +8,7 @@
 - Quanto mais luz a criatura carrega = mais rara = mais forte (a cor conta a história).
 
 ## Mecânica
-Para cada tier T (Kindled, Luminous, Radiant):
+Para cada tier T (Ember, Lumen, Corona):
 ```
 chance_T = min( rarityFind_T (do gear) , cap_T )
 cap_T    = capPassivo_T   (sobe de 0 até o máximo via passivas)
@@ -20,15 +20,15 @@ cap_T    = capPassivo_T   (sobe de 0 até o máximo via passivas)
 ## Caps máximos (TRAVADOS)
 | Tier | Base | **Cap máx** | Poder (~×common) |
 |------|------|-------------|------------------|
-| **Kindled** | 0% | **30%** | ~3× |
-| **Luminous** | 0% | **15%** | ~6× |
-| **Radiant** | 0% | **5%** | ~10× (+modificador) |
+| **Ember** | 0% | **30%** | ~3× |
+| **Lumen** | 0% | **15%** | ~6× |
+| **Corona** | 0% | **5%** | ~10× (+modificador) |
 
 ## Ordem de roll (combat `_buildOne`)
 Do mais raro pro mais comum (o primeiro que acertar vence):
-1. **Radiant** — `chance(min(rarityFind.radiant, 5%))`
-2. **Luminous** — `chance(min(rarityFind.luminous, 15%))`
-3. **Kindled** — `chance(min(rarityFind.kindled, 30%))`
+1. **Corona** — `chance(min(rarityFind.radiant, 5%))`
+2. **Lumen** — `chance(min(rarityFind.luminous, 15%))`
+3. **Ember** — `chance(min(rarityFind.kindled, 30%))`
 4. senão **Common**
 
 ## Implementação (passos)
