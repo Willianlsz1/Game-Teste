@@ -215,13 +215,19 @@ Valida: `sim gates` + `sim campaign` — 1º prestige no alvo do P0; empurrar +1
 - **Validação (sim campaign, seeds 1 e 3):** 1ª conv 38.7m/39.4m ✓ · coroa na conv 8 (~10h22) ✓ · árvore 100% na conv 12 ✓ · First Light 18h10/18h27 (banda 15.3–20.7h) ✓ · Okhra ~21h.
 - **Review adversarial (Sonnet):** 1 bug crítico corrigido (save com valor não-numérico em `tree1` virava NaN permanente e drenava pontos sem subir nível — sanitizado no load) + higiene (CSS órfão das 3 árvores, CLAUDE.md v5, regra v4→v5 no canon-check, +24 asserts de teste). Suíte 197/197 verde.
 
-## PASSO 7 — Awaken / First Light (o exame final) ⬜
+## PASSO 7 — Awaken / First Light (o exame final) — EM TRAVAMENTO FATIADO (jul/2026)
 
-**Pergunta central:** o que o First Light exige (o "diploma" do Mapa 1) e quanto poder dá (a ponte pro Mapa 2)?
+### P7.1 — Função ✅ TRAVADO (jul/2026): **RITO DE PASSAGEM (Modelo 1) + resquícios de despertar-de-sistema (Modelo 3)**
+- **Um Awaken por mapa.** É a resposta de lore a "por que um Vessel fere um Nihelim?": não fere — até a luz que carrega despertar. O First Light é (a) a **CHAVE** que torna o Okhra ferível de verdade, (b) a **PONTE** estatística pro Mapa 2, (c) opcionalmente o evento que **acende o afixo de despertar do gear** (amarra a arquitetura despertar-em-estágios do P4 — "resquício do Modelo 3", forma exata decidida no P7.4).
+- Arco travado (Opção A da abertura do P7): coroa acesa → desperta ~18h → com luz desperta, mata o Okhra ~21h.
+- Referências: Apotheosis do Gaiadon (evento raro no topo da pilha de prestiges) · Bankai (Bleach) · re-despertar (Solo Leveling).
+- Rejeitado: cadeia de 3–4 awakens por mapa (dilui — marcos intermediários já são Harbingers + coroa).
+- **Nota do dono (fora de escopo por ora):** repensar depois um sistema tipo o antigo Ascension com **Mémoires** — 1 por mapa, conta a história do mundo e dá bônus poderosos. Não desenhar agora.
 
-Decide: requisitos re-mapeados (área 18 · nível ~cap do mapa · convergences = meta do P5 · materiais = cadência do P3) · magnitude do bônus (hoje ×2.5/×1.5 placeholder) dimensionada pra "Área 1 do Mapa 2 farmável na chegada, sem trivializar".
+### Fatias restantes
+- **P7.2** — nome do sistema + escada de nomes por mapa. **P7.3** — requisitos exatos (candidato: coroa acesa em vez de "12 conv" cru). **P7.4** — magnitude via sim + forma do resquício do Modelo 3.
 Insumos: PASSOS 1–6.
-Valida: `sim campaign` — First Light cai dentro do orçamento total do P0; poder pós-Awaken vs HP hipotético do início do Mapa 2.
+Valida: `sim campaign` — First Light dentro do orçamento total do P0; Okhra viável só pós-Awaken; poder pós-Awaken vs HP hipotético do início do Mapa 2.
 
 ## PASSO 8 — Encontros especiais (a textura) ⬜
 
