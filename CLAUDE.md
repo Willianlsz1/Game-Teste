@@ -13,7 +13,7 @@ Browser-based idle/loot game (Map 1 focus). Vanilla JS, no framework, no build s
 | Module system | Global `G` object — every module registers itself as `G.module = {...}` |
 | Entry point | `index.html` loads CSS then JS via `<script>` tags (order matters) |
 | CSS | Split into `styles/base.css`, `components.css`, `hud.css`, `gear.css`, `convergence.css`, `awaken.css`, `worldmap.css`, `passives.css` |
-| Save | `localStorage` key `eclats_v4` (JSON). Falls back to in-memory if `file://` |
+| Save | `localStorage` key `eclats_v5` (JSON). Falls back to in-memory if `file://` |
 | Fonts | Google Fonts: Cormorant Garamond (display), Outfit (UI) |
 | Dev server | `node .claude/static-server.js` or double-click `Jogar Eclats.bat` |
 | Tests | None |

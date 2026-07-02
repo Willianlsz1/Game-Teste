@@ -60,6 +60,39 @@ ok(G.passives.leaves().length === 8, "8 folhas (depth 4)");
 ok(G.passives.nodes.filter((n) => n.depth === 2).length === 2 &&
   G.passives.nodes.filter((n) => n.depth === 3).length === 4, "2 nós em D2, 4 em D3");
 
+// save v4 antigo (key morta) é ignorado — carrega fresh v5, sem crash
+store = {}; store["eclats_v4"] = JSON.stringify({ level: 999, passives: { eclat: Array(15).fill(3) } });
+G.state.data = null;
+const hadSaveV4 = G.state.load();
+ok(hadSaveV4 === false, "save v4 (key morta) não é encontrado sob a key v5");
+ok(G.state.data.level === 1 && G.state.data.passives.tree1.every((v) => v === 0),
+  "v4 ignorado: estado fresco (level 1, tree1 zerada), sem crash");
+
+// save v5 corrompido: string não-numérica em tree1 não vira NaN persistente (senão buy()
+// drena Convergence Points pra sempre sem o nó nunca subir de nível — NaN é falsy em level())
+store = {};
+store[G.state.SAVE_KEY] = JSON.stringify({ passives: { tree1: ["abc", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14] },
+  convergences: 1, convergencePoints: 1e6 });
+G.state.data = null; G.state.load();
+ok(G.state.data.passives.tree1[0] === 0, "save corrompido (string): entrada sanitizada para 0, não NaN");
+const ptsBefore = G.state.data.convergencePoints;
+ok(G.passives.buy(0) === true, "nó saneado ainda é comprável");
+ok(G.passives.level(0) === 1, "buy() após sanear sobe de nível de verdade (não fica preso em NaN)");
+ok(G.state.data.convergencePoints === ptsBefore - G.passives.unlockCost(0), "buy() cobrou o custo certo, sem dreno silencioso");
+
+// save v5 com array curto (3 elementos): resto preenchido com 0, sem crash
+store[G.state.SAVE_KEY] = JSON.stringify({ passives: { tree1: [2, 1, 1] } });
+G.state.data = null; G.state.load();
+ok(G.state.data.passives.tree1.length === 15 && G.state.data.passives.tree1[0] === 2 &&
+  G.state.data.passives.tree1[14] === 0, "save curto: array preenchido a 15, índices faltantes = 0");
+
+// save v5 com níveis acima do cap (>10) e negativos: reconcile clampa em [0, maxLevel]
+store[G.state.SAVE_KEY] = JSON.stringify({ passives: { tree1: [99, -5, 10.9, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14] } });
+G.state.data = null; G.state.load();
+ok(G.state.data.passives.tree1[0] === 10, "reconcile clampa nível acima do cap (99 -> 10)");
+ok(G.state.data.passives.tree1[1] === 0, "reconcile clampa nível negativo (-5 -> 0)");
+ok(G.state.data.passives.tree1[2] === 10, "reconcile trunca fracionário e clampa (10.9 -> 10)");
+
 // gating abre-ao-comprar: nada sem Convergence; raiz 1ª; filho abre com pai ≥1
 fresh();
 ok(G.passives.canBuy(0) === false, "sem Convergence: nada comprável");
@@ -71,6 +104,21 @@ ok(G.passives.canBuy(1) === true && G.passives.canBuy(2) === true, "comprar a ra
 ok(G.passives.canBuy(3) === false, "neto D3 ainda bloqueado (pai D2 no nível 0)");
 G.passives.buy(1);
 ok(G.passives.canBuy(3) === true && G.passives.canBuy(4) === true, "comprar o D2 abre seus 2 filhos D3");
+
+// buy() direto (não só canBuy()) recusa TODO nó cujo pai ainda não foi comprado — mesmo com
+// pontos infinitos, uma folha nunca é alcançável sem a cadeia de ancestrais inteira
+fresh(); G.state.data.convergences = 1; G.state.data.convergencePoints = 1e12;
+for (let i = 1; i < G.passives.nodes.length; i++)
+  ok(G.passives.buy(i) === false && G.passives.level(i) === 0,
+    `buy(${i}) direto recusado sem o pai comprado (nó bloqueado por baixo)`);
+// destrava a cadeia até uma folha: 0 (raiz) -> 1 (D2 Regeneration) -> 4 (D3 Hardened Light) -> 9 (folha Deep Memory)
+ok(G.passives.buy(0) === true && G.passives.buy(1) === true && G.passives.buy(4) === true && G.passives.buy(9) === true,
+  "cadeia completa (raiz -> D2 -> D3 -> folha) compra em sequência");
+ok(G.passives.buy(10) === true, "folha IRMÃ (10) sob o mesmo pai (4) já aberta — abre-ao-comprar é por PAI, não por caminho exato");
+ok(G.passives.buy(7) === false && G.passives.buy(8) === false,
+  "folhas do OUTRO D3 (3, Vessel's Growth — não comprado) seguem bloqueadas mesmo com o ramo irmão aberto");
+ok(G.passives.buy(11) === false && G.passives.buy(13) === false,
+  "folhas do OUTRO ramo D2 (2, Heal on Kill — não comprado) seguem totalmente bloqueadas");
 
 // custo: maxLevel 10, unlock por profundidade, upgrade geométrico
 fresh(); G.state.data.convergences = 1; G.state.data.convergencePoints = 1e12;
@@ -153,6 +201,14 @@ ok(G.state.stats().atkSpeed > as0, "Quickened Pulse: atkSpeed sobe (soft cap com
 // A COROA "The Ring Closes": auto-concedida com as 8 folhas ≥1; mult em ATK/HP/Lumens/XP
 fresh(); G.state.data.convergences = 1;
 ok(G.passives.crownActive() === false, "coroa apagada com a árvore vazia");
+// 7 das 8 folhas maxadas (nível 10) NÃO acende — a coroa exige as 8, não "quase todas"
+const leaves = G.passives.leaves();
+for (let k = 0; k < leaves.length - 1; k++) setNode(leaves[k], 10);
+ok(G.passives.crownActive() === false, "coroa NÃO acende com 7/8 folhas, mesmo todas maxadas (falta 1)");
+ok(G.passives.effects().ringCloses === undefined, "sem coroa: ringCloses nem aparece em effects()");
+// a 8ª folha no nível 1 (não max) já basta — a coroa é sobre ALCANÇAR todas, não maximizar
+setNode(leaves[leaves.length - 1], 1);
+ok(G.passives.crownActive() === true, "coroa acende com as 8 folhas ≥1 (não precisa de nível máximo)");
 for (const i of G.passives.leaves()) setNode(i, 1);
 ok(G.passives.crownActive() === true, "coroa acende com as 8 folhas ≥1");
 ok(G.passives.effects().ringCloses === G.passives.unit("ringCloses"), "effects() injeta ringCloses com a coroa acesa");

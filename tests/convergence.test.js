@@ -127,5 +127,24 @@ G.state.data.convergences = 3;
 ok(G.convergence.legacyAtkPct() === 3 * b.convLegacyAtkPct, "legacyAtkPct() escala linear com convergences × convLegacyAtkPct");
 ok(G.convergence.legacyHpPct() === 3 * b.convLegacyHpPct, "legacyHpPct() escala linear com convergences × convLegacyHpPct");
 
+// 9) integração REAL (sem mock): Deep Memory (nó 9, key convPointsPct) comprado pela árvore de
+// verdade — respeitando a topologia (0 raiz -> 1 Regeneration -> 4 Hardened Light -> 9 Deep
+// Memory) — precisa mesmo elevar convergence.points(). O teste #4 acima só prova que a FÓRMULA
+// multiplica certo quando G.passives.effect é mockado; isto prova que o NÓ real está no índice
+// certo, com a key certa, e que o gating não impede a compra de chegar até ele.
+store = {}; G.state.data = null; G.state.load();
+G.state.data.convergences = 1;
+G.state.data.convergencePoints = 1e9;
+G.state.data.level = 276; // == gate 1
+ok(G.passives.nodes[9].key === "convPointsPct", "nó 9 é mesmo Deep Memory (key convPointsPct)");
+const rawAtGate1 = G.convergence.rawPoints();
+ok(G.convergence.points() === rawAtGate1, "sem Deep Memory comprado: points() == rawPoints() (convPointsPct inerte)");
+ok(G.passives.buy(0) && G.passives.buy(1) && G.passives.buy(4) && G.passives.buy(9),
+  "compra real da cadeia até Deep Memory (respeita canBuy em cada passo)");
+const expectedWithNode = Math.floor(rawAtGate1 * (1 + G.passives.effect("convPointsPct") / 100));
+ok(G.convergence.points() === expectedWithNode,
+  `Deep Memory real (nível 1) eleva points() de ${rawAtGate1} para ${expectedWithNode} (obtido ${G.convergence.points()})`);
+ok(G.convergence.points() > rawAtGate1, "points() com Deep Memory comprado > rawPoints() sem passiva nenhuma");
+
 console.log(failed === 0 ? "\nALL PASS" : `\n${failed} FAIL`);
 process.exit(failed === 0 ? 0 : 1);

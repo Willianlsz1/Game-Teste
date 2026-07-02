@@ -30,6 +30,7 @@ const TERMS = [
   [/\bLuminous\b/g, 'Lumen', /\bLumen\b/],
   [/\bRadiant\b(?! Ascendant)/g, "Corona", /Corona/],
   [/eclats_save_v2|eclats_v3\b/g, 'eclats_v4', /eclats_v4/],
+  [/eclats_v4\b/g, 'eclats_v5', /eclats_v5|HIST[OÓ]RICO|superad/i],
   [/\bYaldabaoth\b/g, "(refutado — não usar)", /refutado|superad|Apócrifo|Fonte/i],
 ];
 // linha marcada com "canon-ok" é sempre tolerada

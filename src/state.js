@@ -183,13 +183,17 @@ G.state = {
     if (typeof this.data.awakenTier !== "number" || this.data.awakenTier < this.data.awakens.length)
       this.data.awakenTier = this.data.awakens.length;
 
-    // Passivas (Árvore I): preserva níveis salvos por índice, clampando ao teto do nó
+    // Passivas (Árvore I): preserva níveis salvos por índice, clampando ao teto do nó.
+    // Number.isFinite barra lixo não-numérico do save — um NaN aqui fica preso no array
+    // (buy() faz += 1) e drena pontos sem o nó nunca subir de nível.
     if (G.passives) {
       const arr = G.passives.freshSet();
       const saved = this.data.passives;
       if (saved && Array.isArray(saved.tree1))
-        for (let i = 0; i < arr.length; i++)
-          arr[i] = Math.min(saved.tree1[i] || 0, G.passives.nodeMax(i));
+        for (let i = 0; i < arr.length; i++) {
+          const v = Math.floor(Number(saved.tree1[i]));
+          arr[i] = Number.isFinite(v) ? Math.max(0, Math.min(v, G.passives.nodeMax(i))) : 0;
+        }
       this.data.passives = { tree1: arr };
     }
 
