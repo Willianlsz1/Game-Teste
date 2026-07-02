@@ -309,8 +309,7 @@ function scenarioGates() {
   console.log(row(['growth', '#conv', '1ª conv', 'First Light', 'Okhra', 'razão méd', 'convs por grupoMax'], W));
   for (const growth of growths) {
     G.data.balance.convGateGrowth = growth;
-    const sim = freshSim({ converge: true, allowAwaken: true,
-      onConverge: (s) => { if (G.state.data.convergences >= 8) s.convergeEnabled = false; } });
+    const sim = freshSim({ converge: true, allowAwaken: true });
     run(sim, { maxHours, stop: (s) => G.state.data.mapOneCleared });
     const nconv = sim.runs.length;
     const firstConv = nconv ? fmtT(sim.runs[0].t) : '—';
@@ -342,13 +341,9 @@ function scenarioCampaign() {
     ? ` · override[cost ${G.data.balance.promoteCommonCost}, chance ${G.economy.dropTable.common.commonMaterial.chance}, uncCap ${G.data.rarities.find(r=>r.id==='uncommon').cap}]` : '';
   console.log(`\n═══ CAMPAIGN — Mapa 1 completo · gate escalonado ×${G.data.balance.convGateGrowth} · push ${push} · seed ${SEED} · cap ${maxHours}h${ovr} ═══\n`);
 
-  const sim = freshSim({
-    converge: true, push, allowAwaken: true,
-    onConverge: (s) => {
-      // após 8 convergences (requisito do First Light): para de convergir e empurra o nível
-      if (G.state.data.convergences >= 8) s.convergeEnabled = false;
-    },
-  });
+  // P5: sem parada artificial — o gate escalonado (× convGateGrowth) ultrapassa o cap de nível
+  // após ~12 convergences, então a convergência PÁRA sozinha e o jogador empurra até Okhra.
+  const sim = freshSim({ converge: true, push, allowAwaken: true });
   // não para no First Light — segue até Okhra (área 18) p/ medir o mapa inteiro
   run(sim, { maxHours, stop: (s) => G.state.data.mapOneCleared });
 
@@ -491,8 +486,10 @@ function scenarioCalibrate() {
     ENTRY = {}; END = {}; BOSS = {};
     // allowAwaken:false → o push não para no First Light (área 9), segue até Okhra,
     // amostrando as 18 áreas + os 6 Marcos.
+    // P5: convergência para sozinha quando o gate ultrapassa o cap de nível; marca o push então.
+    const levelCap = G.data.areas[G.data.areas.length - 1].levelRange[1];
     const sim = freshSim({ converge: true, allowAwaken: false, seed,
-      onConverge: (s) => { if (G.state.data.convergences >= 8) { s.convergeEnabled = false; if (s.pushStart == null) s.pushStart = s.t; } } });
+      onConverge: (s) => { if (G.convergence.currentGate() > levelCap && s.pushStart == null) s.pushStart = s.t; } });
     sim.onStep = (s) => {
       const d = G.state.data, idx = d.areaIndex, area = G.data.areas[idx];
       if (!ENTRY[idx]) ENTRY[idx] = snapNow();

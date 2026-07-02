@@ -149,10 +149,10 @@ function partA() {
   // avaliações de pace vs alvos
   if (cpArea1) {
     const m = cpArea1.t / 60;
-    // alvo ~18 min: Attack Speed cresce devagar de propósito (capa só no Mapa 2),
-    // o que torna o Mapa 1 mais deliberado (~5h). Decisão consciente de design.
-    if (m < 10) flag("BAL", "A", `Área 1 rápida demais (${m.toFixed(1)} min; alvo ~18)`);
-    if (m > 26) flag("BAL", "A", `Área 1 lenta demais (${m.toFixed(1)} min; alvo ~18)`);
+    // alvo ~8 min (P5: escala de XP reaberta p/ First Light ~18h). O beat inicial que importa
+    // é a 1ª Convergence (~38min, dentro da banda P0 25–40min), não a Área 1 isolada.
+    if (m < 3)  flag("BAL", "A", `Área 1 rápida demais (${m.toFixed(1)} min; alvo ~8)`);
+    if (m > 14) flag("BAL", "A", `Área 1 lenta demais (${m.toFixed(1)} min; alvo ~8)`);
   }
   if (cpGearMax && cpGearMax.area < 3)
     flag("BAL", "A", `Gear maximiza na Área ${cpGearMax.area} (antes da Área 3, onde abre a promoção) → lumens transbordam`);

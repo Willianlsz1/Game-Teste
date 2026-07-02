@@ -83,7 +83,7 @@ const mob8 = { name: "m", level: 1, maxHp: 1, hp: 0, dmg: 1, lumens: 1, xp: 1, i
 G.combat.enemies = [mob8]; G.combat.enemy = mob8;   // onKill opera sobre enemies[]
 G.combat.onKill();
 ok(G.state.data.totalKills === 1, "totalKills incrementa em onKill");
-G.state.data.level = 100; G.convergence.converge();
+G.state.data.level = G.convergence.currentGate(); G.convergence.converge();  // P5: gate escalonado (≥276)
 ok(G.state.data.totalKills === 1 && G.state.data.runKills === 0, "Convergence reseta runKills mas NÃO totalKills");
 
 // 9) MIGRAÇÃO de save: awakenTier ausente é derivado da lista awakens; concluído sobrevive

@@ -22,7 +22,7 @@ G.convergence = {
     return Math.round(b.convGateBase * Math.pow(b.convGateGrowth, G.state.data.convergences || 0));
   },
 
-  rawPoints() { return this.pointsFor(G.state.data.level || 1); },
+  rawPoints() { return Math.floor(this.pointsFor(G.state.data.level || 1)); },
 
   points() {
     let p = this.rawPoints();
