@@ -12,7 +12,7 @@
 
 - **PASSO 0 (Relógio): ✅** — 18h · 30–50min/beat · 50/50 · 1º prestige 25–40min.
 - **PASSO 1 (Esqueleto): ✅ TRAVADO E IMPLEMENTADO** (ciclo 10-80-10: Opus implementou, Sonnet achou+corrigiu 1 bug de migração de save, Fable revisou) — 18 áreas no código, cap 6000, Harbinger por grupo, Okhra fecha o mapa. Tempos por grupo = contrato a cumprir no P2.
-- **PASSOS 2–5: ✅ TODOS FECHADOS** (fricção calibrada · economia Gaiadon · matriz de gear · gate escalonado ×1.30 com relógio validado: 1ª conv 38.7min, First Light 17h43). **P6 em travamento fatiado** (Árvore I sequencial: P6.1 ✅ topologia; P6.2 roster NA MESA; P6.3 banco/Second Wind na fila).
+- **PASSOS 2–6: ✅ TODOS FECHADOS.** P2–P5: fricção calibrada · economia Gaiadon · matriz de gear · gate escalonado ×1.30. **P6 ✅ TRAVADO E IMPLEMENTADO** (Árvore I sequencial de 15 nós, coroa conquistável, save `eclats_v5`; ciclo 10-80-10 completo — review Sonnet achou+corrigiu 1 bug crítico de save NaN; âncoras validadas seeds 1 e 3: 1ª conv ~39min, coroa conv 8, árvore 100% conv 12, First Light 18h10–18h27). **Faltam só P7 (First Light re-mapeado) e P8 (Rarity Find + encontros).**
 - **Modo de trabalho travado: 10-80-10** — 10% planejamento+pesquisa (Fable) · 80% implementação+review (Opus/Sonnet, nunca Haiku) · 10% review final (Fable).
 
 ## O que o simulador descobriu (fatos medidos — não re-descobrir)
@@ -21,7 +21,7 @@
 - **F1:** gate 351 = 1º prestige em **27min** ✓ (análise estática antiga errava 5× — afixos de XP compõem).
 - **F2:** fórmula de pontos é **flat** — convergir no gate rende sempre C=400; empurrar 2× o nível = só +32%. Decisão de convergir é degenerada.
 - **F3 (o mais grave):** **o jogo não tem parede após o min ~15** — TTK nas entradas de área: 0.8s/0.7s/0.1s. Causa: loop composto income×lumensBonus×gear. Consertar no Passo 2.
-- **F4:** passivas quase decorativas — 8 convergences compram ~45 níveis de nó; `atkFlat 100/nível` vs ATK 15M = morto. `UNIT` precisa re-derivação.
+- **F4:** ~~passivas quase decorativas (flats mortos)~~ **RESOLVIDO no P6** — Árvore I toda em %, custos re-derivados da renda real do P5.
 - **F5:** Map 1 (9 áreas) completo = **3h04m** ativas.
 
 ## Decisões travadas (canon) — NÃO reabrir
@@ -32,16 +32,16 @@
 
 ## Pendências conhecidas (ordenadas)
 
-1. **P4 ✅ TRAVADO — implementação em andamento** (matriz de 6 casas + arquitetura despertar-em-estágios + escada de cor gear=luz). Depois: P5 (o pivô do relógio).
-2. **Diretrizes do dono pro P3/P4 registradas:** Mapa 1 só Common+Uncommon (Rare = Map 2) · Harbinger sem loot garantido · uncommon mat/Forge fora do Mapa 1.
-2. **P2.2–2.5** — travar em sequência; depois implementar o P2 inteiro junto (10-80-10).
-3. **UI copy (do review):** `ui.js` mostra "Reach level X" pra áreas de fronteira (deveria indicar o Harbinger) e o hint de Awaken material por área ficou obsoleto (idx>=5) — corrigir na fase de UI.
-4. **Observação de balance (review):** no baseline, área 3 pode reter o jogador ~2h40 no grind do threshold com mobs capados — cruzar `bossKillThreshold` × TTK no P2.5.
-5. **Import** do `mapa1_tema_b_porto_afundado.md` (criado fora do repo) + ajuste Nebulor→Okhra (área 17).
-6. **Sweep de termos** nos docs (Archon→Nihelim etc.) — `node tools/check_canon.js` lista; exports consolidados (`GAME_CONTEXT`, `LORE_COMPLETE`) têm banner mas corpo antigo.
-7. Escolher **quais 3 Harbingers** da floresta viram titulares de grupo (lore, sem pressa).
-8. Fila da lore: **Séraphine + final/Convergence (Parte IX)** ← próximo item de lore; depois Mapa 2 (Naameth).
-9. Renomes no código (Ember/Lumen/Corona, save key etc.) — **só quando o balance mandar** (decisão: lore não entra no código ainda).
+1. **P7 — Awaken/First Light**: re-mapear requisitos (hoje era antiga: área 9, nível 4051, conv 8) pra realidade de 18 áreas; magnitude = ponte pro Mapa 2. Formato: 1 decisão por vez com o dono.
+2. **P8 — Encontros especiais**: Rarity Find (spec em `RARITY_FIND.md`) · modificadores Corona+/Marcos · luta Harbinger/Okhra.
+3. **Registrados pra Árvore II (Mapa 2):** Second Wind · Golden Wake e o banco · awakenEfficiency/awakenReqReduction (removidos do código no P6) · pós-cap da convergence aberto de propósito.
+4. **UI copy (do review):** `ui.js` mostra "Reach level X" pra áreas de fronteira (deveria indicar o Harbinger) — corrigir na fase de UI.
+5. **Política do sim (registrado no P3):** promoções em lockstep no G2–G3; jogador realista espalharia — refinar a persona se algum número futuro depender disso.
+6. **Import** do `mapa1_tema_b_porto_afundado.md` (criado fora do repo) + ajuste Nebulor→Okhra (área 17).
+7. **Sweep de termos** nos docs (Archon→Nihelim etc.) — `node tools/check_canon.js` lista; exports consolidados (`GAME_CONTEXT`, `LORE_COMPLETE`) têm banner mas corpo antigo.
+8. Escolher **quais 3 Harbingers** da floresta viram titulares de grupo (lore, sem pressa).
+9. Fila da lore: **Séraphine + final/Convergence (Parte IX)** ← próximo item de lore; depois Mapa 2 (Naameth).
+10. Renomes no código (Ember/Lumen/Corona etc.) — **só quando o balance mandar** (decisão: lore não entra no código ainda).
 
 ## Infra & contexto operacional
 

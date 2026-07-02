@@ -184,7 +184,7 @@ Decide: `gateLevel` (âncora natural: fim do G1 / entrada do G2) · fórmula com
 Insumos: PASSOS 1–2 (o gate é um beat do esqueleto) · achado F2 do sim (fórmula flat mata a decisão).
 Valida: `sim gates` + `sim campaign` — 1º prestige no alvo do P0; empurrar +1 grupo rende visivelmente mais; meta de convergences bate.
 
-## PASSO 6 — Passivas (o motor permanente) — EM TRAVAMENTO FATIADO (jul/2026)
+## PASSO 6 — Passivas (o motor permanente) ✅ TRAVADO E IMPLEMENTADO (jul/2026)
 
 **Direção travada pelo dono: MODELO SEQUENCIAL.** Em vez de 3 árvores paralelas: **Árvore I** (Mapa 1, 15 nós) → **Árvore II** (Mapa 2, versões amplificadas + poucas novas, custo ~×10, mais forte POR PONTO) → etc. Regra: cada árvore ≥ mais forte que a anterior. Racional medido: renda escalonada (×1.5/conv, até ~84K pts) exige sumidouro que escala; mesma arquitetura "evoluir, não adicionar" do gear (P4.2b). Identidade (combate/economia) vira RAMOS dentro da árvore. As 3 árvores paralelas atuais morrem.
 
@@ -208,13 +208,12 @@ Valida: `sim gates` + `sim campaign` — 1º prestige no alvo do P0; empurrar +1
 - **Banco (Golden Wake etc.) → candidatos registrados da Árvore II** — o banco é o embrião do design do Mapa 2.
 - **Pós-cap da Convergence: ABERTO** (sem trava) — o Mapa 2 sobe o teto de nível e a 13ª convergence vira alcançável naturalmente; a escada atravessa mapas sem costura.
 
-**→ P6 COMPLETO EM DECISÕES (P6.1 topologia · P6.2 roster · P6.3 banco). Implementação conjunta via 10-80-10 em andamento.**
-
-**Pergunta central:** quanto poder permanente o Mapa 1 inteiro deve render, e em que ordem o jogador o compra?
-
-Decide: orçamento total de pontos do mapa (= convergences × pontos médios, sai do P5) · custo dos tiers re-calibrado pra esse orçamento (intenção: tier 1 de UMA árvore ≈ o mapa inteiro? ou mais?) · **UNIT re-derivado da escala real** (achado F4: flats mortos — converter pra % ou escalar) · elenco final dos nós (crit stack ×3 → ×2? atkSpeed node? nós de custo de gear na Fracture? `miniBossThreshold` adiado?) · orçamento de poder por tier (T1 ≈ ×2–3 no eixo · T2 especializado · T3 = Mapa 2).
-Insumos: PASSO 5 travado (renda define custo).
-Valida: `sim campaign` — % da árvore comprada ao fim do mapa bate a intenção; nenhum nó morto; poder das passivas ≈ fatia planejada do total.
+### P6 — implementação ✅ (ciclo 10-80-10 completo, jul/2026)
+- **Custos:** `unlockByDepth [80, 120, 200, 350]` (nível 1 = abrir) · evolução `custo₁ × 0.4 × 1.5^(nível−1)` (evoFactor 0.4, evoRamp 1.5) · maxLevel 10. Árvore inteira maxada ≈ orçamento total do P5 (~84K pts).
+- **Magnitudes (por nível):** First Spark ATK+HP 2%/2% · Regen 0.5%HP/s · HoK 2.5%/kill · Vessel 5% HP · Hardened 1.25% DmgRed · Whetted 5% ATK · Instinct 2.5% crit · Prospector 10% Lumens · Pilgrim 7.5% XP · Deep Memory 6% pts · Overkill Echo 12% (Lumens extra, cap = lumens base do mob) · Deepcrack 18% CritDmg · Lightbane 10% vs acesos/elite (não-boss) · Quickened 0.037 AtkSpeed · Harbinger's Bane 12% vs Marcos. Coroa: +18% mult ATK/HP/Lumens/XP (F4 resolvido: tudo em %, zero flats).
+- **Código:** `passives.js` reescrito (árvore única, `nodes[15]` com parent explícito, `canBuy` = pai ≥1, `crownActive()` = 8 folhas) · save key **`eclats_v5`** (v4 ignorado, sem migração) · `awakenEfficiency`/`awakenReqReduction` removidos (voltam na Árvore II).
+- **Validação (sim campaign, seeds 1 e 3):** 1ª conv 38.7m/39.4m ✓ · coroa na conv 8 (~10h22) ✓ · árvore 100% na conv 12 ✓ · First Light 18h10/18h27 (banda 15.3–20.7h) ✓ · Okhra ~21h.
+- **Review adversarial (Sonnet):** 1 bug crítico corrigido (save com valor não-numérico em `tree1` virava NaN permanente e drenava pontos sem subir nível — sanitizado no load) + higiene (CSS órfão das 3 árvores, CLAUDE.md v5, regra v4→v5 no canon-check, +24 asserts de teste). Suíte 197/197 verde.
 
 ## PASSO 7 — Awaken / First Light (o exame final) ⬜
 
@@ -241,6 +240,7 @@ Valida: `sim baseline` com rarity find — frequência de Ember/Lumen/Corona por
 4. **Decisão travada não reabre** sem número novo do sim (mesma disciplina da lore).
 
 ## Log de decisões travadas
+- **jul/2026 — PASSO 6 (Passivas):** Árvore I sequencial, 15 nós binários abre-ao-comprar, coroa conquistável · custos [80/120/200/350] + evo 0.4×1.5^n · tudo em % (F4 fechado) · save v5 · implementado+revisado, âncoras batidas em 2 seeds.
 - **jul/2026 — PASSO 0 (Relógio):** 18h ativas · sessão 30–50min c/ regra do beat · ~50/50 ativo/idle · 1º prestige 25–40min.
 - **jul/2026 — P2.5 (threshold/boss):** threshold 25+5×grupo · mults derivados das bandas HTK (Harbinger ~30 golpes/dano ×2 · Okhra ~90/×2.5).
 - **jul/2026 — P2.4 (dano/ondas/morte):** custo de onda 10–20%/35–50% · ondas 1/2/2/3/3/3 · morte só zera contador · **sustain 100% via passivas** (heal-on-kill e regen%/s tier 1; sem regen grátis) — a 1ª parede força a 1ª Convergence.
