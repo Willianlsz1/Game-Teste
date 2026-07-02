@@ -377,7 +377,7 @@ G.data = {
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
         { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
       ],
-      boss: { name: "Okhra, the Starving Tide", sprite: "🌊", hpMult: 10.74, dmgMult: 2.5 }, // PLACEHOLDER (lore): chefe de Mapa — matar Okhra completa o Mapa 1
+      boss: { name: "Okhra, the Starving Tide", sprite: "🌊", hpMult: 48, dmgMult: 2.5 }, // PLACEHOLDER (lore): chefe de Mapa — matar Okhra completa o Mapa 1
     },
   ],
 
@@ -429,6 +429,7 @@ G.data = {
     bossLumenMult:     5,
     goldRatio:         0.35,   // lumens/HP — calibrado p/ gear acompanhar (não estourar) o HP do mob
     baseXp:            200,     // P5: escala de XP reaberta (P1 previu) — comprime o mapa das ~12 convergences do gate escalonado p/ First Light ~18h (era 28)
+    xpMultByGroup:     [1, 1, 1, 1, 2.5, 3.0],  // P7: acelerador de XP por grupo (G1..G6) — barateia a SUBIDA final p/ trazer o First Light à banda ~18h; NÃO mexe nas provas do Awaken
     xpCurveBase:       14,      // XP p/ próximo nível = xpCurveBase × nível^xpCurveExp
     xpCurveExp:        1.62,    // expoente: late-game pesa (XP% vira decisão); subir = mais íngreme
     respawnDelay:      0.5,     // respawn mais ágil → kills/min sem precisar de one-shot

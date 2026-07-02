@@ -66,8 +66,12 @@ G.combat = {
     const hp    = G.data.mobHpAt(level, area);
     const aIdx  = G.util.clamp(G.state.data.areaIndex || 0, 0, b.mobAtkByArea.length - 1);
     const atk   = b.mobAtkByArea[aIdx];
+    // P7 (First Light na banda): acelerador de XP nos grupos finais — barateia a SUBIDA,
+    // não as provas (requisitos do Awaken intactos). xpMultByGroup[grupo], default 1.
+    const grp   = G.util.clamp(Math.floor(aIdx / b.groupSize), 0, (b.xpMultByGroup || []).length - 1);
+    const xpGroupMult = (b.xpMultByGroup && b.xpMultByGroup[grp] != null) ? b.xpMultByGroup[grp] : 1;
 
-    let maxHp = hp, dmg = atk, xp = b.baseXp * level;
+    let maxHp = hp, dmg = atk, xp = b.baseXp * level * xpGroupMult;
     let isBoss = false, isElite = false, name, rarity = null;
 
     if (isBossSpawn) {

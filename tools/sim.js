@@ -347,11 +347,14 @@ function scenarioCampaign() {
 
   // P7.4: conta os GOLPES na luta do Okhra (HTK) — valida a banda P2.5 (60–120, alvo ~90).
   // Headless não tem projétil: cada playerHit resolve direto em applyHitToEnemy.
-  let okhraHits = 0;
+  let okhraHits = 0, okhraFightStart = null;
   const _applyHitEnemy = G.combat.applyHitToEnemy.bind(G.combat);
   G.combat.applyHitToEnemy = function (dmg, crit) {
     const t = this.enemies.find((e) => !e.dead);
-    if (t && t.isBoss && G.state.data.areaIndex === G.data.areas.length - 1) okhraHits++;
+    if (t && t.isBoss && G.state.data.areaIndex === G.data.areas.length - 1) {
+      okhraHits++;
+      if (okhraFightStart == null) okhraFightStart = sim.t;
+    }
     return _applyHitEnemy(dmg, crit);
   };
 
@@ -386,7 +389,7 @@ function scenarioCampaign() {
     console.log(`⚠ First Light NÃO alcançado em ${fmtT(sim.t)} — nível ${d.level}, área ${d.areaIndex + 1}, ${d.convergences} convergences`);
     console.log(`  requisitos: ${reqs}`);
   }
-  if (d.mapOneCleared) console.log(`🌊 OKHRA (área 18 · Map 1 completo) em ${fmtT(sim.t)} — ${okhraHits} golpes (alvo P2.5 60–120, ~90)`);
+  if (d.mapOneCleared) console.log(`🌊 OKHRA (área 18 · Map 1 completo) em ${fmtT(sim.t)} — ${okhraHits} golpes · luta ${okhraFightStart != null ? fmtT(sim.t - okhraFightStart) : '—'} (spawn→morte) (alvo P2.5 60–120, ~90)`);
   else console.log(`⚠ Okhra NÃO derrotado em ${fmtT(sim.t)} — área ${d.areaIndex + 1}, nível ${d.level}${sim.timedOut ? ' (timeout)' : ''}`);
   const s = G.state.stats();
   console.log(`  final: ATK ${fmtN(s.atk)} · HP ${fmtN(s.hp)} · gear médio ${gearAvgLevel()} · passivas ${sim.nodeLevelsBought} níveis de nó`);
