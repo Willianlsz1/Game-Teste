@@ -378,14 +378,16 @@ function scenarioCalibrate() {
 
   function measureRun(seed) {
     ENTRY = {}; END = {}; BOSS = {};
-    const sim = freshSim({ gate, convergeAt: gate, allowAwaken: true, seed,
+    // allowAwaken:false → o push não para no First Light (área 9), segue até Okhra,
+    // amostrando as 18 áreas + os 6 Marcos.
+    const sim = freshSim({ gate, convergeAt: gate, allowAwaken: false, seed,
       onConverge: (s) => { if (G.state.data.convergences >= 8) { s.convergeAt = null; if (s.pushStart == null) s.pushStart = s.t; } } });
     sim.onStep = (s) => {
       const d = G.state.data, idx = d.areaIndex, area = G.data.areas[idx];
       if (!ENTRY[idx]) ENTRY[idx] = snapNow();
       if (!END[idx] && d.level >= area.levelRange[1]) END[idx] = snapNow();
     };
-    run(sim, { maxHours: measHours, stop: (s) => s.firstLightAt != null });
+    run(sim, { maxHours: measHours, stop: () => BOSS[17] != null });
     sim._entry = ENTRY; sim._end = END; sim._boss = BOSS;
     return sim;
   }
