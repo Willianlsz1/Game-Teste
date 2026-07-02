@@ -124,5 +124,110 @@ G.passives.UNIT.moreEnemies = 0; G.state.data.passives.fracture[8] = 0;
 G.state.data.passives.fracture[5] = 12; G.state.data.passives.fracture[6] = 12; G.state.data.passives.fracture[7] = 12;
 ok(G.passives.groupUnlocked("fracture", 2) === true, "grupo 2 libera com 5/6/7 no máx (8/9 Mapa 2 ignorados)");
 
+// ---------- PASSO 4: a MATRIZ de afixos (P4.2a) ----------
+// primários (Common) por peça
+const P1 = (slot, i) => G.gear.buildPiece(slot, "common").affixes[i];
+ok(P1("weapon", 0).stat === "atk"  && P1("weapon", 0).layer === "flat", "Weapon P1 = ATK flat (Gilded Edge)");
+ok(P1("weapon", 1).stat === "atk"  && P1("weapon", 1).layer === "pct",  "Weapon P2 = ATK% (Searing Light)");
+ok(P1("helmet", 0).stat === "xpBonus",                                  "Helmet P1 = XP% (Watcher's Lens)");
+ok(P1("helmet", 1).stat === "damageReduction",                          "Helmet P2 = Dmg Reduction (Steadfast Guard)");
+ok(P1("armor",  0).stat === "hp"   && P1("armor", 0).layer === "flat",  "Armor P1 = HP flat (Sealed Vessel)");
+ok(P1("armor",  1).stat === "hp"   && P1("armor", 1).layer === "pct",   "Armor P2 = HP% (Golden Seam)");
+ok(P1("gloves", 0).stat === "crit" && P1("gloves", 0).layer === "flat", "Gloves P1 = Crit Rate (Bare Hand's Instinct)");
+ok(P1("gloves", 1).stat === "critDmg",                                  "Gloves P2 = Crit Damage (Crackfinder)");
+ok(P1("boots",  0).stat === "atkSpeed",                                 "Boots P1 = Attack Speed (Pathfinder's Pace)");
+ok(P1("boots",  1).stat === "rarityFindEmber",                          "Boots P2 = Ember Trail (rarityFindEmber, inerte)");
+ok(P1("cloak",  0).stat === "lumensBonus" && P1("cloak", 0).layer === "flat", "Cloak P1 = Lumens flat (Gilded Fringe)");
+ok(P1("cloak",  1).stat === "lumensBonus" && P1("cloak", 1).layer === "pct",  "Cloak P2 = Lumens% (Fortune's Weave)");
+// o ATK% do cloak MORRE (conserta o glass-cannon acidental)
+ok(G.gear.buildPiece("cloak", "uncommon").affixes.every((a) => a.stat !== "atk"), "Cloak não tem mais nenhum afixo de ATK");
+
+// despertares (afixo exclusivo do Uncommon)
+const hasStat = (slot, stat) => G.gear.buildPiece(slot, "uncommon").affixes.some((a) => a.stat === stat);
+ok(hasStat("weapon", "specialDmg"),        "Weapon despertar = specialDmg (Marked Blade)");
+ok(hasStat("armor",  "siegeWard"),         "Armor despertar = siegeWard (Siege Ward)");
+ok(G.gear.buildPiece("gloves", "uncommon").affixes.some((a) => a.stat === "crit" && a.layer === "pct"), "Gloves despertar = Crit% (Fracture Sense)");
+ok(hasStat("helmet", "rarityFindLumen"),   "Helmet despertar = rarityFindLumen (Second Sight)");
+ok(hasStat("boots",  "xpBonus"),           "Boots despertar = XP menor (Long Road)");
+ok(hasStat("cloak",  "rarityFindCorona"),  "Cloak despertar = rarityFindCorona (Corona Call)");
+
+// specialDmg NÃO dobra: stats() expõe gear (Marked Blade) + passiva (Giant Slayer) como soma ÚNICA
+fresh();
+G.state.data.equipped.weapon = G.gear.buildPiece("weapon", "uncommon");
+G.state.data.equipped.weapon.level = 100;
+G.state.invalidateStats();
+const wSD = G.state.data.equipped.weapon.affixes.find((a) => a.stat === "specialDmg");
+const gearSD = G.gear.affixValue(G.state.data.equipped.weapon, wSD);
+ok(gearSD > 0, "specialDmg de gear > 0 no Uncommon");
+G.state.data.passives.eclat[4] = 1; G.state.invalidateStats();       // Giant Slayer (UNIT.specialDmg = 12)
+const passSD = G.passives.effect("specialDmg");
+ok(Math.abs(G.state.stats().specialDmg - (gearSD + passSD)) < 1e-6, "specialDmg = gear + passiva (soma única, sem dobrar)");
+G.state.data.passives.eclat[4] = 0; G.state.invalidateStats();
+
+// siegeWard: exposto, e a redução extra SÓ conta com 2+ inimigos vivos (combat.applyHitToHero)
+fresh();
+G.state.data.equipped.armor = G.gear.buildPiece("armor", "uncommon");
+G.state.data.equipped.armor.level = G.gear.cap(G.state.data.equipped.armor);   // max uncommon
+G.state.invalidateStats();
+ok(G.state.stats().siegeWard > 0, "siegeWard exposto (>0 no armor Uncommon maxado)");
+const realUi = G.ui; G.ui = null;
+G.state.data.hp = 1e15;
+G.combat.enemies = [{ dead: false }];                 // 1 vivo → siegeWard NÃO aplica
+let b0 = G.state.data.hp; G.combat.applyHitToHero(1e6); const dmg1 = b0 - G.state.data.hp;
+G.state.data.hp = 1e15;
+G.combat.enemies = [{ dead: false }, { dead: false }]; // 2 vivos → siegeWard aplica (dano menor)
+b0 = G.state.data.hp; G.combat.applyHitToHero(1e6); const dmg2 = b0 - G.state.data.hp;
+G.ui = realUi; G.combat.enemies = [];
+ok(dmg2 < dmg1, "siegeWard reduz dano só com 2+ inimigos vivos na onda");
+
+// siegeWard: boss sozinho (1 vivo) NÃO conta; boss + 1 escolta (2 vivos) conta certo
+G.state.data.hp = 1e15;
+G.combat.enemies = [{ isBoss: true, dead: false }];                       // só o boss → 1 vivo
+b0 = G.state.data.hp; G.combat.applyHitToHero(1e6); const dmgBoss1 = b0 - G.state.data.hp;
+G.state.data.hp = 1e15;
+G.combat.enemies = [{ isBoss: true, dead: false }, { dead: false }];      // boss + escolta → 2 vivos
+b0 = G.state.data.hp; G.combat.applyHitToHero(1e6); const dmgBossEscort = b0 - G.state.data.hp;
+G.combat.enemies = [];
+ok(dmgBoss1 === dmg1, "siegeWard: boss sozinho (1 vivo) não aplica, igual ao caso genérico de 1 vivo");
+ok(dmgBossEscort < dmgBoss1, "siegeWard: boss + 1 escolta (2 vivos) aplica a redução extra");
+
+// siegeWard: clamp do TOTAL (damageReduction + siegeWard) em 75, não de cada termo isolado
+G.state.data.equipped.helmet = G.gear.buildPiece("helmet", "uncommon");
+G.state.data.equipped.helmet.level = G.gear.cap(G.state.data.equipped.helmet);   // dmgRed alto do helmet
+G.state.invalidateStats();
+ok(G.state.stats().damageReduction + G.state.stats().siegeWard > 75,
+  "setup: damageReduction + siegeWard isolados somam > 75 (pré-condição do clamp)");
+G.state.data.hp = 1e15;
+G.combat.enemies = [{ dead: false }, { dead: false }];   // 2 vivos → siegeWard entra na soma
+b0 = G.state.data.hp; G.combat.applyHitToHero(1e6);
+const reducedClamped = b0 - G.state.data.hp;
+G.combat.enemies = [];
+ok(Math.abs(reducedClamped - Math.ceil(1e6 * 0.25)) < 1, "siegeWard: total clampado em 75% (dano final = 25% do bruto), não cada termo isolado");
+
+// rarityFind* expostos e INERTES (stats() os expõe; nada os consome até o P8)
+fresh();
+G.state.data.equipped.helmet = G.gear.buildPiece("helmet", "uncommon"); G.state.data.equipped.helmet.level = 100;
+G.state.data.equipped.cloak  = G.gear.buildPiece("cloak",  "uncommon"); G.state.data.equipped.cloak.level  = 100;
+G.state.invalidateStats();
+const rf = G.state.stats();
+ok("rarityFindLumen"  in rf && rf.rarityFindLumen  > 0, "rarityFindLumen exposto em stats()");
+ok("rarityFindEmber"  in rf && rf.rarityFindEmber >= 0, "rarityFindEmber exposto em stats()");
+ok("rarityFindCorona" in rf && rf.rarityFindCorona > 0, "rarityFindCorona exposto em stats()");
+
+// save antigo (afixos velhos, cloak com ATK%) → reconcile reconstrói do gearBase novo, nível preservado
+store = {};
+store[G.state.SAVE_KEY] = JSON.stringify({
+  level: 500,
+  equipped: {
+    cloak:  { slot: "cloak",  rarity: "uncommon", level: 1200, affixes: [{ id: "atkp", stat: "atk", layer: "pct" }] },
+    weapon: { slot: "weapon", rarity: "common",   level: 400 },
+  },
+});
+G.state.data = null; G.state.load();
+ok(G.state.data.equipped.cloak.level === 1200, "save antigo: nível do cloak preservado (1200)");
+ok(G.state.data.equipped.weapon.level === 400,  "save antigo: nível da weapon preservado (400)");
+ok(G.state.data.equipped.cloak.affixes.every((a) => a.stat !== "atk"), "save antigo: cloak reconstruído sem ATK% (afixos novos)");
+ok(G.state.data.equipped.cloak.affixes.some((a) => a.stat === "rarityFindCorona"), "save antigo: cloak ganha o despertar novo (rarityFindCorona)");
+
 console.log(failed === 0 ? "\nALL PASS" : `\n${failed} FAIL`);
 process.exit(failed === 0 ? 0 : 1);
