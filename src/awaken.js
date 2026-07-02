@@ -6,8 +6,9 @@
 // encerra um capítulo (First Light = fim do Mapa 1).
 //
 // Estado persistente (state.js): awakens[] (ids concluídos), awakenTier.
-// Requisitos suportados: area, level, kills, convergences e materials
-// (consome awakenMaterials via economy.js).
+// Requisitos suportados: area, level, kills, convergences, crown
+// (passives.crownActive) e materials (consome awakenMaterials via economy.js).
+// Cada Awaken exige apenas os campos PRESENTES em requirements (subconjunto livre).
 
 G.awaken = {
   ALL() { return G.data.awakens; },
@@ -42,6 +43,10 @@ G.awaken = {
       const need = key === "area" ? r[key] : Math.ceil(r[key] * factor);
       const have = this.playerValue(key);
       out.push({ key, need, have, met: have >= need });
+    }
+    if (r.crown) {
+      const lit = !!(G.passives && G.passives.crownActive());
+      out.push({ key: "crown", need: 1, have: lit ? 1 : 0, met: lit });
     }
     if (r.materials) {
       for (const mk of Object.keys(r.materials)) {

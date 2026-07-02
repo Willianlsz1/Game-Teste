@@ -765,6 +765,7 @@ G.ui = {
 
     const reqName = { area: "Area", level: "Lv", kills: "Kills", convergences: "Convergences" };
     const reqs = G.awaken.requirements(a.id).map((r) => {
+      if (r.key === "crown") return { label: "The Ring Closes (crown lit)", met: r.met };
       const base = r.key.indexOf("material:") === 0 ? "Awaken Mat" : (reqName[r.key] || r.key);
       return { label: `${base} ${G.util.fmt(r.have)}/${G.util.fmt(r.need)}`, met: r.met };
     });
@@ -903,7 +904,10 @@ G.ui = {
     this.el["wmap-info-enemies"].textContent = pack + " per wave";
     if (a.boss) {
       this.el["wmap-info-boss-row"].hidden = false;
-      this.el["wmap-info-boss"].textContent = a.boss.name;
+      const okhraGated = i === total - 1 && !(G.awaken && G.awaken.isDone("first_light"));
+      this.el["wmap-info-boss"].textContent = okhraGated
+        ? "The tide stirs... but your light sleeps. Awaken the First Light."
+        : a.boss.name;
     } else {
       this.el["wmap-info-boss-row"].hidden = true;
     }

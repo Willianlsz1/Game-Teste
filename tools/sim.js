@@ -344,8 +344,20 @@ function scenarioCampaign() {
   // P5: sem parada artificial — o gate escalonado (× convGateGrowth) ultrapassa o cap de nível
   // após ~12 convergences, então a convergência PÁRA sozinha e o jogador empurra até Okhra.
   const sim = freshSim({ converge: true, push, allowAwaken: true });
+
+  // P7.4: conta os GOLPES na luta do Okhra (HTK) — valida a banda P2.5 (60–120, alvo ~90).
+  // Headless não tem projétil: cada playerHit resolve direto em applyHitToEnemy.
+  let okhraHits = 0;
+  const _applyHitEnemy = G.combat.applyHitToEnemy.bind(G.combat);
+  G.combat.applyHitToEnemy = function (dmg, crit) {
+    const t = this.enemies.find((e) => !e.dead);
+    if (t && t.isBoss && G.state.data.areaIndex === G.data.areas.length - 1) okhraHits++;
+    return _applyHitEnemy(dmg, crit);
+  };
+
   // não para no First Light — segue até Okhra (área 18) p/ medir o mapa inteiro
   run(sim, { maxHours, stop: (s) => G.state.data.mapOneCleared });
+  G.combat.applyHitToEnemy = _applyHitEnemy;
 
   const W = [5, 9, 8, 7, 7, 5, 9, 7, 8, 7, 6];
   console.log(row(['run', 't', 'dur', 'gate', 'nível', 'gMax', 'pontos', 'razão', 'nós·lvls', 'árvore', 'coroa'], W));
@@ -374,7 +386,7 @@ function scenarioCampaign() {
     console.log(`⚠ First Light NÃO alcançado em ${fmtT(sim.t)} — nível ${d.level}, área ${d.areaIndex + 1}, ${d.convergences} convergences`);
     console.log(`  requisitos: ${reqs}`);
   }
-  if (d.mapOneCleared) console.log(`🌊 OKHRA (área 18 · Map 1 completo) em ${fmtT(sim.t)}`);
+  if (d.mapOneCleared) console.log(`🌊 OKHRA (área 18 · Map 1 completo) em ${fmtT(sim.t)} — ${okhraHits} golpes (alvo P2.5 60–120, ~90)`);
   else console.log(`⚠ Okhra NÃO derrotado em ${fmtT(sim.t)} — área ${d.areaIndex + 1}, nível ${d.level}${sim.timedOut ? ' (timeout)' : ''}`);
   const s = G.state.stats();
   console.log(`  final: ATK ${fmtN(s.atk)} · HP ${fmtN(s.hp)} · gear médio ${gearAvgLevel()} · passivas ${sim.nodeLevelsBought} níveis de nó`);

@@ -331,5 +331,30 @@ ok(G.state.data.equipped.weapon.level === 400,  "save antigo: nível da weapon p
 ok(G.state.data.equipped.cloak.affixes.every((a) => a.stat !== "atk"), "save antigo: cloak reconstruído sem ATK% (afixos novos)");
 ok(G.state.data.equipped.cloak.affixes.some((a) => a.stat === "rarityFindCorona"), "save antigo: cloak ganha o despertar novo (rarityFindCorona)");
 
+// ---------- PASSO 7: o PORTÃO do Okhra (combat.spawn) ----------
+// A última área só invoca o boss (Okhra) via threshold se o First Light estiver desperto.
+fresh();
+const lastIdx = G.data.areas.length - 1;
+ok(!!G.data.areas[lastIdx].boss, "última área (18) tem boss (Okhra)");
+(function () {
+  const realUi = G.ui; G.ui = null;
+  function spawnAt(idx) {
+    G.state.data.areaIndex = idx; G.state.data.maxAreaUnlocked = idx;
+    G.combat._lastAreaIndex = idx; G.combat._bossKills = 1e9;   // acima de qualquer threshold
+    G.combat.spawn();
+    return G.combat.enemies.some((e) => e.isBoss);
+  }
+  // sem First Light: o threshold NÃO invoca o Okhra
+  G.state.data.awakens = []; G.state.data.awakensUnlocked = [];
+  ok(spawnAt(lastIdx) === false, "área 18 sem First Light: threshold NÃO invoca o Okhra (portão)");
+  // com First Light desperto: o boss se manifesta
+  G.state.data.awakens = ["first_light"]; G.state.data.awakensUnlocked = ["first_light"];
+  ok(spawnAt(lastIdx) === true, "área 18 com First Light: threshold invoca o Okhra");
+  // o portão é SÓ da última área — o Harbinger do G5 (idx 14) ignora o First Light
+  G.state.data.awakens = []; G.state.data.awakensUnlocked = [];
+  ok(spawnAt(14) === true, "Harbinger do G5 (idx 14) spawna por threshold sem depender do First Light");
+  G.combat.enemies = []; G.ui = realUi;
+})();
+
 console.log(failed === 0 ? "\nALL PASS" : `\n${failed} FAIL`);
 process.exit(failed === 0 ? 0 : 1);

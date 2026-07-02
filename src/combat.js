@@ -121,7 +121,11 @@ G.combat = {
     this.enemies = [];
 
     // Boss de Área aparece por THRESHOLD DE KILL — nunca solo, sempre com escolta de mobs.
-    const bossTime = area.boss && this._bossKills >= this._bossThreshold();
+    // PORTÃO do Okhra (P7.4): o boss da ÚLTIMA área só se manifesta com o First Light desperto.
+    // Sem despertar, o threshold NÃO invoca o boss — a área farma normal (a UI explica).
+    const isFinalArea = d.areaIndex === G.data.areas.length - 1;
+    const okhraGated  = isFinalArea && !(G.awaken && G.awaken.isDone("first_light"));
+    const bossTime = area.boss && this._bossKills >= this._bossThreshold() && !okhraGated;
     if (bossTime) this.enemies.push(this._buildOne(true, area.boss));   // boss à frente
     const pool = this.enemyPool();
     for (let i = 0; i < n; i++)
