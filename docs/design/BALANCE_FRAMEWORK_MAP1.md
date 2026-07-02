@@ -263,8 +263,15 @@ Valida: `sim campaign` — First Light dentro do orçamento total do P0; Okhra v
 - Recompensas dos acesos ~×3/×6/×10 (espelham o poder) — sim valida contra a economia do P3 na implementação.
 - Rejeitado: unlock único via coroa/First Light (tarde demais) · tetos fixos desde o início (teto invisível, perde a dupla alavanca) · perLevel liso 0.001 (invisível, nunca produz momento perceptível).
 
+### P8.2 — Modificadores do Corona+ ✅ TRAVADO (jul/2026): **pool de 4, cada Corona rola exatamente 1**
+- Regra: SÓ Corona tem modificador (Ember/Lumen = stats puros — cor = força, só o topo muda regras). Nome vira prefixo ("Lightshell Duskwolf") + linha de log no spawn.
+- **Pool:** **Lightshell** (absorve N golpes do jogador — testa dano bruto) · **Quickened** (mob +40% atk speed — testa sustain) · **Siphoning** (cura-se de X% do dano causado — testa DPS/crit) · **Escorted** (chega com onda cheia de comuns — testa Siege Ward). Cada um pressiona um galho diferente da Árvore I — Corona = teste-relâmpago do build.
+- Rejeitado: Enrage (redundante c/ Siphoning) · Splitting (caro + conflita com threshold) · Thorns (morte invisível offline, feels-bad).
+- Magnitudes (N, %, +40%) = sim na implementação.
+- **Gancho do dono (Árvore II):** os 4 modificadores viram alvos de COUNTER-PASSIVAS no Mapa 2 (ex.: quebra-escudo, anti-siphon) — registrado nos candidatos da Árvore II.
+
 ### Fatias restantes
-- **P8.2** — menu de modificadores do Corona+ (e se Marcos ganham assinatura → P8.3). **P8.3** — luta de Harbinger. **P8.4** — luta do Okhra.
+- **P8.3** — luta de Harbinger. **P8.4** — luta do Okhra.
 Insumos: PASSOS 4–7.
 Valida: `sim baseline/campaign` com rarity find — frequência de acesos por grupo; recompensa vs orçamento do P3; âncoras do relógio intactas.
 
