@@ -270,8 +270,14 @@ Valida: `sim campaign` — First Light dentro do orçamento total do P0; Okhra v
 - Magnitudes (N, %, +40%) = sim na implementação.
 - **Gancho do dono (Árvore II):** os 4 modificadores viram alvos de COUNTER-PASSIVAS no Mapa 2 (ex.: quebra-escudo, anti-siphon) — registrado nos candidatos da Árvore II.
 
-### Fatias restantes
-- **P8.3** — luta de Harbinger. **P8.4** — luta do Okhra.
+### P8.3 — Luta de Harbinger ✅ TRAVADO (jul/2026): **assinatura fixa por Marco**
+- Cada Harbinger carrega UM modificador fixo do pool do P8.2 — o jogador enfrenta a mecânica no Marco ANTES de vê-la nos Coronas (o cap abre na morte dele: a luz roubada se dispersa e reaparece nos Coronas). O Harbinger é o tutorial encarnado do modificador.
+- Escada: H1 **Lightshell** · H2 **Escorted** · H3 **Siphoning** · H4 **Quickened** · H5 e H6 **pares** (quais exatamente = sim na implementação; ensaio geral pro Okhra).
+- Threshold/HP/dano/loot: inalterados (P2.5/P3). Custo no motor ≈ zero além do P8.2 (mesma maquinaria, fixa em vez de rolada).
+- Rejeitado: fases de HP (sistema novo, textura quase invisível em combate automático) · manter número puro (6 Marcos mecanicamente idênticos, e o pool do P8.2 sem palco de apresentação).
+
+### Fatia restante
+- **P8.4** — luta do Okhra.
 Insumos: PASSOS 4–7.
 Valida: `sim baseline/campaign` com rarity find — frequência de acesos por grupo; recompensa vs orçamento do P3; âncoras do relógio intactas.
 
