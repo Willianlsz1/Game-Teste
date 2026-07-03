@@ -6,7 +6,7 @@ G.ui = {
 
   cache() {
     const ids = [
-      "res-lumens", "res-area",
+      "res-lumens", "res-area", "harbinger-counter",
       "hero-card-level", "hero-hp-fill", "hero-hp-label", "hero-xp-fill", "hero-xp-label",
       "enemies-container", "log",
       "gear-stats", "gear-slots", "gear-mult", "gear-tooltip", "gear-materials",
@@ -547,7 +547,46 @@ G.ui = {
   // Combat
   _lastArt: null,
 
+  // contador de invocação do Harbinger — logo abaixo do banner de área.
+  // Roda no clock de 100ms (via renderEnemy) porque a contagem muda a cada kill.
+  renderHarbingerCounter() {
+    const el = this.el["harbinger-counter"];
+    if (!el) return;
+    const area = G.data.currentArea();
+    const d = G.state.data;
+    const lastIdx = G.data.areas.length - 1;
+
+    const liveBoss = G.combat.enemies.find(e => e.isBoss && !e.dead);
+    if (liveBoss) {
+      el.classList.add("is-here");
+      el.innerHTML = liveBoss.isMapBoss ? "◆ THE NIHELIM IS HERE" : "⟡ THE HARBINGER IS HERE";
+      el.style.display = "";
+      return;
+    }
+    el.classList.remove("is-here");
+
+    const stirs = (name) => {
+      const n = Math.max(0, G.combat._bossThreshold() - G.combat._bossKills);
+      el.innerHTML = `⟡ ${name} stirs in <b>${n}</b> kills`;
+      el.style.display = "";
+    };
+
+    if (area.boss && d.areaIndex === lastIdx) {
+      const h6Felled = Array.isArray(d.harbingersFelled) && d.harbingersFelled.indexOf(lastIdx) !== -1;
+      const awake = !!(G.awaken && G.awaken.isDone("first_light"));
+      if (!h6Felled) { stirs(area.boss.name); return; }
+      if (awake && area.mapBoss) { stirs(area.mapBoss.name); return; }
+      el.innerHTML = "The tide stirs... awaken the First Light.";
+      el.style.display = "";
+      return;
+    }
+
+    if (area.boss) { stirs(area.boss.name); return; }
+    el.style.display = "none";
+  },
+
   renderEnemy() {
+    this.renderHarbingerCounter();
     const container = this.el["enemies-container"];
     if (!container) return;
 
@@ -557,7 +596,7 @@ G.ui = {
       if (container.innerHTML) container.innerHTML = "";
       container.className = "enemies-container";
       this._enemySig = "";
-      this._enemyFills = []; this._enemyLabels = []; this._enemyHpShown = [];
+      this._enemyFills = []; this._enemyLabels = []; this._enemyHpShown = []; this._shellBadges = [];
       return;
     }
 
@@ -574,9 +613,13 @@ G.ui = {
         const nameHtml  = e.rarity ? `${e.name} · ${e.rarity.tag}` : e.name;
         const nameColor = e.rarity ? ` style="color:${e.rarity.color}"` : "";
         const shelled   = e.lightshell > 0;
+        const nameEl    = `${bossTag}
+          <span class="enemy-name${e.isBoss ? " boss-name" : ""}"${nameColor}>${nameHtml}</span>`;
+        const header    = e.isBoss && e.banner
+          ? `<div class="boss-header"><img class="boss-banner" src="${e.banner}" alt="" onerror="this.remove()" />${nameEl}</div>`
+          : nameEl;
         return `<div class="enemy-card${e.isBoss ? " boss" : ""}" data-idx="${i}">
-          ${bossTag}
-          <span class="enemy-name${e.isBoss ? " boss-name" : ""}"${nameColor}>${nameHtml}</span>
+          ${header}
           <span class="shell-badge" id="shell-badge-${i}"${shelled ? "" : ` style="display:none"`}></span>
           <div class="enemy-figure${e.isBoss ? " boss" : ""}${shelled ? " shelled" : ""}" id="enemy-art-${i}">
             <span class="art-ph">${e.sprite}</span>

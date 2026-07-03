@@ -58,6 +58,10 @@ in its design (crown, halo, collar, wheel — a ring that does not close).
 Its stolen light is hoarded, not carried: <onde/como ele acumula luz roubada>.
 ```
 (O anel-que-não-fecha é a marca de família Nihelim — nos Harbingers aparece FRACO/incompleto, eco do eco.)
+⚠️ **Cláusula anti-vermelho (todo prompt de Harbinger/banner/boss):** acrescentar
+*"NO red anywhere in the image — red is reserved in this world."* O vermelho é
+assinatura SELADA do Nihel (regra de cores §5) e os geradores adoram pôr vermelho
+em heráldica — o banner v1 do H1 veio com anel vermelho por conta própria.
 
 **Direção travada pro visual dos Harbingers (dono, jul/2026):** designs únicos e
 incomuns, ar de criatura que COMANDA (boss) — nunca "mob grande". **Espécies variadas,

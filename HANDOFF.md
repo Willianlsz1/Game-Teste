@@ -41,6 +41,7 @@
 3. **Registrados pra Árvore II (Mapa 2):** Second Wind · Golden Wake e o banco · awakenEfficiency/awakenReqReduction (removidos do código no P6) · pós-cap da convergence aberto de propósito.
 4. **UI copy (do review):** `ui.js` mostra "Reach level X" pra áreas de fronteira (deveria indicar o Harbinger) — corrigir na fase de UI.
 4b. **Pergunta aberta PRO PLAYTEST (não pro sim):** HP bruto cai em algumas fronteiras (13→14, 16→17 etc.) porque o cruzamento acontece pós-Convergence (dano esperado menor; golpes sentidos são monótonos). Se humanos estranharem, plano B pronto: piso cosmético `hp entrada ≥ hp fim anterior` no calibrador (custo: re-subidas ~8–10 golpes na entrada). Decisão atual: fidelidade de golpes > estética de número.
+4c. **Registrado (review adversarial P8.5, jul/2026):** estado do finale (`_bossKills`, `_okhraManifest`, tide) vive em `G.combat` e NÃO persiste — reload entre a morte do H6 e o spawn do Okhra perde a manifestação imediata (re-farma o threshold). Pré-existente, janela estreita; se incomodar no playtest: persistir em `state.data` e hidratar no load.
 5. **Política do sim (registrado no P3):** promoções em lockstep no G2–G3; jogador realista espalharia — refinar a persona se algum número futuro depender disso.
 6. **Import** do `mapa1_tema_b_porto_afundado.md` (criado fora do repo) + ajuste Nebulor→Okhra (área 17).
 7. **Sweep de termos** nos docs (Archon→Nihelim etc.) — `node tools/check_canon.js` lista; exports consolidados (`GAME_CONTEXT`, `LORE_COMPLETE`) têm banner mas corpo antigo.

@@ -202,6 +202,9 @@
     -1.2px -1.2px 0 #1a0e02, 1.2px -1.2px 0 #1a0e02, -1.2px 1.2px 0 #1a0e02, 1.2px 1.2px 0 #1a0e02,
     0 0 6px #000, 0 0 16px rgba(232, 181, 74, 0.85);
 }
+/* boss vive sempre em pack-2/pack-3 — vence os overrides de nome por pack (especificidade, sem !important) */
+.enemies-container.pack-2 .enemy-name.boss-name,
+.enemies-container.pack-3 .enemy-name.boss-name { font-size: 24px; }
 .enemy-card.enemy-active .enemy-name.boss-name {
   text-shadow:
     -1.2px -1.2px 0 #1a0e02, 1.2px -1.2px 0 #1a0e02, -1.2px 1.2px 0 #1a0e02, 1.2px 1.2px 0 #1a0e02,
@@ -210,6 +213,19 @@
 .enemy-bar.boss-bar {
   border: 1px solid rgba(232, 181, 74, 0.7);
   box-shadow: 0 0 12px rgba(232, 181, 74, 0.35), inset 0 0 4px rgba(0, 0, 0, 0.6);
+}
+
+/* ---- banner heráldico do Harbinger (arte atrás do tag+nome) ---- */
+.boss-header {
+  position: relative; width: 100%;
+  display: flex; flex-direction: column; align-items: center;
+}
+.boss-header .harbinger-tag,
+.boss-header .enemy-name { position: relative; z-index: 1; }
+.boss-banner {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 110%; max-width: 340px; height: auto; z-index: 0;
+  pointer-events: none;
 }
 
 /* ---- Lightshell (escudo de luz — golpes absorvidos) ---- */
@@ -333,6 +349,23 @@
   background-image: url("../assets/ui/banner_teal.png");
 }
 .banner--area .banner__text { font-size: 24px; font-weight: 600; letter-spacing: 0.4px; text-shadow: 0 1px 4px #000, 0 0 12px #000; }
+
+/* ---- contador de invocação do Harbinger (abaixo do banner) ---- */
+.harbinger-counter {
+  margin-top: 4px; text-align: center;
+  font-family: "Outfit", sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.5px;
+  color: color-mix(in srgb, var(--gold) 80%, #fff 20%);
+  text-shadow: 0 1px 3px #000, 0 0 8px rgba(0, 0, 0, 0.85);
+}
+.harbinger-counter b { color: #fff; font-weight: 700; }
+.harbinger-counter.is-here {
+  letter-spacing: 2px; font-weight: 800;
+  animation: harbinger-pulse 1.6s ease-in-out infinite;
+}
+@keyframes harbinger-pulse {
+  0%, 100% { opacity: 0.75; }
+  50%      { opacity: 1; }
+}
 
 /* ---- setas de navegação de área ---- */
 .area-nav {

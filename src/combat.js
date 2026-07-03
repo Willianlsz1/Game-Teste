@@ -137,7 +137,7 @@ G.combat = {
     this.spawnCount++;
 
     return {
-      name, sprite: def.sprite, img: def.img,
+      name, sprite: def.sprite, img: def.img, banner: def.banner,
       level, isBoss,
       rarity: rarity ? { tag: rarity.tag, color: rarity.color, tier: rarity.tier } : null,
       modifiers, lightshell,
@@ -412,11 +412,13 @@ G.combat = {
   markBossCleared(e) {
     const d = G.state.data;
     d.runBosses = (d.runBosses || 0) + 1;
-    // boss caiu → re-grind parcial do threshold pra re-invocá-lo (mata o farm de boss em toda onda)
-    this._bossKills = Math.floor(this._bossThreshold() * (1 - (G.data.balance.bossRegrindFrac != null ? G.data.balance.bossRegrindFrac : 1)));
     const lastIdx    = G.data.areas.length - 1;
     const idx        = d.areaIndex;
     const isMapBoss  = !!(e && e.isMapBoss);   // Okhra (mapBoss) NÃO é Marco
+    // Harbinger caiu → re-grind parcial do threshold pra re-invocá-lo (mata o farm de boss em toda onda).
+    // O mapBoss (Okhra) NÃO re-invoca por re-grind: sua re-luta é gated por threshold cheio, não pelo re-grind parcial.
+    if (!isMapBoss)
+      this._bossKills = Math.floor(this._bossThreshold() * (1 - (G.data.balance.bossRegrindFrac != null ? G.data.balance.bossRegrindFrac : 1)));
 
     // Marco (Harbinger): a 1ª morte levanta os tetos do Rarity Find em 1/6 (permanente,
     // sobrevive à Convergence). H6 (Harbinger da área 18) É Marco — fecha os caps 6/6.
