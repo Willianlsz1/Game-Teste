@@ -131,6 +131,28 @@ Novas mecânicas de folha (Golden Wake, Execute) entram no combat.js junto com
 as de gear (P9.3/P9.4 são um batch só de mecânica + um de números).
 Magnitudes finais: TODAS saem do sim (protocolo §3), estas são formas, não números.
 
+### 2.8 Princípio: Mapa 1 é INTRODUÇÃO — mecânicas com caps baixos (dono, jul/03)
+
+Decisão do dono: mecânicas de aceleração (gold extra, chance de raros, golpe
+duplo, cleave...) são conteúdo de fase avançada; no Mapa 1 elas aparecem como
+DEGUSTAÇÃO, com caps explicitamente baixos. O jogador sente o mecanismo,
+entende o que ele vai virar, mas a expressão plena fica pros mapas seguintes.
+Precedentes já no código: `map1AtkSpeedCap 2` vs `atkSpeedCap 15` final;
+Uncommon terminal no Mapa 1 (Rare volta no Mapa 2); caps de Rarity Find
+abertos por Marcos.
+
+Caps de DESIGN do Mapa 1 (teto duro; o sim calibra abaixo deles, nunca acima):
+
+| Mecânica | Cap Mapa 1 | Expressão futura |
+|---|---|---|
+| Cleave (weapon) | ≤25% do overkill | Mapa 2+: % maior, salta mais alvos |
+| Overcrit (gloves) | crit efetivo ≤130% (chance de duplo ≤30%) | multiataque triplo em mapas futuros |
+| Momentum (boots) | ≤3 stacks | mais stacks/duração depois |
+| Bulwark (armor) | dobra DR abaixo de 35% HP (cap DR global 75 mantém) | thresholds maiores depois |
+| Golden Wake (folha) | ≤10% de chance de Lumens dobro | tiers de multiplicador depois |
+| Executioner's Light (folha) | execute ≤8% do HP máx | thresholds maiores depois |
+| Rarity Find | caps atuais via Marcos (já é assim) | — |
+
 ### 2.7 Mortes com intenção
 
 Morrer = sinal claro de "volte mais forte" (entrada prematura de área), não
