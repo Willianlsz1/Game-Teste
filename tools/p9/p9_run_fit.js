@@ -18,6 +18,10 @@ fs.readFileSync = function (p, enc) {
   const base = typeof p === 'string' ? path.basename(p) : '';
   if (base === 'data.js') {
     src = src + '\n' + cand.dataPatch;
+  } else if (base === 'economy.js' && cand.econPatch) {
+    src = src + '\n' + cand.econPatch;
+  } else if (base === 'passives.js' && cand.passivesPatch) {
+    src = src + '\n' + cand.passivesPatch;
   } else if (base === 'state.js') {
     const sp = cand.statePatch;
     if (!src.includes(sp.from1) || !src.includes(sp.from2)) throw new Error('P9 statePatch: ancora nao encontrada');

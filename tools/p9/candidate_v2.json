@@ -1,0 +1,34 @@
+{
+  "dial": {
+    "hp1": 2500,
+    "hpEndTarget": 100000000000,
+    "gap": 0.5,
+    "atk1": 40,
+    "yRampShape": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "yBase": 1.35,
+    "pAtkCoef": 8,
+    "pAtkExp": 1.5,
+    "pHpCoef": 4,
+    "pHpExp": 1.45,
+    "uncommonStatMult": 8,
+    "weaponPerLevel": 220,
+    "armorPerLevel": 60,
+    "v2": "awaken massa 50k · boss hpMult 5.5 · arvore x3 custosa · convLegacy 2%"
+  },
+  "dataPatch": "\n;(function (G) {\n  const HP = [[2584,38438],[128128,344200],[1147332,1551569],[5171896,5171896],[7596080,7596080],[11619288,11619288],[23757947,23757947],[27452615,27452615],[40002915,381775775],[1272585916,1272585916],[1853564031,1853564031],[2029652399,2029652399],[2526939593,2526939593],[2551024215,2551024215],[2934755845,2934755845],[3815559856,3815559856],[4622897154,4622897154],[4793246827,7189870241]];\n  G.data.areas.forEach((a, i) => { a.hp = HP[i]; });\n  G.data.balance.mobAtkByArea = [40,234,2046,4338,6127,8823,16693,18888,26244,24209,31663,40163,62660,63263,79094,113974,146212,153003];\n  G.data.rarities[1].statMult = 8;\n  const gb = G.data.gearBase;\n  gb.weapon.affixes[0].perLevel = 220;\n  gb.armor.affixes[0].perLevel = 60;\n})(G);\n\n;(function (G) {\n  G.data.awakens[0].requirements.materials.firstLight = 50000;\n  G.data.areas.forEach((a) => { if (a.boss) a.boss.hpMult = 5.5; });\n  const last = G.data.areas[G.data.areas.length - 1];\n  if (last.mapBoss) last.mapBoss.hpMult = 9;\n  G.data.balance.convLegacyAtkPct = 2;\n  G.data.balance.convLegacyHpPct = 2;\n})(G);\n",
+  "econPatch": "\n;(function (G) {\n  const dt = G.economy.dropTable;\n  dt.common.awakenMaterial = { chance: 1, min: 1, max: 3, minAreaIndex: 12 };\n  dt.rare.awakenMaterial   = { chance: 1, min: 4, max: 10, minAreaIndex: 12 };\n  dt.boss.awakenMaterial   = { chance: 1, min: 600, max: 1500, minAreaIndex: 12 };\n})(G);\n",
+  "passivesPatch": "\n;(function (G) {\n  const U = G.passives.UNIT;\n  for (const k of Object.keys(U)) if (k !== '_default' && k !== 'atkSpeed') U[k] = U[k] * 3;\n  U.atkSpeed = U.atkSpeed * 2;\n  G.passives.unlockByDepth = [150, 300, 700, 1600];\n  G.passives.evoFactor = 0.5;\n  G.passives.evoRamp = 1.9;\n})(G);\n",
+  "statePatch": {
+    "from1": "add(\"atk\", \"flat\", (d.level - 1) * 5, \"Character Level\");",
+    "to1": "add(\"atk\", \"flat\", 8 * Math.pow(d.level, 1.5), \"Character Level\");",
+    "from2": "add(\"hp\",  \"flat\", (d.level - 1) * 2, \"Character Level\");",
+    "to2": "add(\"hp\",  \"flat\", 4 * Math.pow(d.level, 1.45), \"Character Level\");"
+  }
+}

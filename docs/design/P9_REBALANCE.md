@@ -172,7 +172,13 @@ mortes concentradas em tentativa prematura.
 
 - [x] Diagnóstico baseline (jul/03, seed 1) — números no §0
 - [x] P9.1 Harness + candidato v1 FITADO (jul/03) — ver §5
-- [ ] P9.1b Candidato v2 (3 gaps do v1: material do First Light, HTK de boss, re-subida)
+- [x] P9.1b–d Candidatos v2→v4 (jul/03) — RELÓGIO NA BANDA: First Light 30h13,
+      Okhra 31h31 (seed 1), curva acelera→desacelera ✓, árvore dura o mapa ✓
+- [ ] P9.1e Boss-fit (hpMult por boss DEPOIS dos arrays estáveis; Okhra ~208
+      p/ luta ~90 golpes — v4 mediu 6477/54min com mult 15000) + relógio fino
+      (31.5h → 36h±2: firstLight 75k→~100k e/ou xpCurveExp) + seeds 3/7
+- [ ] P9.1f Verificar: re-subida derrete (HTK ≤2 via árvore), padrão de mortes,
+      TTK wave nas bandas
 - [ ] P9.2 Player scale + TTK wave (atkSpeed, HTK, curva de dano)
 - [ ] P9.3 Gear (promoção ×6–10 + per-level)
 - [ ] P9.4 Passivas (valores reais nas 3 árvores)
@@ -217,6 +223,19 @@ ATK 243M no fim do baseline · coroa na conv 8 (banda alvo) · razão de pontos
    até o fim). A re-subida derrete VIA árvore comprada com os pontos.
 4. (Cauda) sem First Light o gate ×1.3 corre solto → 24 convergences, runs de
    35h. Resolve-se com (1); validar conv count ~12–16.
+
+## 6. P9.1b–d — trajetória v2→v4 (campanha, seed 1, jul/03)
+
+| Candidato | Mudança | First Light | Achado |
+|---|---|---|---|
+| v2 | material vira massa (drop comum G5+, req 50k) · boss hpMult 5.5 · árvore UNIT×3 custos [150,300,700,1600] evoRamp 1.9 · convLegacy 2% | 8h44 | destravou; meio colapsa (convs de 2–7min); Okhra 1 hit |
+| v3 | xpMultByGroup→1s (mata acelerador P7) · xpCurveExp 1.78 · req 75k · boss ratio-fit · okhra 810 | 11h11 | curva inicial linda (33m→1h52); G4–G5 ainda colapsa; bosses oscilam entre runs |
+| v4 | xpCurveExp 1.9 · gateGrowth 1.35 · okhra 15000 · RE-FIT das áreas (10 passes, topo 6.5e11) | **30h13 (Okhra 31h31)** | BANDA ✓ · curva 67m→2h54 acel + 3h28→8h22 desacel ✓ · coroa conv 11 ✓ · árvore 66% no fim ✓ · Okhra 6477 golpes/54min (overshoot) · bosses precisam de fit próprio pós-arrays |
+
+Lições de método: (a) hpMult de boss SÓ se fita depois dos arrays de área
+estabilizarem (ele cavalga o mob HP); (b) BOM do PowerShell corrompe JSON de
+candidato — makers sempre em Node; (c) o fitter oscila com xpCurveExp alto
+mas converge (maxDev 0.055 no pass 10).
 
 ## Superseded
 
