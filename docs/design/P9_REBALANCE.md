@@ -198,18 +198,25 @@ TTD entrada 25s.
 ATK 243M no fim do baseline · coroa na conv 8 (banda alvo) · razão de pontos
 1.53 ✓ · rarity find saudável (G6: 9.4/5.0/1.7%).
 
-**Os 3 gaps (campanha, 100h timeout):**
-1. **First Light INALCANÇÁVEL** — material firstLight 1/3 em 100h. O drop do
-   material (economy.dropTable, placeholder de sempre) não escala com o novo
-   ritmo. v2: dimensionar o fluxo pra 3 materiais chegarem ~30–34h.
+**Os 3 gaps (campanha, 100h timeout) + decisões do dono (jul/03) sobre eles:**
+1. **First Light INALCANÇÁVEL** — material firstLight 1/3 em 100h.
+   **DECISÃO DO DONO: o requisito vira MASSA — ~30k–100k de materiais**, não
+   3 unidades raras. Material de Awaken passa a ser moeda farmada em volume
+   (drop por kill nos grupos avançados + bônus de boss); o requisito grande é
+   espetáculo E relógio ao mesmo tempo. v2: dimensionar fluxo pra fechar
+   30k–100k em ~30–34h de jogo.
 2. **HTK do 1º contato com Harbinger = 247 (H1)** — hpMult herdado (17.42)
-   sobre entrada HTK 10 explode. v2: derivar hpMult por grupo do alvo
-   HTK_boss 25–35 no dano de meio-de-banda (fórmula, não à mão).
-3. **Re-subida não derrete** — pós-Convergence, áreas 3–11 ficam com HTK até
-   6.6 (alvo ≤2, dono quer 1 hit). v2: convLegacy mais forte (ou multiplicativo)
-   + medir com Executioner's Light do P9.4.
+   sobre entrada HTK 10 explode. v2: derivar hpMult por fórmula do alvo
+   HTK_boss 25–35 no dano de meio-de-banda.
+3. **Re-subida não derrete** (HTK até 6.6, alvo ≤2).
+   **DECISÃO DO DONO: Convergence NÃO é fonte de poder direta nesta fase —
+   o poder transfere pra ÁRVORE DE PASSIVAS: nós mais fortes E mais custosos.**
+   v2: convLegacy reduzido a resíduo (~0–2%/conv); UNIT da árvore socado
+   (nó relevante no TTK) e custos re-escalados pra árvore durar o mapa inteiro
+   (hoje ela fecha 100% na conv 13 e vira tédio — custo maior = sink de pontos
+   até o fim). A re-subida derrete VIA árvore comprada com os pontos.
 4. (Cauda) sem First Light o gate ×1.3 corre solto → 24 convergences, runs de
-   35h. Resolve-se sozinho quando (1) destravar; validar conv count ~12–16.
+   35h. Resolve-se com (1); validar conv count ~12–16.
 
 ## Superseded
 
