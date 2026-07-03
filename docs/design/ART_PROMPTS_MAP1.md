@@ -114,6 +114,19 @@ referências do dono: melancolia nobre (serenidade + veias escuras) · carisma t
 dourada, ponto luminoso pequeno no alto da forma vertical).
 
 ### Background de área
+
+⚠️ **Regra dos backgrounds do Tema B (dono, jul/03 — após bg 13 v1):** cena "fisicamente
+plausível" é REPROVADA por definição — o mundo do Éclats é mágico, a física real não se
+aplica (ver `eclats-surreal-biomes`). TODO background do Porto carrega os 4 ingredientes:
+1. **Pedaços da cidade engolida em física impossível** — torre de cabeça pra baixo, rua de
+   paralelepípedos ondulando como fita, praça pendurada por correntes, escada em espiral
+   sem prédio (gramática Escher: estrutura familiar + orientação errada).
+2. **UMA presença meio-vista ao fundo** ("algo te assistindo"): dois pontos de luz teal na
+   escuridão distante, ou uma silhueta colossal que não cabe no quadro (lição Sunless Sea:
+   basta quase nada — luz onde não devia haver luz).
+3. **Micro-vida errada** — cardume parado em formação de gente, lanterna acesa em janela
+   afogada, porta que se abre sozinha na corrente.
+4. **Luz como evento**: escuro por padrão, cada fonte de luz é preciosa e intencional.
 ```
 Art style: clean cel-shaded game environment, layered flat color blocks,
 crisp shapes, no noise or grain. Wide 16:9 scene, NO characters.

@@ -321,6 +321,7 @@ G.data = {
     {
       id: 13, name: "The Wreckfields", theme: "port",
       blurb: "Ships that never finish sinking — hulls hang suspended in the blue, frozen mid-fall, chains stretched toward a surface they will never reach.",
+      img: "assets/areas/wreckfields.png",
       levelRange: [2295, 2717],
       hp: [60815702, 79060413],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
@@ -332,6 +333,7 @@ G.data = {
     {
       id: 14, name: "The Drowned Shipyard", theme: "port",
       blurb: "The shipyard the water finished: half-built hulls grown shut with coral, and stairways of current standing where stairs should be.",
+      img: "assets/areas/drowned_shipyard.png",
       levelRange: [2718, 3203],
       hp: [40622208, 52808871],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
@@ -343,6 +345,7 @@ G.data = {
     {
       id: 15, name: "The Hollow Armada", theme: "port",
       blurb: "A fleet fused into a single body — masts like ribs, torn sails like membranes, deck-lights burning with no crew to tend them.",
+      img: "assets/areas/hollow_armada.png",
       levelRange: [3204, 3762],
       hp: [61252164, 79627813],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
