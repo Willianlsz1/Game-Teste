@@ -14,6 +14,12 @@
       "port": 4321
     },
     {
+      "name": "eclats-static",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [".claude/static-server.js"],
+      "port": 3000
+    },
+    {
       "name": "vite-verify",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "--", "--port", "5199"],

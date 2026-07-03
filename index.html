@@ -255,9 +255,12 @@
     <button class="wmap-back" id="wmap-back" title="Back">◀ World</button>
     <div class="wmap" id="wmap">
       <div class="wmap__inner">
-        <img class="wmap__bg" src="assets/ui/map1.png" alt="" />
+        <img class="wmap__bg" id="wmap-bg" src="assets/ui/map1.png" alt="" />
+        <span class="wmap__act-label" id="wmap-act-label" hidden></span>
         <svg class="wmap-trail" id="wmap-trail" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
         <div class="wmap__nodes" id="wmap-nodes"></div>
+        <button class="wmap-act-nav wmap-act-nav--down" id="wmap-act-down" hidden></button>
+        <button class="wmap-act-nav wmap-act-nav--up" id="wmap-act-up" hidden>▲ The Dreaming Wood</button>
       </div>
     </div>
     <aside class="wmap-info" id="wmap-info" hidden>

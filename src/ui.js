@@ -12,6 +12,7 @@ G.ui = {
       "gear-stats", "gear-slots", "gear-mult", "gear-tooltip", "gear-materials",
       "forge-mats", "forge-convert", "forge-promote", "forge-anvil",
       // World Map
+      "wmap-bg", "wmap-act-label", "wmap-act-down", "wmap-act-up",
       "wmap-nodes", "wmap-trail", "wmap-info", "wmap-info-art", "wmap-info-name",
       "wmap-info-lore", "wmap-info-level", "wmap-info-enemies", "wmap-info-status",
       "wmap-info-boss-row", "wmap-info-boss", "wmap-info-unlock-row", "wmap-info-unlock",
@@ -59,6 +60,19 @@ G.ui = {
     const wback = document.getElementById("wmap-back");
     if (wback) wback.addEventListener("click", () => { document.getElementById("modal-worldmap").hidden = true; });
 
+    // World Map: navegação entre atos (A = Floresta / B = Porto Afundado). Não muda a área do jogador.
+    if (this.el["wmap-act-down"])
+      this.el["wmap-act-down"].addEventListener("click", () => {
+        if (this.el["wmap-act-down"].classList.contains("is-locked")) return;
+        this._wmapAct = "B"; this.renderWorldMap();
+        if (this.el["wmap-info"]) this.el["wmap-info"].hidden = true;
+      });
+    if (this.el["wmap-act-up"])
+      this.el["wmap-act-up"].addEventListener("click", () => {
+        this._wmapAct = "A"; this.renderWorldMap();
+        if (this.el["wmap-info"]) this.el["wmap-info"].hidden = true;
+      });
+
     // Convergence (prestige): confirma e renasce
     if (this.el["btn-converge"])
       this.el["btn-converge"].addEventListener("click", () => {
@@ -101,6 +115,7 @@ G.ui = {
     this.renderAll();
     // World Map renderiza só ao abrir (não a cada tick); painel começa fechado
     if (id === "modal-worldmap") {
+      this._wmapAct = (G.state.data.areaIndex || 0) <= 8 ? "A" : "B";
       this.renderWorldMap();
       if (this.el["wmap-info"]) this.el["wmap-info"].hidden = true;
     }
@@ -908,13 +923,13 @@ G.ui = {
 
   // ---------- WORLD MAP ----------
   // posições dos 18 nós no mapa (% x,y) — fonte única p/ nós E trilha.
-  // Floresta (0-8): caminho descendente original. Porto Afundado (9-17): descida
-  // serpenteante na faixa inferior — dois sweeps (y79 direita→esquerda, y90 esquerda→direita).
+  // Ato A (0-8, Floresta): alinhadas à geografia pintada de map1.png.
+  // Ato B (9-17, Porto Afundado): grade suave provisória — a arte do Porto redefine depois.
   mapNodePos: [
-    [10, 23], [36, 18], [66, 17], [82, 27], [61, 42],
-    [35, 51], [10, 64], [28, 71], [71, 64],
-    [90, 79], [72, 79], [54, 79], [34, 79], [12, 79],
-    [23, 90], [44, 90], [64, 90], [82, 90],
+    [10, 78], [22, 47], [38, 22], [55, 12], [52, 40],
+    [72, 38], [36, 65], [60, 72], [88, 62],
+    [22, 20], [50, 18], [78, 22], [80, 48], [50, 46],
+    [22, 48], [24, 76], [52, 74], [80, 74],
   ],
 
   renderWorldMap() {
@@ -922,8 +937,39 @@ G.ui = {
     if (!wrap) return;
     const d = G.state.data;
     const pos = this.mapNodePos;
-    const maxU = Math.min(d.maxAreaUnlocked || 0, G.data.areas.length - 1);
+    const total = G.data.areas.length;
+    const maxU = Math.min(d.maxAreaUnlocked || 0, total - 1);
+    const act = this._wmapAct === "B" ? "B" : "A";
+    const first = act === "B" ? 9 : 0;
+    const last = act === "B" ? total - 1 : 8;
 
+    // fundo + rótulo do ato (Ato B = placeholder do Porto Afundado sobre map1.png)
+    const wmap = document.getElementById("wmap");
+    if (wmap) wmap.classList.toggle("is-actB", act === "B");
+    const label = this.el["wmap-act-label"];
+    if (label) {
+      label.textContent = "The Sunken Port";
+      label.hidden = act !== "B";
+    }
+
+    // botões de navegação entre atos
+    const downBtn = this.el["wmap-act-down"];
+    if (downBtn) {
+      if (act === "A") {
+        downBtn.hidden = false;
+        const portUnlocked = maxU >= 9;
+        downBtn.classList.toggle("is-locked", !portUnlocked);
+        downBtn.textContent = portUnlocked ? "▼ The Sunken Port" : "🔒 The Sunken Port";
+        downBtn.title = portUnlocked ? "" : "Defeat the Gilded Hollow";
+      } else {
+        downBtn.hidden = true;
+      }
+    }
+    const upBtn = this.el["wmap-act-up"];
+    if (upBtn) upBtn.hidden = act !== "B";
+
+    // trilha: só o rastro dourado de progresso, restrito aos nós do ato visível.
+    // (a trilha base é PINTADA na arte — não desenhamos mais os paths azul-cinza.)
     const trail = this.el["wmap-trail"];
     if (trail) {
       const crPath = (pts, tension = 0.5) => {
@@ -939,24 +985,26 @@ G.ui = {
         }
         return s;
       };
-      const allPath  = crPath(pos);
-      const donePath = crPath(pos.slice(0, maxU + 1));
+      const doneEnd = Math.min(maxU, last);
+      const donePts = doneEnd >= first ? pos.slice(first, doneEnd + 1) : [];
+      const donePath = crPath(donePts);
       const vne = 'fill="none" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"';
-      trail.innerHTML =
-        `<path d="${allPath}" ${vne} stroke="rgba(30,40,100,0.30)" stroke-width="8"/>` +
-        `<path d="${allPath}" ${vne} stroke="rgba(110,125,200,0.22)" stroke-width="4"/>` +
-        `<path d="${allPath}" ${vne} stroke="rgba(180,190,240,0.18)" stroke-width="1.5"/>` +
-        `<path d="${donePath}" ${vne} stroke="rgba(0,0,0,0.55)" stroke-width="10"/>` +
-        `<path d="${donePath}" ${vne} stroke="rgba(210,155,20,0.88)" stroke-width="5.5"/>` +
-        `<path d="${donePath}" ${vne} stroke="rgba(255,242,170,0.65)" stroke-width="1.8"/>`;
+      trail.innerHTML = donePath
+        ? `<path d="${donePath}" ${vne} stroke="rgba(0,0,0,0.45)" stroke-width="9"/>` +
+          `<path d="${donePath}" ${vne} stroke="rgba(210,155,20,0.7)" stroke-width="5.5"/>` +
+          `<path d="${donePath}" ${vne} stroke="rgba(255,242,170,0.52)" stroke-width="1.8"/>`
+        : "";
     }
 
     wrap.innerHTML = G.data.areas.map((a, i) => {
+      if (i < first || i > last) return "";
       const locked = i > maxU;
       const cur = i === d.areaIndex;
       const [x, y] = pos[i] || [50, 50];
       const cls = `wmap-node${locked ? " is-locked" : ""}${cur ? " is-current" : ""}`;
+      const ph = `<span class="wmap-node__ph">${locked ? "🔒" : i + 1}</span>`;
       return `<button class="${cls}" style="left:${x}%;top:${y}%" data-area="${i}" title="${a.name}">
+        ${ph}
         <img src="assets/ui/node_${i + 1}.png" alt="" onerror="this.remove()" />
         <span class="wmap-node__name">${a.name}</span>
       </button>`;
