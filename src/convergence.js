@@ -81,7 +81,7 @@ G.convergence = {
     }
 
     if (G.ui && G.ui.log)
-      G.ui.log(`✦ Convergence — the Seeker breaks and begins anew. +${G.util.fmt(gained)} Convergence Points.`, "boss");
+      G.ui.log(`✦ Convergence: the Seeker breaks and begins anew. +${G.util.fmt(gained)} Convergence Points.`, "boss");
     if (G.ui) {
       if (G.ui.onAreaChange) G.ui.onAreaChange();
       if (G.ui.renderAll) G.ui.renderAll();

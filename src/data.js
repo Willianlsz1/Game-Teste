@@ -103,7 +103,7 @@ G.data = {
       id: "first_light",
       name: "First Light",
       tier: 1,
-      lore: "In the astral hush, the light you carry stirs for the first time — and answers.",
+      lore: "In the astral hush, the light you carry stirs for the first time, and answers.",
       requirements: {
         area: 18,
         crown: true,
@@ -221,7 +221,7 @@ G.data = {
     },
     {
       id: 5, name: "The Sunken Grove", theme: "forest",
-      blurb: "A flooded, mirrored grove — every still pool reflects the creeping Mist back at the Seeker.",
+      blurb: "A flooded, mirrored grove, every still pool reflects the creeping Mist back at the Seeker.",
       img: "assets/areas/sunken_grove.png",
       levelRange: [397, 534],
       hp: [763757, 992885],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -233,7 +233,7 @@ G.data = {
     },
     {
       id: 6, name: "The Gilded Thicket", theme: "forest",
-      blurb: "A bramble of thorns where the golden corruption climbs — beautiful, and entirely wrong.",
+      blurb: "A bramble of thorns where the golden corruption climbs, beautiful, and entirely wrong.",
       img: "assets/areas/gilded_thicket.png",
       levelRange: [535, 693],
       hp: [1301741, 1754575],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -270,7 +270,7 @@ G.data = {
     },
     {
       id: 9, name: "The Hollow Sanctum", theme: "forest",
-      blurb: "The heart of the wood — the climax of the Dreaming, where the Gilded Hollow waits in the hush.",
+      blurb: "The heart of the wood, the climax of the Dreaming, where the Gilded Hollow waits in the hush.",
       img: "assets/areas/hollow_sanctum.png",
       levelRange: [1087, 1328],
       hp: [4008236, 5210707],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -295,7 +295,7 @@ G.data = {
     },
     {
       id: 11, name: "The Drowned Market", theme: "port",
-      blurb: "The market never closed — lanterns still burn beneath the tide, and pale shoals drift between the stalls like customers.",
+      blurb: "The market never closed. Lanterns still burn beneath the tide, and pale shoals drift between the stalls like customers.",
       img: "assets/areas/drowned_market.png",
       levelRange: [1607, 1926],
       hp: [7843392, 18875731],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -320,7 +320,7 @@ G.data = {
     },
     {
       id: 13, name: "The Wreckfields", theme: "port",
-      blurb: "Ships that never finish sinking — hulls hang suspended in the blue, frozen mid-fall, chains stretched toward a surface they will never reach.",
+      blurb: "Ships that never finish sinking, hulls hang suspended in the blue, frozen mid-fall, chains stretched toward a surface they will never reach.",
       img: "assets/areas/wreckfields.png",
       levelRange: [2295, 2717],
       hp: [60815702, 79060413],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -344,7 +344,7 @@ G.data = {
     },
     {
       id: 15, name: "The Hollow Armada", theme: "port",
-      blurb: "A fleet fused into a single body — masts like ribs, torn sails like membranes, deck-lights burning with no crew to tend them.",
+      blurb: "A fleet fused into a single body, masts like ribs, torn sails like membranes, deck-lights burning with no crew to tend them.",
       img: "assets/areas/hollow_armada.png",
       levelRange: [3204, 3762],
       hp: [61252164, 79627813],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -357,7 +357,7 @@ G.data = {
     },
     {
       id: 16, name: "The Abyssal Shelf", theme: "port",
-      blurb: "The edge of the abyss, where the surface is a distant dead sky — and something far too large passes below, slowly.",
+      blurb: "The edge of the abyss, where the surface is a distant dead sky, and something far too large passes below, slowly.",
       levelRange: [3763, 4405],
       hp: [97487369, 126733580],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
@@ -368,7 +368,7 @@ G.data = {
     },
     {
       id: 17, name: "The Starving Trench", theme: "port",
-      blurb: "The trench glows with a slow, starving pulse, and everything — wreckage, chains, light — leans toward the mouth.",
+      blurb: "The trench glows with a slow, starving pulse, and everything, wreckage, chains, light, leans toward the mouth.",
       levelRange: [4406, 5144],
       hp: [75582580, 98257354],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [

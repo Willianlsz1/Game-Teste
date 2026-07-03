@@ -25,7 +25,7 @@
     G.ui.log("✦ Welcome to Éclats of Lumière.", "boss");
     if (idleMsg) G.ui.log(idleMsg, "level");
     if (!G.state.storageOk())
-      G.ui.log("⚠ Opened as local file — progress will NOT be saved.", "bad");
+      G.ui.log("⚠ Opened as local file, progress will NOT be saved.", "bad");
 
     // combat: 10× per second
     let last = Date.now();

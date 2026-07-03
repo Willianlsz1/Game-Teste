@@ -291,7 +291,7 @@ G.ui = {
     const b = document.getElementById("log-toggle");
     if (!p) return;
     const collapsed = p.classList.toggle("collapsed");
-    if (b) { b.textContent = collapsed ? "+" : "—"; b.title = collapsed ? "Expand" : "Minimize"; }
+    if (b) { b.textContent = collapsed ? "+" : "−"; b.title = collapsed ? "Expand" : "Minimize"; }
   },
 
   // ---- GEAR MODAL ----
@@ -769,7 +769,7 @@ G.ui = {
     const nmax = P.nodeMax();
     const lvlText = maxed ? "✦" : (level > 0 ? `${level}/${nmax}` : "");
     const foot = maxed ? `<div class="pv-tip-foot max">Max Level</div>`
-      : locked ? `<div class="pv-tip-foot locked">Locked — buy the node below first</div>`
+      : locked ? `<div class="pv-tip-foot locked">Locked, buy the node below first</div>`
       : `<div class="pv-tip-foot cost">${level === 0 ? "Unlock" : "Upgrade"} · ${G.util.fmt(P.nextCost(i))} pts</div>`;
     return `<button class="${cls}" data-i="${i}" style="left:${pos.x}%;top:${pos.y}%;--p:${(level / nmax).toFixed(3)}">
       <span class="pv-disc"><i class="pv-ring"></i></span>
@@ -788,7 +788,7 @@ G.ui = {
     const pos = P.CROWN_POS, on = P.crownActive();
     const lit = P.leaves().filter((i) => P.level(i) >= 1).length;
     const cls = ["pv-node", "pv-crown", "tip-below", on ? "maxed crown-on" : "locked"].join(" ");
-    const foot = on ? `<div class="pv-tip-foot max">The Ring Closes — complete</div>`
+    const foot = on ? `<div class="pv-tip-foot max">The Ring Closes, complete</div>`
       : `<div class="pv-tip-foot locked">Light all 8 leaves (${lit}/8)</div>`;
     return `<button class="${cls}" data-crown disabled style="left:${pos.x}%;top:${pos.y}%">
       <span class="pv-disc"><i class="pv-ring"></i></span>
@@ -879,7 +879,7 @@ G.ui = {
 
     const stateClass = unlocked ? " is-done" : can ? " is-ready" : "";
     const action = unlocked
-      ? `<div class="awk-preview__done">✦ Awakened — the light endures</div>`
+      ? `<div class="awk-preview__done">✦ Awakened, the light endures</div>`
       : `<button class="btn btn-ornate awk-preview__btn" data-awaken="${a.id}"${can ? "" : " disabled"}>${can ? "◈ Awaken" : "Requirements not met"}</button>`;
 
     panel.innerHTML = `<div class="awk-preview__inner${stateClass}">
@@ -1058,9 +1058,9 @@ G.ui = {
         const h6Felled = Array.isArray(d.harbingersFelled) && d.harbingersFelled.indexOf(i) !== -1;
         let extra = "";
         if (!h6Felled)   extra = `Then: ${a.mapBoss.name} stirs beyond the Choir.`;
-        else if (awake)  extra = `${a.mapBoss.name} — the Starving Tide, risen.`;
+        else if (awake)  extra = `${a.mapBoss.name}, the Starving Tide, risen.`;
         else             extra = "The tide stirs... but your light sleeps. Awaken the First Light.";
-        this.el["wmap-info-boss"].textContent = `${a.boss.name} — ${extra}`;
+        this.el["wmap-info-boss"].textContent = `${a.boss.name}: ${extra}`;
       }
     } else {
       this.el["wmap-info-boss-row"].hidden = true;

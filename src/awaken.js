@@ -72,7 +72,7 @@ G.awaken = {
     d.awakensUnlocked = d.awakens;
     d.awakenTier = Math.max(d.awakenTier || 0, a.tier || d.awakens.length);
     G.state.invalidateStats();
-    if (G.ui && G.ui.log) G.ui.log(`✦ Awakening: ${a.name} — the light stirs.`, "boss");
+    if (G.ui && G.ui.log) G.ui.log(`✦ Awakening: ${a.name}, the light stirs.`, "boss");
     if (G.ui && G.ui.renderAll) G.ui.renderAll();
     G.state.save();
     return true;

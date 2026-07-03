@@ -79,7 +79,7 @@ G.passives = {
   },
 
   EFFECT_DESC: {
-    firstSpark:      "The first ember — raises both ATK and HP.",
+    firstSpark:      "The first ember, raises both ATK and HP.",
     hpRegen:         "Regenerates % of max HP per second.",
     healOnKill:      "Restores % of max HP on each kill.",
     hpPct:           "Increases your HP.",
@@ -94,7 +94,7 @@ G.passives = {
     lightbane:       "Deals more damage to the kindled (rares & elites).",
     atkSpeed:        "Increases your attack speed.",
     bossDmg:         "Increases damage dealt to Harbingers & Bosses.",
-    ringCloses:      "The ring closes — a lasting boost to ATK, HP, Lumens and XP.",
+    ringCloses:      "The ring closes, a lasting boost to ATK, HP, Lumens and XP.",
   },
 
   // posição de cada nó (%x,%y) na Árvore-Mundo: raiz embaixo, folhas na copa,

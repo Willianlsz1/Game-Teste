@@ -161,7 +161,7 @@ G.combat = {
     d.rarityFirstSeen[tierKey] = true;
     if (G.ui && G.ui.log) {
       const T = { ember: "Ember", lumen: "Lumen", corona: "Corona" };
-      G.ui.log(`✦ A ${T[tierKey]} light kindles within a creature — rarer, fiercer, richer prey.`, "boss");
+      G.ui.log(`✦ A ${T[tierKey]} light kindles within a creature, rarer, fiercer, richer prey.`, "boss");
     }
   },
 
@@ -174,12 +174,12 @@ G.combat = {
     if (G.ui && G.ui.log) {
       const M = G.data.modifiers[key];
       const desc = {
-        lightshell: "shrugs off the first blows — batter through its shell.",
-        quickened:  "strikes faster than the eye can follow — brace and endure.",
-        siphoning:  "drinks the light of every wound it deals — out-damage its thirst.",
-        escorted:   "never walks alone — a full tide of the drowned comes with it.",
+        lightshell: "shrugs off the first blows, batter through its shell.",
+        quickened:  "strikes faster than the eye can follow, brace and endure.",
+        siphoning:  "drinks the light of every wound it deals, out-damage its thirst.",
+        escorted:   "never walks alone, a full tide of the drowned comes with it.",
       };
-      G.ui.log(`✦ ${M.label} — this Corona ${desc[key] || "carries a stranger light."}`, "boss");
+      G.ui.log(`✦ ${M.label}, this Corona ${desc[key] || "carries a stranger light."}`, "boss");
     }
   },
 
@@ -255,7 +255,7 @@ G.combat = {
     for (let i = 0; i < add; i++) this.enemies.push(this._buildOne(false, G.util.pick(pool)));
     if (!this._tideRisen) {
       this._tideRisen = true;
-      if (G.ui && G.ui.log) G.ui.log("🌊 The Starving Tide rises — the drowned surge to Okhra's call.", "boss");
+      if (G.ui && G.ui.log) G.ui.log("🌊 The Starving Tide rises. The drowned surge to Okhra's call.", "boss");
     }
     if (G.ui && G.ui.renderEnemy) G.ui.renderEnemy();
   },
@@ -319,7 +319,7 @@ G.combat = {
       target.lightshell--;
       if (G.ui && G.ui.floater) G.ui.floater(0, "shell", this.enemies.indexOf(target));
       if (target.lightshell === 0 && G.ui && G.ui.log)
-        G.ui.log(`✦ The Lightshell shatters — ${target.name} can be wounded now.`, "good");
+        G.ui.log(`✦ The Lightshell shatters. ${target.name} can be wounded now.`, "good");
       if (G.ui && G.ui.renderEnemy) G.ui.renderEnemy();
       return;
     }
@@ -352,7 +352,7 @@ G.combat = {
   onDeath() {
     G.state.data.hp = G.state.maxHp();
     this._bossKills = 0;   // morreu → perde o progresso rumo ao Boss de Área
-    if (G.ui && G.ui.log) G.ui.log("☠ The Seeker fell — recovered and returned.", "bad");
+    if (G.ui && G.ui.log) G.ui.log("☠ The Seeker fell, recovered and returned.", "bad");
     this.pendingHits = [];
     this.enemies = [];
     this.enemy   = null;
@@ -434,7 +434,7 @@ G.combat = {
         G.state.invalidateStats();   // o teto mudou → recomputa rarityCaps
         if (G.ui && G.ui.log) {
           const rc = G.data.rarityCaps;
-          G.ui.log(`✦ The stolen light disperses — Rarity Find caps rise (Ember +${(rc.ember / 6).toFixed(1)}% · Lumen +${(rc.lumen / 6).toFixed(1)}% · Corona +${(rc.corona / 6).toFixed(2)}%).`, "boss");
+          G.ui.log(`✦ The stolen light disperses. Rarity Find caps rise (Ember +${(rc.ember / 6).toFixed(1)}% · Lumen +${(rc.lumen / 6).toFixed(1)}% · Corona +${(rc.corona / 6).toFixed(2)}%).`, "boss");
         }
       }
     }
@@ -444,8 +444,8 @@ G.combat = {
       if (!d.mapOneCleared) {
         d.mapOneCleared = true;
         if (G.ui && G.ui.log) {
-          G.ui.log("✦ The Starving Tide is stilled. Okhra is undone at the bottom of the Sunken Port — Map 1 complete.", "boss");
-          G.ui.log("✦ In the hush, the tide recedes — but a colder current stirs far below. Something deeper begins to wake.", "boss");
+          G.ui.log("✦ The Starving Tide is stilled. Okhra is undone at the bottom of the Sunken Port. Map 1 complete.", "boss");
+          G.ui.log("✦ In the hush, the tide recedes, but a colder current stirs far below. Something deeper begins to wake.", "boss");
         }
       }
       this._okhraManifest = false; this._tideTimer = 0; this._tideRisen = false;
@@ -459,7 +459,7 @@ G.combat = {
       const awake = !!(G.awaken && G.awaken.isDone("first_light"));
       if (awake) { this._okhraManifest = true; this._tideTimer = 0; this._tideRisen = false; }
       if (G.ui && G.ui.log) {
-        if (awake) G.ui.log("✦ The Tidebound Choir is silenced — and far below, the Starving Tide answers your light. Okhra rises.", "boss");
+        if (awake) G.ui.log("✦ The Tidebound Choir is silenced. Far below, the Starving Tide answers your light. Okhra rises.", "boss");
         else       G.ui.log("The tide stirs... but your light sleeps. Awaken the First Light.", "bad");
       }
     }
@@ -472,7 +472,7 @@ G.combat = {
       d.maxAreaUnlocked = d.areaIndex + 1;
       if (G.ui && G.ui.log) {
         const next = G.data.areas[d.areaIndex + 1];
-        G.ui.log(`✦ ${next.name} unlocked — advance when ready.`, "good");
+        G.ui.log(`✦ ${next.name} unlocked, advance when ready.`, "good");
       }
       if (G.ui && G.ui.renderResources) G.ui.renderResources();
     }
@@ -503,7 +503,7 @@ G.combat = {
       if (Math.floor(idx / gs) !== Math.floor(nextIdx / gs)) return;   // fronteira de grupo → gate do Harbinger
       if (d.level < G.data.areas[nextIdx].levelRange[0]) return;
       d.maxAreaUnlocked = nextIdx;
-      if (G.ui && G.ui.log) G.ui.log(`✦ ${G.data.areas[nextIdx].name} unlocked — the grove deepens.`, "good");
+      if (G.ui && G.ui.log) G.ui.log(`✦ ${G.data.areas[nextIdx].name} unlocked, the grove deepens.`, "good");
       if (G.ui && G.ui.renderResources) G.ui.renderResources();
     }
   },
