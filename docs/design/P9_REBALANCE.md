@@ -171,12 +171,45 @@ mortes concentradas em tentativa prematura.
 ## 4. Estado da trilha
 
 - [x] Diagnóstico baseline (jul/03, seed 1) — números no §0
-- [ ] P9.1 Família de inimigos (script gerador + candidato v1 no sim)
+- [x] P9.1 Harness + candidato v1 FITADO (jul/03) — ver §5
+- [ ] P9.1b Candidato v2 (3 gaps do v1: material do First Light, HTK de boss, re-subida)
 - [ ] P9.2 Player scale + TTK wave (atkSpeed, HTK, curva de dano)
 - [ ] P9.3 Gear (promoção ×6–10 + per-level)
 - [ ] P9.4 Passivas (valores reais nas 3 árvores)
 - [ ] P9.5 XP/Convergence ladder re-derivada pro relógio de 36h
 - [ ] Pacote final validado nas 3 seeds → batch data.js (Sonnet) → travar
+
+## 5. P9.1 — harness e resultados do candidato v1 (jul/03, seed 1)
+
+**Harness (scratchpad da sessão; recriável):** `p9_generate.js` (família por
+álgebra, lê levelRanges reais) → `candidate_vN.json` (dataPatch + statePatch)
+→ `p9_run.js` / `p9_run_fit.js` (intercepta o load do sim via fs.readFileSync
+e injeta o patch — sim INTACTO, zero fork) → `p9_fit.js` (loop: roda, mede
+HTK/TTD nas entradas, re-ajusta hp[]/mobAtk por razão; convergiu em 8 passes).
+
+**Dials v1 travados no fit:** player atk = 1000 + 8·L^1.5 · hp = 1000 + 4·L^1.45
+(statePatch; a implementação final move isso pro data.balance) · uncommon
+statMult 8 · weapon perLevel 220 · armor perLevel 60 · HTK alvo: entrada 10
+(área 1: 2.5), saída de banda 3 (= entrada[i+1]×3/10, bandas contíguas) ·
+TTD entrada 25s.
+
+**O que o v1 ACERTOU (baseline):** área 1 TTK 2.8s (foguete ✓) · HTK 10 e TTD
+25s em TODAS as entradas (fit ±11%) · espetáculo: mob área 18 ~5–7×10⁹, player
+ATK 243M no fim do baseline · coroa na conv 8 (banda alvo) · razão de pontos
+1.53 ✓ · rarity find saudável (G6: 9.4/5.0/1.7%).
+
+**Os 3 gaps (campanha, 100h timeout):**
+1. **First Light INALCANÇÁVEL** — material firstLight 1/3 em 100h. O drop do
+   material (economy.dropTable, placeholder de sempre) não escala com o novo
+   ritmo. v2: dimensionar o fluxo pra 3 materiais chegarem ~30–34h.
+2. **HTK do 1º contato com Harbinger = 247 (H1)** — hpMult herdado (17.42)
+   sobre entrada HTK 10 explode. v2: derivar hpMult por grupo do alvo
+   HTK_boss 25–35 no dano de meio-de-banda (fórmula, não à mão).
+3. **Re-subida não derrete** — pós-Convergence, áreas 3–11 ficam com HTK até
+   6.6 (alvo ≤2, dono quer 1 hit). v2: convLegacy mais forte (ou multiplicativo)
+   + medir com Executioner's Light do P9.4.
+4. (Cauda) sem First Light o gate ×1.3 corre solto → 24 convergences, runs de
+   35h. Resolve-se sozinho quando (1) destravar; validar conv count ~12–16.
 
 ## Superseded
 
