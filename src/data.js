@@ -284,6 +284,7 @@ G.data = {
     {
       id: 10, name: "The Salt-Eaten Quay", theme: "port",
       blurb: "The quay lies dry in the shadow of a wave frozen mid-bite, and salt covers everything like snow.",
+      img: "assets/areas/salt_eaten_quay.png",
       levelRange: [1329, 1606],
       hp: [8209360, 10672168],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
@@ -295,6 +296,7 @@ G.data = {
     {
       id: 11, name: "The Drowned Market", theme: "port",
       blurb: "The market never closed — lanterns still burn beneath the tide, and pale shoals drift between the stalls like customers.",
+      img: "assets/areas/drowned_market.png",
       levelRange: [1607, 1926],
       hp: [7843392, 18875731],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
@@ -306,6 +308,7 @@ G.data = {
     {
       id: 12, name: "The Sunken Belfry", theme: "port",
       blurb: "The drowned bell-tower still tolls, and every toll moves the black water in slow, visible rings.",
+      img: "assets/areas/sunken_belfry.png",
       levelRange: [1927, 2294],
       hp: [31459552, 40897418],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
