@@ -157,7 +157,8 @@ G.ui = {
       tc.classList.toggle("theme-forest", !port);
     }
     const wimg = document.querySelector(".world-img");
-    if (wimg && area.img && wimg.getAttribute("src") !== area.img) wimg.src = area.img;
+    const wsrc = area.imgFinale && document.body.classList.contains("okhra-manifest") ? area.imgFinale : area.img;
+    if (wimg && wsrc && wimg.getAttribute("src") !== wsrc) wimg.src = wsrc;
     const d = G.state.data;
     const maxUnlocked = Math.min(d.maxAreaUnlocked || 0, G.data.areas.length - 1);
     const prev = document.getElementById("area-prev");
@@ -933,12 +934,12 @@ G.ui = {
   // ---------- WORLD MAP ----------
   // posições dos 18 nós no mapa (% x,y) — fonte única p/ nós E trilha.
   // Ato A (0-8, Floresta): alinhadas à geografia pintada de map1.png.
-  // Ato B (9-17, Porto Afundado): grade suave provisória — a arte do Porto redefine depois.
+  // Ato B (9-17, Porto Afundado): alinhado à geografia do map2.png.
   mapNodePos: [
     [10, 78], [22, 47], [38, 22], [55, 12], [52, 40],
     [72, 38], [36, 65], [60, 72], [88, 62],
-    [22, 20], [50, 18], [78, 22], [80, 48], [50, 46],
-    [22, 48], [24, 76], [52, 74], [80, 74],
+    [17, 15], [35, 28], [61, 19], [20, 47], [33, 60],
+    [71, 46], [41, 84], [56, 75], [85, 82],
   ],
 
   renderWorldMap() {
@@ -955,6 +956,10 @@ G.ui = {
     // fundo + rótulo do ato (Ato B = placeholder do Porto Afundado sobre map1.png)
     const wmap = document.getElementById("wmap");
     if (wmap) wmap.classList.toggle("is-actB", act === "B");
+    if (this.el["wmap-bg"]) {
+      const bgSrc = act === "B" ? "assets/ui/map2.png" : "assets/ui/map1.png";
+      if (this.el["wmap-bg"].getAttribute("src") !== bgSrc) this.el["wmap-bg"].src = bgSrc;
+    }
     const label = this.el["wmap-act-label"];
     if (label) {
       label.textContent = "The Sunken Port";
@@ -1090,6 +1095,10 @@ G.ui = {
   // P8.4: palco do Okhra — combat avisa (ui só LÊ estado e aplica a classe cosmética).
   setOkhraStage(on) {
     if (document.body) document.body.classList.toggle("okhra-manifest", !!on);
+    const area = G.data.currentArea();
+    const wimg = document.querySelector(".world-img");
+    const wsrc = area.imgFinale && on ? area.imgFinale : area.img;
+    if (wimg && wsrc && wimg.getAttribute("src") !== wsrc) wimg.src = wsrc;
   },
 
   materialDrop(drops) {

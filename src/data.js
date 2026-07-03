@@ -353,11 +353,12 @@ G.data = {
         { name: "Wrackwood Hulk",  sprite: "🚢", img: "assets/enemies/wrackwood_hulk.png"  },
         { name: "Hollowed Diver",  sprite: "🤿", img: "assets/enemies/hollowed_diver.png"  },
       ],
-      boss: { name: "The Hollow Fleet", sprite: "🚢", hpMult: 3.65, dmgMult: 2.0, signature: ["lightshell", "quickened"] }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar. P8.3 H5 = par Lightshell+Quickened (burst→velocidade; sem stacking de dano recebido)
+      boss: { name: "The Hollow Fleet", sprite: "🚢", hpMult: 3.65, dmgMult: 2.0, signature: ["lightshell", "quickened"], img: "assets/enemies/hollow_fleet.png" }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar. P8.3 H5 = par Lightshell+Quickened (burst→velocidade; sem stacking de dano recebido)
     },
     {
       id: 16, name: "The Abyssal Shelf", theme: "port",
       blurb: "The edge of the abyss, where the surface is a distant dead sky, and something far too large passes below, slowly.",
+      img: "assets/areas/abyssal_shelf.png",
       levelRange: [3763, 4405],
       hp: [97487369, 126733580],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
@@ -369,6 +370,7 @@ G.data = {
     {
       id: 17, name: "The Starving Trench", theme: "port",
       blurb: "The trench glows with a slow, starving pulse, and everything, wreckage, chains, light, leans toward the mouth.",
+      img: "assets/areas/starving_trench.png",
       levelRange: [4406, 5144],
       hp: [75582580, 98257354],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
@@ -380,6 +382,8 @@ G.data = {
     {
       id: 18, name: "The Tide's Maw", theme: "port",
       blurb: "The throat of the tide: a black maw ringed by broken gold filigree, where the swallowed cargo still orbits the dark.",
+      img: "assets/areas/tides_maw.png",
+      imgFinale: "assets/areas/tides_maw_finale.png",
       levelRange: [5145, 6000],
       hp: [101473110, 202946219],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
@@ -389,7 +393,7 @@ G.data = {
       ],
       // P8.4 — o finale encenado (dois estágios): H6 (Harbinger, ungated) → Okhra (mapBoss, gated pelo First Light).
       // Matar H6 pela 1ª vez fecha os Marcos 6/6. Okhra manifesta após o H6 SÓ com First Light desperto.
-      boss:    { name: "The Tidebound Choir", sprite: "🎼", hpMult: 3.65, dmgMult: 2.0, signature: ["siphoning", "escorted"] }, // PLACEHOLDER (lore): Harbinger H6 do Porto Afundado. P8.3 par Siphoning+Escorted (ensaio geral do Okhra: cura + onda, sem acelerar ataque)
+      boss:    { name: "The Tidebound Choir", sprite: "🎼", hpMult: 3.65, dmgMult: 2.0, signature: ["siphoning", "escorted"], img: "assets/enemies/tidebound_choir.png" }, // PLACEHOLDER (lore): Harbinger H6 do Porto Afundado. P8.3 par Siphoning+Escorted (ensaio geral do Okhra: cura + onda, sem acelerar ataque)
       mapBoss: { name: "Okhra, the Starving Tide", sprite: "🌊", hpMult: 48, dmgMult: 2.5, signature: ["siphoning"] }, // PLACEHOLDER (lore): chefe de Mapa — Siphoning + The Tide Rises; matar Okhra completa o Mapa 1
     },
   ],

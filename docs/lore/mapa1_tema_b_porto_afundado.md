@@ -28,7 +28,7 @@
 | Luz roubada | dourado (SÓ na luz roubada — filigrana, Éclats) | `#E7B84C` |
 | Lanternas do porto | teal luminoso | `#41D9C5` |
 
-Céu sem-lua preto-tempestade (a Lua está enjaulada na Floresta — Tema A). **NO red** (regra de prompt). Vermelho segue reservado à assinatura "vermelho que não ilumina" (Nihel/Nil Aeternum) — não aparece no Mapa 1.
+Céu sem-lua preto-tempestade (a Lua está enjaulada na Floresta — Tema A). **Vermelho (revisado jul/03):** liberado como cor de design deliberada (vermelho+preto é combinação poderosa; usar com parcimônia, decisão nossa e nunca do gerador). Segue selado apenas o COMPORTAMENTO da assinatura: "vermelho que não ilumina" (Nihel/Nil Aeternum) não aparece no Mapa 1.
 
 ---
 
@@ -137,9 +137,11 @@ Um **coro de afogados amarrados juntos pela mesma corda de maré** — figuras p
 
 ## 6. O finale — Okhra, the Starving Tide
 
-**Design JÁ TRAVADO** (refs em `docs/design/refs_okhra.jpg`; prompt-base no `ART_PROMPTS_MAP1.md`): maré vertical em espiral · tentáculos grossos de água escura · carga afogada em silhueta na barriga da onda (mastro, torre de sino, peixes pálidos, lanterna teal fraca) · **boca-redemoinho com anel quebrado em filigrana dourada** — a luz devorada que não desce.
-Encenação travada no P8.4: H6 morre → Okhra manifesta (só com First Light desperto) → The Tide Rises. Matar Okhra completa o Mapa 1.
-O palco (background da área 18 no modo finale) é a garganta vista de dentro: o anel dourado girando acima como um falso amanhecer.
+**Design em DUAS formas (revisado jul/03 pelo dono — a forma-onda sozinha ficou aquém de uma entidade):**
+- **O corpo verdadeiro = a maré** (refs em `docs/design/refs_okhra.jpg`): a onda vertical em espiral, os tentáculos, a carga engolida, a boca-redemoinho com o anel de filigrana quebrado. É o DOMÍNIO — vive nos backgrounds (o vórtice da área 18, o vislumbre da Trench, o palco do finale). O mapa inteiro é o corpo dele; ninguém luta contra isso.
+- **O que manifesta no círculo ritual = o AVATAR** *(forma final, dono jul/03)*: **humano SÓ na silhueta** — nada humano no resto. Cabeça escura lisa com **olhos teal brilhando** e uma **cortina de tentáculos grossos no lugar de boca e queixo, caindo como barba (rosto-Cthulhu)**; **vestes que SÃO o oceano** — pano negro-teal em vagas sobrepostas com fio de espuma branca nas barras, carregando em silhueta a cidade engolida (navio, torre de sino); **halo = anel dourado QUEBRADO flutuando SOBRE a cabeça** (referência direta a Nihel — arcos com falhas, nunca círculo); empunha uma **GLAIVE** — haste escura, lâmina crescente de vidro-do-mar pálido com fio de espuma. Flutua sobre um anel de água escura. Render (final, jul/03): **a tinta detalhada da casa** (mesma família do acervo aprovado — coerência acima de tudo; experimentos anime/flat descartados). **Olhos: ORBES LEITOSOS DESENHADOS com pupila escura em órbitas definidas sob arcada** (a regra do rosto — como o Lanternjaw), nunca pontos de luz.
+Encenação travada no P8.4 (inalterada): H6 morre → Okhra manifesta (só com First Light desperto) → The Tide Rises. Matar Okhra (o avatar) completa o Mapa 1 — a maré recua; a fome não morre, perde a forma.
+O palco (finale) é a prisão quebrada da cidade com o vórtice-corpo preenchendo o fundo.
 
 ---
 

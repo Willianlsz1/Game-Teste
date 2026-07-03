@@ -85,12 +85,10 @@
 .battle-stage .battle-hero, .battle-stage .enemies-container { pointer-events: auto; align-self: center; }
 .battle-stage .hero-figure .floaters { z-index: 6; }
 
-/* ---- P8.4: palco do Okhra (tint barato; a arte real vem depois) ---- */
+/* ---- P8.4: palco do Okhra (brilho de maré sobre a arte real do finale) ---- */
 .okhra-manifest::before {
   content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background:
-    radial-gradient(120% 90% at 50% 115%, rgba(60, 210, 200, 0.28), rgba(20, 40, 80, 0) 60%),
-    linear-gradient(180deg, rgba(6, 10, 26, 0.55), rgba(4, 18, 40, 0.78));
+  background: radial-gradient(120% 90% at 50% 115%, rgba(60, 210, 200, 0.22), rgba(20, 40, 80, 0) 60%);
   animation: okhra-tide 6s ease-in-out infinite alternate;
 }
 @keyframes okhra-tide {

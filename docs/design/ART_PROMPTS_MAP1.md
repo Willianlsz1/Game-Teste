@@ -3,6 +3,25 @@
 > Pipeline travado (jul/2026): reboot total via ChatGPT imagens. Este doc é o kit de trabalho.
 > A chave de arte vem da lore (`DECISOES_JUL26.md §8`) — travada, não reinventar.
 
+## ⚠️ PROCESSO ANTI-DERIVA DE ESTILO (dono, jul/03 — após 5 versões do Okhra saírem "pintura")
+
+Quando o estilo teima em sair errado, o problema é PROCESSO, não prompt:
+- **Edição em cadeia herda o render da imagem editada** — as palavras de estilo perdem
+  pra imagem na frente do gerador. NUNCA tentar consertar estilo via "edite mantendo tudo".
+- **O chat ancora**: geração nova no mesmo chat herda o estilo das anteriores.
+- **Prompt longo dilui**: 400 palavras de lore afogam 20 de estilo.
+
+Receita quando o estilo derrapar (ou pra personagens novos importantes):
+1. **Chat 100% NOVO.** Anexar SÓ imagens que JÁ SÃO o estilo-alvo (pra anime key visual:
+   as refs de anime do dono + o sprite do Seeker). ZERO imagens do estilo errado — nem
+   "só pro design": o gerador não separa design de render de uma imagem anexada.
+2. **Rosto primeiro:** gerar um RETRATO EM BUSTO do personagem (o rosto domina o
+   orçamento de pixels → sai bem + o estilo trava no chat). Aprovar o retrato.
+3. **Só então o corpo inteiro:** "full body of this exact character" — o retrato
+   aprovado ancora rosto E estilo.
+4. **Prompt curto**: estilo nas primeiras linhas E repetido no fim; design em lista
+   telegráfica; lore fica fora (lore é nossa, não do gerador).
+
 ## Como usar (o fluxo, passo a passo)
 
 1. **Um chat por categoria** (mobs da floresta / Harbingers / backgrounds / finale). A IA "lembra" do estilo dentro do mesmo chat — isso é sua ferramenta de consistência nº 1.
@@ -38,6 +57,38 @@ Format: single character, full body, centered, transparent background PNG.
 - **Floresta (áreas 1–9):** `Palette: deep forest greens and umber shadows, warm amber/gold for the carried light, muted moss and bark tones. Accent: candle-flame orange.`
 - **Porto Afundado (áreas 10–18)** *(travada jul/03 das refs do Okhra — `refs_okhra.jpg` + lore doc §1)*: `Palette: deep drowned teal (#175A57 to #0E3B3B) and storm-black marine shadow (#081418), pale grey-green foam (#AEBFBD), verdigris bronze (#4E8C7A) on digested metal, luminous teal (#41D9C5) for harbour lanterns. Gold (#E7B84C) ONLY for stolen light. NO red.`
 - **Tags de raridade (mobs acesos):** Ember = teal glow · Lumen = blue glow · Corona = violet glow (o glow da tag SOBREPÕE a luz normal da criatura).
+
+## ⚠️ REGRA-MESTRA DE ESTILO (dono, jul/03, após o avatar do Okhra v1): LEGIBILIDADE
+
+O estilo da casa NÃO é cel-shaded puro — é **ilustração de tinta detalhada** (contornos
+nítidos, hachura fina — família Darkest Dungeon). O que separa arte aprovada de arte
+reprovada é **LEGIBILIDADE**, e o exemplar canônico é o background da área 16
+(`abyssal_shelf.png`): "limpa e conseguimos ver os visuais".
+
+**UM ESTILO DA CASA (decisão final do dono, jul/03, após a saga do Okhra):**
+**ilustração de tinta detalhada** (contornos nítidos, hachura fina — o acervo aprovado
+inteiro; exemplar: `lanternjaw_angler.png`). Os experimentos "anime key visual" e "flat
+estilizado" foram testados no Okhra e DESCARTADOS — quebravam a coerência do conjunto.
+O problema real nunca foi o estilo: era rosto ilegível.
+
+**REGRA DO ROSTO (dono, jul/03 — a lição da saga):** toda cabeça/rosto precisa de
+**OLHO DESENHADO E VISÍVEL** — globo ocular com estrutura (esclera/pupila, órbita,
+arcada) como as órbitas leitosas do Lanternjaw — NUNCA só um ponto de luz no lugar.
+Não precisa ser ultra-detalhado; precisa LER como olho. Frase de prompt: *"VISIBLE
+DRAWN EYES — pale orb eyeballs with small dark pupils set in defined sockets under a
+brow ridge — never glowing dots, never empty light."* O orçamento de detalhe fino do
+sprite vai primeiro pro rosto (pontos focais da regra de legibilidade).
+
+Todo prompt de agora em diante declara as 4 leis da legibilidade:
+1. **Formas grandes primeiro** — a silhueta e as massas principais leem a 100px de
+   distância; o detalhe mora DENTRO de formas simples, nunca no lugar delas.
+2. **Detalhe concentrado nos pontos focais** (rosto/luz/assinatura do design) — o resto
+   do corpo tem áreas de DESCANSO visual (blocos escuros quase chapados).
+3. **Três camadas de valor bem separadas**: massa escura · meio-tom · UM brilho focal.
+   Se tudo é meio-tom detalhado, a imagem "vira pintura" e reprova.
+4. Frase de prompt: *"CLEAN and READABLE like a game asset: big simple shapes first,
+   detail only at focal points, large areas of visual rest, three clearly separated
+   value layers. NEVER uniform detail density."*
 
 ## ⚠️ Lições do Lote 4 — mobs do Porto (jul/03, feedback do dono)
 
@@ -99,10 +150,14 @@ in its design (crown, halo, collar, wheel — a ring that does not close).
 Its stolen light is hoarded, not carried: <onde/como ele acumula luz roubada>.
 ```
 (O anel-que-não-fecha é a marca de família Nihelim — nos Harbingers aparece FRACO/incompleto, eco do eco.)
-⚠️ **Cláusula anti-vermelho (todo prompt de Harbinger/banner/boss):** acrescentar
-*"NO red anywhere in the image — red is reserved in this world."* O vermelho é
-assinatura SELADA do Nihel (regra de cores §5) e os geradores adoram pôr vermelho
-em heráldica — o banner v1 do H1 veio com anel vermelho por conta própria.
+⚠️ **Regra do vermelho (REVISADA jul/03 — dono aboliu o banimento total):** vermelho
+é PERMITIDO como cor de design — vermelho+preto é combinação poderosa e entra quando
+o DESIGN pedir (com parcimônia; nem tudo leva). O que continua SELADO é o
+comportamento da assinatura (§5): **"vermelho que não ilumina"** (brilho que não lança
+luz em nada ao redor) é exclusivo do Nihel/Nil Aeternum — nenhuma arte do Mapa 1 usa
+esse efeito. Na prática dos prompts: vermelho só aparece quando NÓS escrevemos ele no
+prompt deliberadamente; se o gerador enfiar vermelho por conta própria onde não foi
+pedido, regenera (a decisão é de design, nunca do gerador).
 
 **Direção travada pro visual dos Harbingers (dono, jul/2026):** designs únicos e
 incomuns, ar de criatura que COMANDA (boss) — nunca "mob grande". **Espécies variadas,
@@ -144,7 +199,7 @@ o ponto de luz distante É a Lua presa vazando pelo dossel. Backgrounds 7–9:
 adicionar indícios do Porto na borda (sal, água subindo, verdete, madeira encharcada).
 
 ### Okhra e Nihel
-**Design JÁ APROVADO na lore — o prompt descreve o design travado, não inventa.** Okhra: maré vertical em espiral, tentáculos grossos, carga afogada em silhueta (mastro, torre de sino, peixes, lanterna teal fraca), boca-redemoinho com anel quebrado em filigrana dourada. (Nihel: ver §8 — é conteúdo de mapa final, não gerar agora.)
+**Okhra em DUAS formas (revisão do dono, jul/03):** o corpo verdadeiro é a MARÉ (refs_okhra.jpg — vive nos backgrounds: vórtice, garganta, palco do finale); o sprite de boss é o **AVATAR quase-humanoide descido do cosmo** — sereno, belo e errado, juba de tentáculos d'água, olhos fechados (os abertos ficam bordados no manto), halo = anel de filigrana dourada QUEBRADO atrás da cabeça, glaive de maré endurecida, vestes negro-teal com a cidade engolida na barra. Prompt canônico: ver lore doc §6. (Nihel: ver §8 — conteúdo de mapa final, não gerar agora.)
 
 ## Ordem de produção (espelha o roadmap)
 
