@@ -623,13 +623,20 @@ G.ui = {
 
     // renderiza a onda INTEIRA (mortos inclusos, greyed) → posições não mudam quando 1 morre,
     // e os índices enemy-art-{i} batem com os índices do combat (projéteis/floaters certos).
+    // ORDEM DE EXIBIÇÃO (visual apenas): boss(es) por último, mobs comuns antes (ordem relativa
+    // preservada). O array G.combat.enemies e o alvo de ataque (enemies[0]/find) NÃO mudam —
+    // cada card carrega data-idx/ids do índice ORIGINAL no array, então floaters/projéteis
+    // (que usam enemies.indexOf(target) ou o idx passado por combat.js) continuam corretos.
     const list = G.combat.enemies;
     const sig  = list.map(e => e.name + (e.rarity ? e.rarity.tag : "") + (e.isBoss ? "B" : "") + (e.lightshell > 0 ? "S" : "")).join("|");
 
     if (this._enemySig !== sig) {
       this._enemySig = sig;
       container.className = `enemies-container pack-${Math.min(list.length, 3)}`;
-      container.innerHTML = list.map((e, i) => {
+      // cópia com índice original preservada; sort estável (Array#sort é estável no V8/Chrome
+      // moderno) — mobs comuns mantêm a ordem relativa entre si, boss(es) vão pro fim.
+      const order = list.map((e, i) => ({ e, i })).sort((a, b) => (a.e.isBoss ? 1 : 0) - (b.e.isBoss ? 1 : 0));
+      container.innerHTML = order.map(({ e, i }) => {
         const shelled = e.lightshell > 0;
         let header;
         if (e.isBoss) {
@@ -660,17 +667,19 @@ G.ui = {
           </div>
         </div>`;
       }).join("");
-      // cacheia os elementos de HP por índice — evita 2×N getElementById por tick de 100ms
+      // cacheia os elementos por índice ORIGINAL do array (não por posição no DOM, que agora
+      // pode diferir) — evita 2×N getElementById por tick de 100ms.
       this._enemyFills   = list.map((e, i) => document.getElementById(`enemy-hp-fill-${i}`));
       this._enemyLabels  = list.map((e, i) => document.getElementById(`enemy-hp-label-${i}`));
       this._shellBadges  = list.map((e, i) => document.getElementById(`shell-badge-${i}`));
+      this._enemyCards   = list.map((e, i) => container.querySelector(`.enemy-card[data-idx="${i}"]`));
       this._enemyHpShown = [];
     }
 
     // por tick: classes morto/ativo (baratas) + HP só quando muda (pula a escrita se e.hp igual)
     const firstAlive = list.findIndex(e => !e.dead);
     list.forEach((e, i) => {
-      const card = container.children[i];
+      const card = this._enemyCards && this._enemyCards[i];
       if (card) {
         card.classList.toggle("enemy-dead", !!e.dead);
         card.classList.toggle("enemy-active", i === firstAlive);

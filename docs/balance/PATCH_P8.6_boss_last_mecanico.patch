@@ -1,0 +1,46 @@
+﻿diff --git a/src/combat.js b/src/combat.js
+index e02a9d8..6ebc2d3 100644
+--- a/src/combat.js
++++ b/src/combat.js
+@@ -221,15 +221,15 @@ G.combat = {
+     this.enemies = [];
+     let n = this._packSize();
+     let escortBumped = false;
++    let boss = null;
+ 
+     if (bossDef) {
+-      const boss = this._buildOne(true, bossDef);
++      boss = this._buildOne(true, bossDef);
+       if (isMapBoss) {
+         boss.isMapBoss = true;
+         if (!this._okhraManifest) { this._okhraManifest = true; this._tideTimer = 0; this._tideRisen = false; }
+         if (G.ui && G.ui.setOkhraStage) G.ui.setOkhraStage(true);
+       }
+-      this.enemies.push(boss);   // boss à frente
+       if (this._hasMod(boss, "escorted")) { n = this._escortedSize(n); escortBumped = true; }
+     }
+ 
+@@ -240,7 +240,9 @@ G.combat = {
+       if (!escortBumped && this._hasMod(mob, "escorted")) { n = this._escortedSize(n); escortBumped = true; }
+     }
+ 
+-    this.enemy = this.enemies[0];
++    if (boss) this.enemies.push(boss);   // boss por último — a escolta o protege (Escorted)
++
++    this.enemy = this.enemies.find(e => !e.dead) || this.enemies[0] || null;
+     if (G.ui && G.ui.renderEnemy) G.ui.renderEnemy();
+   },
+ 
+@@ -252,7 +254,11 @@ G.combat = {
+     if (room <= 0) return;
+     const add  = Math.min(this._packSize(), room);
+     const pool = this.enemyPool();
+-    for (let i = 0; i < add; i++) this.enemies.push(this._buildOne(false, G.util.pick(pool)));
++    for (let i = 0; i < add; i++) {
++      const bossIdx = this.enemies.findIndex(x => (x.isBoss || x.isMapBoss) && !x.dead);
++      const insertAt = bossIdx === -1 ? this.enemies.length : bossIdx;
++      this.enemies.splice(insertAt, 0, this._buildOne(false, G.util.pick(pool)));
++    }
+     if (!this._tideRisen) {
+       this._tideRisen = true;
+       if (G.ui && G.ui.log) G.ui.log("🌊 The Starving Tide rises — the drowned surge to Okhra's call.", "boss");
