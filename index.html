@@ -263,24 +263,51 @@
         <button class="wmap-act-nav wmap-act-nav--up" id="wmap-act-up" hidden>▲ The Dreaming Wood</button>
       </div>
     </div>
-    <aside class="wmap-info" id="wmap-info" hidden>
-      <button class="wmap-info__x" id="wmap-info-close" title="Close">✕</button>
-      <div class="wmap-info__art" id="wmap-info-art"></div>
-      <div class="wmap-info__pad">
-        <div class="wmap-info__name" id="wmap-info-name"></div>
-        <p class="wmap-info__lore" id="wmap-info-lore"></p>
-        <dl class="wmap-info__stats">
-          <div class="wmap-info__row"><dt>Level</dt><dd id="wmap-info-level"></dd></div>
-          <div class="wmap-info__row"><dt>Enemies</dt><dd id="wmap-info-enemies"></dd></div>
-          <div class="wmap-info__row" id="wmap-info-boss-row" hidden><dt>Boss</dt><dd id="wmap-info-boss"></dd></div>
-          <div class="wmap-info__row"><dt>Status</dt><dd id="wmap-info-status"></dd></div>
-          <div class="wmap-info__row" id="wmap-info-unlock-row" hidden><dt>Unlock</dt><dd id="wmap-info-unlock"></dd></div>
-        </dl>
-        <span class="wmap-info__label">Resources</span>
-        <ul class="wmap-info__res" id="wmap-info-res"></ul>
-        <button class="btn btn-ornate wmap-info__travel" id="wmap-info-travel">Travel here</button>
+    <div class="wmap-info" id="wmap-info" hidden>
+      <div class="wmap-info__card">
+        <header class="wmap-info__head">
+          <img class="wmap-info__emblem" id="wmap-info-emblem" alt="" onerror="this.style.visibility='hidden'" />
+          <div class="wmap-info__head-txt">
+            <div class="wmap-info__name" id="wmap-info-name"></div>
+            <div class="wmap-info__sub" id="wmap-info-sub"></div>
+          </div>
+          <span class="wmap-info__chip" id="wmap-info-chip"></span>
+          <button class="wmap-info__x" id="wmap-info-close" title="Close">✕</button>
+        </header>
+        <div class="wmap-info__body">
+          <div class="wmap-info__plate">
+            <div class="wmap-info__art" id="wmap-info-art"></div>
+            <p class="wmap-info__lore" id="wmap-info-lore"></p>
+            <p class="wmap-info__deep" id="wmap-info-deep" hidden></p>
+          </div>
+          <div class="wmap-info__dossier">
+            <section>
+              <span class="wmap-info__label">Threat</span>
+              <div class="wmap-info__cards">
+                <div class="wmap-info__stat"><span>Level</span><b id="wmap-info-level"></b></div>
+                <div class="wmap-info__stat"><span>Wave</span><b id="wmap-info-enemies"></b></div>
+              </div>
+              <div class="wmap-info__mobs" id="wmap-info-mobs"></div>
+            </section>
+            <section id="wmap-info-boss-row" hidden>
+              <span class="wmap-info__label wmap-info__label--gold">Harbinger</span>
+              <div class="wmap-info__boss" id="wmap-info-boss"></div>
+            </section>
+            <section>
+              <span class="wmap-info__label">Spoils</span>
+              <ul class="wmap-info__res" id="wmap-info-res"></ul>
+            </section>
+            <section id="wmap-info-unlock-row" hidden>
+              <span class="wmap-info__label">Unlock</span>
+              <div class="wmap-info__unlock" id="wmap-info-unlock"></div>
+            </section>
+          </div>
+        </div>
+        <footer class="wmap-info__foot">
+          <button class="btn btn-ornate wmap-info__travel" id="wmap-info-travel">Travel here</button>
+        </footer>
       </div>
-    </aside>
+    </div>
   </div>
 
   <script src="src/util.js"></script>

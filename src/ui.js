@@ -14,7 +14,8 @@ G.ui = {
       // World Map
       "wmap-bg", "wmap-act-label", "wmap-act-down", "wmap-act-up",
       "wmap-nodes", "wmap-trail", "wmap-info", "wmap-info-art", "wmap-info-name",
-      "wmap-info-lore", "wmap-info-level", "wmap-info-enemies", "wmap-info-status",
+      "wmap-info-emblem", "wmap-info-sub", "wmap-info-chip", "wmap-info-lore", "wmap-info-deep",
+      "wmap-info-level", "wmap-info-enemies", "wmap-info-mobs",
       "wmap-info-boss-row", "wmap-info-boss", "wmap-info-unlock-row", "wmap-info-unlock",
       "wmap-info-res", "wmap-info-travel", "wmap-info-close",
       // Convergence
@@ -53,6 +54,11 @@ G.ui = {
     // World Map: painel de info (fechar / viajar) e botão "◀ World"
     if (this.el["wmap-info-close"])
       this.el["wmap-info-close"].addEventListener("click", () => { this.el["wmap-info"].hidden = true; });
+    // clique no overlay (fora do card) fecha o info; clique DENTRO do card não fecha
+    if (this.el["wmap-info"])
+      this.el["wmap-info"].addEventListener("click", (e) => {
+        if (e.target === this.el["wmap-info"]) this.el["wmap-info"].hidden = true;
+      });
     if (this.el["wmap-info-travel"])
       this.el["wmap-info-travel"].addEventListener("click", () => {
         if (this._infoArea != null) this.travelTo(this._infoArea);
@@ -1038,56 +1044,119 @@ G.ui = {
     const maxU = Math.min(d.maxAreaUnlocked || 0, total - 1);
     const locked = i > maxU;
     const isCurrent = i === d.areaIndex;
+    const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+    // tint por bioma: teal para o Porto, dourado para o resto
+    this.el["wmap-info"].style.setProperty("--area-tint", a.theme === "port" ? "#5ee0d2" : "#e8b54a");
+
+    // emblema do medalhão da área
+    const emb = this.el["wmap-info-emblem"];
+    if (emb) { emb.style.visibility = ""; emb.src = `assets/ui/node_${i + 1}.png`; }
 
     const art = this.el["wmap-info-art"];
     if (art)
       art.style.backgroundImage = a.img
         ? `linear-gradient(180deg, rgba(7,10,22,0.05), rgba(7,10,22,0.55)), url('${a.img}')`
         : "none";
-    const tints = ["#5ee0d2", "#e8b54a", "#9d7bff", "#7fb0ff", "#5ee0d2", "#e8b54a", "#cdb06a", "#c46a8a", "#e8d24a",
-      "#2a4d8f", "#2f5aa0", "#3a6bb5", "#4a5fbf", "#5a52c0", "#6b4fc0", "#7d4fbf", "#8f52b8", "#a05fb0"];
-    this.el["wmap-info"].style.setProperty("--area-tint", tints[i % tints.length]);
 
-    this.el["wmap-info-name"].textContent = `${a.name} · ${i + 1}/${total}`;
+    // Ato A não tem rótulo canônico "Act I" na UI; o botão de subida chama "The Dreaming Wood".
+    // Ato B é canonicamente "The Sunken Port" (rótulo/nav do mapa).
+    const actName = i <= 8 ? "Act I · The Dreaming Wood" : "Act II · The Sunken Port";
+    this.el["wmap-info-name"].textContent = a.name;
+    this.el["wmap-info-sub"].textContent = `${actName} · Area ${i + 1} of ${total}`;
+
+    // chip de estado
+    const felled = Array.isArray(d.harbingersFelled) && d.harbingersFelled.indexOf(i) !== -1;
+    const chip = this.el["wmap-info-chip"];
+    chip.textContent = locked ? "Locked" : isCurrent ? "You are here" : felled ? "Harbinger felled" : "Unlocked";
+
+    // lore
     this.el["wmap-info-lore"].textContent = a.blurb || "";
+    const deep = this.el["wmap-info-deep"];
+    deep.textContent = a.lore || "";
+    deep.hidden = !a.lore;
+
+    // ameaça
     this.el["wmap-info-level"].textContent = `${a.levelRange[0]}–${a.levelRange[1]}`;
     const pack = G.combat.packSizeFor(i);
     this.el["wmap-info-enemies"].textContent = pack + " per wave";
+
+    const mobs = this.el["wmap-info-mobs"];
+    mobs.classList.toggle("is-locked", locked);
+    mobs.innerHTML = a.enemies.map((e) =>
+      `<div class="wmap-info__mob"><img src="${e.img}" alt="" onerror="this.style.visibility='hidden'"><span>${esc(e.name)}</span></div>`
+    ).join("");
+
+    // Harbinger
+    const bossRow = this.el["wmap-info-boss-row"];
     if (a.boss) {
-      this.el["wmap-info-boss-row"].hidden = false;
-      // P8.4: a área 18 mostra o H6 (area.boss) como boss; o Okhra (mapBoss) é o 2º estágio.
-      this.el["wmap-info-boss"].textContent = a.boss.name;
-      // linha extra do Okhra pós-H6 (com a mensagem do portão se o First Light não despertou)
-      if (i === total - 1 && a.mapBoss) {
-        const awake    = !!(G.awaken && G.awaken.isDone("first_light"));
-        const h6Felled = Array.isArray(d.harbingersFelled) && d.harbingersFelled.indexOf(i) !== -1;
-        let extra = "";
-        if (!h6Felled)   extra = `Then: ${a.mapBoss.name} stirs beyond the Choir.`;
-        else if (awake)  extra = `${a.mapBoss.name}, the Starving Tide, risen.`;
-        else             extra = "The tide stirs... but your light sleeps. Awaken the First Light.";
-        this.el["wmap-info-boss"].textContent = `${a.boss.name}: ${extra}`;
+      bossRow.hidden = false;
+      const boss = a.boss;
+      const shrouded = locked;
+      const name = shrouded ? "???" : esc(boss.name);
+      let tag = "";
+      if (!shrouded && Array.isArray(boss.signature) && boss.signature.length) {
+        const mod = G.data.modifiers[boss.signature[0]];
+        if (mod && mod.label) tag = `<span class="wmap-info__boss-tag">${esc(mod.label)}</span>`;
       }
+      let cadence = "";
+      if (!shrouded) {
+        if (isCurrent) {
+          const n = Math.max(0, G.combat.bossThresholdFor(i) - G.combat._bossKills);
+          cadence = `stirs in ${n} kills`;
+        } else {
+          cadence = `stirs every ${G.combat.bossThresholdFor(i)} kills`;
+        }
+      }
+      // Área 18: linha extra do Okhra (2º estágio pós-H6), preservando a lógica de portão/First Light.
+      let extra = "";
+      if (i === total - 1 && boss && a.mapBoss && !shrouded) {
+        const awake = !!(G.awaken && G.awaken.isDone("first_light"));
+        if (!felled)     extra = `Then: ${esc(a.mapBoss.name)} stirs beyond the Choir.`;
+        else if (awake)  extra = `${esc(a.mapBoss.name)}, the Starving Tide, risen.`;
+        else             extra = "The tide stirs... but your light sleeps. Awaken the First Light.";
+      }
+      this.el["wmap-info-boss"].className = `wmap-info__boss${shrouded ? " is-shrouded" : ""}`;
+      this.el["wmap-info-boss"].innerHTML =
+        `<img src="${boss.img || ""}" alt="" onerror="this.style.visibility='hidden'">` +
+        `<div class="wmap-info__boss-txt"><span class="wmap-info__boss-name">${name}</span>${tag}` +
+        (extra ? `<span class="wmap-info__boss-extra">${extra}</span>` : "") + `</div>` +
+        (cadence ? `<span class="wmap-info__boss-cadence">${cadence}</span>` : "");
     } else {
-      this.el["wmap-info-boss-row"].hidden = true;
-    }
-    this.el["wmap-info-status"].textContent = locked ? "🔒 Locked" : isCurrent ? "Current" : "Unlocked";
-    if (locked) {
-      this.el["wmap-info-unlock-row"].hidden = false;
-      this.el["wmap-info-unlock"].textContent = `Reach level ${a.levelRange[0]}`;
-    } else {
-      this.el["wmap-info-unlock-row"].hidden = true;
+      bossRow.hidden = true;
     }
 
-    const lumPerKill = Math.ceil(G.data.mobHpAt(a.levelRange[0], a) * G.data.balance.goldRatio);
-    const res = [`<li><span>Lumens</span><b>+${G.util.fmt(lumPerKill)}</b></li>`];
-    res.push(`<li><span>XP</span><b>+${G.util.fmt(Math.ceil(G.data.balance.baseXp * a.levelRange[0]))}</b></li>`);
-    if (i >= 5) res.push(`<li><span>Awaken Material</span><b>Boss</b></li>`);
-    this.el["wmap-info-res"].innerHTML = res.join("");
+    // spoils — projeção real do income do jogador atual
+    const est = G.combat.estimateAreaIncome(i);
+    let res;
+    if (est.deadly) {
+      res = `<li class="is-warning">Beyond your strength. The tide would take you.</li>`;
+    } else {
+      const rows = [
+        `<li><span>Lumens / min</span><b>+${G.util.fmt(est.lumensPerMin)}</b></li>`,
+        `<li><span>XP / min</span><b>+${G.util.fmt(est.xpPerMin)}</b></li>`,
+      ];
+      if (i >= 5) rows.push(`<li><span>Awaken Material</span><b>Boss drop</b></li>`);
+      res = rows.join("");
+    }
+    this.el["wmap-info-res"].innerHTML = res;
+
+    // unlock (área travada): condição + barra de progresso por nível
+    const unlockRow = this.el["wmap-info-unlock-row"];
+    if (locked) {
+      unlockRow.hidden = false;
+      const pct = G.util.clamp((d.level / a.levelRange[0]) * 100, 0, 100);
+      this.el["wmap-info-unlock"].innerHTML =
+        `Reach level ${a.levelRange[0]}` +
+        `<div class="wmap-info__unlock-bar"><div class="wmap-info__unlock-fill" style="width:${pct}%"></div></div>`;
+    } else {
+      unlockRow.hidden = true;
+    }
 
     const tbtn = this.el["wmap-info-travel"];
     if (isCurrent) { tbtn.disabled = true; tbtn.textContent = "You are here"; }
     else if (locked) { tbtn.disabled = true; tbtn.textContent = `🔒 Reach Lv ${a.levelRange[0]}`; }
-    else { tbtn.disabled = false; tbtn.textContent = "Travel here"; }
+    else { tbtn.disabled = false; tbtn.textContent = `Travel to ${a.name}`; }
 
     this.el["wmap-info"].hidden = false;
   },

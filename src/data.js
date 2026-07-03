@@ -173,6 +173,7 @@ G.data = {
     {
       id: 1, name: "The Dreaming Wood", theme: "forest",
       blurb: "Where the Seeker first wakes. Soft auroras drip through ancient boughs, and here the light still dreams.",
+      lore: "The Seeker wakes here because the forest allows it. The oldest boughs remember the Lumiere whole, and they dream it still, aurora dripping like sap. Nothing here wants to hurt you. That is what makes it a lie.",
       img: "assets/areas/dreaming_wood.png",
       levelRange: [1, 80],
       hp: [10253, 13328],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -185,6 +186,7 @@ G.data = {
     {
       id: 2, name: "The Lantern Mire", theme: "forest",
       blurb: "A drowned bog of guttering lanterns, where Fragmented souls lost themselves chasing the light.",
+      lore: "Every lantern in the bog was lit by a Fragmented soul that believed the light would lead it home. The bog kept the lanterns and the souls both. They gutter, but they refuse to go out.",
       img: "assets/areas/lantern_mire.png",
       levelRange: [81, 171],
       hp: [17715, 44481],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -197,6 +199,7 @@ G.data = {
     {
       id: 3, name: "The Whispering Hollows", theme: "forest",
       blurb: "Hollow trees that sing the trapped light, their murmurs curling endlessly through the dark.",
+      lore: "The hollow trees sing because light is trapped inside them, and trapped light does not stay quiet. Pilgrims once pressed their ears to the bark to hear it. Some are still listening. The Hollow Cantor conducts them.",
       img: "assets/areas/whispering_hollows.png",
       levelRange: [172, 276],
       hp: [74135, 222404],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -210,6 +213,7 @@ G.data = {
     {
       id: 4, name: "The Moonlit Canopy", theme: "forest",
       blurb: "The high canopy, nearest the aurora, where moths and wardens drift through a pale, restless glow.",
+      lore: "Closest to the aurora, the canopy is where the forest touches what it lost. Moths carry flecks of pale light between the branches like offerings. The wardens do not guard the canopy. They guard the way down.",
       img: "assets/areas/moonlit_canopy.png",
       levelRange: [277, 396],
       hp: [1081932, 1406512],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -222,6 +226,7 @@ G.data = {
     {
       id: 5, name: "The Sunken Grove", theme: "forest",
       blurb: "A flooded, mirrored grove, every still pool reflects the creeping Mist back at the Seeker.",
+      lore: "The pools do not reflect the sky. They reflect the Mist, patient and creeping, wearing the faces of things that once drank here. The Seeker's own reflection arrives a moment late.",
       img: "assets/areas/sunken_grove.png",
       levelRange: [397, 534],
       hp: [763757, 992885],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -234,6 +239,7 @@ G.data = {
     {
       id: 6, name: "The Gilded Thicket", theme: "forest",
       blurb: "A bramble of thorns where the golden corruption climbs, beautiful, and entirely wrong.",
+      lore: "Here the gold began. It climbed the thorns like a beautiful infection, gilding everything it touched and hollowing everything it gilded. The Bramble King wears the first crown it ever made.",
       img: "assets/areas/gilded_thicket.png",
       levelRange: [535, 693],
       hp: [1301741, 1754575],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -247,6 +253,7 @@ G.data = {
     {
       id: 7, name: "The Hollow Cathedral", theme: "forest",
       blurb: "A cathedral grown of living wood, where the Fragmented kneel and worship the captured light.",
+      lore: "No one built the cathedral. The wood grew it around the kneeling Fragmented, arch by arch, as if the forest wanted to keep their worship. The captured light burns on the altar, and it is not grateful.",
       img: "assets/areas/hollow_cathedral.png",
       levelRange: [694, 876],
       hp: [2924292, 3801580],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -259,6 +266,7 @@ G.data = {
     {
       id: 8, name: "The Weeping Roots", theme: "forest",
       blurb: "The deep roots, where the forest bleeds light and mourns everything it has lost.",
+      lore: "The deep roots bleed raw light where the corruption cut them. The forest mourns loudly here, sap and glow running together. Everything that grieves eventually comes down to drink.",
       img: "assets/areas/weeping_roots.png",
       levelRange: [877, 1086],
       hp: [2592403, 3370124],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -271,6 +279,7 @@ G.data = {
     {
       id: 9, name: "The Hollow Sanctum", theme: "forest",
       blurb: "The heart of the wood, the climax of the Dreaming, where the Gilded Hollow waits in the hush.",
+      lore: "The heart of the Dreaming, hushed like a held breath. The Gilded Hollow waits at the center with its stolen radiance, the forest's whole sickness gathered into one patient shape. Beyond it, the land smells of salt.",
       img: "assets/areas/hollow_sanctum.png",
       levelRange: [1087, 1328],
       hp: [4008236, 5210707],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -284,6 +293,7 @@ G.data = {
     {
       id: 10, name: "The Salt-Eaten Quay", theme: "port",
       blurb: "The quay lies dry in the shadow of a wave frozen mid-bite, and salt covers everything like snow.",
+      lore: "The wave stopped mid-bite the day the tide learned patience. The quay lives dry inside its shadow, salt falling like slow snow. The dockfolk never left. They just stopped being folk.",
       img: "assets/areas/salt_eaten_quay.png",
       levelRange: [1329, 1606],
       hp: [8209360, 10672168],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -296,6 +306,7 @@ G.data = {
     {
       id: 11, name: "The Drowned Market", theme: "port",
       blurb: "The market never closed. Lanterns still burn beneath the tide, and pale shoals drift between the stalls like customers.",
+      lore: "Trade never ended, it only drowned. The lanterns burn under the water because the tide likes them lit, and the pale shoals make their rounds of the stalls, browsing for what is left of the sellers.",
       img: "assets/areas/drowned_market.png",
       levelRange: [1607, 1926],
       hp: [7843392, 18875731],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -308,6 +319,7 @@ G.data = {
     {
       id: 12, name: "The Sunken Belfry", theme: "port",
       blurb: "The drowned bell-tower still tolls, and every toll moves the black water in slow, visible rings.",
+      lore: "The bell was rung to warn the port. The tide swallowed the tower mid-toll and kept the sound. Now the Drowned Bell tolls a count of drownings that have not happened yet. Yours has a number.",
       img: "assets/areas/sunken_belfry.png",
       levelRange: [1927, 2294],
       hp: [31459552, 40897418],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -321,6 +333,7 @@ G.data = {
     {
       id: 13, name: "The Wreckfields", theme: "port",
       blurb: "Ships that never finish sinking, hulls hang suspended in the blue, frozen mid-fall, chains stretched toward a surface they will never reach.",
+      lore: "A graveyard where nothing is allowed to finish dying. The hulls hang frozen mid-fall, chains straining toward a surface the tide keeps only as a memory. Divers move between the wrecks, tending them.",
       img: "assets/areas/wreckfields.png",
       levelRange: [2295, 2717],
       hp: [60815702, 79060413],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -333,6 +346,7 @@ G.data = {
     {
       id: 14, name: "The Drowned Shipyard", theme: "port",
       blurb: "The shipyard the water finished: half-built hulls grown shut with coral, and stairways of current standing where stairs should be.",
+      lore: "The shipwrights fled and the water took up their tools. It finishes the half-built hulls in coral and verdigris, patient and wrong, building ships for a fleet that no one living will sail.",
       img: "assets/areas/drowned_shipyard.png",
       levelRange: [2718, 3203],
       hp: [40622208, 52808871],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -345,6 +359,7 @@ G.data = {
     {
       id: 15, name: "The Hollow Armada", theme: "port",
       blurb: "A fleet fused into a single body, masts like ribs, torn sails like membranes, deck-lights burning with no crew to tend them.",
+      lore: "The port's great fleet never sailed. The tide fused it into a single vast body, masts for ribs, sails for skin, and lit the deck-lights itself. The Hollow Fleet answers no flag. It answers the hunger.",
       img: "assets/areas/hollow_armada.png",
       levelRange: [3204, 3762],
       hp: [61252164, 79627813],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -358,6 +373,7 @@ G.data = {
     {
       id: 16, name: "The Abyssal Shelf", theme: "port",
       blurb: "The edge of the abyss, where the surface is a distant dead sky, and something far too large passes below, slowly.",
+      lore: "The last shelf of stone before the dark goes all the way down. The surface hangs far above like a dead sky. What passes beneath the shelf is too large to fight and too slow to flee, and it knows you are on the edge.",
       img: "assets/areas/abyssal_shelf.png",
       levelRange: [3763, 4405],
       hp: [97487369, 126733580],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -370,6 +386,7 @@ G.data = {
     {
       id: 17, name: "The Starving Trench", theme: "port",
       blurb: "The trench glows with a slow, starving pulse, and everything, wreckage, chains, light, leans toward the mouth.",
+      lore: "The trench pulses like a throat swallowing. Light bends toward the mouth, wreckage bends, even the water leans. The port was not sunk. It is being digested.",
       img: "assets/areas/starving_trench.png",
       levelRange: [4406, 5144],
       hp: [75582580, 98257354],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -382,6 +399,7 @@ G.data = {
     {
       id: 18, name: "The Tide's Maw", theme: "port",
       blurb: "The throat of the tide: a black maw ringed by broken gold filigree, where the swallowed cargo still orbits the dark.",
+      lore: "The throat of the Starving Tide, ringed with the broken gold of a halo that once meant something holy. The Tidebound Choir rehearses at the rim, singing the swallowed cargo down. Okhra listens from below.",
       img: "assets/areas/tides_maw.png",
       imgFinale: "assets/areas/tides_maw_finale.png",
       levelRange: [5145, 6000],
