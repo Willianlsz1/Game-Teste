@@ -135,6 +135,12 @@ G.ui = {
     this.el["res-lumens"].textContent = G.util.fmt(G.state.data.lumens);
     const area = G.data.currentArea();
     this.el["res-area"].textContent = area.name;
+    const tc = document.querySelector(".hud-topcenter");
+    if (tc) {
+      const port = (G.state.data.areaIndex || 0) >= 9;
+      tc.classList.toggle("theme-port", port);
+      tc.classList.toggle("theme-forest", !port);
+    }
     const wimg = document.querySelector(".world-img");
     if (wimg && area.img && wimg.getAttribute("src") !== area.img) wimg.src = area.img;
     const d = G.state.data;
@@ -547,7 +553,7 @@ G.ui = {
   // Combat
   _lastArt: null,
 
-  // contador de invocação do Harbinger — logo abaixo do banner de área.
+  // contador de invocação do Harbinger — topo-direito, logo abaixo do medidor de Lumens.
   // Roda no clock de 100ms (via renderEnemy) porque a contagem muda a cada kill.
   renderHarbingerCounter() {
     const el = this.el["harbinger-counter"];
@@ -609,15 +615,19 @@ G.ui = {
       this._enemySig = sig;
       container.className = `enemies-container pack-${Math.min(list.length, 3)}`;
       container.innerHTML = list.map((e, i) => {
-        const bossTag   = e.isBoss ? `<span class="harbinger-tag">${e.isMapBoss ? "◆ NIHELIM ◆" : "⟡ HARBINGER ⟡"}</span>` : "";
-        const nameHtml  = e.rarity ? `${e.name} · ${e.rarity.tag}` : e.name;
-        const nameColor = e.rarity ? ` style="color:${e.rarity.color}"` : "";
-        const shelled   = e.lightshell > 0;
-        const nameEl    = `${bossTag}
-          <span class="enemy-name${e.isBoss ? " boss-name" : ""}"${nameColor}>${nameHtml}</span>`;
-        const header    = e.isBoss && e.banner
-          ? `<div class="boss-header"><img class="boss-banner" src="${e.banner}" alt="" onerror="this.remove()" />${nameEl}</div>`
-          : nameEl;
+        const shelled = e.lightshell > 0;
+        let header;
+        if (e.isBoss) {
+          const sig = (e.modifiers || [])
+            .map((k) => G.data.modifiers[k] && G.data.modifiers[k].label)
+            .filter(Boolean).join(" · ").toUpperCase();
+          header = `<span class="harbinger-tag">${e.isMapBoss ? "◆ NIHELIM ◆" : "⟡ HARBINGER ⟡"}</span>
+          <span class="boss-nameplate${e.isMapBoss ? " nihelim" : ""}">${(e.baseName || e.name).toUpperCase()}</span>
+          ${sig ? `<span class="boss-signature">${sig}</span>` : ""}`;
+        } else {
+          const nameColor = e.rarity ? ` style="color:${e.rarity.color}"` : "";
+          header = `<span class="enemy-name"${nameColor}>${e.rarity ? `${e.name} · ${e.rarity.tag}` : e.name}</span>`;
+        }
         return `<div class="enemy-card${e.isBoss ? " boss" : ""}" data-idx="${i}">
           ${header}
           <span class="shell-badge" id="shell-badge-${i}"${shelled ? "" : ` style="display:none"`}></span>

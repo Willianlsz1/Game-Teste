@@ -291,10 +291,16 @@ Valida: `sim campaign` — First Light dentro do orçamento total do P0; Okhra v
 - **Review adversarial (Sonnet): APROVADO.** 1 bug ALTO achado+corrigido: converge com o jogo pausado no meio da luta do Okhra deixava o palco/maré presos sobre a Área 1 (`converge()` agora limpa `_okhraManifest`/tide/classe). Baixos registrados sem correção: reload no meio do finale re-exige threshold (padrão pré-existente de todo Marco) · siphoning boss=mob 0.5 (placeholder de balance, inerte em boss por escala) · escoltas podem rolar raridade (filosofia "mesma maquinaria", aceito).
 - Suíte **278/278** · canon 0 drift.
 
-### P8.5 — Re-invocação do Harbinger ✅ TRAVADO (jul/2026, achado do playtest na fase de design)
+### P8.5 — Re-invocação do Harbinger ✅ TRAVADO (jul/2026, achado do playtest na fase de design) — **SUPERSEDIDO pelo P8.5b abaixo**
 - **Achado (dono, testando o H1 in-game):** matar o Harbinger NÃO re-zerava o threshold — ele respawnava em TODA onda seguinte (farm infinito de boss). O farm era, silenciosamente, parte da dieta de XP da calibração: matá-lo de graça atrasava o mapa em +3h24m.
-- **Decisão: `bossRegrindFrac 0.2`** — matar o Harbinger re-arma o contador em 80% do threshold; re-invocar custa ~20% dele (6–11 kills conforme o grupo). Boss vira EVENTO (nunca encadeia onda a onda), e o relógio pousa NO alvo do P0 (18h) melhor que antes.
-- **Sim (campaign, seeds 1/3/7):** mapa completo **18h29–18h34** (era 17h01–17h13 — ABAIXO do alvo de 18h do P0; frac 1.0 = 20h25, frac 0.5 = 19h53, frac 0.25 = 18h52) · Okhra 82–97 golpes (banda 60–120 ✓) · coroa conv 8 (alvo 8ª–11ª ✓) · razão de pontos 1.56 (alvo 1.4–1.7 ✓) · promoções 6/6 em G3–G4 ✓ · suíte verde.
+- ~~**Decisão: `bossRegrindFrac 0.2`**~~ — re-grind parcial (contador re-armava em 80%). Relógio 18h29–18h34. **Vetado pelo dono no dia seguinte**: o contador de invocação (UI) mostrando "faltam 6 kills" logo após matar o boss lia como bug — o dono mandou zerar COMPLETO. Ver P8.5b.
+- **Sim da época (frac 0.2, seeds 1/3/7):** 18h29–18h34 (frac 1.0 = 20h25 · 0.5 = 19h53 · 0.25 = 18h52 — com baseXp 200).
+
+### P8.5b — Re-grind CHEIO + compensação de XP ✅ TRAVADO (jul/2026, ordem do dono)
+- **Decisão do dono:** matar o Harbinger **zera o contador por completo** (`bossRegrindFrac 1.0`) — re-invocar = re-farmar o threshold inteiro (30–55 kills). Sem meio-termo: o contador da UI conta a verdade simples.
+- **Compensação do relógio: `baseXp 200 → 245`** (mesmo botão do P5). O fim do farm de boss tirava ~11% do XP total; testado: bossRewardMult 12 moveu só 14min (boss raro demais pra pesar) — o botão certo é o global. 230 → 18h58 · **245 → na banda**.
+- **Sim (campaign, seeds 1/3/7, frac 1.0 + baseXp 245):** mapa completo **18h22–18h26** (alvo P0 18h ✓) · Okhra 88–110 golpes (banda 60–120 ✓) · coroa conv 8 em 7h04 (alvo 8ª–11ª ✓) · razão 1.56 (1.4–1.7 ✓) · promoções 6/6 G4 (banda G2–G4 ✓) · awaken mat folga 2h43 · suíte verde.
+- **ESTAS âncoras substituem as do P8/P8.5** (17h01–17h13 e 18h29–18h34 são históricas).
 - **Finale preservado:** a morte do H6 seta `_okhraManifest` explicitamente — Okhra segue manifestando IMEDIATO com First Light, mesmo com o threshold re-zerado. Verificação headless 6/6 (spawn→shell→kill→sem respawn→re-grind→re-invoca→H6→Okhra imediato).
 - **UI acoplada (mesma sessão):** tag ⟡ HARBINGER ⟡ / ◆ NIHELIM ◆ + nome dourado + barra com moldura de boss · Lightshell visível (badge 🛡 ×N, aura teal no card, floater ABSORBED por golpe absorvido, log "The Lightshell shatters" na quebra).
 
@@ -311,7 +317,8 @@ Valida: `sim baseline/campaign` com rarity find — frequência de acesos por gr
 4. **Decisão travada não reabre** sem número novo do sim (mesma disciplina da lore).
 
 ## Log de decisões travadas
-- **jul/2026 — P8.5 (re-invocação):** `bossRegrindFrac 0.2` — Harbinger morto re-arma o threshold em 80% (re-invocar = ~20% dele); mata o farm infinito de boss achado no playtest do H1 · relógio 18h29–18h34 (seeds 1/3/7, alvo P0 = 18h) · finale H6→Okhra imediato preservado via `_okhraManifest` · UI: tag HARBINGER + Lightshell legível (badge/aura/floater/log).
+- **jul/2026 — P8.5b (re-grind cheio):** dono vetou o parcial — `bossRegrindFrac 1.0` (matar Harbinger zera o contador de invocação) + `baseXp 245` compensa o fim do farm de boss · relógio 18h22–18h26 (seeds 1/3/7, alvo P0 18h) · Okhra 88–110 golpes · âncoras novas substituem P8/P8.5.
+- **jul/2026 — P8.5 (re-invocação · SUPERSEDIDO):** `bossRegrindFrac 0.2` — re-arm em 80%; matou o farm infinito achado no playtest do H1 · finale H6→Okhra imediato preservado via `_okhraManifest` · UI: tag HARBINGER + Lightshell legível (badge/aura/floater/log). Vetado pelo dono → P8.5b.
 - **jul/2026 — PASSO 8 (Encontros):** Rarity Find (Marco abre teto 1/6, gear enche em degraus 50, ×3/×6/×10) · pool de 4 modificadores (só Corona, 1 de 4) · assinatura fixa por Marco (pares no H5/H6) · finale encenado (H6 novo invoca Okhra + The Tide Rises 10s) · sistema antigo de raros/elites morto · mapa completo 17h01–17h13 (seeds 1/3/7).
 - **jul/2026 — PASSO 7 (Awaken):** rito de passagem 1/mapa (chave anti-Nihelim + ponte) · escada do amanhecer (First Light → … → Lumière) · três provas (área 18 + coroa + 3 materiais) · portão limpo do Okhra · xpMultByGroup [1,1,1,1,2.5,3.0] · Okhra hpMult 48 · First Light ~17h49, Okhra 82–98 golpes (seeds 1/3/5).
 - **jul/2026 — PASSO 6 (Passivas):** Árvore I sequencial, 15 nós binários abre-ao-comprar, coroa conquistável · custos [80/120/200/350] + evo 0.4×1.5^n · tudo em % (F4 fechado) · save v5 · implementado+revisado, âncoras batidas em 2 seeds.

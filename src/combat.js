@@ -121,6 +121,7 @@ G.combat = {
     }
 
     // Nome vira prefixo com o(s) modificador(es): "Lightshell <nome>" (P8.2/P8.3)
+    const baseName = name;
     if (modifiers.length) {
       const pre = modifiers.map((k) => G.data.modifiers[k] && G.data.modifiers[k].label).filter(Boolean).join(" ");
       if (pre) name = pre + " " + name;
@@ -137,7 +138,7 @@ G.combat = {
     this.spawnCount++;
 
     return {
-      name, sprite: def.sprite, img: def.img, banner: def.banner,
+      name, baseName, sprite: def.sprite, img: def.img,
       level, isBoss,
       rarity: rarity ? { tag: rarity.tag, color: rarity.color, tier: rarity.tier } : null,
       modifiers, lightshell,

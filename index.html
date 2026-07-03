@@ -29,10 +29,11 @@
   <div class="hud hud-topcenter">
     <div class="banner banner--area">
       <button class="area-nav area-nav--prev" id="area-prev" title="Previous area" onclick="G.ui.goToArea(-1)">‹</button>
+      <span class="area-fil area-fil--l"></span>
       <span class="banner__text" id="res-area">The Dreaming Wood</span>
+      <span class="area-fil area-fil--r"></span>
       <button class="area-nav area-nav--next" id="area-next" title="Next area" onclick="G.ui.goToArea(1)">›</button>
     </div>
-    <div class="harbinger-counter" id="harbinger-counter" style="display:none"></div>
   </div>
 
   <!-- top-right: Lumens -->
@@ -41,6 +42,7 @@
       <img class="lumens-hud__icon" src="assets/ui/lumens_coin.png" alt="Lumens" onerror="this.remove()" />
       <b class="lumens-hud__value" id="res-lumens">0</b>
     </div>
+    <div class="harbinger-counter" id="harbinger-counter" style="display:none"></div>
   </div>
 
   <!-- top-left: toolbar -->

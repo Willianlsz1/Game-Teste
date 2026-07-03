@@ -22,7 +22,7 @@
 .hud { position: fixed; z-index: 10; }
 .hud-topleft { top: 14px; left: 14px; display: flex; align-items: flex-start; gap: 10px; }
 .hud-topcenter { top: 14px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.hud-topright { top: 14px; right: 14px; }
+.hud-topright { top: 14px; right: 14px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .hud-bottomleft { bottom: 14px; left: 14px; width: 360px; max-width: 40vw; }
 
 /* ---- log (baixo esquerda) ---- */
@@ -196,36 +196,33 @@
   text-shadow: 0 0 10px rgba(232, 181, 74, 0.8), 0 1px 3px #000;
   margin-bottom: 2px;
 }
-.enemy-name.boss-name {
-  color: var(--gold); font-size: 26px;
-  text-shadow:
-    -1.2px -1.2px 0 #1a0e02, 1.2px -1.2px 0 #1a0e02, -1.2px 1.2px 0 #1a0e02, 1.2px 1.2px 0 #1a0e02,
-    0 0 6px #000, 0 0 16px rgba(232, 181, 74, 0.85);
+/* nameplate tipográfico: nome em caps sobre faixa escura angulada */
+.boss-nameplate {
+  display: block; text-align: center;
+  max-width: 100%; box-sizing: border-box;
+  padding: 4px 16px;
+  background: rgba(10, 8, 4, 0.85);
+  clip-path: polygon(3% 0, 97% 0, 100% 50%, 97% 100%, 3% 100%, 0 50%);
+  border-top: 1px solid rgba(232, 181, 74, 0.5);
+  border-bottom: 1px solid rgba(232, 181, 74, 0.5);
+  font-family: "Outfit", sans-serif; font-size: 17px; font-weight: 800;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: #fff; text-shadow: 0 0 12px rgba(232, 181, 74, 0.9);
 }
-/* boss vive sempre em pack-2/pack-3 — vence os overrides de nome por pack (especificidade, sem !important) */
-.enemies-container.pack-2 .enemy-name.boss-name,
-.enemies-container.pack-3 .enemy-name.boss-name { font-size: 24px; }
-.enemy-card.enemy-active .enemy-name.boss-name {
-  text-shadow:
-    -1.2px -1.2px 0 #1a0e02, 1.2px -1.2px 0 #1a0e02, -1.2px 1.2px 0 #1a0e02, 1.2px 1.2px 0 #1a0e02,
-    0 0 6px #000, 0 0 18px rgba(232, 181, 74, 1);
+.boss-nameplate.nihelim {
+  border-top-color: rgba(157, 123, 255, 0.55);
+  border-bottom-color: rgba(157, 123, 255, 0.55);
+  text-shadow: 0 0 12px rgba(157, 123, 255, 0.95);
+}
+.boss-signature {
+  display: block; text-align: center; margin-top: 2px;
+  font-family: "Outfit", sans-serif; font-size: 11px; font-weight: 700;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  color: #5ee0d2; text-shadow: 0 0 8px rgba(94, 224, 210, 0.5), 0 1px 3px #000;
 }
 .enemy-bar.boss-bar {
   border: 1px solid rgba(232, 181, 74, 0.7);
   box-shadow: 0 0 12px rgba(232, 181, 74, 0.35), inset 0 0 4px rgba(0, 0, 0, 0.6);
-}
-
-/* ---- banner heráldico do Harbinger (arte atrás do tag+nome) ---- */
-.boss-header {
-  position: relative; width: 100%;
-  display: flex; flex-direction: column; align-items: center;
-}
-.boss-header .harbinger-tag,
-.boss-header .enemy-name { position: relative; z-index: 1; }
-.boss-banner {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  width: 110%; max-width: 340px; height: auto; z-index: 0;
-  pointer-events: none;
 }
 
 /* ---- Lightshell (escudo de luz — golpes absorvidos) ---- */
@@ -333,26 +330,30 @@
   letter-spacing: 0.5px; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
-/* ---- banner ornamentado (área atual) ---- */
+/* ---- banner do nome da área (limpo — degradê + filetes por tema) ---- */
 .banner {
   position: relative; display: flex; align-items: center; justify-content: center;
-  background-repeat: no-repeat; background-size: 100% 100%;
 }
 .banner__text {
   font-family: "Cormorant Garamond", serif; font-style: italic; font-weight: 600;
-  color: var(--text); text-align: center; max-width: 64%;
+  color: var(--text); text-align: center;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  text-shadow: 0 1px 4px #000, 0 0 10px rgba(55, 200, 240, 0.3);
+  text-shadow: 0 1px 4px #000, 0 0 12px #000;
 }
 .banner--area {
-  width: 460px; aspect-ratio: 1276 / 291;
-  background-image: url("../assets/ui/banner_teal.png");
+  min-width: 420px; max-width: 480px; padding: 6px 10px; gap: 10px;
+  background: linear-gradient(90deg, transparent, rgba(7, 10, 22, 0.72) 22%, rgba(7, 10, 22, 0.72) 78%, transparent);
 }
-.banner--area .banner__text { font-size: 24px; font-weight: 600; letter-spacing: 0.4px; text-shadow: 0 1px 4px #000, 0 0 12px #000; }
+.banner--area .banner__text { font-size: 24px; letter-spacing: 0.4px; flex: 0 1 auto; }
+.area-fil { flex: 1; max-width: 90px; min-width: 24px; height: 1px; }
+.area-fil--l { background: linear-gradient(90deg, transparent, rgba(232, 181, 74, 0.8)); }
+.area-fil--r { background: linear-gradient(90deg, rgba(232, 181, 74, 0.8), transparent); }
+.hud-topcenter.theme-port .area-fil--l { background: linear-gradient(90deg, transparent, rgba(94, 224, 210, 0.8)); }
+.hud-topcenter.theme-port .area-fil--r { background: linear-gradient(90deg, rgba(94, 224, 210, 0.8), transparent); }
 
-/* ---- contador de invocação do Harbinger (abaixo do banner) ---- */
+/* ---- contador de invocação do Harbinger (abaixo do medidor de Lumens) ---- */
 .harbinger-counter {
-  margin-top: 4px; text-align: center;
+  text-align: center;
   font-family: "Outfit", sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.5px;
   color: color-mix(in srgb, var(--gold) 80%, #fff 20%);
   text-shadow: 0 1px 3px #000, 0 0 8px rgba(0, 0, 0, 0.85);
@@ -369,12 +370,10 @@
 
 /* ---- setas de navegação de área ---- */
 .area-nav {
-  position: absolute; top: 50%; transform: translateY(-50%);
+  flex: none;
   background: none; border: none; cursor: pointer; padding: 0 8px;
   color: var(--cyan); font-size: 26px; line-height: 1; font-weight: 700;
   text-shadow: 0 1px 4px #000; transition: filter 0.1s, opacity 0.1s;
 }
-.area-nav--prev { left: 8%; }
-.area-nav--next { right: 8%; }
 .area-nav:hover { filter: brightness(1.4); }
 .area-nav.is-disabled { opacity: 0.25; pointer-events: none; }

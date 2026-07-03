@@ -205,7 +205,7 @@ G.data = {
         { name: "Dreamhorn Warden",  sprite: "🦌", img: "assets/enemies/dreamhorn_warden.png"  },
         { name: "Mirelight Drifter", sprite: "🏮", img: "assets/enemies/mirelight_drifter.png" },
       ],
-      boss: { name: "The Hollow Cantor", sprite: "🎶", hpMult: 17.42, dmgMult: 2.0, signature: ["lightshell"], img: "assets/enemies/hollow_cantor.png", banner: "assets/ui/banners/h1_hollow_cantor.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H1 = Lightshell
+      boss: { name: "The Hollow Cantor", sprite: "🎶", hpMult: 17.42, dmgMult: 2.0, signature: ["lightshell"], img: "assets/enemies/hollow_cantor.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H1 = Lightshell
     },
     {
       id: 4, name: "The Moonlit Canopy",
@@ -242,7 +242,7 @@ G.data = {
         { name: "Candlewisp Shade",   sprite: "🔥", img: "assets/enemies/candlewisp_shade.png"   },
         { name: "Glasswater Wraith",  sprite: "💧", img: "assets/enemies/glasswater_wraith.png"  },
       ],
-      boss: { name: "The Bramble King", sprite: "🥀", hpMult: 4.49, dmgMult: 2.0, signature: ["escorted"], img: "assets/enemies/bramble_king.png", banner: "assets/ui/banners/h2_bramble_king.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H2 = Escorted
+      boss: { name: "The Bramble King", sprite: "🥀", hpMult: 4.49, dmgMult: 2.0, signature: ["escorted"], img: "assets/enemies/bramble_king.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H2 = Escorted
     },
     {
       id: 7, name: "The Hollow Cathedral",
@@ -279,7 +279,7 @@ G.data = {
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
         { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
       ],
-      boss: { name: "The Gilded Hollow", sprite: "👁", hpMult: 4.49, dmgMult: 2.0, signature: ["siphoning"], img: "assets/enemies/gilded_hollow.png", banner: "assets/ui/banners/h3_gilded_hollow.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H3 = Siphoning
+      boss: { name: "The Gilded Hollow", sprite: "👁", hpMult: 4.49, dmgMult: 2.0, signature: ["siphoning"], img: "assets/enemies/gilded_hollow.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H3 = Siphoning
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
@@ -316,7 +316,7 @@ G.data = {
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
         { name: "Husklight Murmur",   sprite: "🌳", img: "assets/enemies/husklight_murmur.png"   },
       ],
-      boss: { name: "The Drowned Bell", sprite: "🔔", hpMult: 3.60, dmgMult: 2.0, signature: ["quickened"], banner: "assets/ui/banners/h4_drowned_bell.png" }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar. P8.3 H4 = Quickened
+      boss: { name: "The Drowned Bell", sprite: "🔔", hpMult: 3.60, dmgMult: 2.0, signature: ["quickened"] }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar. P8.3 H4 = Quickened
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
@@ -353,7 +353,7 @@ G.data = {
         { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
         { name: "Husklight Murmur",   sprite: "🌳", img: "assets/enemies/husklight_murmur.png"   },
       ],
-      boss: { name: "The Hollow Fleet", sprite: "🚢", hpMult: 3.65, dmgMult: 2.0, signature: ["lightshell", "quickened"], banner: "assets/ui/banners/h5_hollow_fleet.png" }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar. P8.3 H5 = par Lightshell+Quickened (burst→velocidade; sem stacking de dano recebido)
+      boss: { name: "The Hollow Fleet", sprite: "🚢", hpMult: 3.65, dmgMult: 2.0, signature: ["lightshell", "quickened"] }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar. P8.3 H5 = par Lightshell+Quickened (burst→velocidade; sem stacking de dano recebido)
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
@@ -392,8 +392,8 @@ G.data = {
       ],
       // P8.4 — o finale encenado (dois estágios): H6 (Harbinger, ungated) → Okhra (mapBoss, gated pelo First Light).
       // Matar H6 pela 1ª vez fecha os Marcos 6/6. Okhra manifesta após o H6 SÓ com First Light desperto.
-      boss:    { name: "The Tidebound Choir", sprite: "🎼", hpMult: 3.65, dmgMult: 2.0, signature: ["siphoning", "escorted"], banner: "assets/ui/banners/h6_tidebound_choir.png" }, // PLACEHOLDER (lore): Harbinger H6 do Porto Afundado. P8.3 par Siphoning+Escorted (ensaio geral do Okhra: cura + onda, sem acelerar ataque)
-      mapBoss: { name: "Okhra, the Starving Tide", sprite: "🌊", hpMult: 48, dmgMult: 2.5, signature: ["siphoning"], banner: "assets/ui/banners/okhra.png" }, // PLACEHOLDER (lore): chefe de Mapa — Siphoning + The Tide Rises; matar Okhra completa o Mapa 1
+      boss:    { name: "The Tidebound Choir", sprite: "🎼", hpMult: 3.65, dmgMult: 2.0, signature: ["siphoning", "escorted"] }, // PLACEHOLDER (lore): Harbinger H6 do Porto Afundado. P8.3 par Siphoning+Escorted (ensaio geral do Okhra: cura + onda, sem acelerar ataque)
+      mapBoss: { name: "Okhra, the Starving Tide", sprite: "🌊", hpMult: 48, dmgMult: 2.5, signature: ["siphoning"] }, // PLACEHOLDER (lore): chefe de Mapa — Siphoning + The Tide Rises; matar Okhra completa o Mapa 1
     },
   ],
 
@@ -444,14 +444,14 @@ G.data = {
     bossRewardMult:    6,
     bossLumenMult:     5,
     goldRatio:         0.35,   // lumens/HP — calibrado p/ gear acompanhar (não estourar) o HP do mob
-    baseXp:            200,     // P5: escala de XP reaberta (P1 previu) — comprime o mapa das ~12 convergences do gate escalonado p/ First Light ~18h (era 28)
+    baseXp:            245,     // P5: escala de XP reaberta (P1 previu) — comprime o mapa das ~12 convergences do gate escalonado p/ First Light ~18h (era 28); 245 no P8.5b: compensa o fim do farm de boss (re-grind cheio) — relógio re-validado 18h22–18h26 seeds 1/3/7
     xpMultByGroup:     [1, 1, 1, 1, 2.5, 3.0],  // P7: acelerador de XP por grupo (G1..G6) — barateia a SUBIDA final p/ trazer o First Light à banda ~18h; NÃO mexe nas provas do Awaken
     xpCurveBase:       14,      // XP p/ próximo nível = xpCurveBase × nível^xpCurveExp
     xpCurveExp:        1.62,    // expoente: late-game pesa (XP% vira decisão); subir = mais íngreme
     respawnDelay:      0.5,     // respawn mais ágil → kills/min sem precisar de one-shot
     bossKillThresholdBase:     25,   // P2.5: threshold do Harbinger = base + perGroup×(grupo+1) → 30..55 kills sem morrer
     bossKillThresholdPerGroup: 5,    // P2.5: escalada por grupo. Morte zera o contador. Ver docs/design/ENEMY_POWER_PYRAMID.md
-    bossRegrindFrac:           0.2,  // fração do threshold a re-farmar pra RE-invocar o Harbinger após matá-lo (0 = respawn direto, 1 = re-grind cheio)
+    bossRegrindFrac:           1.0,  // re-grind CHEIO — matar o Harbinger zera o contador; re-invocar = re-farmar o threshold inteiro (decisão do dono, P8.5b; 0 = respawn direto era o bug pré-P8.5)
     gearCostBase:      2500,
     gearCostGrowth:    1.022,   // P2.2: freio principal — testado no sim
     promoteCommonCost:    50,   // common material (common → uncommon) — dimensionado no P3
