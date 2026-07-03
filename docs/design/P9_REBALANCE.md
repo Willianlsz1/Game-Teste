@@ -178,9 +178,19 @@ mortes concentradas em tentativa prematura.
       ver §7: First Light 35h50/36h48/37h10 (seeds 1/3/7, banda 36±2 ✓),
       Harbingers 20–40 HTK ✓, Okhra 62–75 golpes ✓, coroa conv 11 ✓,
       mortes com padrão intencional ✓
-- [ ] P9.1f Re-subida: 10 áreas ainda acima de HTK 2 (pior: 15–17 com 9–11).
-      Resolve no P9.4 (árvore mais forte + mecânicas: Executioner's Light corta
-      re-subida diretamente). Medido e aceito como pendência, não como falha.
+- [x] P9.3+P9.4 MECÂNICAS implementadas em src/ (jul/03, Opus + review Sonnet
+      + fix batch): Cleave/Bulwark/Overcrit/Momentum no gear, Golden Wake/
+      Executioner's Light na árvore, caps Mapa 1 em data.balance. 24/24 probes,
+      regressão nv200 byte-idêntica, saves antigos migram grátis (reconcile
+      reconstrói afixos). Fix pós-review: spill do cleave roteado por
+      _dealDamage (consome Lightshell, ativa Executioner, guard intacto).
+- [ ] P9.5 BATCH FINAL DE NÚMEROS — recalibrar com as mecânicas dentro:
+      relógio 30h12 → 36h±2 (material/xp) · Okhra 126 golpes → banda 60–120 ·
+      RE-SUBIDA (10 áreas > HTK 2; execute cap 8% não morde com HTK ≤ 11 —
+      fecha via números da árvore, ou dono decide abrir o cap) · projeção de
+      income é PISO (sem Cleave/GoldenWake/Momentum, comentado no código) ·
+      baked: v6 dials + statePatch do player pra data.js/state.js · seeds 1/3/7
+      → playtest do dono → travar.
 - [ ] P9.2 Player scale + TTK wave (atkSpeed, HTK, curva de dano)
 - [ ] P9.3 Gear (promoção ×6–10 + per-level)
 - [ ] P9.4 Passivas (valores reais nas 3 árvores)

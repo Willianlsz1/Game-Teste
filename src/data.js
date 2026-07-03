@@ -24,8 +24,9 @@ G.data = {
   // Base de cada peça. affixes[].base = valor no Lv.1, perLevel = ganho/nível.
   // valor final no Lv. N = base + perLevel × (N - 1)
   // P4.2a — a MATRIZ do Mapa 1: cada peça = 2 primários (Common) + 1 despertar (Uncommon).
-  // labels = nomes-lore em inglês (mecânica travada). Despertares novos: specialDmg (arma),
-  // siegeWard (armor), rarityFind{Lumen,Ember,Corona} (inertes até o P8 — Rarity Find).
+  // labels = nomes-lore em inglês (mecânica travada). Despertar = ASSINATURA da peça (P9 §2.4):
+  // cleave (weapon), bulwark (armor), overcrit (gloves), momentum (boots),
+  // rarityFind{Lumen,Ember,Corona} (helmet/cloak). Mecânicas no combat.js; caps Mapa 1 em §2.8.
   gearBase: {
     weapon: {
       name: "Worn Blade",
@@ -34,7 +35,7 @@ G.data = {
         { id: "atkp", label: "Searing Light", stat: "atk", layer: "pct",  base: 0, perLevel: 1  },
       ],
       uncommonAffixes: [
-        { id: "specialDmg", label: "Marked Blade", stat: "specialDmg", layer: "flat", base: 0, perLevel: 0.01 },
+        { id: "cleave", label: "Riven Edge", stat: "cleave", layer: "flat", base: 0, perLevel: 0.012, cap: 25 }, // % do overkill do golpe fatal transferido ao próximo vivo (combat)
       ],
     },
     helmet: {
@@ -54,7 +55,7 @@ G.data = {
         { id: "hpp", label: "Golden Seam",   stat: "hp", layer: "pct",  base: 0, perLevel: 2  },
       ],
       uncommonAffixes: [
-        { id: "siegeWard", label: "Siege Ward", stat: "siegeWard", layer: "flat", base: 0, perLevel: 0.001 }, // dmgRed extra: só onda 2+ (combat)
+        { id: "bulwark", label: "Last Vessel", stat: "bulwark", layer: "flat", base: 0, perLevel: 0.008, cap: 20 }, // dmgRed EXTRA só abaixo de 35% HP (combat); soma clampa em dmgReductionCap
       ],
     },
     gloves: {
@@ -64,7 +65,7 @@ G.data = {
         { id: "critDmg", label: "Crackfinder",          stat: "critDmg", layer: "flat", base: 0,    perLevel: 1     },
       ],
       uncommonAffixes: [
-        { id: "critP", label: "Fracture Sense", stat: "crit", layer: "pct", base: 0, perLevel: 0.008 },
+        { id: "overcrit", label: "Fracture Sense", stat: "overcrit", layer: "flat", base: 0, perLevel: 0.012, cap: 30 }, // teto de chance de golpe duplo destravada por crit acima de 100% (combat)
       ],
     },
     boots: {
@@ -74,7 +75,7 @@ G.data = {
         { id: "rarityFindEmber", label: "Ember Trail",       stat: "rarityFindEmber", layer: "flat", base: 0, perStep: 0.5, step: 50, cap: 30 }, // P8.1 Rarity Find — +0.5% Ember chance por degrau de 50 níveis (teto 30%)
       ],
       uncommonAffixes: [
-        { id: "xp", label: "Long Road", stat: "xpBonus", layer: "flat", base: 0, perLevel: 0.25 },
+        { id: "momentum", label: "Momentum", stat: "momentum", layer: "flat", base: 0, perLevel: 0.002, cap: 5 }, // +attack speed% por stack de kill (até momentumMaxStacks, momentumDuration s) — combat
       ],
     },
     cloak: {
@@ -481,6 +482,13 @@ G.data = {
     convGateGrowth:     1.30,   // P5.1: cada convergence sobe o requisito de nível → ~12 convergences até o cap
     convPointsBase:     400,    // P5.3: pontos = convPointsBase × (nível/convGateBase)^convPointsExp
     convPointsExp:      1.55,   // P5.3: α = ln1.5/ln1.3 → cada convergence no gate rende ~×1.5 a anterior
-    dmgReductionCap:      75,   // teto de damageReduction, siegeWard e da SOMA dos dois (combat.applyHitToHero)
+    dmgReductionCap:      75,   // teto de damageReduction, bulwark e da SOMA dos dois (combat.applyHitToHero)
+    // P9 §2.8 — caps de assinatura de gear / mecânicas de folha (Mapa 1 = degustação).
+    bulwarkHpThreshold:   35,   // % do HP máx abaixo do qual o Bulwark (armor) ativa a redução extra
+    overcritCritCeil:    100,   // crit acima deste valor vira chance de golpe duplo (Overcrit, gloves)
+    momentumMaxStacks:     3,   // stacks de Momentum (boots) — cada kill +1, teto Mapa 1
+    momentumDuration:      6,   // segundos até o timer de Momentum zerar os stacks
+    goldenWakeCap:        10,   // teto de chance de Lumens em dobro por kill (folha Golden Wake)
+    executionerCap:        8,   // teto do limiar de execução (% do HP máx) da folha Executioner's Light
   },
 };

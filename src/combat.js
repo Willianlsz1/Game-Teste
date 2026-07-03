@@ -20,6 +20,9 @@ G.combat = {
   _okhraManifest:   false, // P8.4: Okhra (mapBoss) manifestou nesta visita à área 18? (persiste até a morte dele → sem loop de re-grind)
   _tideTimer:       0,    // P8.4: acumulador da mecânica The Tide Rises
   _tideRisen:       false, // P8.4: a maré já subiu ao menos 1× nesta luta? (log temático só na 1ª)
+  _momentumStacks:  0,    // P9: stacks de Momentum (boots) — cada kill +1 até momentumMaxStacks
+  _momentumTimer:   0,    // P9: segundos restantes antes de zerar os stacks de Momentum
+  _cleaving:        false, // P9: guarda anti-recursão do Cleave (1 salto só — a cadeia não re-propaga)
 
   // tracker de taxas (Gold/Min, XP/Min) — janela rolante
   _clock:      0,
@@ -102,7 +105,11 @@ G.combat = {
     // dano esperado por golpe: atk com expectativa de crit. crit é % (0-100), critMult é fração (=1+critDmg/100).
     const s = G.state.stats();
     const critChance = G.util.clamp(s.crit, 0, 100) / 100;
-    const dmgPerHit  = s.atk * (1 + critChance * (s.critMult - 1));
+    let dmgPerHit  = s.atk * (1 + critChance * (s.critMult - 1));
+    // Overcrit (gloves): crit acima de 100% vira chance de golpe duplo, mesma fórmula de playerHit.
+    // Cleave/Golden Wake/Momentum ficam FORA da projeção (dinâmicos demais) — isto é um PISO, não a média real.
+    const doubleChance = G.util.clamp(Math.max((s.critRaw || 0) - 100, 0), 0, s.overcrit || 0) / 100;
+    dmgPerHit *= (1 + doubleChance);
     const interval   = G.state.attackInterval();
 
     // Rarity Find (P8.1): mesma ordem de roll do _buildOne — rarityTiers do mais raro pro mais
@@ -266,6 +273,7 @@ G.combat = {
       this._lastAreaIndex = d.areaIndex;
       this._bossKills = 0;
       this._tideTimer = 0; this._tideRisen = false;
+      this._momentumStacks = 0; this._momentumTimer = 0;   // P9: Momentum não atravessa troca de área
       if (this._okhraManifest) { this._okhraManifest = false; if (G.ui && G.ui.setOkhraStage) G.ui.setOkhraStage(false); }
     }
 
@@ -333,6 +341,15 @@ G.combat = {
     if (G.ui && G.ui.renderEnemy) G.ui.renderEnemy();
   },
 
+  // P9: intervalo de ataque do jogador com o embalo do Momentum (boots).
+  // Dinâmico por kill (fora do stats()/cache): base / (1 + stacks × momentum%/100).
+  playerInterval() {
+    const base = G.state.attackInterval();
+    const per  = G.state.stats().momentum || 0;
+    if (this._momentumStacks <= 0 || per <= 0) return base;
+    return base / (1 + this._momentumStacks * per / 100);
+  },
+
   // ataque do Seeker → primeiro inimigo VIVO
   playerHit() {
     const target = this.enemies.find(e => !e.dead);
@@ -341,6 +358,12 @@ G.combat = {
     const s    = G.state.stats();
     const crit = G.util.chance(s.crit / 100);
     let raw    = s.atk * (crit ? s.critMult : 1);
+    // Overcrit (gloves): crit acima de 100% vira chance de GOLPE DUPLO (teto = s.overcrit).
+    // O crit do golpe em si continua clampado a 100 (s.crit); aqui só o excedente vira duplo.
+    if (s.overcrit > 0) {
+      const doubleChance = G.util.clamp((s.critRaw || 0) - 100, 0, s.overcrit);
+      if (doubleChance > 0 && G.util.chance(doubleChance / 100)) raw *= 2;
+    }
     // specialDmg: rares & bosses (gear + passiva, já somados em s.specialDmg)
     if (target.isBoss || target.rarity)
       raw *= 1 + (s.specialDmg || 0) / 100;
@@ -384,8 +407,11 @@ G.combat = {
     this.pendingHits = still;
   },
 
-  applyHitToEnemy(dmg, crit) {
-    const target = this.enemies.find(e => !e.dead);
+  // caminho de dano ÚNICO contra um inimigo (lightshell + executioner). Usado pelo golpe
+  // normal do jogador (front) e pelo spillover do Cleave (alvo explícito, sem projétil/floater
+  // de "hit" do jogador) — ver applyHitToEnemy e o bloco de Cleave em onKill.
+  _dealDamage(target, dmg, opts) {
+    opts = opts || {};
     if (!target) return;
     // Lightshell (P8.2): absorve os primeiros N golpes — 0 dano até o escudo quebrar.
     if (target.lightshell > 0) {
@@ -396,17 +422,32 @@ G.combat = {
       if (G.ui && G.ui.renderEnemy) G.ui.renderEnemy();
       return;
     }
-    if (G.ui && G.ui.floater) G.ui.floater(dmg, crit ? "crit" : "hit", this.enemies.indexOf(target));
+    if (opts.floater !== false && G.ui && G.ui.floater)
+      G.ui.floater(dmg, opts.floaterType || "hit", this.enemies.indexOf(target));
     target.hp -= dmg;
+    // Executioner's Light (folha): inimigo NÃO-boss que fique abaixo de exec% do HP máx após
+    // o golpe MORRE na hora (morte normal, com recompensas). Bosses e Okhra (Marcos) excluídos.
+    if (target.hp > 0 && !target.isBoss && !target.isMapBoss && G.passives) {
+      let exec = G.passives.effect("executioner") || 0;
+      exec = G.util.clamp(exec, 0, G.data.balance.executionerCap);
+      if (exec > 0 && target.hp < target.maxHp * exec / 100) target.hp = 0;
+    }
     if (target.hp <= 0) this.onKill();
     else if (G.ui && G.ui.renderEnemy) G.ui.renderEnemy();
   },
 
+  applyHitToEnemy(dmg, crit) {
+    const target = this.enemies.find(e => !e.dead);
+    if (!target) return;
+    this._dealDamage(target, dmg, { floaterType: crit ? "crit" : "hit" });
+  },
+
   applyHitToHero(dmg, source) {
     const s = G.state.stats();
-    // siegeWard (armor despertar): redução extra só quando há 2+ inimigos vivos na onda; clamp total = dmgReductionCap
+    // Bulwark (armor assinatura): redução EXTRA só quando o HP atual está abaixo de bulwarkHpThreshold% do máx.
+    // A SOMA (damageReduction + bulwark) continua clampada em dmgReductionCap.
     let dr = s.damageReduction || 0;
-    if (s.siegeWard && this.enemies.filter(e => !e.dead).length >= 2) dr += s.siegeWard;
+    if (s.bulwark && G.state.data.hp < G.state.maxHp() * G.data.balance.bulwarkHpThreshold / 100) dr += s.bulwark;
     dr = G.util.clamp(dr, 0, G.data.balance.dmgReductionCap);
     const reduced = Math.max(1, Math.ceil(dmg * (1 - dr / 100)));
     if (G.ui && G.ui.floater) G.ui.floater(reduced, "enemy");
@@ -425,6 +466,7 @@ G.combat = {
   onDeath() {
     G.state.data.hp = G.state.maxHp();
     this._bossKills = 0;   // morreu → perde o progresso rumo ao Boss de Área
+    this._momentumStacks = 0; this._momentumTimer = 0;   // P9: morte zera o embalo do Momentum
     if (G.ui && G.ui.log) G.ui.log("☠ The Seeker fell, recovered and returned.", "bad");
     this.pendingHits = [];
     this.enemies = [];
@@ -437,15 +479,24 @@ G.combat = {
     const e = this.enemies.find(e => !e.dead);
     if (!e) return;
     const s = G.state.stats();
-    const lumens = Math.ceil(e.lumens * (1 + s.lumensBonus / 100));
+    // overkill do golpe fatal: e.hp está negativo aqui (ainda não zerado). Fonte comum de
+    // Overkill Echo (Lumens) e Cleave (dano transferido) — capturado antes de qualquer zeragem.
+    const overkill = Math.max(0, -e.hp);
+
+    let lumens = Math.ceil(e.lumens * (1 + s.lumensBonus / 100));
     const xp     = Math.round(e.xp    * (1 + s.xpBonus    / 100));
 
-    // Overkill Echo (passiva): dano excedente ALÉM da morte vira Lumens extra.
-    // e.hp já está negativo aqui (o golpe fatal ainda não foi zerado). Cap = lumens base do mob.
+    // Golden Wake (folha): chance por kill de Lumens EM DOBRO (clamp goldenWakeCap por segurança).
+    if (G.passives) {
+      let gw = G.passives.effect("goldenWake") || 0;
+      gw = G.util.clamp(gw, 0, G.data.balance.goldenWakeCap);
+      if (gw > 0 && G.util.chance(gw / 100)) lumens *= 2;
+    }
+
+    // Overkill Echo (passiva): dano excedente ALÉM da morte vira Lumens extra. Cap = lumens base do mob.
     let overkillLumens = 0;
     const echo = G.passives ? (G.passives.effect("overkillEcho") || 0) : 0;
     if (echo > 0) {
-      const overkill = Math.max(0, -e.hp);
       overkillLumens = Math.min(Math.ceil(overkill * G.data.balance.goldRatio * (echo / 100)), e.lumens);
     }
 
@@ -455,6 +506,11 @@ G.combat = {
     if (G.ui) this._gains.push({ t: this._clock, lumens: lumens + overkillLumens, xp });
     d.totalKills = (d.totalKills || 0) + 1;
     d.runKills   = (d.runKills  || 0) + 1;
+    // Momentum (boots): cada kill +1 stack (teto momentumMaxStacks) e reseta o timer.
+    if (s.momentum > 0) {
+      this._momentumStacks = Math.min(G.data.balance.momentumMaxStacks, this._momentumStacks + 1);
+      this._momentumTimer  = G.data.balance.momentumDuration;
+    }
     if (!e.isBoss) this._bossKills++;   // progresso rumo ao Boss de Área (mortes de boss não contam)
     if ((d.runMaxAreaIndex || 0) < d.areaIndex) d.runMaxAreaIndex = d.areaIndex;
 
@@ -472,6 +528,22 @@ G.combat = {
     // marca como morto (permanece visível mas greyed-out até a onda limpar)
     e.dead = true;
     e.hp   = 0;
+
+    // Cleave (weapon assinatura): o overkill do golpe fatal atinge o próximo inimigo VIVO,
+    // roteado pelo MESMO caminho de dano do golpe normal (_dealDamage) — respeita Lightshell
+    // (consome carga, 0 dano) e Executioner (vale pra qualquer dano em não-boss). 1 salto só
+    // (Mapa 1): _cleaving impede que uma morte em cadeia re-propague outro cleave.
+    if (!this._cleaving && s.cleave > 0 && overkill > 0) {
+      const next = this.enemies.find(x => !x.dead);
+      if (next && !next.isBoss && !next.isMapBoss) {
+        const spill = Math.ceil(overkill * s.cleave / 100);
+        if (spill > 0) {
+          this._cleaving = true;
+          try { this._dealDamage(next, spill, { floaterType: "hit" }); } finally { this._cleaving = false; }
+        }
+      }
+    }
+
     this.enemy = this.enemies.find(e => !e.dead) || null;
 
     const anyAlive = this.enemies.some(e => !e.dead);
@@ -610,9 +682,15 @@ G.combat = {
       }
     }
 
+    // P9: Momentum (boots) — os stacks acumulados por kill expiram quando o timer zera.
+    if (this._momentumStacks > 0) {
+      this._momentumTimer -= dt;
+      if (this._momentumTimer <= 0) { this._momentumStacks = 0; this._momentumTimer = 0; }
+    }
+
     // player attacks first living enemy
     this.atkTimer += dt;
-    const interval = G.state.attackInterval();
+    const interval = this.playerInterval();
     while (this.atkTimer >= interval) {
       this.atkTimer -= interval;
       this.playerHit();

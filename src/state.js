@@ -99,12 +99,10 @@ G.state = {
       add("hp",  "pct",  passEff.hpPct    || 0, "Passives");
       add("crit", "flat", passEff.critRate || 0, "Passives");
       add("critDmg", "flat", passEff.critDmg || 0, "Passives");
-      add("atkSpeed", "flat", passEff.atkSpeed || 0, "Passives");
       add("damageReduction", "flat", passEff.damageReduction || 0, "Passives");
       add("lightbane", "flat", passEff.lightbane || 0, "Passives");
       add("healOnKill", "flat", passEff.healOnKill || 0, "Passives");
       add("hpRegen", "flat", passEff.hpRegen || 0, "Passives");
-      add("lumensBonus", "flat", passEff.lumensPct || 0, "Passives");
       add("xpBonus", "flat", passEff.xpPct || 0, "Passives");
       // coroa "The Ring Closes": bônus multiplicativo pequeno em ATK, HP, Lumens e XP
       const crown = 1 + (passEff.ringCloses || 0) / 100;
@@ -126,6 +124,7 @@ G.state = {
       atk:              Math.round(fin("atk")),
       hp:               Math.round(fin("hp")),
       crit:             G.util.clamp(fin("crit"), 0, 100),
+      critRaw:          Math.max(0, fin("crit")),   // crit sem teto — o excesso acima de 100 vira golpe duplo (Overcrit)
       critDmg:          fin("critDmg"),
       critMult:         1 + fin("critDmg") / 100,
       atkSpeed:         G.util.softCap(fin("atkSpeed"), this.currentAtkSpeedSoft(), this.currentAtkSpeedCap()),
@@ -133,8 +132,11 @@ G.state = {
       lumensBonus:      fin("lumensBonus"),
       damageReduction:  G.util.clamp(fin("damageReduction"), 0, G.data.balance.dmgReductionCap),  // gear (Steadfast Guard) + passiva (Hardened Light)
       lightbane:        fin("lightbane"),             // passiva (Lightbane): +% dano vs acesos
-      specialDmg:       fin("specialDmg"),            // gear (Marked Blade): vs rares & bosses
-      siegeWard:        G.util.clamp(fin("siegeWard"), 0, G.data.balance.dmgReductionCap),  // dmgRed extra — combat aplica só com 2+ vivos
+      specialDmg:       fin("specialDmg"),            // sem fonte no Mapa 1 (afixo removido); chave viva p/ o Mapa 2
+      cleave:           G.util.clamp(fin("cleave"), 0, 25),        // gear (Riven Edge): % do overkill transferido ao próximo vivo
+      bulwark:          G.util.clamp(fin("bulwark"), 0, G.data.balance.dmgReductionCap),  // gear (Last Vessel): dmgRed extra abaixo de 35% HP
+      overcrit:         G.util.clamp(fin("overcrit"), 0, 30),      // gear (Fracture Sense): teto de chance de golpe duplo (crit acima de 100)
+      momentum:         Math.max(0, fin("momentum")),              // gear (Momentum): +atkSpeed% por stack de kill
       rarityFindLumen:  fin("rarityFindLumen"),       // % Lumen do gear (Second Sight)
       rarityFindEmber:  fin("rarityFindEmber"),       // % Ember do gear (Ember Trail)
       rarityFindCorona: fin("rarityFindCorona"),      // % Corona do gear (Corona Call)

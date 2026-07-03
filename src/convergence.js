@@ -63,7 +63,7 @@ G.convergence = {
     d.runKills = 0;
     d.runBosses = 0;
     d.runMaxAreaIndex = 0;
-    if (G.combat) G.combat._bossKills = 0;   // não carregar progresso de boss pro novo ciclo
+    if (G.combat) { G.combat._bossKills = 0; G.combat._momentumStacks = 0; G.combat._momentumTimer = 0; }   // não carregar progresso de boss/momentum pro novo ciclo
 
     G.state.invalidateStats();
     d.hp = G.state.maxHp();

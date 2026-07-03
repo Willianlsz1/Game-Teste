@@ -15,7 +15,10 @@ G.ui = {
     lumensBonus:      "Lumens Bonus",
     damageReduction:  "Damage Reduction",
     specialDmg:       "Rare and Boss Damage",
-    siegeWard:        "Damage Reduction (2+ enemies)",
+    cleave:           "Cleave (overkill to next)",
+    bulwark:          "Damage Reduction (below 35% HP)",
+    overcrit:         "Double Strike Chance",
+    momentum:         "Attack Speed per Kill",
     rarityFindEmber:  "Ember Light Chance",
     rarityFindLumen:  "Lumen Light Chance",
     rarityFindCorona: "Corona Light Chance",
@@ -223,6 +226,14 @@ G.ui = {
     const html = rows.map(([key, k]) =>
       `<li class="stat-row" data-stat="${key}"><span>${k}</span><b>${this.statValueText(key, s)}</b></li>`).join("");
 
+    // Assinaturas (P9): só aparecem se o jogador tiver a peça (valor > 0); sem stat-pop de
+    // breakdown (mesmo tratamento das linhas de Lights) — usa classe stat-row--light.
+    const sigKeys = ["cleave", "bulwark", "overcrit", "momentum"];
+    const sigHtml = sigKeys
+      .filter((key) => (s[key] || 0) > 0)
+      .map((key) => `<li class="stat-row--light"><span>${this.STAT_NAMES[key]}</span><b>${(s[key]).toFixed(1)}%</b></li>`)
+      .join("");
+
     const rf  = s.rarityFind  || { ember: 0, lumen: 0, corona: 0 };
     const cap = s.rarityCaps  || { ember: 0, lumen: 0, corona: 0 };
     const lightRow = (label, color, t) => {
@@ -236,7 +247,7 @@ G.ui = {
       lightRow("Lumen", "#4fa8ff", "lumen") +
       lightRow("Corona", "#9d7bff", "corona");
 
-    if (this.el["gear-stats"]) this.el["gear-stats"].innerHTML = html + lightsHtml;
+    if (this.el["gear-stats"]) this.el["gear-stats"].innerHTML = html + sigHtml + lightsHtml;
   },
 
   statValueText(key, s) {

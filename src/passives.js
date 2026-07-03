@@ -33,21 +33,22 @@ G.passives = {
     damageReduction: 1.25, // +% redução de dano por nível (fonte passiva NOVA)
     atkPct:           5,   // +% ATK por nível
     critRate:       2.5,   // +% chance de crítico por nível
-    lumensPct:       10,   // +% Lumens por nível
+    goldenWake:     1.0,   // P9 — +% chance de Lumens EM DOBRO por kill (folha 7; máx 10% = cap Mapa 1)
     xpPct:          7.5,   // +% XP por nível
     convPointsPct:    6,   // +% Pontos de Convergence por nível (Deep Memory)
     overkillEcho:    12,   // dano excedente do golpe fatal → Lumens extra (mecânica NOVA)
     critDmg:         18,   // +% dano crítico por nível
     lightbane:       10,   // +% dano vs acesos (rares & elites, não boss) — NOVO
-    atkSpeed:     0.037,   // +atkSpeed flat por nível (soft cap cuida do resto)
+    executioner:    0.8,   // P9 — inimigo não-boss abaixo de X% do HP máx morre (folha 13; máx 8% = cap Mapa 1)
     bossDmg:         12,   // +% dano vs Marcos (Harbinger's Bane) — chave existente
     ringCloses:      18,   // COROA — ×(1+18/100) em ATK, HP, Lumens e XP (aplicado 1×)
     _default: 0,
   },
 
   // efeitos LIVE (têm alvo no motor de stats). ringCloses é injetado à parte.
+  // goldenWake/executioner são mecânicas de COMBATE (combat.js), não camada de stat — fora daqui.
   LIVE: ["firstSpark", "hpPct", "damageReduction", "atkPct", "critRate",
-         "lumensPct", "xpPct", "critDmg", "lightbane", "atkSpeed",
+         "xpPct", "critDmg", "lightbane",
          "hpRegen", "healOnKill"],
 
   // ---- topologia: nodes[i] = { name, key, parent (índice, -1 = raiz), depth } ----
@@ -60,13 +61,13 @@ G.passives = {
     { name: "Hardened Light",   key: "damageReduction", parent: 1,  depth: 3 }, // 4  Provisão
     { name: "Whetted Light",    key: "atkPct",          parent: 2,  depth: 3 }, // 5  Caça
     { name: "Bare Instinct",    key: "critRate",        parent: 2,  depth: 3 }, // 6  Caça
-    { name: "Prospector's Eye", key: "lumensPct",       parent: 3,  depth: 4 }, // 7  folha
+    { name: "Golden Wake",      key: "goldenWake",      parent: 3,  depth: 4 }, // 7  folha (P9 — Lumens em dobro)
     { name: "Pilgrim's Wisdom", key: "xpPct",           parent: 3,  depth: 4 }, // 8  folha
     { name: "Deep Memory",      key: "convPointsPct",   parent: 4,  depth: 4 }, // 9  folha
     { name: "Overkill Echo",    key: "overkillEcho",    parent: 4,  depth: 4 }, // 10 folha
     { name: "Deepcrack",        key: "critDmg",         parent: 5,  depth: 4 }, // 11 folha
     { name: "Lightbane",        key: "lightbane",       parent: 5,  depth: 4 }, // 12 folha
-    { name: "Quickened Pulse",  key: "atkSpeed",        parent: 6,  depth: 4 }, // 13 folha
+    { name: "Executioner's Light", key: "executioner",  parent: 6,  depth: 4 }, // 13 folha (P9 — execute abaixo do limiar)
     { name: "Harbinger's Bane", key: "bossDmg",         parent: 6,  depth: 4 }, // 14 folha
   ],
   CROWN: { name: "The Ring Closes", key: "ringCloses" },
@@ -86,13 +87,13 @@ G.passives = {
     damageReduction: "Reduces the damage you take.",
     atkPct:          "Increases your ATK.",
     critRate:        "Increases your critical chance.",
-    lumensPct:       "Increases Lumens gained.",
+    goldenWake:      "Each kill has a chance to drop double Lumens.",
     xpPct:           "Increases XP gained.",
     convPointsPct:   "Increases Convergence Points earned.",
     overkillEcho:    "Damage spilled past a killing blow returns as extra Lumens.",
     critDmg:         "Increases your critical damage.",
     lightbane:       "Deals more damage to the kindled (rares & elites).",
-    atkSpeed:        "Increases your attack speed.",
+    executioner:     "Strikes fell any lesser enemy below a fraction of its health.",
     bossDmg:         "Increases damage dealt to Harbingers & Bosses.",
     ringCloses:      "The ring closes, a lasting boost to ATK, HP, Lumens and XP.",
   },
@@ -176,13 +177,13 @@ G.passives = {
       damageReduction: (v) => `+${v}% Damage Reduction`,
       atkPct:          (v) => `+${v}% ATK`,
       critRate:        (v) => `+${v}% Crit Rate`,
-      lumensPct:       (v) => `+${v}% Lumens`,
+      goldenWake:      (v) => `+${v}% double Lumens chance`,
       xpPct:           (v) => `+${v}% XP`,
       convPointsPct:   (v) => `+${v}% Convergence Points`,
       overkillEcho:    (v) => `+${v}% of overkill as Lumens`,
       critDmg:         (v) => `+${v}% Crit Damage`,
       lightbane:       (v) => `+${v}% vs kindled`,
-      atkSpeed:        (v) => `+${v} Attack Speed`,
+      executioner:     (v) => `execute below ${v}% HP`,
       bossDmg:         (v) => `+${v}% vs Harbingers`,
     };
     const fmt = FMT[key];
