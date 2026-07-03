@@ -4,6 +4,12 @@
 > Método: .pck baixado e extraído (136 fontes GDScript em texto + 7 JSONs de dados); dois agentes mineraram independentemente e os relatórios convergiram (verificação cruzada).
 > **Uso: REFERÊNCIA, nunca cópia.** Qualquer número do Éclats continua saindo do nosso `tools/sim.js`.
 > Citações arquivo:linha referem-se à árvore extraída (scratchpad da sessão; re-extraível a qualquer momento do .pck público).
+>
+> **ADENDO jul/03/2026 — build Steam (definitiva, Godot 4.4) minerada:** ver §11.
+> As FÓRMULAS abaixo (§2–§4, §7–§9) são da build HTML antiga e seguem sendo a
+> única fonte de fórmula exata — a build Steam criptografa os scripts (.gdc +
+> script encryption). Os DADOS da Steam (JSONs legíveis + saves reais do dono)
+> confirmam, corrigem ou expandem o que está marcado no §11.
 
 ---
 
@@ -78,6 +84,33 @@ Em TODOS os buckets, o expoente do HP inimigo é **~+0.5 acima** do expoente do 
 
 ---
 
+## 11. Build Steam definitiva (minerada jul/03/2026 — pck embutido no exe, Godot 4.4)
+
+Método: pck carveado do exe (trailer GDPC, 130MB, formato v2, mesmo
+`+file_base`), 842 arquivos extraídos. Scripts `.gdc` com script encryption
+(chave no binário do motor — fórmulas inacessíveis); 12 JSONs de dados 100%
+legíveis; saves `.bin` = FileAccessEncrypted/AES (indecifráveis sem a chave);
+**2 CSVs de stat export com a progressão REAL do dono** (jul e out/2025).
+
+**O que os dados confirmam/corrigem no doc antigo:**
+
+| Tema | Doc antigo (HTML) | Steam (dados + save real) |
+|---|---|---|
+| Equipment | 12 slots, 4 raridades implementadas | 12 slots idem; **6 raridades** (+ Legendary, Mythic) via sistema NOVO de crafting (receitas + crafter_level + materiais) |
+| Mundos | 3 × 15 = 45 locations, gates asc 0/10/15 | Os 3 confirmados IDÊNTICOS (nomes, bandas, gates); **+2 mundos** (Incursion; No Man's Domain com gate ascension 1100–1200) = 57 locations |
+| Prestige caps | Ascension máx 180 · Transcendence máx 5 | Caps eram da demo: o dono chegou a **7800 ascensions / 260 transcendences**. **A razão 30:1 CONFIRMADA EMPIRICAMENTE: 7800/260 = 30.0 exato** |
+| Escala de nível | — | Highest level real do dono: **3.08×10⁹** (número-espetáculo é o padrão do gênero em endgame) |
+
+**Progressão real do dono (stat exports):** jul→out/2025: ascension 1860→7800,
+transcendence 62→260, Apotheosis 3→36, level máximo 1.7×10⁸→3.1×10⁹. Três
+meses de jogo ativo multiplicaram o prestige ~4×.
+
+**Sistemas novos da definitiva (nenhum existia na HTML):** Apotheosis (4ª
+camada, paragon com 4 disciplines × ~13 skills); Crafting (é o caminho real
+de promoção Rare→Mythic); Incursion (endgame de 4 facções + World Tier ranks
+0–24); dano elemental (Fire/Water/Nature/Shadow ×dmg/res/pen); 8 "moon
+currencies"; quests; achievements-paragon; eventos sazonais.
+
 ## O que isso ensina pro Éclats (leitura minha, jul/03)
 
 1. **Nossa pilha de stats está certa** — camadas BASE/(1+%)/mult idênticas às do gênero.
@@ -88,3 +121,19 @@ Em TODOS os buckets, o expoente do HP inimigo é **~+0.5 acima** do expoente do 
 6. **Sorte como stat progressível com CAP** (Elite ≤20%, Champion ≤10%) — bom modelo pro nosso eliteChance da Fracture.
 7. **Duas camadas de prestige com razão ~30:1** (30 ascensions → 1 transcendence) — régua útil quando o Mémoires/pós-Convergence for desenhado (registrado, não desenhar agora).
 8. **Offline deles é pior que o nosso** — manter nossa simulação real como diferencial.
+
+**Lições novas da build Steam (jul/03):**
+
+9. **A razão 30:1 do prestige de duas camadas sobrevive do tutorial ao endgame
+   extremo** (260 transcendences reais) — quando o Mémoires/pós-Convergence
+   for desenhado, essa régua tem validação empírica, não só teórica.
+10. **A escada de raridade cresce por SISTEMA, não por número**: Legendary e
+    Mythic chegaram via crafting (receitas+materiais), não via extensão da
+    curva. Rima com o nosso plano: Uncommon terminal no Mapa 1, Rare volta no
+    Mapa 2 COM a Forge — o sistema novo É o conteúdo novo.
+11. **Endgame = camadas empilhadas, cada uma com moeda própria** (Apotheosis,
+    Incursion, moon currencies) — referência direta pra quando Ascension/
+    Divinity saírem do gelo (fora de escopo agora; registrado).
+12. **Nosso espetáculo está calibrado certo**: highest level real de 3×10⁹ no
+    Gaiadon endgame vs nosso topo de HP 6.5×10¹¹ no Mapa 1 — estamos na
+    ordem de grandeza do gênero sem exagero.
