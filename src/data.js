@@ -318,77 +318,71 @@ G.data = {
       ],
       boss: { name: "The Drowned Bell", sprite: "🔔", hpMult: 3.60, dmgMult: 2.0, signature: ["quickened"], img: "assets/enemies/drowned_bell.png" }, // P8.3 H4 = Quickened
     },
-    // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
-      id: 13, name: "The Sunken Port — Descent IV", theme: "port",
-      blurb: "Wharf after wharf sinks deeper, the pressure of the deep pressing the light thin.",
+      id: 13, name: "The Wreckfields", theme: "port",
+      blurb: "Ships that never finish sinking — hulls hang suspended in the blue, frozen mid-fall, chains stretched toward a surface they will never reach.",
       levelRange: [2295, 2717],
       hp: [60815702, 79060413],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
-        { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
-        { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
-        { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
+        { name: "Wrackwood Hulk",  sprite: "🚢", img: "assets/enemies/wrackwood_hulk.png"  },
+        { name: "Hollowed Diver",  sprite: "🤿", img: "assets/enemies/hollowed_diver.png"  },
+        { name: "The Pale Shoal",  sprite: "🐟", img: "assets/enemies/pale_shoal.png"      },
       ],
     },
-    // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
-      id: 14, name: "The Sunken Port — Descent V", theme: "port",
-      blurb: "The wreck-fields, where drowned hulls drift in a slow, luminous procession.",
+      id: 14, name: "The Drowned Shipyard", theme: "port",
+      blurb: "The shipyard the water finished: half-built hulls grown shut with coral, and stairways of current standing where stairs should be.",
       levelRange: [2718, 3203],
       hp: [40622208, 52808871],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
-        { name: "Husklight Murmur",   sprite: "🌳", img: "assets/enemies/husklight_murmur.png"   },
-        { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
-        { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
+        { name: "Coralbone Creeper", sprite: "🦀", img: "assets/enemies/coralbone_creeper.png" },
+        { name: "Wrackwood Hulk",    sprite: "🚢", img: "assets/enemies/wrackwood_hulk.png"    },
+        { name: "Mooring Strangler", sprite: "⚓", img: "assets/enemies/mooring_strangler.png" },
       ],
     },
-    // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
-      id: 15, name: "The Sunken Port — Descent VI", theme: "port",
-      blurb: "A graveyard of ships fused into a single hollow fleet, crewed by the light of the lost.",
+      id: 15, name: "The Hollow Armada", theme: "port",
+      blurb: "A fleet fused into a single body — masts like ribs, torn sails like membranes, deck-lights burning with no crew to tend them.",
       levelRange: [3204, 3762],
       hp: [61252164, 79627813],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
-        { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
-        { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
-        { name: "Husklight Murmur",   sprite: "🌳", img: "assets/enemies/husklight_murmur.png"   },
+        { name: "Depthlight Lure", sprite: "🪼", img: "assets/enemies/depthlight_lure.png" },
+        { name: "Wrackwood Hulk",  sprite: "🚢", img: "assets/enemies/wrackwood_hulk.png"  },
+        { name: "Hollowed Diver",  sprite: "🤿", img: "assets/enemies/hollowed_diver.png"  },
       ],
       boss: { name: "The Hollow Fleet", sprite: "🚢", hpMult: 3.65, dmgMult: 2.0, signature: ["lightshell", "quickened"] }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar. P8.3 H5 = par Lightshell+Quickened (burst→velocidade; sem stacking de dano recebido)
     },
-    // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
-      id: 16, name: "The Sunken Port — Descent VII", theme: "port",
-      blurb: "The abyssal shelf, where the last daylight dies and the deep begins to hunger.",
+      id: 16, name: "The Abyssal Shelf", theme: "port",
+      blurb: "The edge of the abyss, where the surface is a distant dead sky — and something far too large passes below, slowly.",
       levelRange: [3763, 4405],
       hp: [97487369, 126733580],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
-        { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
-        { name: "Husklight Murmur",   sprite: "🌳", img: "assets/enemies/husklight_murmur.png"   },
-        { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
+        { name: "Siltveil Shade",    sprite: "🧜", img: "assets/enemies/siltveil_shade.png"    },
+        { name: "Depthlight Lure",   sprite: "🪼", img: "assets/enemies/depthlight_lure.png"   },
+        { name: "Coralbone Creeper", sprite: "🦀", img: "assets/enemies/coralbone_creeper.png" },
       ],
     },
-    // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
-      id: 17, name: "The Sunken Port — Descent VIII", theme: "port",
-      blurb: "The trench mouth, where the water itself glows with a slow, starving pulse.",
+      id: 17, name: "The Starving Trench", theme: "port",
+      blurb: "The trench glows with a slow, starving pulse, and everything — wreckage, chains, light — leans toward the mouth.",
       levelRange: [4406, 5144],
       hp: [75582580, 98257354],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
-        { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
-        { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
-        { name: "Husklight Murmur",   sprite: "🌳", img: "assets/enemies/husklight_murmur.png"   },
+        { name: "Tidespawn Husk",  sprite: "🌀", img: "assets/enemies/tidespawn_husk.png"  },
+        { name: "Siltveil Shade",  sprite: "🧜", img: "assets/enemies/siltveil_shade.png"  },
+        { name: "Depthlight Lure", sprite: "🪼", img: "assets/enemies/depthlight_lure.png" },
       ],
     },
-    // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
-      id: 18, name: "The Sunken Port — Descent IX", theme: "port",
-      blurb: "The bottom of the world, where the Starving Tide coils around the last of the light.",
+      id: 18, name: "The Tide's Maw", theme: "port",
+      blurb: "The throat of the tide: a black maw ringed by broken gold filigree, where the swallowed cargo still orbits the dark.",
       levelRange: [5145, 6000],
       hp: [101473110, 202946219],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
-        { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
-        { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
-        { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
+        { name: "Tidespawn Husk",    sprite: "🌀", img: "assets/enemies/tidespawn_husk.png"    },
+        { name: "Siltveil Shade",    sprite: "🧜", img: "assets/enemies/siltveil_shade.png"    },
+        { name: "Coralbone Creeper", sprite: "🦀", img: "assets/enemies/coralbone_creeper.png" },
       ],
       // P8.4 — o finale encenado (dois estágios): H6 (Harbinger, ungated) → Okhra (mapBoss, gated pelo First Light).
       // Matar H6 pela 1ª vez fecha os Marcos 6/6. Okhra manifesta após o H6 SÓ com First Light desperto.
