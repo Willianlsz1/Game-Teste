@@ -80,6 +80,29 @@ Project slash commands (`.claude/commands/`):
 
 ---
 
+## Regra 10-80-10 (modo de trabalho travado pelo dono)
+
+O modelo de ponta (Fable) **NUNCA implementa, testa, roda ou itera código** —
+isso inclui código do jogo, harness de simulação, scripts de fit, batches de
+dados e loops empíricos. Divisão obrigatória:
+
+- **10% Fable** — planejamento, decisão de design, lore/docs/prompts de arte,
+  e o PLANO de qualquer tarefa de código (arquivos, mudanças, dials, alvos,
+  critérios de aceite executáveis).
+- **80% Opus/Sonnet via Agent tool** (NUNCA Haiku) — implementação, testes,
+  execução de sims/candidatos, primeira revisão. Roteamento: spec clara/
+  mecânica → Sonnet · ambíguo/combate/estado/fitting iterativo → Opus ·
+  review adversarial padrão → Sonnet · diff em balance travado → Opus.
+- **10% Fable** — revisão final dos diffs e dos números medidos, validação
+  in-game, commit.
+
+Fable escolhe o modelo (decisão de planejamento) e tem permissão permanente de
+escalar Sonnet→Opus sem perguntar quando o output não bate a régua. Agente que
+devolve "estou aguardando" em vez de trabalho: matar e relançar UMA vez com
+regra dura ("não delegue; o relatório É a mensagem final").
+
+---
+
 ## Architecture Rules
 
 **The G object is the entire module system.** All modules live on `G`. Script load order in `index.html` is the dependency order — do not reorder.
