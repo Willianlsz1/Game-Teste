@@ -9,6 +9,12 @@
 2. **Primeira mensagem do chat = o BLOCO DE ESTILO (abaixo) + a primeira criatura.** Quando sair uma imagem que você ame, diga "use esta imagem como referência de estilo para as próximas" — âncora de consistência nº 2.
 3. **Uma criatura por geração.** Nunca peça duas na mesma imagem.
 4. **Sempre peça fundo transparente** para sprites (o ChatGPT gera PNG transparente se pedir). Backgrounds não (são a cena inteira).
+   ⚠️ Lições do Lote 1 (jul/2026), acrescentar ao prompt de TODO sprite:
+   *"REAL transparent background (alpha PNG). The creature must be FULLY OPAQUE with a
+   closed, complete silhouette — dark parts must have a drawn edge, never fading into
+   the background. Clean image: no floating butterflies, sparkles or scattered dust."*
+   (Se vier fundo preto com a criatura desbotando pro preto, o meio do corpo fica
+   irrecuperável no recorte — regenerar, não recortar.)
 5. Gerou → **teste no jogo** (troca o PNG em `assets/`, F5). Arte só é aprovada em cima do background real.
 6. Referências do Pinterest: anexe 1–2 no chat com a linha "o que eu quero desta imagem é ___" (a pose, a luz, a textura — nunca "faça igual").
 
