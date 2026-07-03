@@ -69,12 +69,29 @@ gap ≈ 0.45–0.55 (FIXO — a parede é estrutural, não calibração)
 | Trash pós-Convergence (volta ao início) | 1 hit — o momento "eu sou um deus" que hoje não existe |
 | Harbinger na banda | 45–90s de luta |
 
-### 2.4 Gear: promoção dramática
+### 2.4 Gear: promoção dramática + afixos de assinatura
 
 - Common→Uncommon: salto de **×6–10** no stat (front-load à la Gaiadon §5),
   per-level continua o grind entre saltos.
 - Per-level re-escalado pra acompanhar a família de inimigos (gear ≈
   multiplicador dominante early-mid).
+
+**Afixos por peça (design P9, dono pediu "quais bônus criar" jul/03):** os
+afixos base ficam (números re-escalados); o afixo Uncommon vira a ASSINATURA
+da peça — promoção entrega ×6–10 de stat E uma mecânica visível:
+
+| Peça | Base (mantém, re-escala) | Assinatura Uncommon (P9) |
+|---|---|---|
+| Weapon | ATK flat, ATK% | **Riven Edge (Cleave)** — o dano excedente do golpe fatal atinge o próximo inimigo (X% do overkill). Ondas derretem em cadeia |
+| Helmet | XP Bonus, Damage Reduction | **Second Sight** (mantém: Lumen Light Chance em degraus) |
+| Armor | HP flat, HP% | **Last Vessel (Bulwark)** — abaixo de 35% do HP, a redução de dano dobra. Substitui o siegeWard (invisível na prática) |
+| Gloves | Crit Chance, Crit Damage | **Overcrit** — crit acima de 100% vira chance de GOLPE DUPLO (lição Gaiadon §3, crit vira multiataque) |
+| Boots | Attack Speed, Ember Light Chance | **Momentum** — cada kill dá +X% attack speed por 6s, acumulando até Y stacks. A "aceleração" sentida em combate |
+| Cloak | Lumens flat, Lumens% | **Corona Call** (mantém: Corona Light Chance em degraus) |
+
+Removido: `specialDmg` da arma (nicho já coberto por Lightbane + Harbinger's
+Bane na árvore). Novas mecânicas (Cleave/Bulwark/Overcrit/Momentum) entram no
+combat.js no batch do P9.3 — pequenas, todas no tick/onKill existentes.
 
 ### 2.5 Player: escala inflada dos dois lados
 
@@ -82,13 +99,37 @@ ATK/HP do player (base+nível) re-escalados pra ordem de grandeza que
 acompanhe a família (fim do mapa: ATK efetivo ~10⁸–10⁹ com gear+conv+awaken).
 Número grande em AMBOS os lados = espetáculo sem quebrar TTK.
 
-### 2.6 Passivas: desenhar de verdade (P9.4, sub-trilha)
+### 2.6 Passivas: Árvore I com folhas mecânicas (P9.4)
 
-- Éclat/Vestige/Fracture ganham valores reais, com nós que SE SENTEM
-  (ex.: +20–30% num nó, breakpoints, não +1% homeopático).
-- eliteChance da Fracture segue o modelo Gaiadon §8: sorte como stat
-  progressível com CAP explícito.
-- Ordem: depois de 2.2/2.3 travados (passivas dependem da escala nova).
+CORREÇÃO de premissa: as 3 árvores (Éclat/Vestige/Fracture) morreram no P6 —
+existe a Árvore I (binária 1/2/4/8 + coroa, passives.js). A TOPOLOGIA fica.
+O problema diagnosticado: tronco e folhas são TODOS "+X% silencioso" com
+magnitudes homeopáticas — nada se sente. Redesign P9:
+
+**Tronco (D1–D3) = fundações, magnitudes socadas** (mantém as chaves):
+First Spark (ATK+HP), Regeneration | Heal on Kill (identidade de sustain),
+HP% / Damage Reduction | ATK% / Crit. Re-escala: um nível de nó precisa ser
+percebido no TTK/TTD (alvo: nó maxado ≈ +50–80% no seu eixo, não +25%).
+
+**Folhas (D4) = mecânicas com cara** (3 trocas, 5 ficam):
+
+| Folha | Efeito P9 | Status |
+|---|---|---|
+| Golden Wake (era Prospector's Eye) | X% de chance de Lumens EM DOBRO por kill (o "cling" da moeda dupla) | TROCA — lumens% flat vira aposta visível |
+| Pilgrim's Wisdom | +XP% (re-escalado, punchy) | fica |
+| Deep Memory | +Convergence Points% | fica |
+| Overkill Echo | overkill do golpe fatal vira Lumens extra | fica (já é mecânica boa), buff |
+| Deepcrack | +Crit Damage (re-escalado) | fica |
+| Lightbane | +dano vs acesos (Ember/Lumen/Corona) | fica — casa com Rarity Find |
+| Executioner's Light (era Quickened Pulse) | inimigo abaixo de X% do HP máx MORRE na hora (X sobe por nível, cap ~20%) | TROCA — execute é o final feliz do TTK wave; atkSpeed flat já vive nas boots |
+| Harbinger's Bane | +dano vs Harbingers/Bosses | fica |
+
+**Coroa (The Ring Closes)**: fica, multiplicativa, re-escalada pra ser um
+EVENTO (~×1.3 em ATK/HP/Lumens/XP).
+
+Novas mecânicas de folha (Golden Wake, Execute) entram no combat.js junto com
+as de gear (P9.3/P9.4 são um batch só de mecânica + um de números).
+Magnitudes finais: TODAS saem do sim (protocolo §3), estas são formas, não números.
 
 ### 2.7 Mortes com intenção
 
