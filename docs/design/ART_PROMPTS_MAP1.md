@@ -55,6 +55,14 @@ sem detalhe único). Regras pra TODO prompt de criatura do Tema B daqui em diant
    (c) **1 detalhe-assinatura ornamentado** que o torna único (a lanterna, as boias
    de vidro, as moedas de latão...). Distribuir espuma/verdete/teal/madeira
    deliberadamente — nunca entregar um mob de uma cor só.
+4b. **Cores do Porto ≠ cores da Floresta (dono, jul/03, após mobs 4–5):** o Strangler
+   e o Diver saíram com marrons QUENTES dominantes (corda/couro) que leem como Tema A.
+   Daqui em diante: **teal profundo / verdete / espuma pálida DOMINAM a leitura** do
+   sprite; marrom só frio, dessaturado e coadjuvante; nada de âmbar/dourado-quente
+   exceto a luz roubada. E o cel-shaded ainda não pegou: se a geração vier painterly
+   (gradientes suaves, textura de pincel), **REJEITAR e regenerar** — não aprovar por
+   cansaço; testar o prompt de estilo como PRIMEIRA linha e pedir explicitamente
+   "flat cel shading like a modern animated game, hard-edged shadow shapes".
 4. **Régua Pinterest (dono, jul/03): cada mob tem que valer como imagem sozinho.**
    O prompt de cada criatura declara explicitamente: **silhueta-base própria**
    (vertical curvada / serpentina horizontal / radial / nó / massa assimétrica /
