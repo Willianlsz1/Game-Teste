@@ -292,28 +292,26 @@ G.data = {
         { name: "The Pale Shoal",    sprite: "🐟", img: "assets/enemies/pale_shoal.png"        },
       ],
     },
-    // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
-      id: 11, name: "The Sunken Port — Descent II", theme: "port",
-      blurb: "Flooded galleries of a harbour long lost, its lanterns still burning green beneath the tide.",
+      id: 11, name: "The Drowned Market", theme: "port",
+      blurb: "The market never closed — lanterns still burn beneath the tide, and pale shoals drift between the stalls like customers.",
       levelRange: [1607, 1926],
       hp: [7843392, 18875731],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
-        { name: "Husklight Murmur",   sprite: "🌳", img: "assets/enemies/husklight_murmur.png"   },
-        { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
-        { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
+        { name: "Lanternjaw Angler", sprite: "🏮", img: "assets/enemies/lanternjaw_angler.png" },
+        { name: "The Pale Shoal",    sprite: "🐟", img: "assets/enemies/pale_shoal.png"        },
+        { name: "Mooring Strangler", sprite: "⚓", img: "assets/enemies/mooring_strangler.png" },
       ],
     },
-    // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
-      id: 12, name: "The Sunken Port — Descent III", theme: "port",
-      blurb: "The drowned bell-tower, where a single toll still rolls out through the black water.",
+      id: 12, name: "The Sunken Belfry", theme: "port",
+      blurb: "The drowned bell-tower still tolls, and every toll moves the black water in slow, visible rings.",
       levelRange: [1927, 2294],
       hp: [31459552, 40897418],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
-        { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
-        { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
-        { name: "Husklight Murmur",   sprite: "🌳", img: "assets/enemies/husklight_murmur.png"   },
+        { name: "Mooring Strangler", sprite: "⚓", img: "assets/enemies/mooring_strangler.png" },
+        { name: "Saltmarrow Wader",  sprite: "🧂", img: "assets/enemies/saltmarrow_wader.png"  },
+        { name: "Hollowed Diver",    sprite: "🤿", img: "assets/enemies/hollowed_diver.png"    },
       ],
       boss: { name: "The Drowned Bell", sprite: "🔔", hpMult: 3.60, dmgMult: 2.0, signature: ["quickened"] }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar. P8.3 H4 = Quickened
     },
