@@ -312,6 +312,9 @@ G.combat = {
     // Lightshell (P8.2): absorve os primeiros N golpes — 0 dano até o escudo quebrar.
     if (target.lightshell > 0) {
       target.lightshell--;
+      if (G.ui && G.ui.floater) G.ui.floater(0, "shell", this.enemies.indexOf(target));
+      if (target.lightshell === 0 && G.ui && G.ui.log)
+        G.ui.log(`✦ The Lightshell shatters — ${target.name} can be wounded now.`, "good");
       if (G.ui && G.ui.renderEnemy) G.ui.renderEnemy();
       return;
     }
@@ -409,6 +412,8 @@ G.combat = {
   markBossCleared(e) {
     const d = G.state.data;
     d.runBosses = (d.runBosses || 0) + 1;
+    // boss caiu → re-grind parcial do threshold pra re-invocá-lo (mata o farm de boss em toda onda)
+    this._bossKills = Math.floor(this._bossThreshold() * (1 - (G.data.balance.bossRegrindFrac != null ? G.data.balance.bossRegrindFrac : 1)));
     const lastIdx    = G.data.areas.length - 1;
     const idx        = d.areaIndex;
     const isMapBoss  = !!(e && e.isMapBoss);   // Okhra (mapBoss) NÃO é Marco
@@ -443,7 +448,9 @@ G.combat = {
     } else {
       // H6 caiu na área 18 (P8.4): com First Light → Okhra manifesta (spawn no ciclo seguinte);
       // sem → portão. A invocação/spawn efetivo do Okhra acontece em spawn().
+      // _okhraManifest garante a manifestação IMEDIATA mesmo com o threshold re-zerado acima.
       const awake = !!(G.awaken && G.awaken.isDone("first_light"));
+      if (awake) { this._okhraManifest = true; this._tideTimer = 0; this._tideRisen = false; }
       if (G.ui && G.ui.log) {
         if (awake) G.ui.log("✦ The Tidebound Choir is silenced — and far below, the Starving Tide answers your light. Okhra rises.", "boss");
         else       G.ui.log("The tide stirs... but your light sleeps. Awaken the First Light.", "bad");

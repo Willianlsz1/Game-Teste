@@ -451,6 +451,7 @@ G.data = {
     respawnDelay:      0.5,     // respawn mais ágil → kills/min sem precisar de one-shot
     bossKillThresholdBase:     25,   // P2.5: threshold do Harbinger = base + perGroup×(grupo+1) → 30..55 kills sem morrer
     bossKillThresholdPerGroup: 5,    // P2.5: escalada por grupo. Morte zera o contador. Ver docs/design/ENEMY_POWER_PYRAMID.md
+    bossRegrindFrac:           0.2,  // fração do threshold a re-farmar pra RE-invocar o Harbinger após matá-lo (0 = respawn direto, 1 = re-grind cheio)
     gearCostBase:      2500,
     gearCostGrowth:    1.022,   // P2.2: freio principal — testado no sim
     promoteCommonCost:    50,   // common material (common → uncommon) — dimensionado no P3

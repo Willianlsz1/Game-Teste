@@ -187,6 +187,44 @@
 .enemy-card .floaters { position: absolute; inset: 0; z-index: 6; pointer-events: none; }
 .enemy-card .enemy-bar { width: 100%; }
 
+/* ---- identidade de Harbinger (boss) ---- */
+.harbinger-tag {
+  display: block; text-align: center;
+  font-family: "Outfit", sans-serif; font-style: normal;
+  font-size: 11px; font-weight: 800; letter-spacing: 5px; text-transform: uppercase;
+  color: var(--gold);
+  text-shadow: 0 0 10px rgba(232, 181, 74, 0.8), 0 1px 3px #000;
+  margin-bottom: 2px;
+}
+.enemy-name.boss-name {
+  color: var(--gold); font-size: 26px;
+  text-shadow:
+    -1.2px -1.2px 0 #1a0e02, 1.2px -1.2px 0 #1a0e02, -1.2px 1.2px 0 #1a0e02, 1.2px 1.2px 0 #1a0e02,
+    0 0 6px #000, 0 0 16px rgba(232, 181, 74, 0.85);
+}
+.enemy-card.enemy-active .enemy-name.boss-name {
+  text-shadow:
+    -1.2px -1.2px 0 #1a0e02, 1.2px -1.2px 0 #1a0e02, -1.2px 1.2px 0 #1a0e02, 1.2px 1.2px 0 #1a0e02,
+    0 0 6px #000, 0 0 18px rgba(232, 181, 74, 1);
+}
+.enemy-bar.boss-bar {
+  border: 1px solid rgba(232, 181, 74, 0.7);
+  box-shadow: 0 0 12px rgba(232, 181, 74, 0.35), inset 0 0 4px rgba(0, 0, 0, 0.6);
+}
+
+/* ---- Lightshell (escudo de luz — golpes absorvidos) ---- */
+.shell-badge {
+  display: block; text-align: center;
+  font-family: "Outfit", sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.5px;
+  color: #5ee0d2;
+  text-shadow: 0 0 8px rgba(94, 224, 210, 0.7), 0 1px 3px #000;
+}
+.enemy-figure.shelled .art-img {
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 22px rgba(94, 224, 210, 0.75));
+}
+.floater.shell { color: #5ee0d2; font-size: 15px; letter-spacing: 2px; font-family: "Outfit", sans-serif; }
+
 /* inimigo morto — ainda visível mas esmaecido até a onda limpar */
 /* mob morto: some de vez (invisível), mas o slot continua ocupando espaço → ninguém reposiciona */
 .enemy-card.enemy-dead { opacity: 0; pointer-events: none; }

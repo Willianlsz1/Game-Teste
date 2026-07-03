@@ -564,24 +564,28 @@ G.ui = {
     // renderiza a onda INTEIRA (mortos inclusos, greyed) → posições não mudam quando 1 morre,
     // e os índices enemy-art-{i} batem com os índices do combat (projéteis/floaters certos).
     const list = G.combat.enemies;
-    const sig  = list.map(e => e.name + (e.rarity ? e.rarity.tag : "") + (e.isBoss ? "B" : "")).join("|");
+    const sig  = list.map(e => e.name + (e.rarity ? e.rarity.tag : "") + (e.isBoss ? "B" : "") + (e.lightshell > 0 ? "S" : "")).join("|");
 
     if (this._enemySig !== sig) {
       this._enemySig = sig;
       container.className = `enemies-container pack-${Math.min(list.length, 3)}`;
       container.innerHTML = list.map((e, i) => {
-        const nameHtml  = e.rarity ? `${e.name} · ${e.rarity.tag}` : (e.name + (e.isBoss ? " 👑" : ""));
+        const bossTag   = e.isBoss ? `<span class="harbinger-tag">${e.isMapBoss ? "◆ NIHELIM ◆" : "⟡ HARBINGER ⟡"}</span>` : "";
+        const nameHtml  = e.rarity ? `${e.name} · ${e.rarity.tag}` : e.name;
         const nameColor = e.rarity ? ` style="color:${e.rarity.color}"` : "";
+        const shelled   = e.lightshell > 0;
         return `<div class="enemy-card${e.isBoss ? " boss" : ""}" data-idx="${i}">
-          <span class="enemy-name"${nameColor}>${nameHtml}</span>
-          <div class="enemy-figure${e.isBoss ? " boss" : ""}" id="enemy-art-${i}">
+          ${bossTag}
+          <span class="enemy-name${e.isBoss ? " boss-name" : ""}"${nameColor}>${nameHtml}</span>
+          <span class="shell-badge" id="shell-badge-${i}"${shelled ? "" : ` style="display:none"`}></span>
+          <div class="enemy-figure${e.isBoss ? " boss" : ""}${shelled ? " shelled" : ""}" id="enemy-art-${i}">
             <span class="art-ph">${e.sprite}</span>
             ${e.img ? `<img class="art-img" src="${e.img}" alt="" onerror="this.remove()" />` : ""}
             <div class="floaters" id="floaters-enemy-${i}"></div>
           </div>
           <div class="enemy-info">
             <span class="card-sub">Lv. <b>${e.level}</b> · ATK <b>${G.util.fmt(e.dmg)}</b></span>
-            <div class="bar enemy-bar">
+            <div class="bar enemy-bar${e.isBoss ? " boss-bar" : ""}">
               <div class="bar-fill enemy-fill" id="enemy-hp-fill-${i}"></div>
               <span class="bar-label" id="enemy-hp-label-${i}"></span>
             </div>
@@ -591,6 +595,7 @@ G.ui = {
       // cacheia os elementos de HP por índice — evita 2×N getElementById por tick de 100ms
       this._enemyFills   = list.map((e, i) => document.getElementById(`enemy-hp-fill-${i}`));
       this._enemyLabels  = list.map((e, i) => document.getElementById(`enemy-hp-label-${i}`));
+      this._shellBadges  = list.map((e, i) => document.getElementById(`shell-badge-${i}`));
       this._enemyHpShown = [];
     }
 
@@ -602,6 +607,8 @@ G.ui = {
         card.classList.toggle("enemy-dead", !!e.dead);
         card.classList.toggle("enemy-active", i === firstAlive);
       }
+      const badge = this._shellBadges && this._shellBadges[i];
+      if (badge && e.lightshell > 0) badge.textContent = `🛡 Lightshell ×${e.lightshell}`;
       if (this._enemyHpShown[i] === e.hp) return;
       this._enemyHpShown[i] = e.hp;
       const fill  = this._enemyFills[i];
@@ -618,7 +625,7 @@ G.ui = {
     if (!target) return;
     const f = document.createElement("span");
     f.className = "floater " + type;
-    f.textContent = (type === "enemy" ? "-" : "") + G.util.fmt(amount) + (type === "crit" ? "!" : "");
+    f.textContent = type === "shell" ? "ABSORBED" : (type === "enemy" ? "-" : "") + G.util.fmt(amount) + (type === "crit" ? "!" : "");
     f.style.left = G.util.randInt(20, 80) + "%";
     target.appendChild(f);
     setTimeout(() => f.remove(), 800);
