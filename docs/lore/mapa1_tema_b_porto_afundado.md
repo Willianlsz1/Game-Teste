@@ -95,6 +95,23 @@ Fluxo travado: **detalhe abaixo → Willian caça referências no Pinterest → 
 | 17 | Tidespawn Husk · Siltveil Shade · Depthlight Lure |
 | 18 | Tidespawn Husk · Siltveil Shade · Coralbone Creeper |
 
+### 4b. Mapa de variedade (adendo jul/03 — régua Pinterest do dono)
+
+Cada mob = silhueta-base própria + pose com atitude + esquema de cor próprio + 1 ideia forte. Nenhum prompt sai sem declarar as 4 colunas; nenhuma coluna repete a do mob anterior do lote.
+
+| Mob | Silhueta-base | Pose/atitude | Blocos de cor dominantes | Ideia forte |
+|---|---|---|---|---|
+| Saltmarrow Wader | vertical curvada, pesada | vergado sob a rede, passo fundido no chão | branco-osso · madeira úmida escura · verdete | as boias de vidro na rede (uma acesa) |
+| Lanternjaw Angler | serpentina horizontal | flutuando torto, boca entreaberta, caçando | teal profundo · marfim · bronze-verdete | a isca é uma lanterna roubada do porto |
+| The Pale Shoal | núcleo fino + leque radial | ereto, cardume abrindo em auréola atrás | casaco pálido · nuvem de peixes teal-escura · latão | o casaco vazio habitado pelo cardume |
+| Mooring Strangler | nó/chicote em movimento | meio-bote, cordas no ar, arrastando o cabrestante | marrom-corda encharcado · ferro verdete · teal nos nós | as amarras do cais que aprenderam a estrangular |
+| Hollowed Diver | vertical rígida, lenta | passo de fundo de mar, mangueira serpenteando como cauda | latão verdete · cobre escuro · luz teal no visor | o escafandro vazio — só água escura dentro |
+| Wrackwood Hulk | massa larga assimétrica | inclinado pra frente, ombro-proa avançando | madeira naufragada escura · cracas pálidas · verdete | a vigia escura no lugar da cabeça |
+| Coralbone Creeper | baixa e larga | andar de lado, pinça gigante erguida | branco-osso coral · sombras teal · anêmonas acesas | a pinça assimétrica incrustada de verdete |
+| Depthlight Lure | etérea flutuante | pairando parada, cortinas de tentáculos caindo | sino translúcido teal · lustre DOURADO dentro · sombra funda | a água-viva-catedral com lustre de luz roubada |
+| Siltveil Shade | esgarçada, meio-vista | inclinada, bordas se desfazendo em nuvem | lodo cinza-verde · sedimento escuro · um traço teal | só existe enquanto a água se move |
+| Tidespawn Husk | coluna espiral | girando, detritos orbitando | teal escuro da maré · detritos variados · fiapo dourado | um gomo da maré com filigrana do anel do Okhra |
+
 ---
 
 ## 5. Harbingers do Porto — H4 · H5 · H6

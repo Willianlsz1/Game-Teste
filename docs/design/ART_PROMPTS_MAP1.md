@@ -36,8 +36,34 @@ Format: single character, full body, centered, transparent background PNG.
 ## Paleta por tema (anexar ao bloco conforme o chat)
 
 - **Floresta (áreas 1–9):** `Palette: deep forest greens and umber shadows, warm amber/gold for the carried light, muted moss and bark tones. Accent: candle-flame orange.`
-- **Porto Afundado (áreas 10–18):** `Palette: drowned blue-greens and cold slate, pale teal for the carried light, waterlogged wood and verdigris bronze. Accent: deep violet in the shadows.`
+- **Porto Afundado (áreas 10–18)** *(travada jul/03 das refs do Okhra — `refs_okhra.jpg` + lore doc §1)*: `Palette: deep drowned teal (#175A57 to #0E3B3B) and storm-black marine shadow (#081418), pale grey-green foam (#AEBFBD), verdigris bronze (#4E8C7A) on digested metal, luminous teal (#41D9C5) for harbour lanterns. Gold (#E7B84C) ONLY for stolen light. NO red.`
 - **Tags de raridade (mobs acesos):** Ember = teal glow · Lumen = blue glow · Corona = violet glow (o glow da tag SOBREPÕE a luz normal da criatura).
+
+## ⚠️ Lições do Lote 4 — mobs do Porto (jul/03, feedback do dono)
+
+O trio v1 da área 10 saiu **pintura realista monocromática** (tudo cinza, sem cel-shading,
+sem detalhe único). Regras pra TODO prompt de criatura do Tema B daqui em diante:
+
+1. **Re-declarar o estilo em TODA geração** (não confiar na memória do chat):
+   *"Clean cel-shaded game art: crisp dark outlines, layered FLAT color blocks,
+   stained-glass shading — NOT painterly, NOT photorealistic, NO watercolor or
+   airbrush texture."*
+2. **Âncora de família = sprite aprovado do Tema A anexado** ("match the rendering
+   style of this attached sprite") — a paleta muda pro Porto, o RENDER não muda.
+3. **Sincronia de cor ≠ monocromia.** Cada mob recebe: (a) material dominante
+   próprio · (b) UM acento secundário próprio dentro da paleta do Porto ·
+   (c) **1 detalhe-assinatura ornamentado** que o torna único (a lanterna, as boias
+   de vidro, as moedas de latão...). Distribuir espuma/verdete/teal/madeira
+   deliberadamente — nunca entregar um mob de uma cor só.
+4. **Régua Pinterest (dono, jul/03): cada mob tem que valer como imagem sozinho.**
+   O prompt de cada criatura declara explicitamente: **silhueta-base própria**
+   (vertical curvada / serpentina horizontal / radial / nó / massa assimétrica /
+   baixa-larga / etérea / espiral...) + **pose com atitude** (nunca "parado de
+   frente") + **esquema de cor próprio** (2–3 blocos dominantes distintos do mob
+   anterior) + **1 ideia-conceito forte** que dá vontade de olhar de novo.
+   Anti-convergência: se a geração sair parecida com outro mob do lote, gerar em
+   chat novo sem o histórico. Mapa de variedade dos 10 mobs do Porto: ver
+   `docs/lore/mapa1_tema_b_porto_afundado.md §4b` (adendo jul/03).
 
 ## Templates por categoria
 
