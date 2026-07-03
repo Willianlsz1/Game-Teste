@@ -41,6 +41,7 @@ Backgrounds das áreas 1–3 · refazer os sprites dos 4 mobs iniciais (Candlewi
 
 ### Etapa 2 — Resto da Floresta (áreas 4–9)
 Sprites restantes do Tema A · H2 (Bramble King) e H3 (Gilded Hollow) · backgrounds 4–9 (os 9 existem — decidir o que refaz).
+**Gancho pro Porto (travado jul/2026):** os backgrounds 7–9 introduzem indícios do Tema B na borda da cena (sal, água parada subindo, verdete, madeira encharcada) — a descida se anuncia antes da virada.
 
 ### Etapa 3 — Porto Afundado: LORE ANTES DE ARTE ⚠️
 O bestiário do Tema B **não existe** (as áreas 10–18 reusam mobs da floresta como placeholder). Ordem obrigatória: importar o doc do Porto (pendência 6 do HANDOFF) → definir 4–6 mobs novos + nomes → SÓ ENTÃO: backgrounds 10–18, sprites novos, **H4/H5/H6** (hoje sem arte nenhuma).
@@ -49,7 +50,7 @@ O bestiário do Tema B **não existe** (as áreas 10–18 reusam mobs da florest
 **Okhra** (sprite grande, silhueta de maré faminta) · o palco da manifestação (a troca de background quando H6 o invoca — hoje é um tint; virar cenário próprio) · o visual da Maré subindo (a escolta chegando em ondas).
 
 ### Etapa 5 — Pele da UI (por último, é pele e não osso)
-HUD · os 5 modais · World Map com os 18 nós (Porto precisa de traçado) · painel Lights · banner de área · ícones que faltarem. Aqui entram também os renomes no código (Kindled/Luminous/Radiant → Ember/Lumen/Corona) e os copy fixes registrados.
+HUD · os 5 modais · **World Map em 2 atos (travado jul/2026): tela A = áreas 1–9 (Floresta), tela B = áreas 10–18 (Porto), com navegação entre elas** — o Porto precisa de traçado e arte de mapa própria · painel Lights · banner de área · ícones que faltarem. Aqui entram também os renomes no código (Kindled/Luminous/Radiant → Ember/Lumen/Corona) e os copy fixes registrados.
 
 ## Fluxo Pinterest → prompt (por asset)
 
@@ -62,6 +63,8 @@ HUD · os 5 modais · World Map com os 18 nós (Porto precisa de traçado) · pa
 1. **REBOOT TOTAL de arte** — com os Nihelim a temática do mapa mudou; todos os mobs ganham arte nova (⚠️ flag de lore: se além da ARTE o dono quiser trocar NOMES/roster do bestiário da floresta, é decisão de lore a travar antes dos prompts — os 10 nomes atuais são canon).
 2. **Pipeline: IA — ChatGPT imagens.** Kit de prompts em `ART_PROMPTS_MAP1.md` (bloco de estilo mestre + templates por categoria + fluxo de consistência).
 3. **Os 6 Harbingers reservados também são refeitos** (sem reaproveitamento). A decisão de lore "quais 3 viram titulares" segue aberta.
+4. **Identidade do Tema A travada (jul/2026):** "a floresta que roubou a Lua e dorme sonhando" — física de sonho, Lua enjaulada, céu sem-lua cinzento. Detalhe por área em `DECISOES_JUL26.md §4b`. **Ordem de produção travada: backgrounds antes de mobs** (arte se aprova sobre o fundo real; o fundo escuro é o que faz a luz roubada funcionar).
+5. **World Map em 2 atos (jul/2026):** ver Etapa 5 e `DECISOES_JUL26.md §4b`.
 
 ## Vantagem herdada da lore (não redescobrir)
 A **chave de arte já está travada** em `DECISOES_JUL26.md §8`: cel-shaded limpo + detalhe deliberado, blocos de cor "água de vitral", filigrana onde importa, detalhe = forma (NUNCA ruído), silhueta vertical fechada, fundo neutro, 1 ponto focal luminoso. **Okhra e Nihel já têm design aprovado em arte.** Marca de família dos Nihelim: o eco do anel quebrado. A Etapa 0 então se reduz a: paleta por tema (Floresta vs Porto) + o bloco de estilo mestre em inglês pros prompts.

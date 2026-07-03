@@ -59,11 +59,16 @@ Art style: clean cel-shaded game environment, layered flat color blocks,
 crisp shapes, no noise or grain. Wide 16:9 scene, NO characters.
 A dying world where ambient light is dim and ashen — any visible light
 sources are small, stolen, and precious.
-Scene: <descrição da área a partir do blurb em data.js>.
+Scene: <descrição da área a partir do blurb em data.js + a IMAGEM
+IMPOSSÍVEL da área (DECISOES_JUL26.md §4b — física de sonho do Tema A)>.
 [PALETA DO TEMA]
 Composition: open middle ground (creatures render in front), darker at
 the edges, one distant point of faint light for depth.
 ```
+Tema A: a identidade travada é "a floresta que roubou a Lua e dorme sonhando" —
+todo background da Floresta expressa física de sonho (nada de floresta genérica);
+o ponto de luz distante É a Lua presa vazando pelo dossel. Backgrounds 7–9:
+adicionar indícios do Porto na borda (sal, água subindo, verdete, madeira encharcada).
 
 ### Okhra e Nihel
 **Design JÁ APROVADO na lore — o prompt descreve o design travado, não inventa.** Okhra: maré vertical em espiral, tentáculos grossos, carga afogada em silhueta (mastro, torre de sino, peixes, lanterna teal fraca), boca-redemoinho com anel quebrado em filigrana dourada. (Nihel: ver §8 — é conteúdo de mapa final, não gerar agora.)

@@ -28,6 +28,8 @@
 
 - **Lore/hierarquia (jul/2026):** `docs/lore/DECISOES_JUL26.md` — escada Vessels→Harbingers→Nihelim→Nihel; 7 Nihelim (Okhra=Map1); Map 1 = 18 áreas (Floresta+Porto), Harbinger a cada 3 áreas; tipos = bestiário; cores = assinaturas; Seeker de nome roubado; ranks da Ordre = escada de conhecimento. **Onde divergir de docs antigos, ele vence.**
 - **Tags de raridade:** Common (sem tag) · Ember (teal) · Lumen (azul) · Corona (violeta). *(Ainda NÃO implementado em `src/data.js` — de propósito; código usa Kindled/Luminous/Radiant.)*
+- **Identidade do Tema A (jul/2026):** "a floresta que roubou a Lua e dorme sonhando" — física de sonho, Lua enjaulada no dossel, céu sem-lua cinzento; imagem impossível por área em `DECISOES_JUL26.md §4b`. **Ordem de produção de arte: backgrounds antes de mobs.**
+- **World Map em 2 atos (jul/2026):** Mapa 1 = 2 telas de mapa (A: áreas 1–9 · B: áreas 10–18); segue UM mapa (1 Nihelim, 1 Awaken). Backgrounds 7–9 fazem gancho visual pro Porto. Implementação da tela dupla = fase de UI (Etapa 5 do roadmap).
 - **Método de trabalho:** SPEC vs LOG (auditoria = agir e apagar) · definition-of-done (código+spec+sim+CLAUDE.md) · sim antes de número · um sistema por vez · decisão travada não reabre sem número novo.
 
 ## Pendências conhecidas (ordenadas)

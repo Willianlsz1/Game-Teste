@@ -94,6 +94,35 @@ Regra: nomes de despertar não podem usar **Ember/Lumen/Corona** (tags de rarida
 
 ---
 
+## 4b. Tema A — identidade da Floresta ✅ (jul/2026, fase de design)
+
+**"A floresta que roubou a Lua e dorme sonhando."** *The Dreaming Wood* é literal: quando a luz começou a morrer, a última grande floresta **sonhou a Lua pra baixo do céu** e a prendeu no fundo do dossel — raízes fechadas ao redor dela como punho. O maior roubo de luz do mundo. O céu do Tema A é **sem-lua, cinzento, morto**; o único brilho distante permitido nos backgrounds é a luz da Lua presa vazando pelo dossel.
+
+**Regra visual: física de sonho, nunca floresta genérica.**
+- Árvores crescem na direção em que *lembram* do sol — troncos dobram no ar, crescem de lado, em espiral, de cabeça pra baixo; dosséis pendurados no nada.
+- Chuva petrificada suspensa (gotas de vidro paradas no meio da queda).
+- Escala que mente: folha do tamanho de uma casa ao lado de árvores anãs.
+
+**A imagem impossível de cada área** (âncora dos prompts de background):
+
+| Área | Imagem impossível |
+|---|---|
+| 1 · Dreaming Wood | árvores dobradas como sob a água, crescendo pra onde a Lua ficava; chuva de vidro suspensa |
+| 2 · Lantern Mire | lanternas afogadas ainda queimando **sob** a água — luz embaixo, escuro em cima |
+| 3 · Whispering Hollows | troncos ocos curvados como tubos de órgão/orelhas, murmurando a luz presa |
+| 4 · Moonlit Canopy | **a Lua enjaulada**, vislumbrada entre galhos crescidos ao redor dela como punho |
+| 5 · Sunken Grove | poças-espelho refletindo **o céu de antes** — com a Lua ainda no alto (o reflexo mente) |
+| 6 · Gilded Thicket | corrupção dourada dos Nihelim subindo pelos espinhos, escalando rumo à Lua |
+| 7 · Hollow Cathedral | catedral **crescida**, não construída — arcos góticos de madeira viva |
+| 8 · Weeping Roots | sob a floresta: raízes chorando luz roubada, seiva luminosa pingando pra cima |
+| 9 · Hollow Sanctum | o coração do sonho — silêncio absoluto onde o Gilded Hollow espera |
+
+- Menções antigas a "aurora" nos blurbs = **o brilho da Lua presa vazando pelo dossel** (reconciliar blurbs na fase de UI copy). 🔧
+
+**World Map em 2 atos ✅:** o Mapa 1 ganha **duas telas de mapa** — Ato A (áreas 1–9, Floresta) e Ato B (áreas 10–18, Porto Afundado). Segue sendo UM mapa (1 Nihelim, 1 Awaken); a divisão é de apresentação. **Gancho visual:** a arte das áreas 7–9 puxa para o Porto — indícios do Tema B crescendo na borda do Tema A (sal, água parada subindo, verdete, madeira encharcada) para o jogador sentir a descida chegando antes de virar a página.
+
+---
+
 ## 5. Regra de Cores ✅ — ASSINATURAS, não paleta
 
 **Nenhuma cor é reservada.** O que carrega significado é a cor **se comportando de um jeito específico**:
