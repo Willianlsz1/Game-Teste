@@ -121,6 +121,13 @@ Regra: nomes de despertar não podem usar **Ember/Lumen/Corona** (tags de rarida
 
 **World Map em 2 atos ✅:** o Mapa 1 ganha **duas telas de mapa** — Ato A (áreas 1–9, Floresta) e Ato B (áreas 10–18, Porto Afundado). Segue sendo UM mapa (1 Nihelim, 1 Awaken); a divisão é de apresentação. **Gancho visual:** a arte das áreas 7–9 puxa para o Porto — indícios do Tema B crescendo na borda do Tema A (sal, água parada subindo, verdete, madeira encharcada) para o jogador sentir a descida chegando antes de virar a página.
 
+## 4c. Tema B — identidade do Porto Afundado ✅ (jul/03, fase de design)
+
+**"O porto que a maré engoliu — e ainda não terminou de engolir."** Canon completo em **`docs/lore/mapa1_tema_b_porto_afundado.md`** (identidade + direção lovecraftiana + paleta das refs do Okhra + 9 áreas com imagem impossível + bestiário de 10 Vessels + H4/H5/H6 + finale). Decisões-chave:
+- Áreas 10–18 nomeadas (The Salt-Eaten Quay → The Tide's Maw), em 3 degraus: a Beira (G4) · a Barriga (G5) · a Garganta (G6).
+- **The Tidebound Choir (H6) = foreshadowing intencional de Naameth** — o coro era dele; Okhra o engoliu junto com o porto.
+- Âncoras visuais: `docs/design/refs_okhra.jpg` + família do Tema A.
+
 ---
 
 ## 5. Regra de Cores ✅ — ASSINATURAS, não paleta
