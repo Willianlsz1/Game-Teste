@@ -2,13 +2,14 @@
 
 > **Leia isto ANTES de qualquer trabalho.** Atualizado ao fim de cada sessão (`/handoff`).
 > Regra: este doc diz ONDE o trabalho parou e O QUE está travado — não re-derive nem re-litigue.
-> Última atualização: **2026-07-02** (sessão de balance framework + harness).
+> Última atualização: **2026-07-03** (escada P0–P8 fechada + ciclo de qualidade + abertura da fase de design).
 
 ---
 
 ## Onde o trabalho está AGORA
 
-**A ESCADA P0–P8 ESTÁ COMPLETA (jul/2026)** — balance do Mapa 1 travado, implementado e revisado de ponta a ponta (`docs/design/BALANCE_FRAMEWORK_MAP1.md`). **Trilha seguinte declarada pelo dono: playtest humano + fase de design — mapas, mobs e UI.**
+**A ESCADA P0–P8 ESTÁ COMPLETA + ciclo de qualidade fechado (PRs #24 e #25 mergeados).** Balance travado de ponta a ponta; 7 bugs corrigidos; ~1.720 linhas mortas removidas; 290 testes verdes.
+**TRILHA ATIVA: FASE DE DESIGN (dono executando).** Decisões travadas: REBOOT TOTAL de arte · pipeline ChatGPT imagens · Harbingers reservados refeitos. Guias: `docs/design/ART_UI_ROADMAP.md` (5 etapas) + `docs/design/ART_PROMPTS_MAP1.md` (kit de prompts). Lote 1 = 4 mobs iniciais + H1. REGRA: lore do Porto ANTES de qualquer arte do Tema B. Flag aberta: se o dono quiser trocar NOMES/roster dos mobs (não só arte) = decisão de lore a travar antes dos prompts.
 
 - **PASSO 0 (Relógio): ✅** — 18h · 30–50min/beat · 50/50 · 1º prestige 25–40min.
 - **PASSO 1 (Esqueleto): ✅ TRAVADO E IMPLEMENTADO** (ciclo 10-80-10: Opus implementou, Sonnet achou+corrigiu 1 bug de migração de save, Fable revisou) — 18 áreas no código, cap 6000, Harbinger por grupo, Okhra fecha o mapa. Tempos por grupo = contrato a cumprir no P2.
