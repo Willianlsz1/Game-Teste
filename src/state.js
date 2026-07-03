@@ -4,7 +4,7 @@ G.state = {
   data: null,
   _cache: null,
 
-  SAVE_KEY: "eclats_v4",
+  SAVE_KEY: "eclats_v5",   // P6: bump estrutural (Árvore I única). Sem migração de v4 — não há saves reais.
 
   fresh() {
     return {
@@ -28,8 +28,15 @@ G.state = {
       awakens:           [],
       awakensUnlocked:   [],
       awakenTier:        0,
-      // ---- Passivas (3 árvores) ----
-      passives:          { eclat: Array(15).fill(0), vestige: Array(15).fill(0), fracture: Array(15).fill(0) },
+      // ---- Rarity Find (P8.1) ----
+      // Marcos abatidos (idx da área do Harbinger) — cada 1ª morte levanta os caps em 1/6.
+      // PERMANENTE: NÃO reseta na Convergence. Guardamos os ids p/ robustez de save.
+      harbingersFelled:  [],
+      // flags de onboarding: 1º spawn de cada tier / modificador já foi anunciado?
+      rarityFirstSeen:   {},
+      modifierFirstSeen: {},
+      // ---- Passivas (Árvore I — árvore única binária de 15 nós) ----
+      passives:          { tree1: new Array(15).fill(0) },
       // ---- Materiais (fundação econômica) ----
       gearMaterials:     { common: 0, uncommon: 0 },
       awakenMaterials:   { firstLight: 0 },
@@ -63,7 +70,7 @@ G.state = {
     add("critDmg", "flat", 50, "Base");
     add("atkSpeed", "flat", G.data.balance.atkSpeedBase, "Base");
     add("lumensBonus", "flat", 10, "Base");
-    add("lumensBonus", "flat", d.level * 0.15, "Character Level");
+    add("lumensBonus", "flat", Math.min(G.data.balance.lumensLevelCap, d.level * G.data.balance.lumensLevelPerLevel), "Character Level");
 
     // equipment
     for (const slot of G.data.slots) {
@@ -82,28 +89,38 @@ G.state = {
       add("hp",  "pct", G.convergence.legacyHpPct(),  "Convergence Legacy");
     }
 
-    // Passivas — efeitos LIVE somam nas camadas; demais expostos via effect()
+    // Passivas (Árvore I) — efeitos somam nas camadas; a coroa injeta mults ×(1+ringCloses%)
     let passEff = null;
     if (G.passives) {
       passEff = G.passives.effects();
-      add("atk", "flat", passEff.atkFlat  || 0, "Passives");
+      add("atk", "pct",  passEff.firstSpark || 0, "Passives");   // raiz: ATK% + HP%
+      add("hp",  "pct",  passEff.firstSpark || 0, "Passives");
       add("atk", "pct",  passEff.atkPct   || 0, "Passives");
       add("hp",  "pct",  passEff.hpPct    || 0, "Passives");
       add("crit", "flat", passEff.critRate || 0, "Passives");
       add("critDmg", "flat", passEff.critDmg || 0, "Passives");
+      add("atkSpeed", "flat", passEff.atkSpeed || 0, "Passives");
+      add("damageReduction", "flat", passEff.damageReduction || 0, "Passives");
+      add("lightbane", "flat", passEff.lightbane || 0, "Passives");
+      add("healOnKill", "flat", passEff.healOnKill || 0, "Passives");
+      add("hpRegen", "flat", passEff.hpRegen || 0, "Passives");
       add("lumensBonus", "flat", passEff.lumensPct || 0, "Passives");
       add("xpBonus", "flat", passEff.xpPct || 0, "Passives");
-      add("atk", "mult", 1 + (passEff.capstoneEclat || 0) / 100, "Passives");
-      add("hp",  "mult", 1 + (passEff.capstoneEclat || 0) / 100, "Passives");
-      add("lumensBonus", "mult", 1 + (passEff.capstoneVestige || 0) / 100, "Passives");
-      add("xpBonus", "mult", 1 + (passEff.capstoneVestige || 0) / 100, "Passives");
+      // coroa "The Ring Closes": bônus multiplicativo pequeno em ATK, HP, Lumens e XP
+      const crown = 1 + (passEff.ringCloses || 0) / 100;
+      add("atk", "mult", crown, "Passives");
+      add("hp",  "mult", crown, "Passives");
+      add("lumensBonus", "mult", crown, "Passives");
+      add("xpBonus", "mult", crown, "Passives");
     }
 
     const fin = (k) => { const x = layer(k); return x.flat * (1 + x.pct / 100) * x.mult; };
 
-    // HP → Dano (Éclat): injeta uma fração do HP final no ATK antes de finalizar
-    if (passEff && passEff.hpToDamage)
-      add("atk", "flat", fin("hp") * (passEff.hpToDamage / 100), "Passives");
+    // Rarity Find (P8.1): chance de gear (rarityFind, fração 0-1) e teto dos Marcos (rarityCaps).
+    // Cada Harbinger abatido levanta 1/6 do teto (capMax/6), clampado no máximo. Fração p/ chance().
+    const felled = (d.harbingersFelled && d.harbingersFelled.length) || 0;
+    const rcMax = G.data.rarityCaps;
+    const capFrac = (max) => Math.min(max, felled * (max / 6)) / 100;
 
     this._cache = {
       atk:              Math.round(fin("atk")),
@@ -114,9 +131,26 @@ G.state = {
       atkSpeed:         G.util.softCap(fin("atkSpeed"), this.currentAtkSpeedSoft(), this.currentAtkSpeedCap()),
       xpBonus:          fin("xpBonus"),
       lumensBonus:      fin("lumensBonus"),
-      damageReduction:  G.util.clamp(fin("damageReduction"), 0, 75),
-      eliteDmg:         fin("eliteDmg"),
+      damageReduction:  G.util.clamp(fin("damageReduction"), 0, G.data.balance.dmgReductionCap),  // gear (Steadfast Guard) + passiva (Hardened Light)
+      lightbane:        fin("lightbane"),             // passiva (Lightbane): +% dano vs acesos
+      specialDmg:       fin("specialDmg"),            // gear (Marked Blade): vs rares & bosses
+      siegeWard:        G.util.clamp(fin("siegeWard"), 0, G.data.balance.dmgReductionCap),  // dmgRed extra — combat aplica só com 2+ vivos
+      rarityFindLumen:  fin("rarityFindLumen"),       // % Lumen do gear (Second Sight)
+      rarityFindEmber:  fin("rarityFindEmber"),       // % Ember do gear (Ember Trail)
+      rarityFindCorona: fin("rarityFindCorona"),      // % Corona do gear (Corona Call)
+      // P8.1: chance efetiva (gear) e teto (Marcos) por tier, em fração 0-1 p/ o roll do combat
+      rarityFind: {
+        ember:  Math.max(0, fin("rarityFindEmber"))  / 100,
+        lumen:  Math.max(0, fin("rarityFindLumen"))  / 100,
+        corona: Math.max(0, fin("rarityFindCorona")) / 100,
+      },
+      rarityCaps: {
+        ember:  capFrac(rcMax.ember),
+        lumen:  capFrac(rcMax.lumen),
+        corona: capFrac(rcMax.corona),
+      },
       healOnKill:       fin("healOnKill"),
+      hpRegen:          fin("hpRegen"),
       _layers:          L,
       _breakdown:       BD,
     };
@@ -160,26 +194,36 @@ G.state = {
     this.data.equipped = G.gear.reconcile(this.data.equipped);
     if (G.economy) G.economy.reconcile(this.data);
 
+    // Mapa 1 cresceu de 9 → 18 áreas (P1). Saves antigos podem trazer mapOneCleared=true
+    // (mapa velho de 9 áreas concluído), mas o mapa novo (Okhra, última área) não foi batido.
+    // Sem isto, o jogador herdaria o teto de atkSpeed de mapa 2 cedo demais e a mensagem
+    // de "Map 1 complete" nunca voltaria a disparar ao derrotar Okhra de verdade.
+    if (this.data.mapOneCleared && (this.data.maxAreaUnlocked || 0) < G.data.areas.length - 1)
+      this.data.mapOneCleared = false;
+
     // Awaken: garante a lista canônica e o tier em saves antigos
     if (!Array.isArray(this.data.awakens)) this.data.awakens = [];
     this.data.awakensUnlocked = this.data.awakens;
     if (typeof this.data.awakenTier !== "number" || this.data.awakenTier < this.data.awakens.length)
       this.data.awakenTier = this.data.awakens.length;
 
-    // Passivas: preserva níveis salvos por índice, clampando ao teto atual do nó
+    // Passivas (Árvore I): preserva níveis salvos por índice, clampando ao teto do nó.
+    // Number.isFinite barra lixo não-numérico do save — um NaN aqui fica preso no array
+    // (buy() faz += 1) e drena pontos sem o nó nunca subir de nível.
     if (G.passives) {
-      const fresh = G.passives.freshSet();
+      const arr = G.passives.freshSet();
       const saved = this.data.passives;
-      if (saved && typeof saved === "object") {
-        for (const tree of Object.keys(fresh))
-          if (Array.isArray(saved[tree]))
-            fresh[tree] = fresh[tree].map((_, i) => Math.min(saved[tree][i] || 0, G.passives.nodeMax(tree, i)));
-      }
-      this.data.passives = fresh;
+      if (saved && Array.isArray(saved.tree1))
+        for (let i = 0; i < arr.length; i++) {
+          const v = Math.floor(Number(saved.tree1[i]));
+          arr[i] = Number.isFinite(v) ? Math.max(0, Math.min(v, G.passives.nodeMax(i))) : 0;
+        }
+      this.data.passives = { tree1: arr };
     }
 
     this.invalidateStats();
-    if (this.data.hp <= 0) this.data.hp = this.maxHp();
+    const hp = Number(this.data.hp);
+    this.data.hp = (Number.isFinite(hp) && hp > 0) ? hp : this.maxHp();
     return !!loaded;
   },
 
@@ -187,6 +231,7 @@ G.state = {
     if (this.storageOk()) try { localStorage.removeItem(this.SAVE_KEY); } catch (e) {}
     delete this._mem[this.SAVE_KEY];
     this.data = this.fresh();
+    this.invalidateStats();
     this.data.hp = this.maxHp();
   },
 };

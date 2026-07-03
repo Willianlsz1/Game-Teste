@@ -24,15 +24,8 @@
 .hud-topcenter { top: 14px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .hud-topright { top: 14px; right: 14px; }
 .hud-bottomleft { bottom: 14px; left: 14px; width: 360px; max-width: 40vw; }
-.hud-bottomcenter { bottom: 14px; left: 50%; transform: translateX(-50%); }
-.hud-bottomright { bottom: 14px; right: 14px; }
 
 /* ---- log (baixo esquerda) ---- */
-.hud-bottomleft .tabs {
-  background: var(--card); border: 1px solid var(--card-border); border-bottom: none;
-  border-radius: 10px 10px 0 0; padding: 0 4px;
-}
-.hud-bottomleft .tab { padding: 6px 12px; }
 /* painel de log: tamanho FIXO (não cresce/encolhe) + minimizar */
 .hud-bottomleft .log-panel {
   background: var(--card); border: 1px solid var(--card-border);
@@ -56,14 +49,6 @@
 .log-panel.collapsed .log { display: none; }
 .log-panel.collapsed .log-header { border-bottom: none; }
 
-/* ---- readout de stats (baixo centro) ---- */
-.hud-stats {
-  display: flex; gap: 18px; padding: 6px 16px; border-radius: 10px;
-  background: rgba(10, 16, 32, 0.7); border: 1px solid var(--card-border);
-  font-size: 13px; color: var(--muted);
-}
-.hud-stats b { color: var(--text); }
-
 /* ---- painel de taxas (Gold/Min, XP/Min, Dmg) — topo-esquerda sob a toolbar ---- */
 .hud-rates { bottom: 14px; left: 388px; }
 .rates-panel {
@@ -79,6 +64,17 @@
   color: var(--gold); font-weight: 700; font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
+/* Lights panel (Rarity Find) — chance efetiva / teto por tier */
+.lights-panel {
+  display: flex; flex-direction: column; gap: 3px;
+  margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--card-border);
+}
+.lights-title {
+  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted); font-weight: 700; margin-bottom: 1px;
+}
+.lights-title .lights-sub { font-weight: 400; opacity: 0.6; text-transform: none; letter-spacing: 0; }
+.lights-panel .rate-row b { color: #cfd8ea; }
 
 /* ---- cena de batalha sobre o mundo ---- */
 .battle-stage {
@@ -88,6 +84,19 @@
 }
 .battle-stage .battle-hero, .battle-stage .enemies-container { pointer-events: auto; align-self: center; }
 .battle-stage .hero-figure .floaters { z-index: 6; }
+
+/* ---- P8.4: palco do Okhra (tint barato; a arte real vem depois) ---- */
+.okhra-manifest::before {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 50% 115%, rgba(60, 210, 200, 0.28), rgba(20, 40, 80, 0) 60%),
+    linear-gradient(180deg, rgba(6, 10, 26, 0.55), rgba(4, 18, 40, 0.78));
+  animation: okhra-tide 6s ease-in-out infinite alternate;
+}
+@keyframes okhra-tide {
+  from { opacity: 0.72; }
+  to   { opacity: 1; }
+}
 
 /* ---- herói (sem card — corpo inteiro) ---- */
 .battle-hero {
@@ -185,20 +194,13 @@
 .card-sub { font-size: 13px; color: #c7d2e4; text-shadow: 0 1px 3px #000, 0 0 6px rgba(0, 0, 0, 0.9); }
 .card-sub b { color: #fff; }
 
-/* ---- arte genérica (legacy card-art) ---- */
+/* ---- arte genérica (sprite/imagem do card) ---- */
 .art-ph {
   font-size: 84px; line-height: 1;
   animation: float 3s ease-in-out infinite;
   filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.25));
 }
 .art-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.card-art {
-  position: relative; width: 100%; aspect-ratio: 3 / 4; border-radius: 8px; overflow: hidden;
-  background: radial-gradient(circle at 50% 40%, rgba(94,224,210,.12), rgba(0,0,0,.35));
-  display: flex; align-items: center; justify-content: center;
-}
-.enemy-battle .card-art { background: radial-gradient(circle at 50% 40%, rgba(255,154,77,.14), rgba(0,0,0,.35)); }
-.card-art .art-img { object-fit: contain; }
 
 @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 

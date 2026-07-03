@@ -84,13 +84,13 @@ Regra de avaliação da escada: identidade facial idêntica T1→T5; cada salto 
 | 2 | Fragmented/Consumed | **Crystalbound Husk** · **Luminis Pilgrim** · **Hollowflame Adept** (referências aprovadas — ver §6) |
 | 3 | The Consumed | **Ember Revenant** · **Emberhorn Penitent** · **Ash Choir** (referências aprovadas — ver §6) |
 | 4 | Consumed/Claimed | **Fissure Stalker** · **Sundered Titan** · **Claimed Vanguard** (✅ aprovados — ver §6) |
-| 5 | Corte de Nihel (Claimed/Eidola) | **Pale Courtier** · **Crownless King** · **Crimson Wyrmlord** (✅ aprovados — ver §6) |
+| 5 | Corte de Nihel (Claimed/Harbingers) | **Pale Courtier** · **Crownless King** · **Crimson Wyrmlord** (✅ aprovados — ver §6) |
 
-**Boss final do Map 1 — The Gilded Hollow (The Eidola):** referência aprovada — figura em vestes claras, rosto de vazio absoluto, filigranas douradas de luz crescendo pela pele, segurando um pequeno orbe de luz. Lore: um membro da Ordre que absorveu além do procedimento — a luz o esvaziou por dentro e agora veste o que sobrou dele. É a primeira lição do jogo em forma de chefe: *os Éclats carregam algo mais*.
+**Boss final do Map 1 — The Gilded Hollow (The Harbingers):** referência aprovada — figura em vestes claras, rosto de vazio absoluto, filigranas douradas de luz crescendo pela pele, segurando um pequeno orbe de luz. Lore: um membro da Ordre que absorveu além do procedimento — a luz o esvaziou por dentro e agora veste o que sobrou dele. É a primeira lição do jogo em forma de chefe: *os Éclats carregam algo mais*.
 
-**Boss final do Map 2 — The Pale Reunion (The Eidola):** referência aprovada — ser radiante branco-azul, rosto de vazio escuro com olhos brancos, espirais de luz branca formando uma auréola dupla, corpo de luz translúcida. Lore: no fundo das Cavernes, longe de qualquer Seeker, os Éclats cristalizados tentaram se reunir sozinhos — e quase conseguiram. The Pale Reunion é uma convergência incompleta: bela, serena e errada. É a lição do mapa em forma de chefe: *a luz tenta se reconstituir* — e o eco visual proposital do que o próprio Seeker se tornará no tier Lumière.
+**Boss final do Map 2 — The Pale Reunion (The Harbingers):** referência aprovada — ser radiante branco-azul, rosto de vazio escuro com olhos brancos, espirais de luz branca formando uma auréola dupla, corpo de luz translúcida. Lore: no fundo das Cavernes, longe de qualquer Seeker, os Éclats cristalizados tentaram se reunir sozinhos — e quase conseguiram. The Pale Reunion é uma convergência incompleta: bela, serena e errada. É a lição do mapa em forma de chefe: *a luz tenta se reconstituir* — e o eco visual proposital do que o próprio Seeker se tornará no tier Lumière.
 
-**Boss final do Map 3 — The Ashen King (The Eidola):** referência aprovada — espectro de fitas negras com coroa de espinhos, costelas de brasa dourada, lança fina. Lore: rei de um reino consumido pelas cinzas, ainda de pé sobre o que restou.
+**Boss final do Map 3 — The Ashen King (The Harbingers):** referência aprovada — espectro de fitas negras com coroa de espinhos, costelas de brasa dourada, lança fina. Lore: rei de um reino consumido pelas cinzas, ainda de pé sobre o que restou.
 
 **Boss final do Map 4 — The Claimed Queen (✅ APROVADA):** armadura negra ornamentada com fios dourados opacos, coroa de espinhos, cabelos claros longos, **único brilho vermelho dos Maps 1–4** (olhos), vaza escuridão. Versão oficial = imagem aprovada em 2026-06-10 (coroa-máscara com olhos visíveis). Lore: esposa do Ashen King que ajoelhou para Nihel — o casal real partido entre Maps 3 e 4: ele resistiu e virou cinza; ela cedeu e virou rainha do Nada.
 
@@ -262,7 +262,7 @@ small flowers, its hands cupped around the glow. Drifting light motes everywhere
 Majestic, sorrowful, vast. Vertical enemy card portrait, clean readable silhouette. [SUFIXO]
 ```
 
-**The Gilded Hollow — BOSS do Map 1** (The Eidola)
+**The Gilded Hollow — BOSS do Map 1** (The Harbingers)
 ```
 [BLOCO DE ESTILO] Recreate the attached figure faithfully: a tall robed being in
 flowing pale blue-white garments with a dark belt, its exposed skin pure black void —
@@ -319,7 +319,7 @@ A Seeker who absorbed too much — the light now wears him. Powerful, wrong, reg
 Vertical enemy card portrait, clean readable silhouette. [SUFIXO]
 ```
 
-**The Pale Reunion — BOSS do Map 2** (The Eidola)
+**The Pale Reunion — BOSS do Map 2** (The Harbingers)
 ```
 [BLOCO DE ESTILO] Recreate the attached figure faithfully: a radiant humanoid being of
 white and pale blue translucent light, muscular luminous body like living porcelain,
@@ -338,7 +338,7 @@ itself and almost succeeded. Vertical boss artwork, clean readable silhouette. [
 
 **Ash Choir** (The Consumed) — aglomerado de figuras de cinza fundidas, rostos lisos em espiral, muitos braços, veias douradas crepitando entre os corpos. Um hino silencioso em forma.
 
-**The Ashen King** (BOSS, The Eidola) — espectro de fitas negras com coroa de espinhos, costelas de brasa dourada, lança fina. Prompts completos registrados na conversa de 2026-06-09/10; todos seguem o padrão: recriar a referência adaptada ao background do Map 3, brasa sempre dourada (nunca vermelha/azul), névoa prismática, silhueta legível.
+**The Ashen King** (BOSS, The Harbingers) — espectro de fitas negras com coroa de espinhos, costelas de brasa dourada, lança fina. Prompts completos registrados na conversa de 2026-06-09/10; todos seguem o padrão: recriar a referência adaptada ao background do Map 3, brasa sempre dourada (nunca vermelha/azul), névoa prismática, silhueta legível.
 
 ### Map 4 — The Fractured Peaks (✅ TODOS APROVADOS — anexar Âncora nº 1 + background Map 4 + referência de cada um)
 
@@ -414,7 +414,7 @@ white nameplate "The Dreaming Wood". HP bars stay red, the XP bar stays violet.
 
 The hero card shows a hooded figure with a golden light band over the eyes, named
 "The Seeker", with bars "158/180" and "155/200". The nine enemy cards cycle exactly
-three creatures with these exact names: "Luminous Triplecap", "Fragmented Wanderer",
+three creatures with these exact names: "Luminous Triplecap" <!-- canon-ok: prompt histórico registrado -->, "Fragmented Wanderer",
 "Dreambound Wisp" — unsettling and corrupted, hollow golden glowing eyes, no cute or
 friendly expressions, no smiling faces. No extra cards, no overlapping or floating
 cards outside the grid.
@@ -465,7 +465,7 @@ Render only the texts quoted above, all crisp and legible; no other words anywhe
     g. Telas de menu (Passivas, Gear, Echoes) — referência de layout da tela de Gear: organização estilo Gaiadon (grid de slots com fundo colorido pela raridade, tag de level, tooltip lateral, aba Upgrade com materiais)
     h. ✅ **GEAR — ARTE COMPLETA (6 peças × 5 raridades) APROVADA** (2026-06-10):
        - **Mudança de peça:** Crown of Hollow Stars → **The Silent Vigil** (elmo; coroa virou linguagem de reis caídos). Set final: The Waning Edge (espada) · Veil of Cinders (manto) · The Silent Vigil (elmo) · Grasp of the Unnamed (manoplas) · The Last Resonance (amuleto-sino) · Band of Dusk (anel).
-       - **Raridades na lore** (substituem Common→Legendary): **Faded** (cinza) → **Kindled** (teal) → **Luminous** (azul) → **Radiant** (violeta) → **Converged** (branco-prismático). Futuras: **Primordial** (branco-dourado The Mending) e **Ein Sof** (prismático arco-íris). Nada de dourado-quente nem laranja-Legendary: o topo é convergência.
+       - **Raridades na lore** (substituem Common→Legendary): **Common** (cinza, sem tag) → **Ember** (teal) → **Lumen** (azul) → **Corona** (violeta) → **Converged** (branco-prismático, reservado) *(antes Faded/Kindled/Luminous/Radiant)*. Futuras: **Primordial** (branco-dourado The Mending) e **Ein Sof** (prismático arco-íris). Nada de dourado-quente nem laranja-Legendary: o topo é convergência.
        - **Decisão de design:** raridade evolui a **FORMA** da peça (cada tier é uma versão fisicamente diferente, do bruto à obra-prima — silhueta-base e motivo mantidos); a **COR da raridade fica no fundo do box/slot via CSS**, não na arte. Produção em folha-escada: 1 folha por peça com os 5 estágios lado a lado.
        - **BLOCO DE ESTILO OFICIAL DE GEAR:** "Anime fantasy concept art style, strongly stylized: bold visible outlines, flat cel-shaded coloring in two or three tone steps, simplified expressive shapes, minimal texture detail, soft bloom only on glowing elements — like concept art from a high-quality anime or JRPG artbook. Absolutely no photorealism, no realistic rendering, no 3D render." (O termo "painted illustration style" foi BANIDO — puxa render realista.)
        - Assinaturas por peça: crescente na guarda (Edge) · brasas esmaecendo, nunca fogo vivo (Veil) · recriação fiel da ref EV Ganiin (Vigil) · dedos agarrando algo invisível (Grasp) · badalo de cristal, relíquia silenciosa (Resonance) · gradiente do crepúsculo + gema-estrela no ponto do ocaso (Band). Sem vermelho em nenhuma peça.

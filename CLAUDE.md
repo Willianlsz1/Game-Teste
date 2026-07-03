@@ -13,7 +13,7 @@ Browser-based idle/loot game (Map 1 focus). Vanilla JS, no framework, no build s
 | Module system | Global `G` object — every module registers itself as `G.module = {...}` |
 | Entry point | `index.html` loads CSS then JS via `<script>` tags (order matters) |
 | CSS | Split into `styles/base.css`, `components.css`, `hud.css`, `gear.css`, `convergence.css`, `awaken.css`, `worldmap.css`, `passives.css` |
-| Save | `localStorage` key `eclats_save_v2` (JSON). Falls back to in-memory if `file://` |
+| Save | `localStorage` key `eclats_v5` (JSON). Falls back to in-memory if `file://` |
 | Fonts | Google Fonts: Cormorant Garamond (display), Outfit (UI) |
 | Dev server | `node .claude/static-server.js` or double-click `Jogar Eclats.bat` |
 | Tests | None |
@@ -48,7 +48,35 @@ node .claude/static-server.js
 
 Or double-click `Jogar Eclats.bat`. Do **not** open `index.html` directly as `file://` — localStorage is blocked and saves won't persist.
 
+**Balance simulator** (headless, runs the real `src/` modules in Node — never mirror formulas by hand):
+
+```
+node tools/sim.js baseline [--to-level N] [--hours H]   # one run, no prestige: time-to-level, TTK/TTD per area
+node tools/sim.js gates --gates 80,150,351              # time + points of the 1st Convergence per candidate gate
+node tools/sim.js campaign --gate 351 [--push 2.0]      # full Map 1 loop to First Light
+```
+
+Seeded RNG (`--seed`), deterministic. Any balance change must be justified with sim output.
+
 To reset save from the browser console: `G.state.reset(); location.reload()`
+
+---
+
+## Session Harness
+
+**`HANDOFF.md` (repo root) is the living state between sessions — read it before any work.** It says where work stopped, what is locked, and the ordered pending list. Do not re-derive established facts or reopen locked decisions.
+
+Project slash commands (`.claude/commands/`):
+
+| Command | When | What it does |
+|---------|------|--------------|
+| `/retomar` | start of session | read HANDOFF + active track doc, run canon check, report position in ≤10 lines |
+| `/handoff` | end of session | rewrite HANDOFF, verify definition-of-done, run canon check, commit+push |
+| `/travar <decisão>` | a decision is made | record it in the right SPEC + HANDOFF, with sim validation if numeric |
+| `/balance <pergunta>` | any balance question | answer ONLY via `tools/sim.js` (never from theory); in-memory overrides for candidates |
+| `/canon` | doc hygiene | run `tools/check_canon.js`, fix live drift (superseded terms), extend TERMS list |
+
+**Doc discipline:** SPEC (living, one per system) vs LOG (dated audit — act on it, then delete or banner). A doc that contradicts the code gets fixed or bannered within the session that notices it. `node tools/check_canon.js` exits 1 on live drift (docs only; `src/` is exempt until renames are ordered by the balance work).
 
 ---
 
@@ -128,12 +156,12 @@ To reset save from the browser console: `G.state.reset(); location.reload()`
 - Player attacks at `1 / atkSpeed` seconds. Enemy attacks at `0.99s` fixed.
 - Projectile flight of `0.5s` before damage applies (matches CSS transition).
 - On player death: full heal, enemy respawns at full HP. No penalty. This is intentional — gear is the wall.
-- Level up: linear XP (`14 × level`). Mob level = player level, clamped to area range.
+- Level up: XP curve `xpCurveBase × level^xpCurveExp` (14 × L^1.62 — kills/level rise with level). Mob level = player level, clamped to area range.
 
 ### Gear (6 fixed pieces)
 - weapon, helmet, armor, gloves, boots, cloak — always equipped, never swapped.
 - Level up with Lumens: cost = `gearCostBase × gearCostGrowth^(level-1)`.
-- Cap by rarity: Common = 10, Uncommon = TBD in `data.rarities[].cap`.
+- Cap by rarity (`data.rarities[].cap`): Common = 500, Uncommon = 1500, Rare = 3000.
 - Promote Common → Uncommon: requires max level + materials (`economy.getGear`).
 - Balance: **only `src/data.js` controls `gearBase`, `gearCostBase`, `gearCostGrowth`**.
 
@@ -178,7 +206,7 @@ Unlock with Convergence Points. Passive effects aggregate in `passives.effects()
 
 **Do not implement Mémoires, Ascension, or Map 2 features.** These are not in scope for current work.
 
-**Awakening Essence (`awakenEssence`) is a legacy field.** It migrates to `awakenMaterials.firstLight` on load. Do not use it for new code.
+**Awakening Essence (`awakenEssence`) is a dead legacy field.** There is no migration code — it is simply unused; the live field is `awakenMaterials.firstLight`. Do not use `awakenEssence` for new code.
 
 ---
 

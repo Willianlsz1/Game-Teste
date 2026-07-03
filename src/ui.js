@@ -17,11 +17,11 @@ G.ui = {
       "wmap-info-boss-row", "wmap-info-boss", "wmap-info-unlock-row", "wmap-info-unlock",
       "wmap-info-res", "wmap-info-travel", "wmap-info-close",
       // Convergence
-      "conv-points", "conv-count", "conv-highest", "conv-pending", "conv-current", "conv-return", "btn-converge",
+      "conv-points", "conv-count", "conv-highest", "conv-pending", "conv-current", "conv-return", "conv-next", "btn-converge",
       // Awaken
       "awaken-essence", "awaken-list", "awaken-preview",
       // Passives
-      "pv-points", "pv-tabs", "pv-body", "pv-lock",
+      "pv-points", "pv-body", "pv-lock",
     ];
     for (const id of ids) this.el[id] = document.getElementById(id);
   },
@@ -47,13 +47,6 @@ G.ui = {
     const pop = document.getElementById("stat-pop");
     if (pop) pop.addEventListener("click", (e) => {
       if (e.target === pop || e.target.closest("[data-close]")) this.closeStatPop();
-    });
-
-    const tabs = document.getElementById("log-tabs");
-    if (tabs) tabs.addEventListener("click", (e) => {
-      if (!e.target.classList.contains("tab")) return;
-      tabs.querySelectorAll(".tab").forEach((t) => t.classList.remove("is-active"));
-      e.target.classList.add("is-active");
     });
 
     // World Map: painel de info (fechar / viajar) e botão "◀ World"
@@ -95,14 +88,12 @@ G.ui = {
         if (G.awaken.unlock(btn.dataset.awaken)) this.renderAwaken();
       });
 
-    // Passivas (Árvore-Mundo): trocar de aba / comprar nó (clique delegado)
+    // Passivas (Árvore I — árvore única): comprar nó (clique delegado; a coroa não é comprável)
     const pscreen = document.getElementById("modal-passives");
     if (pscreen)
       pscreen.addEventListener("click", (e) => {
-        const tab = e.target.closest(".pv-tab");
-        if (tab) { this.passivesTab = tab.dataset.tree; this.renderPassives(); return; }
         const node = e.target.closest(".pv-node");
-        if (node && G.passives.buy(this.passivesTab || "eclat", +node.dataset.i)) this.renderPassives();
+        if (node && !node.classList.contains("pv-crown") && G.passives.buy(+node.dataset.i)) this.renderPassives();
       });
   },
 
@@ -257,6 +248,21 @@ G.ui = {
     set("rate-xp",    G.util.fmt(Math.round(r.xp)));
     set("rate-kills", (r.kills || 0).toFixed(1));
     set("rate-dmg",   G.util.fmt(dps));
+
+    // Lights panel (Rarity Find): aparece assim que houver qualquer chance OU teto.
+    const rf = s.rarityFind || { ember: 0, lumen: 0, corona: 0 };
+    const cap = s.rarityCaps || { ember: 0, lumen: 0, corona: 0 };
+    const lp = document.getElementById("lights-panel");
+    if (lp) {
+      const any = rf.ember || rf.lumen || rf.corona || cap.ember || cap.lumen || cap.corona;
+      lp.hidden = !any;
+      if (any) {
+        const line = (t) => (Math.min(rf[t], cap[t]) * 100).toFixed(1) + "% / " + (cap[t] * 100).toFixed(1) + "%";
+        set("light-ember",  line("ember"));
+        set("light-lumen",  line("lumen"));
+        set("light-corona", line("corona"));
+      }
+    }
   },
 
   toggleLog() {
@@ -327,15 +333,17 @@ G.ui = {
       mat("uncommon",   G.economy.getGear("uncommon"),     "Uncommon",    "#7ec8a0") +
       mat("firstLight", G.economy.getAwaken("firstLight"), "First Light", "#d4b4ff");
 
-    this.el["forge-convert"].innerHTML = G.economy.CONVERSIONS.map((c, i) => {
-      const rate = G.economy.conversionRate(c);
-      const max  = G.economy.maxConversions(c);
-      return `<div class="forge-recipe">
-        <span class="forge-recipe__line">${rate} ${c.fromLabel} <b>→</b> 1 ${c.toLabel}</span>
-        <span class="forge-recipe__avail">Can make: ${fmt(max)}</span>
-        <button class="forge-btn" data-convert="${i}" ${max > 0 ? "" : "disabled"}>Convert all</button>
-      </div>`;
-    }).join("");
+    this.el["forge-convert"].innerHTML = G.economy.CONVERSIONS.length
+      ? G.economy.CONVERSIONS.map((c, i) => {
+          const rate = G.economy.conversionRate(c);
+          const max  = G.economy.maxConversions(c);
+          return `<div class="forge-recipe">
+            <span class="forge-recipe__line">${rate} ${c.fromLabel} <b>→</b> 1 ${c.toLabel}</span>
+            <span class="forge-recipe__avail">Can make: ${fmt(max)}</span>
+            <button class="forge-btn" data-convert="${i}" ${max > 0 ? "" : "disabled"}>Convert all</button>
+          </div>`;
+        }).join("")
+      : `<span class="forge-recipe__avail">Unavailable in Map 1.</span>`;
 
     this.el["forge-promote"].innerHTML = G.data.slots.map((slot) => {
       const item = G.state.data.equipped[slot.id];
@@ -443,9 +451,19 @@ G.ui = {
       const v    = G.gear.affixValue(item, a);
       const sign = a.pct ? "%" : "";
       const kind = a.layer === "pct" ? "Bonus" : "Primary";
-      const perLv = a.perLevel
-        ? `<span class="tip-perlv">+${this.fmtStat(a.perLevel)}${sign} per level</span>` : "";
-      return `<div class="tip-affix"><span class="tip-affix__main">+${this.fmtStat(v)}${sign} ${a.label} ${kind}</span>${perLv}</div>`;
+      let note = "";
+      if (a.perStep != null) {
+        // Rarity Find (P8.1): mostra o degrau atual e o próximo (valor + nível)
+        const step = a.step || 50;
+        const atCap = a.cap != null && v >= a.cap;
+        const nextLv = (Math.floor(lvl / step) + 1) * step;
+        note = atCap
+          ? `<span class="tip-perlv">max ${this.fmtStat(a.cap)}${sign}</span>`
+          : `<span class="tip-perlv">next step: +${this.fmtStat(a.perStep)}${sign} at Lv ${nextLv}</span>`;
+      } else if (a.perLevel) {
+        note = `<span class="tip-perlv">+${this.fmtStat(a.perLevel)}${sign} per level</span>`;
+      }
+      return `<div class="tip-affix"><span class="tip-affix__main">+${this.fmtStat(v)}${sign} ${a.label} ${kind}</span>${note}</div>`;
     }).join("");
     return `<div class="tip-name" style="color:${item.color}">${item.name}</div>
       <div class="tip-sub" style="color:${item.color}">${item.rarityName} ${item.slotLabel}</div>
@@ -509,7 +527,7 @@ G.ui = {
     const ni   = G.util.clamp(d.areaIndex + delta, 0, maxU);
     if (ni === d.areaIndex) return;
     d.areaIndex = ni;
-    G.combat.enemy = null; G.combat.pendingHits = []; G.combat.respawnTimer = G.data.balance.respawnDelay;
+    G.combat.enemies = []; G.combat.enemy = null; G.combat.pendingHits = []; G.combat.respawnTimer = G.data.balance.respawnDelay;
     this.onAreaChange();
   },
 
@@ -519,7 +537,7 @@ G.ui = {
     const close = () => { const m = document.getElementById("modal-worldmap"); if (m) m.hidden = true; };
     if (i < 0 || i > maxU || i === d.areaIndex) { close(); return; }
     d.areaIndex = i;
-    G.combat.enemy = null; G.combat.pendingHits = []; G.combat.respawnTimer = G.data.balance.respawnDelay;
+    G.combat.enemies = []; G.combat.enemy = null; G.combat.pendingHits = []; G.combat.respawnTimer = G.data.balance.respawnDelay;
     this.onAreaChange();
     close();
   },
@@ -539,6 +557,7 @@ G.ui = {
       if (container.innerHTML) container.innerHTML = "";
       container.className = "enemies-container";
       this._enemySig = "";
+      this._enemyFills = []; this._enemyLabels = []; this._enemyHpShown = [];
       return;
     }
 
@@ -569,9 +588,13 @@ G.ui = {
           </div>
         </div>`;
       }).join("");
+      // cacheia os elementos de HP por índice — evita 2×N getElementById por tick de 100ms
+      this._enemyFills   = list.map((e, i) => document.getElementById(`enemy-hp-fill-${i}`));
+      this._enemyLabels  = list.map((e, i) => document.getElementById(`enemy-hp-label-${i}`));
+      this._enemyHpShown = [];
     }
 
-    // por tick: HP + classes morto/ativo (sem rebuild → nada se reposiciona)
+    // por tick: classes morto/ativo (baratas) + HP só quando muda (pula a escrita se e.hp igual)
     const firstAlive = list.findIndex(e => !e.dead);
     list.forEach((e, i) => {
       const card = container.children[i];
@@ -579,8 +602,10 @@ G.ui = {
         card.classList.toggle("enemy-dead", !!e.dead);
         card.classList.toggle("enemy-active", i === firstAlive);
       }
-      const fill  = document.getElementById(`enemy-hp-fill-${i}`);
-      const label = document.getElementById(`enemy-hp-label-${i}`);
+      if (this._enemyHpShown[i] === e.hp) return;
+      this._enemyHpShown[i] = e.hp;
+      const fill  = this._enemyFills[i];
+      const label = this._enemyLabels[i];
       if (fill)  fill.style.width = G.util.clamp((e.hp / e.maxHp) * 100, 0, 100) + "%";
       if (label) label.textContent = `HP ${G.util.fmt(Math.max(0, e.hp))} / ${G.util.fmt(e.maxHp)}`;
     });
@@ -620,87 +645,83 @@ G.ui = {
     setTimeout(() => img.remove(), dur * 1000 + 80);
   },
 
-  // ---------- PASSIVES (Árvore-Mundo) ----------
+  // ---------- PASSIVES (Árvore I — árvore única binária + coroa) ----------
   renderPassives() {
     const P = G.passives;
-    if (!this.passivesTab) this.passivesTab = "eclat";
-    const tab = this.passivesTab;
     if (this.el["pv-points"]) this.el["pv-points"].textContent = G.util.fmt(G.state.data.convergencePoints || 0);
     const unlocked = P.unlocked();
     if (this.el["pv-lock"]) this.el["pv-lock"].hidden = unlocked;
-    const tabs = this.el["pv-tabs"];
-    if (tabs) {
-      tabs.style.visibility = unlocked ? "" : "hidden";
-      tabs.innerHTML = P.TREES.map((t) => {
-        const tr = P.trees[t];
-        return `<button class="pv-tab ${tr.cls}${t === tab ? " active" : ""}" data-tree="${t}">
-          <span class="pv-emblem"><img class="pv-fruit" src="assets/passives/fruit_${t}.webp" alt="" onerror="this.style.display='none'"></span>
-          <span class="pv-tab-name">${tr.label}</span>
-          <span class="pv-tab-count">${this._pvCount(t)}</span>
-        </button>`;
-      }).join("");
-    }
     const body = this.el["pv-body"];
     if (body) {
       body.style.visibility = unlocked ? "" : "hidden";
-      body.className = `pv-body ${P.trees[tab].cls}`;
-      body.innerHTML = unlocked ? this._pvTreeHtml(tab) : "";
+      body.className = "pv-body pv-tree1";
+      body.innerHTML = unlocked ? this._pvTreeHtml() : "";
     }
   },
 
-  _pvCount(tree) {
-    const pr = G.passives.treeProgress(tree);
-    return `${pr.unlocked}/${pr.total}${pr.maxed ? ` · ✦${pr.maxed}` : ""}`;
-  },
-
-  _pvTreeHtml(tree) {
-    const P = G.passives, tr = P.trees[tree];
+  _pvTreeHtml() {
+    const P = G.passives;
+    const pr = P.treeProgress();
     const summary = `<div class="pv-summary">
-      <span class="pv-sum-orb"></span><span class="pv-sum-l">${tr.label} bonus</span>
-      <span class="pv-sum-div"></span><span class="pv-total">×${(() => { const m = P.treeMult(tree); return m < 100 ? m.toFixed(2) : G.util.fmt(m); })()}</span>
-      <span class="pv-sum-stat">${tr.stat}</span></div>`;
+      <span class="pv-sum-orb"></span><span class="pv-sum-l">World-Tree I</span>
+      <span class="pv-sum-div"></span><span class="pv-total">${pr.unlocked}/${pr.total}</span>
+      <span class="pv-sum-stat">${pr.crown ? "✦ Ring Closed" : pr.maxed + " maxed"}</span></div>`;
     let nodes = "";
-    for (let i = 0; i < 15; i++) nodes += this._pvNode(tree, i);
+    for (let i = 0; i < P.nodes.length; i++) nodes += this._pvNode(i);
+    nodes += this._pvCrown();
     return summary + `<div class="pv-tree">${nodes}</div>`;
   },
 
-  _pvNode(tree, i) {
+  _pvNode(i) {
     const P = G.passives;
-    const [name, key] = P.trees[tree].list[i];
+    const node = P.nodes[i], name = node.name;
     const pos = P.POSITIONS[i];
-    const level = P.level(tree, i);
-    const maxed = P.isMax(tree, i);
-    const deferred = P.isDeferred(tree, i);
-    const locked = deferred || (!P.groupUnlocked(tree, P.groupOf(i)) && level === 0);
-    const role = P.isEngine(tree, key) ? "role-engine" : (P.leverOf(key) ? "role-lever" : "");
-    const cls = ["pv-node", role, i >= 10 ? "tip-below" : "", maxed ? "maxed" : "",
-      P.canBuy(tree, i) ? "buyable" : "", level > 0 && !maxed ? "owned" : "", locked ? "locked" : ""]
+    const level = P.level(i);
+    const maxed = P.isMax(i);
+    const locked = !P.parentBought(i) && level === 0;
+    const cls = ["pv-node", node.depth === 4 ? "tip-below" : "", maxed ? "maxed" : "",
+      P.canBuy(i) ? "buyable" : "", level > 0 && !maxed ? "owned" : "", locked ? "locked" : ""]
       .filter(Boolean).join(" ");
-    const m = `assets/passives/${tree}/${key}.webp`;
-    const mc = `-webkit-mask-image:url('${m}');mask-image:url('${m}')`;
-    const nmax = P.nodeMax(tree, i);
-    const lvlText = deferred ? "M2" : (maxed ? "✦" : (level > 0 ? `${level}/${nmax}` : ""));
-    const foot = deferred ? `<div class="pv-tip-foot locked">Map 2 — coming later</div>`
-      : maxed ? `<div class="pv-tip-foot max">Max Level</div>`
-      : locked ? `<div class="pv-tip-foot locked">Locked — max the tier below</div>`
-      : `<div class="pv-tip-foot cost">${level === 0 ? "Unlock" : "Upgrade"} · ${G.util.fmt(P.nextCost(tree, i))} pts</div>`;
+    const nmax = P.nodeMax();
+    const lvlText = maxed ? "✦" : (level > 0 ? `${level}/${nmax}` : "");
+    const foot = maxed ? `<div class="pv-tip-foot max">Max Level</div>`
+      : locked ? `<div class="pv-tip-foot locked">Locked — buy the node below first</div>`
+      : `<div class="pv-tip-foot cost">${level === 0 ? "Unlock" : "Upgrade"} · ${G.util.fmt(P.nextCost(i))} pts</div>`;
     return `<button class="${cls}" data-i="${i}" style="left:${pos.x}%;top:${pos.y}%;--p:${(level / nmax).toFixed(3)}">
-      <span class="pv-disc"><span class="pv-icon" style="${mc}"></span><i class="pv-ring"></i></span>
+      <span class="pv-disc"><i class="pv-ring"></i></span>
       <span class="pv-node-name">${name}</span>
       <span class="pv-node-lvl">${lvlText}</span>
       <div class="pv-tip">
-        <div class="pv-tip-head"><span class="pv-tip-icon"><span class="pv-icon" style="${mc}"></span></span>
-          <div class="pv-tip-htext"><div class="pv-tip-name">${name} <span class="pv-tip-tag">Passive</span></div>
-            <div class="pv-tip-lvl">Level ${level}/${nmax}</div></div></div>
-        <p class="pv-tip-eff">${this._pvEffect(tree, i)}</p>${foot}
+        <div class="pv-tip-head"><div class="pv-tip-htext"><div class="pv-tip-name">${name} <span class="pv-tip-tag">Passive</span></div>
+          <div class="pv-tip-lvl">Level ${level}/${nmax}</div></div></div>
+        <p class="pv-tip-eff">${this._pvEffect(i)}</p>${foot}
       </div>
     </button>`;
   },
 
-  _pvEffect(tree, i) {
-    const P = G.passives, key = P.trees[tree].list[i][1];
+  _pvCrown() {
+    const P = G.passives;
+    const pos = P.CROWN_POS, on = P.crownActive();
+    const lit = P.leaves().filter((i) => P.level(i) >= 1).length;
+    const cls = ["pv-node", "pv-crown", "tip-below", on ? "maxed crown-on" : "locked"].join(" ");
+    const foot = on ? `<div class="pv-tip-foot max">The Ring Closes — complete</div>`
+      : `<div class="pv-tip-foot locked">Light all 8 leaves (${lit}/8)</div>`;
+    return `<button class="${cls}" data-crown disabled style="left:${pos.x}%;top:${pos.y}%">
+      <span class="pv-disc"><i class="pv-ring"></i></span>
+      <span class="pv-node-name">${P.CROWN.name}</span>
+      <span class="pv-node-lvl">${on ? "✦" : lit + "/8"}</span>
+      <div class="pv-tip">
+        <div class="pv-tip-head"><div class="pv-tip-htext"><div class="pv-tip-name">${P.CROWN.name} <span class="pv-tip-tag">Crown</span></div>
+          <div class="pv-tip-lvl">${on ? "Granted" : "Locked"}</div></div></div>
+        <p class="pv-tip-eff">${P.EFFECT_DESC.ringCloses}<br><b>+${P.unit("ringCloses")}% ATK · HP · Lumens · XP</b></p>${foot}
+      </div>
+    </button>`;
+  },
+
+  _pvEffect(i) {
+    const P = G.passives, key = P.nodes[i].key;
     const desc = (P.EFFECT_DESC && P.EFFECT_DESC[key]) || "Effect pending balancing.";
-    const m = P.magnitude(tree, i);
+    const m = P.magnitude(i);
     if (!m) return desc;
     const now = m.current ? ` · now <b>${m.current}</b>` : "";
     return `${desc}<br><b>${m.perLevel}</b> / level${now}`;
@@ -767,6 +788,7 @@ G.ui = {
 
     const reqName = { area: "Area", level: "Lv", kills: "Kills", convergences: "Convergences" };
     const reqs = G.awaken.requirements(a.id).map((r) => {
+      if (r.key === "crown") return { label: "The Ring Closes (crown lit)", met: r.met };
       const base = r.key.indexOf("material:") === 0 ? "Awaken Mat" : (reqName[r.key] || r.key);
       return { label: `${base} ${G.util.fmt(r.have)}/${G.util.fmt(r.need)}`, met: r.met };
     });
@@ -815,19 +837,24 @@ G.ui = {
     if (this.el["conv-pending"]) this.el["conv-pending"].textContent = G.util.fmt(G.convergence.pending());
     if (this.el["conv-current"]) this.el["conv-current"].textContent = `Lv ${G.util.fmt(d.level)} · ${G.data.currentArea().name}`;
     if (this.el["conv-return"]) this.el["conv-return"].textContent = `Lv 1 · ${G.data.areas[0].name}`;
+    if (this.el["conv-next"]) this.el["conv-next"].textContent = G.util.fmt(G.convergence.currentGate());
     const btn = this.el["btn-converge"];
     if (btn) {
       const ok = G.convergence.canConverge();
       btn.disabled = !ok;
-      btn.textContent = ok ? "Converge" : `Reach Lv ${G.convergence.gateLevel}`;
+      btn.textContent = ok ? "Converge" : `Reach Lv ${G.util.fmt(G.convergence.currentGate())}`;
     }
   },
 
   // ---------- WORLD MAP ----------
-  // posições dos 9 nós no mapa (% x,y) — fonte única p/ nós E trilha
+  // posições dos 18 nós no mapa (% x,y) — fonte única p/ nós E trilha.
+  // Floresta (0-8): caminho descendente original. Porto Afundado (9-17): descida
+  // serpenteante na faixa inferior — dois sweeps (y79 direita→esquerda, y90 esquerda→direita).
   mapNodePos: [
     [10, 23], [36, 18], [66, 17], [82, 27], [61, 42],
     [35, 51], [10, 64], [28, 71], [71, 64],
+    [90, 79], [72, 79], [54, 79], [34, 79], [12, 79],
+    [23, 90], [44, 90], [64, 90], [82, 90],
   ],
 
   renderWorldMap() {
@@ -894,17 +921,29 @@ G.ui = {
       art.style.backgroundImage = a.img
         ? `linear-gradient(180deg, rgba(7,10,22,0.05), rgba(7,10,22,0.55)), url('${a.img}')`
         : "none";
-    const tints = ["#5ee0d2", "#e8b54a", "#9d7bff", "#7fb0ff", "#5ee0d2", "#e8b54a", "#cdb06a", "#c46a8a", "#e8d24a"];
+    const tints = ["#5ee0d2", "#e8b54a", "#9d7bff", "#7fb0ff", "#5ee0d2", "#e8b54a", "#cdb06a", "#c46a8a", "#e8d24a",
+      "#2a4d8f", "#2f5aa0", "#3a6bb5", "#4a5fbf", "#5a52c0", "#6b4fc0", "#7d4fbf", "#8f52b8", "#a05fb0"];
     this.el["wmap-info"].style.setProperty("--area-tint", tints[i % tints.length]);
 
     this.el["wmap-info-name"].textContent = `${a.name} · ${i + 1}/${total}`;
     this.el["wmap-info-lore"].textContent = a.blurb || "";
     this.el["wmap-info-level"].textContent = `${a.levelRange[0]}–${a.levelRange[1]}`;
-    const pack = i < 2 ? 1 : i < 5 ? 2 : 3;
+    const pack = G.combat.packSizeFor(i);
     this.el["wmap-info-enemies"].textContent = pack + " per wave";
     if (a.boss) {
       this.el["wmap-info-boss-row"].hidden = false;
+      // P8.4: a área 18 mostra o H6 (area.boss) como boss; o Okhra (mapBoss) é o 2º estágio.
       this.el["wmap-info-boss"].textContent = a.boss.name;
+      // linha extra do Okhra pós-H6 (com a mensagem do portão se o First Light não despertou)
+      if (i === total - 1 && a.mapBoss) {
+        const awake    = !!(G.awaken && G.awaken.isDone("first_light"));
+        const h6Felled = Array.isArray(d.harbingersFelled) && d.harbingersFelled.indexOf(i) !== -1;
+        let extra = "";
+        if (!h6Felled)   extra = `Then: ${a.mapBoss.name} stirs beyond the Choir.`;
+        else if (awake)  extra = `${a.mapBoss.name} — the Starving Tide, risen.`;
+        else             extra = "The tide stirs... but your light sleeps. Awaken the First Light.";
+        this.el["wmap-info-boss"].textContent = `${a.boss.name} — ${extra}`;
+      }
     } else {
       this.el["wmap-info-boss-row"].hidden = true;
     }
@@ -928,6 +967,11 @@ G.ui = {
     else { tbtn.disabled = false; tbtn.textContent = "Travel here"; }
 
     this.el["wmap-info"].hidden = false;
+  },
+
+  // P8.4: palco do Okhra — combat avisa (ui só LÊ estado e aplica a classe cosmética).
+  setOkhraStage(on) {
+    if (document.body) document.body.classList.toggle("okhra-manifest", !!on);
   },
 
   materialDrop(drops) {

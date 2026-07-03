@@ -1,3 +1,5 @@
+> ⚠️ **HISTÓRICO (jun/2026) — parcialmente superado.** Auditoria escrita antes das decisões de jul/2026 (`docs/lore/DECISOES_JUL26.md`): Eidola→The Harbingers, Archons→Nihelim, tipos rebaixados a bestiário, Map 1 = 18 áreas. Vários apontamentos daqui já foram resolvidos por essas decisões; ler como registro.
+
 # LORE ↔ GAMEPLAY — Auditoria de Consistência
 
 > Auditoria **read-only**. Não reescreve a lore nem altera sistemas. Cruza a

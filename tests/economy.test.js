@@ -46,31 +46,35 @@ let d = G.economy.rollDrops({}, Object.assign({ type: "common", areaIndex: 2 }, 
 ok(d.commonMaterial >= 1 && !d.uncommonMaterial && !d.awakenMaterial, "common dropa só Common material (Área 3)");
 ok(G.economy.getGear("common") >= 1, "Common material foi ao inventário");
 
-// 5) boss em área alta -> Common + Uncommon + Awaken
-d = G.economy.rollDrops({ isBoss: true }, Object.assign({ areaIndex: 5 }, R0));
-ok(d.commonMaterial && d.uncommonMaterial && d.awakenMaterial, "boss (área 6) dropa Common+Uncommon+Awaken");
+// 5) Harbinger em G5+ (idx>=12) -> Common + Awaken, NUNCA Uncommon (Rare/Forge = Mapa 2)
+d = G.economy.rollDrops({ isBoss: true }, Object.assign({ areaIndex: 14 }, R0));
+ok(d.commonMaterial && !d.uncommonMaterial && d.awakenMaterial, "Harbinger (G5+, idx 14) dropa Common+Awaken, sem Uncommon");
 ok(G.economy.getAwaken("firstLight") >= 1, "Awaken material (firstLight) foi ao inventário");
 
-// 6) gate de drops: Áreas 1-2 (idx 0-1) não dropam nada; Área 3 (idx 2) só Common
+// 6) gate de drops: Áreas 1-2 (idx 0-1) não dropam nada; Área 3 (idx 2) só Common (Awaken=G5+)
 let d0 = G.economy.rollDrops({ isBoss: true }, Object.assign({ areaIndex: 0 }, R0));
 ok(Object.keys(d0).length === 0, "gate: Área 1 (idx 0) não dropa material algum");
 let d2 = G.economy.rollDrops({ isBoss: true }, Object.assign({ areaIndex: 2 }, R0));
-ok(d2.commonMaterial && !d2.uncommonMaterial && !d2.awakenMaterial, "gate: Área 3 (idx 2) só Common (Uncommon=Área5, Awaken=Área6)");
+ok(d2.commonMaterial && !d2.uncommonMaterial && !d2.awakenMaterial, "gate: Área 3 (idx 2) só Common (Awaken=G5+/idx 12)");
 
-// 7) passivas Vestige: matCommonPct dobra quantidade (set direto p/ ignorar gating)
+// 7) as passivas de material NÃO existem na Árvore I (voltam na Árvore II) — logo os
+// multiplicadores da economia são inertes (=1). O PLUMBING segue correto: injetar um
+// efeito via mock ainda multiplica (à prova de futuro p/ a Árvore II).
 store = {}; G.state.data = null; G.state.load();
-G.passives.UNIT.matCommonPct = 100; G.state.data.passives.vestige[6] = 1; G.state.invalidateStats();
-ok(G.passives.effect("matCommonPct") === 100, "passiva matCommonPct ativa (placeholder de teste)");
-ok(Math.abs(G.economy.passiveQtyMult("commonMaterial") - 2) < 1e-9, "matCommonPct 100% -> quantidade ×2");
-G.passives.UNIT.matCommonPct = 0;
+ok(Math.abs(G.economy.passiveQtyMult("commonMaterial") - 1) < 1e-9, "Árvore I sem nós de material: passiveQtyMult inerte (=1)");
+const realEffects = G.passives.effects.bind(G.passives);
+const realEffect = G.passives.effect.bind(G.passives);
+G.passives.effects = () => ({ matGeneralPct: 100 });
+ok(Math.abs(G.economy.passiveQtyMult("commonMaterial") - 2) < 1e-9, "plumbing: matGeneralPct 100% -> quantidade ×2");
+G.passives.effects = realEffects;
 
-// 8) passivas Vestige: dropRate -> chance; Fracture: awakenMatPct -> awaken qty
-G.passives.UNIT.dropRate = 50; G.state.data.passives.vestige[9] = 1;
-ok(Math.abs(G.economy.passiveChanceMult() - 1.5) < 1e-9, "dropRate 50% -> chance ×1.5");
-G.passives.UNIT.dropRate = 0;
-G.passives.UNIT.awakenMatPct = 100; G.state.data.passives.fracture[3] = 1;
-ok(Math.abs(G.economy.passiveQtyMult("awakenMaterial") - 2) < 1e-9, "awakenMatPct 100% -> awaken qty ×2");
-G.passives.UNIT.awakenMatPct = 0;
+// 8) plumbing de chance (dropRate) e de awaken (awakenMatPct) via mock — inertes no roster atual
+G.passives.effect = (key) => (key === "dropRate" ? 50 : realEffect(key));
+ok(Math.abs(G.economy.passiveChanceMult() - 1.5) < 1e-9, "plumbing: dropRate 50% -> chance ×1.5");
+G.passives.effect = realEffect;
+G.passives.effects = () => ({ awakenMatPct: 100 });
+ok(Math.abs(G.economy.passiveQtyMult("awakenMaterial") - 2) < 1e-9, "plumbing: awakenMatPct 100% -> awaken qty ×2");
+G.passives.effects = realEffects;
 
 // 9) save/load preserva materiais
 store = {}; G.state.data = null; G.state.load();
@@ -79,8 +83,8 @@ G.state.data = null; G.state.load();
 ok(G.economy.getGear("common") === 12 && G.economy.getGear("uncommon") === 4 && G.economy.getAwaken("firstLight") === 3,
   "save/load preserva materiais");
 
-// 10) integração combat.onKill concede materiais
-store = {}; G.state.data = null; G.state.load(); G.state.data.areaIndex = 5;
+// 10) integração combat.onKill concede materiais (Harbinger em G5+/idx 12)
+store = {}; G.state.data = null; G.state.load(); G.state.data.areaIndex = 14;
 const cBefore = G.economy.getGear("common"), aBefore = G.economy.getAwaken("firstLight");
 const realRandom = Math.random; Math.random = () => 0;
 // onKill agora opera sobre o array enemies[] (encontra o primeiro vivo)
@@ -89,7 +93,7 @@ G.combat.enemies = [mob]; G.combat.enemy = mob;
 G.combat.onKill();
 Math.random = realRandom;
 ok(G.economy.getGear("common") > cBefore && G.economy.getAwaken("firstLight") > aBefore,
-  "combat.onKill (boss área 6) concede Common+Awaken via rollDrops");
+  "combat.onKill (Harbinger G5+) concede Common+Awaken via rollDrops");
 
 // 11) inventário de Awaken existe (awakenEssence legado virou awakenMaterials.firstLight)
 ok(G.state.data.awakenMaterials && typeof G.state.data.awakenMaterials.firstLight === "number",
@@ -97,6 +101,25 @@ ok(G.state.data.awakenMaterials && typeof G.state.data.awakenMaterials.firstLigh
 
 // 12) tipos elite/miniBoss já existem na tabela (prontos p/ inimigos futuros)
 ok(!!(G.economy.dropTable.elite && G.economy.dropTable.miniBoss), "dropTable tem elite e miniBoss (prontos p/ futuro)");
+
+// 13) save antigo com peça 'rare' equipada (Rare saiu de data.rarities no P3) -> reconcile
+// não crasha, rebaixa a peça pra Common e clampa o nível ao novo cap (500), sem travar stats()
+store = {};
+const oldRareSave = G.state.fresh();
+oldRareSave.equipped.weapon = {
+  slot: "weapon", slotLabel: "Weapon", name: "Old Rare Blade",
+  rarity: "rare", rarityName: "Rare", color: "#7fb0ff", level: 2800, affixes: [],
+};
+oldRareSave.lumens = 12345;
+store[G.state.SAVE_KEY] = JSON.stringify(oldRareSave);
+G.state.data = null; G.state.load();
+const wpn = G.state.data.equipped.weapon;
+ok(wpn.rarity === "common", "save antigo com peça 'rare': reconcile rebaixa para 'common' (rare saiu do Mapa 1)");
+ok(wpn.level === G.gear.cap(wpn), "save antigo com peça 'rare': nível clampado ao cap da nova raridade (common=500)");
+ok(G.state.data.lumens === 12345, "save antigo com peça 'rare': resto do save preservado (lumens)");
+let statsThrew = false;
+try { G.state.stats(); } catch (e) { statsThrew = true; }
+ok(!statsThrew, "save antigo com peça 'rare': G.state.stats() não crasha após reconcile");
 
 console.log(failed === 0 ? "\nALL PASS" : `\n${failed} FAIL`);
 process.exit(failed === 0 ? 0 : 1);
