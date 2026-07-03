@@ -37,7 +37,9 @@
 
 ## Pendências conhecidas (ordenadas)
 
-1. **P8 ✅ FECHADO** — Rarity Find + modificadores + assinaturas + finale encenado, tudo no PR #24. Números finais no framework. **Próximo da fila: fase de UI/design** (item 4) e playtest humano (item 4b).
+0. **PRÓXIMO DA FILA (design): pausa de lore do Porto** = item 6 abaixo. Regra travada: NENHUMA arte do Tema B antes do bestiário canon das áreas 10–18. Depois dela: bestiário novo → H4/H5/H6 → backgrounds 10–18 → arte do mapa Ato B (placeholder azulado no código espera `assets/ui/map2.png`) → finale (Okhra, design já aprovado §8).
+0b. **Fase de design — regras vivas (jul/03):** 10-80-10 estrito (Fable NÃO implementa código) · criaturas via nome+forma→referências do dono→prompt · commits em LOTE · arte só aprova IN-GAME · sprites ~600×900 <600KB (3MB congela o renderer) · prompts com alpha real + silhueta fechada + zero partículas + **NO red** · âncora de família visual do Tema B = `docs/design/refs_tema_a_backgrounds.jpg`.
+1. **P8 ✅ FECHADO** (+P8.5b jul/03 — ver Decisões travadas). Playtest humano segue pendente (item 4b).
 1b. **Registrado (dono, não desenhar agora):** repensar sistema tipo Ascension antigo com **Mémoires** — 1 por mapa, história do mundo + bônus poderosos.
 1c. **Registrado pro Mapa 2 (P7.4):** promoção Uncommon→Rare exige First Light (o Awaken abre o próximo estágio do gear a cada mapa).
 3. **Registrados pra Árvore II (Mapa 2):** Second Wind · Golden Wake e o banco · awakenEfficiency/awakenReqReduction (removidos do código no P6) · pós-cap da convergence aberto de propósito.
@@ -47,13 +49,14 @@
 5. **Política do sim (registrado no P3):** promoções em lockstep no G2–G3; jogador realista espalharia — refinar a persona se algum número futuro depender disso.
 6. **Import** do `mapa1_tema_b_porto_afundado.md` (criado fora do repo) + ajuste Nebulor→Okhra (área 17).
 7. **Sweep de termos** nos docs (Archon→Nihelim etc.) — `node tools/check_canon.js` lista; exports consolidados (`GAME_CONTEXT`, `LORE_COMPLETE`) têm banner mas corpo antigo.
-8. Escolher **quais 3 Harbingers** da floresta viram titulares de grupo (lore, sem pressa).
+8. Escolher **quais 3 Harbingers** da floresta viram titulares de grupo (lore). **⚠️ ATUALIZAÇÃO jul/03: o reboot de arte USOU Hollow Cantor (H1), Bramble King (H2) e Gilded Hollow (H3) como titulares — arte nova aprovada pros três.** Falta só o `/travar` formal confirmando (ou trocar ANTES de produzir mais arte deles; os 6 reservados seguem sem arte nova). Os comentários PLACEHOLDER no `data.js` saem no travamento.
 9. Fila da lore: **Séraphine + final/Convergence (Parte IX)** ← próximo item de lore; depois Mapa 2 (Naameth).
 10. Renomes no código (Kindled/Luminous/Radiant → Ember/Lumen/Corona etc.) — **DESBLOQUEADO: a escada fechou, o balance mandou.** Entra na fase de UI/design.
 
 ## Infra & contexto operacional
 
-- **Branch:** `claude/eclats-lumiere-hierarchy-amsoqc` · **PR #24 aberto** (docs+tooling; sem CI no repo; pushes novos atualizam o PR). Sessão inscrita nos eventos do PR.
+- **Branch:** `main` direto (a fase de design commita e pusha em main; o PR #24 da fase de balance já foi absorvido).
+- **Pipeline de arte (jul/03):** dono gera no ChatGPT → baixa em `C:\Users\KABUM\Downloads` → agente checa alpha/borda, otimiza (quantize 256, ~600×900) e instala em `assets/` → valida via Chrome MCP no jogo (forçar boss: `G.combat._bossKills=9999; G.combat.enemies=[]; G.combat.spawn()` · pausar: `G.combat.paused=true` · trocar área: `G.state.data.areaIndex=N; G.state.save(); location.reload()`) → dono aprova → commit em lote. Save do browser é de teste (mutado, descartável).
 - **Sim:** `node tools/sim.js baseline|gates|campaign` (ver CLAUDE.md).
 - **Canon-check:** `node tools/check_canon.js` (termos supersedidos nos docs).
 - **Comandos de sessão** (`.claude/commands/`): `/retomar` · `/handoff` · `/travar` · `/balance` · `/canon` — ver seção Harness no CLAUDE.md.

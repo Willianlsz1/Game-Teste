@@ -3,16 +3,18 @@
 > Criado jul/2026 na virada pós-balance (escada P0–P8 fechada). Guia da fase de design.
 > Dono: Willian. Referências visuais: boards no Pinterest, 1 por etapa.
 
-## O inventário real (extraído do código, jul/2026)
+## O inventário real (atualizado jul/03 — pós-reboot do Tema A)
 
-| Categoria | Existe | Falta |
+| Categoria | Existe (arte NOVA aprovada in-game) | Falta |
 |---|---|---|
-| Mobs distintos | 10 (todos com PNG) | Tema B usa mobs da FLORESTA como placeholder — o bestiário do Porto não existe |
-| Harbingers | H1–H3 com arte | **H4 (Drowned Bell) · H5 (Hollow Fleet) · H6 (Tidebound Choir) — sem arte** |
-| Okhra (boss do mapa) | — | **sem arte** (sprite 🌊) + o palco da Maré (`.okhra-manifest` é só um tint CSS) |
-| Backgrounds de área | 9 (Floresta) | **9 do Porto Afundado** |
-| Reservados | 6 Harbingers da floresta têm arte (waking_bloom, drowned_lantern, moonlit_sovereign, stillwater_maiden, gilded_confessor, heartroot_mourner) | decisão de lore: quais 3 viram titulares |
-| UI | HUD/modais/ícones funcionais | pele visual (skin), World Map do Porto, painel Lights, palco do finale |
+| Mobs Floresta | **10/10 rebootados** ✅ | Tema B usa mobs da FLORESTA como placeholder — o bestiário do Porto não existe |
+| Harbingers | **H1 Hollow Cantor · H2 Bramble King · H3 Gilded Hollow rebootados** ✅ | **H4 (Drowned Bell) · H5 (Hollow Fleet) · H6 (Tidebound Choir) — sem arte** |
+| Okhra (boss do mapa) | design aprovado na lore §8 | **sem arte** (sprite 🌊) + o palco da Maré (`.okhra-manifest` é só um tint CSS) |
+| Backgrounds de área | **9/9 Floresta rebootados** ✅ (gancho pro Porto nos 7–9) | **9 do Porto Afundado** |
+| World Map | **Ato A completo** ✅ (map1.png geografia + 9 medalhões + tela dupla A/B no código) | **arte do Ato B** (`map2.png` — código já espera; placeholder azulado ativo) |
+| Reservados | 6 Harbingers antigos guardados (arte VELHA) | refazer sob demanda; titulares de facto = H1/H2/H3 acima (falta /travar formal — pendência 8 do HANDOFF) |
+| UI combate | **nameplate de boss + contador de invocação + Lightshell legível + banner de área minimalista** ✅ | pele dos 5 modais/HUD, painel Lights, palco do finale, renomes Kindled→Ember (código) |
+| Referências | `refs_tema_a_backgrounds.jpg` (folha 3×3, âncora do Tema B) ✅ | — |
 
 ## Vocabulário mínimo (os termos, sem mistério)
 
@@ -32,7 +34,11 @@
 
 ## As etapas
 
-### Etapa 0 — Direção de arte (1 sessão, ANTES de qualquer imagem)
+> **STATUS jul/03: Etapas 0, 1 e 2 ✅ COMPLETAS** (Tema A 100% rebootado e commitado).
+> Etapa 5 PARCIAL: World Map Ato A + nameplate de boss + banner de área + contador entregues; resta pele de modais/HUD, mapa Ato B, renomes e copy fixes.
+> **Próxima: Etapa 3 (lore do Porto ANTES de arte).** Fluxo de criaturas vigente: nome+forma (agente) → referências (dono) → prompt sobre as refs.
+
+### Etapa 0 — Direção de arte (1 sessão, ANTES de qualquer imagem) ✅
 Uma página só, feita a partir dos boards: paleta (fundo escuro + dourado dos Lumens + as 3 cores de raridade travadas: Ember teal / Lumen azul / Corona violeta) · estilo do traço (escolher UM: pintado/painterly, flat, pixel…) · regra de luz (TODA criatura carrega luz roubada — a luz vem DELA, não do ambiente; isso já está na linguagem visual dos Nihelim, DECISOES_JUL26 §8) · formato padrão dos arquivos (PNG transparente, mesmo tamanho por categoria).
 **Por quê primeiro:** refazer 10 mobs sem isso = 10 estilos diferentes.
 

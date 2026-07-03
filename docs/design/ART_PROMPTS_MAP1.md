@@ -94,13 +94,18 @@ adicionar indícios do Porto na borda (sal, água subindo, verdete, madeira ench
 
 ## Ordem de produção (espelha o roadmap)
 
-| Lote | Chat | Assets |
-|---|---|---|
-| 1 | Mobs Floresta | os 4 iniciais (Candlewisp Shade, Mothlight Herald, Dreamhorn Warden, Mirelight Drifter) → aprovar estilo → os outros 6 |
-| 2 | Harbingers A | H1 Hollow Cantor · H2 Bramble King · H3 Gilded Hollow (+ os 6 reservados refeitos, quando a lore escolher os titulares) |
-| 3 | Backgrounds A | áreas 1–9 |
-| 4 | *(depois do import da lore do Porto)* | bestiário novo do Tema B → H4/H5/H6 → backgrounds 10–18 |
-| 5 | Finale | Okhra (design aprovado) + palco da manifestação |
+| Lote | Chat | Assets | Status |
+|---|---|---|---|
+| 1 | Mobs Floresta | 10 mobs da floresta | ✅ jul/03 (10/10 aprovados in-game) |
+| 2 | Harbingers A | H1 Hollow Cantor · H2 Bramble King · H3 Gilded Hollow | ✅ jul/03 (fluxo: forma → refs do dono → prompt) |
+| 3 | Backgrounds A | áreas 1–9 + World Map Ato A (map1.png + medalhões) | ✅ jul/03 |
+| 4 | *(depois do import da lore do Porto)* | bestiário novo do Tema B → H4/H5/H6 → backgrounds 10–18 → map2.png (Ato B) | ⏳ PRÓXIMO — bloqueado pela lore |
+| 5 | Finale | Okhra (design aprovado §8) + palco da manifestação | — |
+
+**Fluxo vigente pra criaturas (jul/03, ordem do dono):** o agente propõe NOME + FORMA →
+o dono caça referências → o prompt é construído SOBRE as refs (anexadas no chat com
+linhas "From this reference I want ___"). Harbingers = espécies variadas (ver direção
+acima). Faces de mobs NUNCA convergem (variar material/olhos/temperatura/silhueta).
 
 ## Especificações técnicas (padrão dos arquivos)
 
