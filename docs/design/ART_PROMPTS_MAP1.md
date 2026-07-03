@@ -59,6 +59,15 @@ Its stolen light is hoarded, not carried: <onde/como ele acumula luz roubada>.
 ```
 (O anel-que-não-fecha é a marca de família Nihelim — nos Harbingers aparece FRACO/incompleto, eco do eco.)
 
+**Direção travada pro visual dos Harbingers (dono, jul/2026):** designs únicos e
+incomuns, ar de criatura que COMANDA (boss) — nunca "mob grande". **Espécies variadas,
+não necessariamente humanoides:** elfos, anões, reis, sereias, seres etéreos, demônios
+etc. — cada Harbinger é de uma espécie/natureza diferente. Quando a espécie pedir rosto
+humanoide, ele é humanoide-mas-inumano/eerie (canon de boss). Ingredientes das
+referências do dono: melancolia nobre (serenidade + veias escuras) · carisma teatral
+(pose, adornos, presença) · silhueta de divindade (manto que engole o corpo, filigrana
+dourada, ponto luminoso pequeno no alto da forma vertical).
+
 ### Background de área
 ```
 Art style: clean cel-shaded game environment, layered flat color blocks,
