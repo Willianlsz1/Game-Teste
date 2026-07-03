@@ -119,6 +119,10 @@
 .tip-affix { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 .tip-affix__main { font-size: 19px; color: var(--teal); font-weight: 600; }
 .tip-perlv { font-size: 15px; color: var(--muted); }
+.tip-rarity {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+  color: #7ec8a0; opacity: 0.85;
+}
 
 /* multiplicador de level-up */
 .gear-mult__label { font-size: 13px; color: var(--muted); }
@@ -134,6 +138,14 @@
 /* ---- linha de stat clicável + popup de breakdown (matriz Fonte × Camada) ---- */
 .stat-row { cursor: pointer; }
 .stat-row:hover { background: rgba(255, 255, 255, 0.05); }
+
+/* ---- Lights (Rarity Find): seção final da lista de stats, sem breakdown ---- */
+.stat-row--section {
+  margin-top: 6px; padding-top: 10px !important; border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted);
+}
+.stat-row--section .stat-row__hint { font-weight: 400; opacity: 0.6; text-transform: none; letter-spacing: 0; }
+.stat-row--light b { color: #cfd8ea; }
 
 .stat-pop {
   position: fixed; inset: 0; z-index: 120;

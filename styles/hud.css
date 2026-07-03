@@ -25,16 +25,17 @@
 .hud-topright { top: 14px; right: 14px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .hud-bottomleft { bottom: 14px; left: 14px; width: 360px; max-width: 40vw; }
 
-/* ---- log (baixo esquerda) ---- */
+/* ---- Chronicle (baixo esquerda) ---- */
 /* painel de log: tamanho FIXO (não cresce/encolhe) + minimizar */
 .hud-bottomleft .log-panel {
-  background: var(--card); border: 1px solid var(--card-border);
-  border-radius: 10px; overflow: hidden;
+  background: linear-gradient(180deg, rgba(10, 14, 28, 0.72), rgba(7, 10, 22, 0.78));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px; overflow: hidden;
 }
 .hud-bottomleft .log-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 4px 6px 4px 11px; border-bottom: 1px solid var(--card-border);
-  font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted);
+  padding: 4px 6px 4px 11px; border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #8fa6c4;
 }
 .log-toggle {
   width: 24px; height: 18px; border: 1px solid var(--card-border); border-radius: 5px;
@@ -48,33 +49,42 @@
 }
 .log-panel.collapsed .log { display: none; }
 .log-panel.collapsed .log-header { border-bottom: none; }
+/* entradas mais novas entram no TOPO (prepend) — fade progressivo pras mais antigas */
+.hud-bottomleft .log .log-line:nth-child(1) { opacity: 1; }
+.hud-bottomleft .log .log-line:nth-child(2) { opacity: 0.85; }
+.hud-bottomleft .log .log-line:nth-child(3) { opacity: 0.7; }
+.hud-bottomleft .log .log-line:nth-child(4) { opacity: 0.55; }
+.hud-bottomleft .log .log-line:nth-child(n+5) { opacity: 0.4; }
 
-/* ---- painel de taxas (Gold/Min, XP/Min, Dmg) — topo-esquerda sob a toolbar ---- */
-.hud-rates { bottom: 14px; left: 388px; }
+/* ---- faixa de métricas (Gold/Min, XP/Min, Kills/Min, Dmg) — rodapé central ---- */
+.hud-rates {
+  bottom: 12px; left: 50%; transform: translateX(-50%);
+  z-index: 20;
+}
 .rates-panel {
-  display: flex; flex-direction: column; gap: 3px; min-width: 180px;
-  padding: 8px 12px; border-radius: 10px;
-  background: rgba(8, 12, 22, 0.78); border: 1px solid var(--card-border);
+  display: flex; align-items: stretch;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(12, 18, 36, 0.92), rgba(7, 10, 22, 0.94));
+  border: 1px solid rgba(232, 181, 74, 0.28);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
-.rate-row {
-  display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
-  font-size: 12px; color: var(--muted);
+.rate-cell {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 7px 16px;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
 }
-.rate-row b {
-  color: var(--gold); font-weight: 700; font-size: 13px;
-  font-variant-numeric: tabular-nums;
+.rate-cell:first-child { border-left: none; }
+.rate-label {
+  font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: #8fa6c4;
 }
-/* Lights panel (Rarity Find) — chance efetiva / teto por tier */
-.lights-panel {
-  display: flex; flex-direction: column; gap: 3px;
-  margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--card-border);
+.rate-value {
+  font-family: "Cormorant Garamond", serif; font-style: italic; font-weight: 700;
+  font-size: 17px; font-variant-numeric: tabular-nums;
 }
-.lights-title {
-  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--muted); font-weight: 700; margin-bottom: 1px;
-}
-.lights-title .lights-sub { font-weight: 400; opacity: 0.6; text-transform: none; letter-spacing: 0; }
-.lights-panel .rate-row b { color: #cfd8ea; }
+.rate-value--gold   { color: #e8b54a; }
+.rate-value--violet { color: #b9a6ff; }
+.rate-value--teal   { color: #5ee0d2; }
+.rate-value--coral  { color: #f0997b; }
 
 /* ---- cena de batalha sobre o mundo ---- */
 .battle-stage {

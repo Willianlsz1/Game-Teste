@@ -106,27 +106,20 @@
   <div class="hud hud-bottomleft">
     <div class="log-panel" id="log-panel">
       <div class="log-header">
-        <span class="log-title">Log</span>
+        <span class="log-title">Chronicle</span>
         <button class="log-toggle" id="log-toggle" title="Minimize" onclick="G.ui.toggleLog()">—</button>
       </div>
       <div class="log" id="log"></div>
     </div>
   </div>
 
-  <!-- rates panel (Gold/Min, XP/Min, Dmg) -->
+  <!-- rates strip (Gold/Min, XP/Min, Kills/Min, Dmg) -->
   <div class="hud hud-rates">
     <div class="rates-panel">
-      <div class="rate-row"><span>Gold/Min</span><b id="rate-gold">0</b></div>
-      <div class="rate-row"><span>XP/Min</span><b id="rate-xp">0</b></div>
-      <div class="rate-row"><span>Kills/Min</span><b id="rate-kills">0</b></div>
-      <div class="rate-row"><span>Dmg</span><b id="rate-dmg">0</b></div>
-      <!-- Lights (Rarity Find): chance efetiva / teto atual por tier -->
-      <div class="lights-panel" id="lights-panel" hidden>
-        <div class="lights-title">Lights <span class="lights-sub">chance / cap</span></div>
-        <div class="rate-row"><span style="color:#5ee0d2">Ember</span><b id="light-ember">0% / 0%</b></div>
-        <div class="rate-row"><span style="color:#4fa8ff">Lumen</span><b id="light-lumen">0% / 0%</b></div>
-        <div class="rate-row"><span style="color:#9d7bff">Corona</span><b id="light-corona">0% / 0%</b></div>
-      </div>
+      <div class="rate-cell"><span class="rate-label">Gold/Min</span><b id="rate-gold" class="rate-value rate-value--gold">0</b></div>
+      <div class="rate-cell"><span class="rate-label">XP/Min</span><b id="rate-xp" class="rate-value rate-value--violet">0</b></div>
+      <div class="rate-cell"><span class="rate-label">Kills/Min</span><b id="rate-kills" class="rate-value rate-value--teal">0</b></div>
+      <div class="rate-cell"><span class="rate-label">Dmg</span><b id="rate-dmg" class="rate-value rate-value--coral">0</b></div>
     </div>
   </div>
 

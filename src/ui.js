@@ -4,6 +4,23 @@ G.ui = {
   el: {},
   gearMult: 1,
 
+  // display copy: stat key -> plain English name (no fantasy affix names)
+  STAT_NAMES: {
+    atk:              "ATK",
+    hp:               "HP",
+    crit:             "Crit Chance",
+    critDmg:          "Crit Damage",
+    atkSpeed:         "Attack Speed",
+    xpBonus:          "XP Bonus",
+    lumensBonus:      "Lumens Bonus",
+    damageReduction:  "Damage Reduction",
+    specialDmg:       "Rare and Boss Damage",
+    siegeWard:        "Damage Reduction (2+ enemies)",
+    rarityFindEmber:  "Ember Light Chance",
+    rarityFindLumen:  "Lumen Light Chance",
+    rarityFindCorona: "Corona Light Chance",
+  },
+
   cache() {
     const ids = [
       "res-lumens", "res-area", "harbinger-counter",
@@ -205,7 +222,21 @@ G.ui = {
     ];
     const html = rows.map(([key, k]) =>
       `<li class="stat-row" data-stat="${key}"><span>${k}</span><b>${this.statValueText(key, s)}</b></li>`).join("");
-    if (this.el["gear-stats"]) this.el["gear-stats"].innerHTML = html;
+
+    const rf  = s.rarityFind  || { ember: 0, lumen: 0, corona: 0 };
+    const cap = s.rarityCaps  || { ember: 0, lumen: 0, corona: 0 };
+    const lightRow = (label, color, t) => {
+      const chance = (Math.min(rf[t], cap[t]) * 100).toFixed(1);
+      const capPct = (cap[t] * 100).toFixed(1);
+      return `<li class="stat-row--light"><span style="color:${color}">${label}</span><b>${chance}% / ${capPct}%</b></li>`;
+    };
+    const lightsHtml =
+      `<li class="stat-row--section"><span>Lights</span><span class="stat-row__hint">chance / cap</span></li>` +
+      lightRow("Ember", "#5ee0d2", "ember") +
+      lightRow("Lumen", "#4fa8ff", "lumen") +
+      lightRow("Corona", "#9d7bff", "corona");
+
+    if (this.el["gear-stats"]) this.el["gear-stats"].innerHTML = html + lightsHtml;
   },
 
   statValueText(key, s) {
@@ -276,21 +307,6 @@ G.ui = {
     set("rate-xp",    G.util.fmt(Math.round(r.xp)));
     set("rate-kills", (r.kills || 0).toFixed(1));
     set("rate-dmg",   G.util.fmt(dps));
-
-    // Lights panel (Rarity Find): aparece assim que houver qualquer chance OU teto.
-    const rf = s.rarityFind || { ember: 0, lumen: 0, corona: 0 };
-    const cap = s.rarityCaps || { ember: 0, lumen: 0, corona: 0 };
-    const lp = document.getElementById("lights-panel");
-    if (lp) {
-      const any = rf.ember || rf.lumen || rf.corona || cap.ember || cap.lumen || cap.corona;
-      lp.hidden = !any;
-      if (any) {
-        const line = (t) => (Math.min(rf[t], cap[t]) * 100).toFixed(1) + "% / " + (cap[t] * 100).toFixed(1) + "%";
-        set("light-ember",  line("ember"));
-        set("light-lumen",  line("lumen"));
-        set("light-corona", line("corona"));
-      }
-    }
   },
 
   toggleLog() {
@@ -421,16 +437,17 @@ G.ui = {
 
     const rows = newPiece.affixes.map((na) => {
       const sign = na.pct ? "%" : "";
+      const name = this.STAT_NAMES[na.stat] || na.label;
       const newV = this.fmtStat(G.gear.affixValue(newPiece, na));
       const cur  = curById[na.id];
       if (cur) {
         const curV = this.fmtStat(G.gear.affixValue(item, cur));
         return `<div class="anvil-affix">
-          <span class="anvil-affix__lbl">${na.label}</span>
+          <span class="anvil-affix__lbl">${name}</span>
           <span class="anvil-affix__val"><i>+${curV}${sign}</i> <em>→</em> <b>+${newV}${sign}</b></span></div>`;
       }
       return `<div class="anvil-affix anvil-affix--new">
-        <span class="anvil-affix__lbl">${na.label}</span>
+        <span class="anvil-affix__lbl">${name}</span>
         <span class="anvil-affix__val"><b>+${newV}${sign}</b> <em class="tag-new">NEW</em></span></div>`;
     }).join("");
 
@@ -475,10 +492,13 @@ G.ui = {
   gearTipHtml(item) {
     const lvl = item.level || 1;
     const cap = G.gear.cap(item);
+    const base = G.data.gearBase[item.slot];
+    const uncommonIds = (base && base.uncommonAffixes || []).map((a) => a.id);
     const affixes = item.affixes.map((a) => {
       const v    = G.gear.affixValue(item, a);
       const sign = a.pct ? "%" : "";
-      const kind = a.layer === "pct" ? "Bonus" : "Primary";
+      const name = this.STAT_NAMES[a.stat] || a.label;
+      const rarityTag = uncommonIds.indexOf(a.id) !== -1 ? `<span class="tip-rarity">Uncommon</span>` : "";
       let note = "";
       if (a.perStep != null) {
         // Rarity Find (P8.1): mostra o degrau atual e o próximo (valor + nível)
@@ -491,7 +511,7 @@ G.ui = {
       } else if (a.perLevel) {
         note = `<span class="tip-perlv">+${this.fmtStat(a.perLevel)}${sign} per level</span>`;
       }
-      return `<div class="tip-affix"><span class="tip-affix__main">+${this.fmtStat(v)}${sign} ${a.label} ${kind}</span>${note}</div>`;
+      return `<div class="tip-affix"><span class="tip-affix__main">+${this.fmtStat(v)}${sign} ${name}</span>${rarityTag}${note}</div>`;
     }).join("");
     return `<div class="tip-name" style="color:${item.color}">${item.name}</div>
       <div class="tip-sub" style="color:${item.color}">${item.rarityName} ${item.slotLabel}</div>
