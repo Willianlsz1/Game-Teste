@@ -316,7 +316,7 @@ G.data = {
         { name: "Saltmarrow Wader",  sprite: "🧂", img: "assets/enemies/saltmarrow_wader.png"  },
         { name: "Hollowed Diver",    sprite: "🤿", img: "assets/enemies/hollowed_diver.png"    },
       ],
-      boss: { name: "The Drowned Bell", sprite: "🔔", hpMult: 3.60, dmgMult: 2.0, signature: ["quickened"] }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar. P8.3 H4 = Quickened
+      boss: { name: "The Drowned Bell", sprite: "🔔", hpMult: 3.60, dmgMult: 2.0, signature: ["quickened"], img: "assets/enemies/drowned_bell.png" }, // P8.3 H4 = Quickened
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {

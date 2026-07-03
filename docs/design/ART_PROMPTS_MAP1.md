@@ -55,6 +55,13 @@ sem detalhe único). Regras pra TODO prompt de criatura do Tema B daqui em diant
    (c) **1 detalhe-assinatura ornamentado** que o torna único (a lanterna, as boias
    de vidro, as moedas de latão...). Distribuir espuma/verdete/teal/madeira
    deliberadamente — nunca entregar um mob de uma cor só.
+4c. **Variedade DENTRO da família (dono, jul/03, após H4): frio ≠ monocromia.**
+   A base fria (teal/verdete/espuma) segue dominando, mas cada mob leva **UM acento
+   de matiz próprio** que os outros não têm — violeta profundo, azul abissal,
+   marfim-osso, cobre frio, verde-alga, azul-gelo — e **nunca dois mobs seguidos
+   com o mesmo acento**. Declarar o acento no prompt ("accent color of THIS
+   creature: deep violet — no other creature in this set uses it"). Acentos
+   atribuídos aos mobs 6–10: ver mapa de variedade no lore doc (§4b).
 4b. **Cores do Porto ≠ cores da Floresta (dono, jul/03, após mobs 4–5):** o Strangler
    e o Diver saíram com marrons QUENTES dominantes (corda/couro) que leem como Tema A.
    Daqui em diante: **teal profundo / verdete / espuma pálida DOMINAM a leitura** do

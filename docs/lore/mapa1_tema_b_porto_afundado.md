@@ -106,11 +106,13 @@ Cada mob = silhueta-base própria + pose com atitude + esquema de cor próprio +
 | The Pale Shoal | núcleo fino + leque radial | ereto, cardume abrindo em auréola atrás | casaco pálido · nuvem de peixes teal-escura · latão | o casaco vazio habitado pelo cardume |
 | Mooring Strangler | vertical esquálida arrastando peso | inclinado pra frente, corpo inteiro puxando contra a âncora | corda encharcada · pele afogada pálida · ferrugem+verdete · teal sob as cordas | estrangulado pelas próprias amarras, arrastando a âncora do cais |
 | Hollowed Diver | corcunda maciça assimétrica | ombros à frente, nós dos dedos no chão, mangueira-cauda | latão verdete · couro escuro costurado · água-sombra nos rasgos · teal no visor | o traje meio-absorvido — nos rasgos, só água escura |
-| Wrackwood Hulk | massa larga assimétrica | inclinado pra frente, ombro-proa avançando | madeira naufragada escura · cracas pálidas · verdete | a vigia escura no lugar da cabeça |
-| Coralbone Creeper | baixa e larga | andar de lado, pinça gigante erguida | branco-osso coral · sombras teal · anêmonas acesas | a pinça assimétrica incrustada de verdete |
-| Depthlight Lure | etérea flutuante | pairando parada, cortinas de tentáculos caindo | sino translúcido teal · lustre DOURADO dentro · sombra funda | a água-viva-catedral com lustre de luz roubada |
-| Siltveil Shade | esgarçada, meio-vista | inclinada, bordas se desfazendo em nuvem | lodo cinza-verde · sedimento escuro · um traço teal | só existe enquanto a água se move |
-| Tidespawn Husk | coluna espiral | girando, detritos orbitando | teal escuro da maré · detritos variados · fiapo dourado | um gomo da maré com filigrana do anel do Okhra |
+| Wrackwood Hulk | massa larga assimétrica | inclinado pra frente, ombro-proa avançando | madeira naufragada escura · cracas pálidas · **acento: cobre frio + musgo-alga** | a vigia escura no lugar da cabeça |
+| Coralbone Creeper | baixa e larga | andar de lado, pinça gigante erguida | branco-osso coral · sombras teal · **acento: anêmonas VIOLETA profundas acesas** | a pinça assimétrica incrustada de verdete |
+| Depthlight Lure | etérea flutuante | pairando parada, cortinas de tentáculos caindo | sino translúcido teal · lustre DOURADO dentro · **acento: franjas azul-abissal** | a água-viva-catedral com lustre de luz roubada |
+| Siltveil Shade | esgarçada, meio-vista | inclinada, bordas se desfazendo em nuvem | lodo cinza-verde · sedimento escuro · **acento: veios azul-gelo espectrais** | só existe enquanto a água se move |
+| Tidespawn Husk | coluna espiral | girando, detritos orbitando | teal escuro da maré · **detritos multicoloridos frios (madeira, latão, pano desbotado)** · fiapo dourado | um gomo da maré com filigrana do anel do Okhra |
+
+*(Acentos únicos por mob — regra 4c do kit, jul/03: nunca dois mobs seguidos com o mesmo acento.)*
 
 ---
 
