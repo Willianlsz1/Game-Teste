@@ -36,12 +36,16 @@ G.combat = {
     return { lumens: lum / mins, xp: xp / mins, kills: g.length / mins };
   },
 
-  // pool de mobs da área atual (acumula mobs de todas as áreas anteriores)
+  // pool de mobs da área atual (acumula só as áreas do mesmo tema, até a atual)
   enemyPool() {
-    const idx  = G.util.clamp(G.state.data.areaIndex || 0, 0, G.data.areas.length - 1);
+    const areas = G.data.areas;
+    const idx   = G.util.clamp(G.state.data.areaIndex || 0, 0, areas.length - 1);
+    const theme = areas[idx].theme;
+    let start = idx;
+    while (start > 0 && areas[start - 1].theme === theme) start--;
     const pool = [], seen = {};
-    for (let i = 0; i <= idx; i++)
-      for (const e of G.data.areas[i].enemies)
+    for (let i = start; i <= idx; i++)
+      for (const e of areas[i].enemies)
         if (!seen[e.name]) { seen[e.name] = 1; pool.push(e); }
     return pool;
   },

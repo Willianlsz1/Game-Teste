@@ -152,7 +152,7 @@ G.ui = {
     this.el["res-area"].textContent = area.name;
     const tc = document.querySelector(".hud-topcenter");
     if (tc) {
-      const port = (G.state.data.areaIndex || 0) >= 9;
+      const port = G.data.currentArea().theme === "port";
       tc.classList.toggle("theme-port", port);
       tc.classList.toggle("theme-forest", !port);
     }
@@ -957,7 +957,8 @@ G.ui = {
     if (downBtn) {
       if (act === "A") {
         downBtn.hidden = false;
-        const portUnlocked = maxU >= 9;
+        const portStart = G.data.areas.findIndex(a => a.theme === "port");
+        const portUnlocked = portStart >= 0 && maxU >= portStart;
         downBtn.classList.toggle("is-locked", !portUnlocked);
         downBtn.textContent = portUnlocked ? "▼ The Sunken Port" : "🔒 The Sunken Port";
         downBtn.title = portUnlocked ? "" : "Defeat the Gilded Hollow";

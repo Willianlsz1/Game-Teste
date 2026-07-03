@@ -171,7 +171,7 @@ G.data = {
   // o Harbinger. Dentro do grupo, a próxima área destrava por NÍVEL (levelRange[0]).
   areas: [
     {
-      id: 1, name: "The Dreaming Wood",
+      id: 1, name: "The Dreaming Wood", theme: "forest",
       blurb: "Where the Seeker first wakes. Soft auroras drip through ancient boughs, and here the light still dreams.",
       img: "assets/areas/dreaming_wood.png",
       levelRange: [1, 80],
@@ -183,7 +183,7 @@ G.data = {
       ],
     },
     {
-      id: 2, name: "The Lantern Mire",
+      id: 2, name: "The Lantern Mire", theme: "forest",
       blurb: "A drowned bog of guttering lanterns, where Fragmented souls lost themselves chasing the light.",
       img: "assets/areas/lantern_mire.png",
       levelRange: [81, 171],
@@ -195,7 +195,7 @@ G.data = {
       ],
     },
     {
-      id: 3, name: "The Whispering Hollows",
+      id: 3, name: "The Whispering Hollows", theme: "forest",
       blurb: "Hollow trees that sing the trapped light, their murmurs curling endlessly through the dark.",
       img: "assets/areas/whispering_hollows.png",
       levelRange: [172, 276],
@@ -208,7 +208,7 @@ G.data = {
       boss: { name: "The Hollow Cantor", sprite: "🎶", hpMult: 17.42, dmgMult: 2.0, signature: ["lightshell"], img: "assets/enemies/hollow_cantor.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H1 = Lightshell
     },
     {
-      id: 4, name: "The Moonlit Canopy",
+      id: 4, name: "The Moonlit Canopy", theme: "forest",
       blurb: "The high canopy, nearest the aurora, where moths and wardens drift through a pale, restless glow.",
       img: "assets/areas/moonlit_canopy.png",
       levelRange: [277, 396],
@@ -220,7 +220,7 @@ G.data = {
       ],
     },
     {
-      id: 5, name: "The Sunken Grove",
+      id: 5, name: "The Sunken Grove", theme: "forest",
       blurb: "A flooded, mirrored grove — every still pool reflects the creeping Mist back at the Seeker.",
       img: "assets/areas/sunken_grove.png",
       levelRange: [397, 534],
@@ -232,7 +232,7 @@ G.data = {
       ],
     },
     {
-      id: 6, name: "The Gilded Thicket",
+      id: 6, name: "The Gilded Thicket", theme: "forest",
       blurb: "A bramble of thorns where the golden corruption climbs — beautiful, and entirely wrong.",
       img: "assets/areas/gilded_thicket.png",
       levelRange: [535, 693],
@@ -245,7 +245,7 @@ G.data = {
       boss: { name: "The Bramble King", sprite: "🥀", hpMult: 4.49, dmgMult: 2.0, signature: ["escorted"], img: "assets/enemies/bramble_king.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H2 = Escorted
     },
     {
-      id: 7, name: "The Hollow Cathedral",
+      id: 7, name: "The Hollow Cathedral", theme: "forest",
       blurb: "A cathedral grown of living wood, where the Fragmented kneel and worship the captured light.",
       img: "assets/areas/hollow_cathedral.png",
       levelRange: [694, 876],
@@ -257,7 +257,7 @@ G.data = {
       ],
     },
     {
-      id: 8, name: "The Weeping Roots",
+      id: 8, name: "The Weeping Roots", theme: "forest",
       blurb: "The deep roots, where the forest bleeds light and mourns everything it has lost.",
       img: "assets/areas/weeping_roots.png",
       levelRange: [877, 1086],
@@ -269,7 +269,7 @@ G.data = {
       ],
     },
     {
-      id: 9, name: "The Hollow Sanctum",
+      id: 9, name: "The Hollow Sanctum", theme: "forest",
       blurb: "The heart of the wood — the climax of the Dreaming, where the Gilded Hollow waits in the hush.",
       img: "assets/areas/hollow_sanctum.png",
       levelRange: [1087, 1328],
@@ -281,21 +281,20 @@ G.data = {
       ],
       boss: { name: "The Gilded Hollow", sprite: "👁", hpMult: 4.49, dmgMult: 2.0, signature: ["siphoning"], img: "assets/enemies/gilded_hollow.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H3 = Siphoning
     },
-    // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
-      id: 10, name: "The Sunken Port — Descent I",
-      blurb: "The forest gives way to drowned wharves, where cold currents carry a light that has forgotten the sun.",
+      id: 10, name: "The Salt-Eaten Quay", theme: "port",
+      blurb: "The quay lies dry in the shadow of a wave frozen mid-bite, and salt covers everything like snow.",
       levelRange: [1329, 1606],
       hp: [8209360, 10672168],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
       enemies: [
-        { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
-        { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
-        { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
+        { name: "Saltmarrow Wader",  sprite: "🧂", img: "assets/enemies/saltmarrow_wader.png"  },
+        { name: "Lanternjaw Angler", sprite: "🏮", img: "assets/enemies/lanternjaw_angler.png" },
+        { name: "The Pale Shoal",    sprite: "🐟", img: "assets/enemies/pale_shoal.png"        },
       ],
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
-      id: 11, name: "The Sunken Port — Descent II",
+      id: 11, name: "The Sunken Port — Descent II", theme: "port",
       blurb: "Flooded galleries of a harbour long lost, its lanterns still burning green beneath the tide.",
       levelRange: [1607, 1926],
       hp: [7843392, 18875731],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -307,7 +306,7 @@ G.data = {
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
-      id: 12, name: "The Sunken Port — Descent III",
+      id: 12, name: "The Sunken Port — Descent III", theme: "port",
       blurb: "The drowned bell-tower, where a single toll still rolls out through the black water.",
       levelRange: [1927, 2294],
       hp: [31459552, 40897418],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -320,7 +319,7 @@ G.data = {
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
-      id: 13, name: "The Sunken Port — Descent IV",
+      id: 13, name: "The Sunken Port — Descent IV", theme: "port",
       blurb: "Wharf after wharf sinks deeper, the pressure of the deep pressing the light thin.",
       levelRange: [2295, 2717],
       hp: [60815702, 79060413],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -332,7 +331,7 @@ G.data = {
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
-      id: 14, name: "The Sunken Port — Descent V",
+      id: 14, name: "The Sunken Port — Descent V", theme: "port",
       blurb: "The wreck-fields, where drowned hulls drift in a slow, luminous procession.",
       levelRange: [2718, 3203],
       hp: [40622208, 52808871],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -344,7 +343,7 @@ G.data = {
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
-      id: 15, name: "The Sunken Port — Descent VI",
+      id: 15, name: "The Sunken Port — Descent VI", theme: "port",
       blurb: "A graveyard of ships fused into a single hollow fleet, crewed by the light of the lost.",
       levelRange: [3204, 3762],
       hp: [61252164, 79627813],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -357,7 +356,7 @@ G.data = {
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
-      id: 16, name: "The Sunken Port — Descent VII",
+      id: 16, name: "The Sunken Port — Descent VII", theme: "port",
       blurb: "The abyssal shelf, where the last daylight dies and the deep begins to hunger.",
       levelRange: [3763, 4405],
       hp: [97487369, 126733580],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -369,7 +368,7 @@ G.data = {
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
-      id: 17, name: "The Sunken Port — Descent VIII",
+      id: 17, name: "The Sunken Port — Descent VIII", theme: "port",
       blurb: "The trench mouth, where the water itself glows with a slow, starving pulse.",
       levelRange: [4406, 5144],
       hp: [75582580, 98257354],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
@@ -381,7 +380,7 @@ G.data = {
     },
     // PLACEHOLDER (lore): conteúdo do Porto Afundado pendente de import
     {
-      id: 18, name: "The Sunken Port — Descent IX",
+      id: 18, name: "The Sunken Port — Descent IX", theme: "port",
       blurb: "The bottom of the world, where the Starving Tide coils around the last of the light.",
       levelRange: [5145, 6000],
       hp: [101473110, 202946219],  // P2: derivado da calibração (HTK C3) — não editar à mão, recalibrar
