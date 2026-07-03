@@ -174,11 +174,13 @@ mortes concentradas em tentativa prematura.
 - [x] P9.1 Harness + candidato v1 FITADO (jul/03) — ver §5
 - [x] P9.1b–d Candidatos v2→v4 (jul/03) — RELÓGIO NA BANDA: First Light 30h13,
       Okhra 31h31 (seed 1), curva acelera→desacelera ✓, árvore dura o mapa ✓
-- [ ] P9.1e Boss-fit (hpMult por boss DEPOIS dos arrays estáveis; Okhra ~208
-      p/ luta ~90 golpes — v4 mediu 6477/54min com mult 15000) + relógio fino
-      (31.5h → 36h±2: firstLight 75k→~100k e/ou xpCurveExp) + seeds 3/7
-- [ ] P9.1f Verificar: re-subida derrete (HTK ≤2 via árvore), padrão de mortes,
-      TTK wave nas bandas
+- [x] P9.1e Boss-fit + relógio fino (jul/03, Opus via 10-80-10) — v5 FECHADO,
+      ver §7: First Light 35h50/36h48/37h10 (seeds 1/3/7, banda 36±2 ✓),
+      Harbingers 20–40 HTK ✓, Okhra 62–75 golpes ✓, coroa conv 11 ✓,
+      mortes com padrão intencional ✓
+- [ ] P9.1f Re-subida: 10 áreas ainda acima de HTK 2 (pior: 15–17 com 9–11).
+      Resolve no P9.4 (árvore mais forte + mecânicas: Executioner's Light corta
+      re-subida diretamente). Medido e aceito como pendência, não como falha.
 - [ ] P9.2 Player scale + TTK wave (atkSpeed, HTK, curva de dano)
 - [ ] P9.3 Gear (promoção ×6–10 + per-level)
 - [ ] P9.4 Passivas (valores reais nas 3 árvores)
@@ -236,6 +238,33 @@ Lições de método: (a) hpMult de boss SÓ se fita depois dos arrays de área
 estabilizarem (ele cavalga o mob HP); (b) BOM do PowerShell corrompe JSON de
 candidato — makers sempre em Node; (c) o fitter oscila com xpCurveExp alto
 mas converge (maxDev 0.055 no pass 10).
+
+## 7. P9.1e — candidato v5 FINAL (jul/03, executado por Opus, revisado por Fable)
+
+**Dials que diferem do v4:** Harbinger hpMult = {área3: 0.483, área6: 3.0,
+área9: 90, área12: 5.49, área15: 1.33, área18: 13.87} · Okhra mapBoss hpMult
+208 · firstLight 100000 (teto do dono). xpCurveExp 1.9 e arrays de área
+intocados (relógio fechou só com material).
+
+**Validação (campanha, 3 seeds):**
+
+| Seed | First Light | Okhra | Coroa | Razão | Árvore fim |
+|---|---|---|---|---|---|
+| 1 | 35h50m | 69 golpes/34s | conv 11 | 1.71 | 66% |
+| 3 | 36h48m | 64/32s | conv 11 | 1.71 | 66% |
+| 7 | 37h10m | 62/31s | conv 11 | 1.71 | 66% |
+
+Mortes: 8–17/campanha, ZERO na área 18/Okhra, concentradas em entrada
+prematura (padrão §2.7 ✓). TTK/TTD de entrada intocados (HTK ~10 / 25s ✓,
+área 1 = 2.8s ✓). Baseline sem prestige trava em G4 por design (o meio-mapa
+EXIGE Convergence).
+
+**Tolerâncias aceitas:** razão 1.71 (0.01 acima da banda, consistente — resíduo
+do gate ×1.35) · H1 seed3 = 44 HTK (erra pro lado alto, regra do dono) · H2
+instável por natureza (1º contato salta de estado; mult 3.0 = meio da banda
+nas 3 seeds, nunca 1-hit).
+
+**Pendência herdada:** re-subida (P9.1f → resolve com P9.4).
 
 ## Superseded
 
