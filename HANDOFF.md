@@ -48,7 +48,7 @@
 
 ## Infra & contexto operacional
 
-- **Branch:** `claude/eclats-lumiere-hierarchy-amsoqc` · **PR #24 aberto** (docs+tooling; sem CI no repo; pushes novos atualizam o PR). Sessão inscrita nos eventos do PR.
+- **Branch:** `claude/eclats-lumiere-hierarchy-amsoqc` (recomeça da main após cada merge). **PRs #24 e #25 MERGEADOS** — main contém tudo. Sem CI no repo.
 - **Sim:** `node tools/sim.js baseline|gates|campaign` (ver CLAUDE.md).
 - **Canon-check:** `node tools/check_canon.js` (termos supersedidos nos docs).
 - **Comandos de sessão** (`.claude/commands/`): `/retomar` · `/handoff` · `/travar` · `/balance` · `/canon` — ver seção Harness no CLAUDE.md.
