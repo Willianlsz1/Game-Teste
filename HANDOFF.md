@@ -2,13 +2,15 @@
 
 > **Leia isto ANTES de qualquer trabalho.** Atualizado ao fim de cada sessão (`/handoff`).
 > Regra: este doc diz ONDE o trabalho parou e O QUE está travado — não re-derive nem re-litigue.
-> Última atualização: **2026-07-02** (sessão de balance framework + harness).
+> Última atualização: **2026-07-03** (sessão de design: Tema A completo + World Map Ato A + P8.5b).
 
 ---
 
 ## Onde o trabalho está AGORA
 
-**A ESCADA P0–P8 ESTÁ COMPLETA (jul/2026)** — balance do Mapa 1 travado, implementado e revisado de ponta a ponta (`docs/design/BALANCE_FRAMEWORK_MAP1.md`). **Trilha seguinte declarada pelo dono: playtest humano + fase de design — mapas, mobs e UI.**
+**FASE DE DESIGN — TEMA A (FLORESTA) 100% REBOOTADO (jul/03):** 9 backgrounds + 10 mobs + H1 Hollow Cantor + H2 Bramble King + H3 Gilded Hollow — tudo aprovado in-game e commitado (commits 3113f1b..2ac8eae). World Map Ato A entregue (arte da geografia + 9 medalhões + tela dupla A/B no código; experimento de regiões clicáveis REVERTIDO pelo dono — não reabrir). UI de combate: contador de invocação (topo-direito), nameplate tipográfico de boss, Lightshell legível, banner de área minimalista com filete por tema. **PRÓXIMO: pausa de lore do Porto (pendência 6) → bestiário do Tema B → arte das áreas 10–18.** Âncora de família visual: `docs/design/refs_tema_a_backgrounds.jpg`. Regras de trabalho da fase: 10-80-10 estrito · fluxo nome+forma→referências do dono→prompt · commits em lote · arte só aprova in-game · prompts com alpha real/silhueta fechada/NO red (`docs/design/ART_PROMPTS_MAP1.md`).
+
+**A ESCADA P0–P8(+P8.5b) ESTÁ COMPLETA** — balance do Mapa 1 travado, implementado e revisado de ponta a ponta (`docs/design/BALANCE_FRAMEWORK_MAP1.md`).
 
 - **PASSO 0 (Relógio): ✅** — 18h · 30–50min/beat · 50/50 · 1º prestige 25–40min.
 - **PASSO 1 (Esqueleto): ✅ TRAVADO E IMPLEMENTADO** (ciclo 10-80-10: Opus implementou, Sonnet achou+corrigiu 1 bug de migração de save, Fable revisou) — 18 áreas no código, cap 6000, Harbinger por grupo, Okhra fecha o mapa. Tempos por grupo = contrato a cumprir no P2.
