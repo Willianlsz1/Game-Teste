@@ -864,32 +864,91 @@ G.ui = {
     </div>`;
   },
 
-  // galhos de luz pai→filho (bezier suave), desenhados SÓ entre nós visíveis (ambos com
+  // galhos de "seiva de luz" pai→filho, desenhados SÓ entre nós visíveis (ambos com
   // sprite) — um nó sem sprite não recebe galho apontando pra ele, mesmo se comprado.
+  //
+  // GEOMETRIA: cúbica de Bézier com a barriga puxada em direção ao eixo do tronco
+  // (x=50%), não o ponto médio vertical puro do desenho anterior — os control points
+  // são deslocados ~20% do delta-x em direção a x=50, o que faz a curva "nascer" do
+  // tronco central como um raminho, em vez de arquear em qualquer direção genérica.
+  //
+  // TAPER: SVG <path stroke> não afina a espessura ao longo do traçado. Em vez de
+  // recorrer a um polígono fechado (caro de calcular corretamente para uma bézier
+  // arbitrária, e sensível a distorção porque o viewBox usa preserveAspectRatio="none"),
+  // dividimos a curva em 2 sub-troços via De Casteljau (t=0..0.5 e t=0.5..1) e desenhamos
+  // cada um com stroke-width decrescente (grosso no pai, fino no filho). É a aproximação
+  // mais simples que ainda lê como afinamento contínuo a essa escala de tela.
   _pvBranches() {
     const P = G.passives, pos = P.POSITIONS, sp = P.SPLIT_POS;
     const visible = (i) => !!P.iconOf(i);
     const bought = (i) => (i === -1 ? true : P.level(i) >= 1);
-    const seg = (ax, ay, bx, by, on) => {
-      const cy = +((ay + by) / 2).toFixed(2);
-      const d = `M${ax},${ay} C${ax},${cy} ${bx},${cy} ${bx},${by}`;
-      const stroke = on ? "pv-branch is-on" : "pv-branch";
-      return `<path class="${stroke}" d="${d}" vector-effect="non-scaling-stroke"/>`;
+
+    // estado da ligação pai(p)->filho(childIdx): locked / buyable / bought
+    const state = (p, childIdx) => {
+      if (!bought(p)) return "locked";
+      return P.level(childIdx) >= 1 ? "bought" : "buyable";
     };
+
+    // pontos de controle de uma bézier cúbica com barriga puxada pro tronco (x=50)
+    const bulgeCtrl = (ax, ay, bx, by) => {
+      const midY = (ay + by) / 2;
+      // desloca os control points ~20% do caminho em direção ao eixo x=50 (tronco)
+      const c1x = ax + (50 - ax) * 0.20;
+      const c2x = bx + (50 - bx) * 0.20;
+      return { c1x, c1y: midY, c2x, c2y: midY };
+    };
+
+    // De Casteljau: divide a cúbica M a C c1 c2 b em t=0.5, devolve os dois sub-troços
+    // como arrays de pontos [ax,ay, c1x,c1y, c2x,c2y, bx,by] cada.
+    const splitCubic = (ax, ay, c1x, c1y, c2x, c2y, bx, by) => {
+      const lerp = (p, q, t) => p + (q - p) * t;
+      const t = 0.5;
+      const p01x = lerp(ax, c1x, t), p01y = lerp(ay, c1y, t);
+      const p12x = lerp(c1x, c2x, t), p12y = lerp(c1y, c2y, t);
+      const p23x = lerp(c2x, bx, t), p23y = lerp(c2y, by, t);
+      const p012x = lerp(p01x, p12x, t), p012y = lerp(p01y, p12y, t);
+      const p123x = lerp(p12x, p23x, t), p123y = lerp(p12y, p23y, t);
+      const p0123x = lerp(p012x, p123x, t), p0123y = lerp(p012y, p123y, t);
+      return {
+        a: [ax, ay, p01x, p01y, p012x, p012y, p0123x, p0123y],
+        b: [p0123x, p0123y, p123x, p123y, p23x, p23y, bx, by],
+      };
+    };
+
+    const cubicPath = (pts) =>
+      `M${pts[0].toFixed(2)},${pts[1].toFixed(2)} C${pts[2].toFixed(2)},${pts[3].toFixed(2)} ${pts[4].toFixed(2)},${pts[5].toFixed(2)} ${pts[6].toFixed(2)},${pts[7].toFixed(2)}`;
+
+    // desenha uma ligação completa (halo difuso + núcleo afinado em 2 troços)
+    const seg = (ax, ay, bx, by, st) => {
+      const { c1x, c1y, c2x, c2y } = bulgeCtrl(ax, ay, bx, by);
+      const full = [ax, ay, c1x, c1y, c2x, c2y, bx, by];
+      const dFull = cubicPath(full);
+      const { a, b } = splitCubic(ax, ay, c1x, c1y, c2x, c2y, bx, by);
+      const dA = cubicPath(a); // metade junto ao pai — traço mais grosso
+      const dB = cubicPath(b); // metade junto ao filho — traço mais fino (taper)
+      const cls = `pv-branch-${st}`;
+      return `<g class="pv-branch ${cls}">`
+        + `<path class="pv-branch-halo" d="${dFull}" vector-effect="non-scaling-stroke"/>`
+        + `<path class="pv-branch-core pv-branch-core--wide" d="${dA}" vector-effect="non-scaling-stroke"/>`
+        + `<path class="pv-branch-core pv-branch-core--thin" d="${dB}" vector-effect="non-scaling-stroke"/>`
+        + `</g>`;
+    };
+
     let out = "";
     // tronco: raiz(0) → split; depois split → nós 1 e 2 — só desenhado se a raiz E ao
     // menos um dos dois filhos forem visíveis (o split é um waypoint decorativo, não um
     // nó real; sem nenhum filho visível não há segmento para puxar dele)
     if (visible(0) && (visible(1) || visible(2))) {
-      out += seg(pos[0].x, pos[0].y, sp.x, sp.y, bought(0));
-      if (visible(1)) out += seg(sp.x, sp.y, pos[1].x, pos[1].y, bought(0));
-      if (visible(2)) out += seg(sp.x, sp.y, pos[2].x, pos[2].y, bought(0));
+      const trunkState = bought(0) ? "bought" : "locked";
+      out += seg(pos[0].x, pos[0].y, sp.x, sp.y, trunkState);
+      if (visible(1)) out += seg(sp.x, sp.y, pos[1].x, pos[1].y, state(0, 1));
+      if (visible(2)) out += seg(sp.x, sp.y, pos[2].x, pos[2].y, state(0, 2));
     }
     // demais nós (>=3): curva pai→filho, só se AMBOS (pai e filho) forem visíveis
     for (let i = 3; i < P.nodes.length; i++) {
       const p = P.parentOf(i);
       if (!visible(i) || !visible(p)) continue;
-      out += seg(pos[p].x, pos[p].y, pos[i].x, pos[i].y, bought(p));
+      out += seg(pos[p].x, pos[p].y, pos[i].x, pos[i].y, state(p, i));
     }
     return out;
   },

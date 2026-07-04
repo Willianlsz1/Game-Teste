@@ -31,11 +31,43 @@
 .pv-branches { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
 .pv-nodes { position: absolute; inset: 0; z-index: 2; }
 
-/* ---- GALHOS DE LUZ ---- */
-.pv-branch { fill: none; stroke: rgba(120,150,210,.16); stroke-width: 2.4;
-  stroke-linecap: round; stroke-linejoin: round; }
-.pv-branch.is-on { stroke: rgba(232,181,74,.85); stroke-width: 2.8;
-  filter: drop-shadow(0 0 3px rgba(232,181,74,.7)); }
+/* ---- GALHOS DE "SEIVA DE LUZ" ----
+   Cada ligação é um <g> com 3 paths: halo (largo/difuso, luz vazando pela casca) +
+   2 núcleos (metade grossa junto ao pai, metade fina junto ao filho — taper por
+   sub-divisão De Casteljau, ver _pvBranches em ui.js). Cor/estado por classe no <g>. */
+.pv-branch-halo, .pv-branch-core { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.pv-branch-halo { stroke-width: 7; }
+.pv-branch-core--wide { stroke-width: 2.6; }
+.pv-branch-core--thin { stroke-width: 1.3; }
+
+/* estado: filho travado — parente ainda não comprado. Quase invisível, prata-azul
+   fria, sem animação. */
+.pv-branch-locked .pv-branch-halo { stroke: rgba(159,184,232,.12); opacity: .12; }
+.pv-branch-locked .pv-branch-core { stroke: rgba(159,184,232,.55); opacity: .12; }
+
+/* estado: comprável — pai comprado, filho ainda nível 0. Prata-teal com shimmer
+   correndo do pai pro filho (stroke-dasharray + stroke-dashoffset animado no núcleo). */
+.pv-branch-buyable .pv-branch-halo { stroke: rgba(94,224,210,.22); opacity: .22; }
+.pv-branch-buyable .pv-branch-core {
+  stroke: rgba(178,232,224,.8);
+  stroke-dasharray: 6 5;
+  animation: pv-branch-shimmer 3s linear infinite;
+}
+
+/* estado: comprado — dourado quente estável, núcleo aceso + halo, sem animação. */
+.pv-branch-bought .pv-branch-halo {
+  stroke: rgba(232,181,74,.22); opacity: .9;
+  filter: blur(1.5px);
+}
+.pv-branch-bought .pv-branch-core {
+  stroke: var(--gold);
+  filter: drop-shadow(0 0 3px rgba(232,181,74,.7));
+}
+
+@keyframes pv-branch-shimmer {
+  from { stroke-dashoffset: 22; }
+  to   { stroke-dashoffset: 0; }
+}
 
 /* ---- NÓ ---- */
 .pv-node { position: absolute; transform: translate(-50%, -50%); appearance: none; cursor: pointer;
