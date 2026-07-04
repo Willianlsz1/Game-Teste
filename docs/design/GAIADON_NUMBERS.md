@@ -60,6 +60,131 @@ Gear por raridade: Common base 0.06/multi 1.21/cap 700 · Uncommon 0.22/3.0/1500
 
 12 slots fixos sempre equipados (`enums.gd:245-258`). 9 raridades no enum, só 4 implementadas (Common→Epic). Stats por item no padrão `{value, level_incre, level_gap}` (incremento a cada gap níveis). **O salto Common→Uncommon dá ~11.5× no incremento de ATK; os tiers seguintes só ~1.15×** — o valor do gear está na PROMOÇÃO de raridade, não no nível dentro do tier (`equipment_data.gd:58-188`). Promoção custa materiais + gold em degraus fixos por tier (2e9 → 2e11 → 2e13 na arma). Bônus de sinergia por conjunto de mesma raridade (`gear.gd:13-19`). Arma tem "Rage" próprio: XP de rage `0.5×1.5^(nv−1)`, bônus `0.1×1.25^(nv−1)`, cap 75.
 
+## 5b. Equipment — a tabela COMPLETA de afixos (minerada jul/04/2026, do disco)
+
+> Árvores extraídas ainda vivas em `%TEMP%\claude\...\204810fa...\scratchpad\gaiadon_data\`
+> (HTML) e `...\gaiadon_steam\extracted_full\Data\` (Steam). Steam `equipment_data.json`
+> = MESMA estrutura da HTML (12 slots, 4 raridades, itens 01–48); Legendary/Mythic
+> existem só como receitas de crafting (stats nos .gdc criptografados — irrecuperáveis).
+
+**12 atributos no jogo inteiro** (`enums.gd:17-50`): HP · ATTACK · ATTACK_SPEED ·
+CRIT_RATE · CRIT_DAMAGE · GOLD_BONUS · KILL_COUNT_BONUS · XP_BONUS ·
+GOLD_CRIT_RATE · ELITE_SPAWN_RATE · CHAMPION_SPAWN_RATE · ENEMY_HP_REDUCTION.
+Cada um em BASE (flat) e/ou MODIFIER (%). Fórmula por item:
+`stat(level) = base + incre × floor(level/gap)` (`gear.gd:276-293`).
+
+**Nº de afixos por item CRESCE com a raridade: T1=2 · T2=3 · T3=4 · T4(Epic)=5**
+— a promoção de raridade também ADICIONA afixos, não só multiplica (alavanca de
+design; rima com o nosso "assinatura desbloqueia no Uncommon").
+
+**Escala por raridade** (mesma tabela pra qualquer slot que carregue o atributo;
+`equipment_data.gd:56-228`) — o incremento/nível de ATTACK BASE: Common 1.5 →
+Uncommon **17.25 (o salto ×11.5)** → Rare 19.83 (×1.15) → Epic 22.81 (×1.15).
+Degraus (gap) por atributo: atkSpeed /5nv · crit /25nv · critDmg /3nv ·
+goldCrit /100nv · gold /5nv · xp /2nv · enemyHpRed /100nv · eliteSpawn /60nv ·
+championSpawn /90nv · killCount /40nv (mesma técnica dos nossos `step`).
+
+**Set synergy** (`gear.gd:13-19`): nível de sinergia = `floor(menorNível/10)` das
+12 peças (o set é gateado pela PIOR peça) → +1.5% ATK, +1.5% HP, +0.5 critDmg,
++5 gold, +5 xp por nível, cumulativo, agnóstico a raridade.
+
+**Weapon Rage** (`gear.gd:20-22`): a arma tem XP próprio (1 + KILL_COUNT_BONUS
+por kill), custo `0.5×1.5^(N-1)`, bônus `+10%×1.25^(N-1)` de ATK (modifier), cap 75.
+
+**Custos**: level-up quadrático (base×multi×Σníveis; Common 600/1.21/cap 700 ·
+Uncommon 2200/3.0/1500 · Rare 5e4/5/4000 · Epic 5e7/6/8000). Promoção exige
+max_level da raridade atual + materiais + gold (2e9 → 2e11 → 2e13 na arma).
+
+**Afixos que o Éclats NÃO tem** (candidatos avaliados no
+`GEAR_BONUS_CATALOG.md`): ENEMY_HP_REDUCTION (mob nasce com −X% HP) ·
+KILL_COUNT_BONUS (cada kill conta ×N pra contadores) · GOLD_CRIT_RATE (drop
+crítico de gold — valida nosso Golden Wake como padrão do gênero) · set
+synergy · Rage. GOLD/XP/crit/atkSpeed/spawn-rates: já cobertos pelos nossos.
+
+## 5c. Endgame de gear validado por print real (dono, jul/04/2026 — Godslayer's Blade, Mythic, nv 19.1M)
+
+O print do save do dono CONFIRMA as fórmulas mineradas em endgame extremo:
+- ×191k Attack Multiplier = 0.050 × (19.149.872/5) — bate exato.
+- Rage nv 210 = +1.80e21% ATK = 10%×1.25^209 — a fórmula da HTML segue viva.
+- Gaps do print (/3, /5, /25, /100 níveis) = os mesmos da tabela §5b.
+- Mythic carrega ~11 afixos (a escada 2→3→4→5 afixos/raridade continua).
+- 🆕 Cap de nível do gear escala com TRANSCENDENCE (demo: fixo 8000; print: 27.5M).
+- 🆕 O MESMO stat aparece em até 3 baldes na MESMA peça, em variantes:
+  "Primary" (flat) → "Mastery"/"Bonus" (%) → "Multiplier" (×, crescendo
+  LINEAR com o nível). O espetáculo e21% vem daí: no endgame o gear escreve
+  no balde MULT. Lição pro Éclats: expressão futura de afixo = subir de
+  balde por mapa/raridade (Mapa 1 mantém mult escasso, §2.8 — coroa e First
+  Light apenas).
+- "Boss token" find em gear = afixo de moeda (valida o candidato Gleaner's
+  Hook do GEAR_BONUS_CATALOG.md).
+
+## 5d. Skills — o sistema completo (minerado jul/04/2026)
+
+**Arquitetura:** Skill Trainer (gerador idle: 2200 SP a cada 25s, ×1.1/nível,
+custo 1e7×1.3^nv) alimenta LIVROS de skills. Livro 01 = ativas (SÓ 3 no jogo
+inteiro: Venomous Slash, Heal, Infernal Blast — o jogo é ~95% passivas).
+Livro 02 = 37 passivas em 5 tiers. Livro 03 (Steam) = 36 passivas de endgame
+(custos 1e13–1e20). Custos por max_level: 500→multi 1.04 · 100→1.10 · 50→1.18.
+
+**Padrão de gerações:** o mesmo stat reaparece por tier como Vitality I/II/
+III/IV etc. (I no tier 1, II no tier 3...) — a "árvore nova por mapa" deles é
+gerações do mesmo eixo com números maiores. Rima com Árvore I/II/III do Éclats.
+
+**Passivas MECÂNICAS (não-stat) — as que importam pro nosso tranca-e-chave:**
+- **Slay I/II** — chance de kill instantâneo (0.25%/nv, não funciona em boss)
+  = valida o nosso Executioner's Light (execute é padrão do gênero).
+- **Splash I/II** — ataques básicos causam % do ATK em TODOS os inimigos
+  = valida o Piercing Light do dono (dano vazando pra onda é padrão).
+- **Blood Drain I/II** — chance de leech (3%/nv rouba 4% HP máx)
+  (nós mantemos sustain na árvore por design; leech chance registrado).
+- **Tactical** — -cooldown de skill (não temos ativas; n/a).
+- **Elite/Champion Tracker** — +chance de spawn raro = nosso Rarity Find.
+- **Onslaught I (Steam, tier 5)** — +contagem de inimigos NA TELA (até o cap
+  da location) como COMPRA do jogador — onda maior como escolha, não imposição.
+- **Retained Knowledge/Ascension (Steam)** — começa com N níveis após
+  ascension / N ascensions após Transcendence = QoL de re-subida COMPRÁVEL.
+- **Ascendant Potential / World Mastery (Steam)** — +cap de nível / +world
+  tier máximo: caps como conteúdo comprável.
+
+**Mecânicas de INIMIGO além de stats:** a build HTML só tem o affix CORRUPTED
+(40% de roll, ×2 tudo, atkSpeed ×1.5) — **os mobs deles são mais POBRES que
+os nossos** (nós: 4 modificadores + assinaturas de Harbinger). O lado rico é
+o endgame Steam (Incursion): 4 facções, 25 tiers, inimigos com
+resistance/penetration por tipo de dano e "dread" (enrage crescente 0→850) —
+tranca-e-chave em nível elemental. Ranks têm atkSpeed mod crescente
+(Elite +0.25 → Titan +0.5): o ATK de mob importa via VELOCIDADE, não flat.
+
+## 5e. Drop de materiais de promoção (minerado jul/04/2026)
+
+**Achado central: o drop NÃO é do inimigo — é do LUGAR.** As loot tables por
+mob no JSON são templates vazios; em runtime cada kill rola 3 tabelas
+INDEPENDENTES (`utils.gd:48-74`, `enemy_data.gd:265-302`): (1) pet card do
+mob, (2) drops do WORLD (materiais base), (3) drops do MAP (receita de
+raridade do bloco atual). Um kill pode soltar as três coisas.
+
+**World drops (materiais base de upgrade — Armor part/Anvil 5%, Sword part
+2% no NORMAL), escalando por rank:** Elite 10/10/5% (qtd 2) · Champion
+15/15/9% (qtd 3) · Fiend 25/25/12% (qtd 4).
+
+**Map drops (a RECEITA que promove a raridade — item-chave):** 2% no NORMAL,
+4% Elite, 8% Champion (qtd 2), 16% Fiend (qtd 2) — a receita do bloco de
+mapas atual (Uncommon Recipe nos maps 3–8, Rare nos 9–16, Epic 17–23,
+Legendary 24–31). O jogador farma a receita do lugar onde está.
+
+**Regras estruturais:** chance+qtd recebem bônus FLAT das stats
+RESOURCE_CHANCE_BONUS/RESOURCE_DROP_BONUS (valida o Gleaner's Hook) · roll
+por tabela com total_weight forçado a ≥100 (resto = chance de nada) · boss
+(Demon/Titan) tem drop GARANTIDO de token (w=100), qtd linear 30→300 por
+progressão de mapa · Mythic+ NUNCA dropa — só crafting (a raridade máxima é
+sistema, não sorte) · Corrupted (×2 gold/xp) NÃO mexe na loot table.
+
+**Leitura pro Éclats:** nosso commonMaterial (mob 5% / elite 15–45% / boss
+100%) está na MESMA banda do padrão deles (5–25% + boss garantido) — economia
+validada. A diferença de desenho: eles separam material-de-grind (partes,
+5%) de item-chave (receita, 2%) — nós fundimos tudo em 1 material × 50. E o
+rank multiplica chance E quantidade — caçar raros é a fonte de material, o
+que casa com nosso Rarity Find como stat.
+
 ## 6. Mundos e locations
 
 **3 mundos × 15 locations = 45** (`location_data.json`): Aetheria (asc 0, nv 1+) · Eredurn (asc 10, nv 5501+) · Frostheim (asc 15, nv 15701+). Cada location tem banda `min_lvl/max_lvl` de spawn, gate por ascension, e `enemy_spawn_count` crescendo de 1 até 10 mobs simultâneos. **World Tier** (via Transcendence) infla as bandas em +200%/tier e o gold em ×(tier+1) — um dial manual de New Game+.

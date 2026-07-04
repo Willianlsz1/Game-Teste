@@ -15,7 +15,10 @@ _Avoid_: grind, ciclo de farm.
 Ponto deliberado onde o poder do jogador para de acompanhar a dificuldade e ele
 precisa **evoluir** para seguir. É projetada de propósito — nunca um beco sem
 saída. Sensação alvo: *"consigo avançar, mas preciso crescer de novo"*, nunca
-*"estou travado"*.
+*"estou travado"*. Desde o P9 a Wall é **estrutural**: o HP inimigo cresce com
+expoente fixo acima do dano "de nível" do jogador (gap de expoente, lição do
+Gaiadon), então Gear, Convergence e Awaken são obrigatórios por construção —
+upar nunca fecha o gap sozinho.
 _Avoid_: gate de dano, soft-cap.
 
 **Playable Slice** (a Fatia Jogável):
@@ -27,8 +30,9 @@ _Avoid_: MVP, demo.
 
 **Convergence**:
 Reset da run (nível, XP, Lumens, área) que concede **Pontos de Convergence**.
-Desbloqueada por **nível** — o gate é **Lv 80**, não uma área. Não dá poder
-direto: o poder vem das Passivas compradas com os Pontos.
+Desbloqueada por **nível** — o gate é uma **escada**: o primeiro cai no fim do
+G1 (~40min de jogo) e cada gate seguinte sobe multiplicativamente. Não dá poder
+direto (legado residual apenas): o poder vem das Passivas compradas com os Pontos.
 _Avoid_: prestige (no chat tudo bem, mas o termo do jogo é Convergence).
 
 **Convergence Point** (Ponto de Convergence):
@@ -37,11 +41,13 @@ A primeira Convergence deve render Pontos suficientes para comprar **alguns nós
 1–2 níveis**, não só um único nó.
 
 **Tier** (de Passiva):
-Um grupo de 5 nós numa árvore de Passiva. Cada árvore tem 3 Tiers; maximizar um
-Tier libera o próximo. A **Playable Slice usa só o Tier 1** (os 5 primeiros nós de
-cada árvore); Tiers 2–3 ficam travados e serão desenhados depois. O alvo de
-balanceamento é o **Tier 1 valer ~40% do poder** (gear ~60%).
-_Avoid_: grupo, group, camada.
+Uma geração da World Tree. O Mapa 1 tem a **Árvore I (Tier I)**: topologia
+binária 1→2→4→8 + coroa = 16 nós — tronco (fundações de %) e 8 folhas
+(mecânicas com cara). A coroa é o único multiplicador da árvore e requisito do
+Awaken. Tiers seguintes (Árvore II...) chegam com os próximos mapas. A árvore é
+**permanente** (sobrevive a Convergence e Awaken) e é dimensionada pra NÃO
+fechar dentro do mapa (sink de pontos até o fim).
+_Avoid_: grupo, group, camada; "3 árvores" (Éclat/Vestige/Fracture morreram no P6).
 
 **Additive fades / Multiplier persists**:
 Bônus aditivos (Primary/Bonus) são diluídos quando o gear cresce — o gear vence
@@ -62,6 +68,24 @@ não melhoram o farm de mob comum.
 **TTK** (Time-To-Kill):
 Tempo-alvo para matar cada tipo de inimigo, a régua de balanceamento de combate
 (de `CONSTITUICAO.md`): Mob 1–3s · Elite 10–20s · Mini Boss 30–60s · Boss 1–3min.
+
+**Power Sources** (fontes de poder do Mapa 1):
+Três fontes, três papéis — a distribuição é por FASE, não por fatia fixa:
+**Gear** = poder dentro da run (resolve a parede de entrada de área) ·
+**Passivas** = poder permanente que atravessa a Convergence (derrete a
+re-subida) · **Awaken** = a chave do finale (o requisito é o relógio do fim
+do mapa; o bônus é o que torna o chefe de Mapa lutável). "Todos importam" =
+cada um é A resposta para uma parede diferente.
+_Avoid_: split percentual fixo (ex.: 60/40) como alvo de design.
+
+**Awaken** (a escada de despertar):
+Rito de passagem, 1 por mapa (First Light no Mapa 1 → … → Lumière). O
+requisito é o relógio do fim do mapa; o bônus é a chave do chefe de Mapa.
+Identidade travada: a escada **fortalece as mesmas assinaturas a cada mapa**
+(piso multiplicativo de ATK/HP + The World Kindles + Light Remembers +
+Vessel of Dawn), nunca inventa bônus novos — o jogador aprende o rito uma
+vez e cada mapa cumpre a promessa mais alto.
+_Avoid_: prestige (Awaken não reseta nada), ascension.
 
 **Power Curve / Difficulty Curve**:
 Power Curve = quão forte o jogador fica (Gear + Passivas + Convergence + Awaken).

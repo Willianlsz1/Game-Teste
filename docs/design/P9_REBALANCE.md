@@ -153,6 +153,29 @@ Caps de DESIGN do Mapa 1 (teto duro; o sim calibra abaixo deles, nunca acima):
 | Executioner's Light (folha) | execute ≤8% do HP máx | thresholds maiores depois |
 | Rarity Find | caps atuais via Marcos (já é assim) | — |
 
+### 2.6b Como nasce um número (método consolidado — grill jul/04)
+
+Todo bônus é definido em dois tempos: primeiro a FORMA (eixo → balde
+flat/increased/more → fonte gear/árvore/awaken/mecânica → cap Mapa 1 §2.8),
+depois o NÚMERO — que nunca é escolhido direto; ele nasce por um de três
+padrões:
+
+- **A. FIT (números de relógio):** escolhe-se a experiência-alvo (HTK,
+  composição de ATK, duração do sink, golpes no chefe) e `tools/p9/p9_fit`
+  deriva o número. Ex.: weapon perLevel 300, UNIT atkPct 45, custos da
+  árvore, e o PAR Awaken ×2.5 ↔ Okhra hpMult 690 (um fit só — mexeu num,
+  re-fita o outro).
+- **B. CAP de design + rampa (mecânicas):** o teto é decisão de design na mão
+  (§2.8); o perLevel/UNIT é aritmética pra rampa terminar no cap (ex.:
+  goldenWake 1.0×10 níveis = cap 10%; executioner 0.8×10 = 8%).
+- **C. ORÇAMENTO de teto sentido (eixos saturáveis):** quando várias fontes
+  alimentam um eixo com teto perceptivo (crit ≤45–50, DR ≤75), dimensiona-se
+  cada fonte de trás pra frente a partir do teto (crit final 44.5% =
+  luvas + árvore + base).
+
+Regra de ouro: relógio → fit · mecânica → cap+rampa · eixo saturável →
+orçamento. Em todos: validação nas seeds 1/3/7 antes de travar.
+
 ### 2.7 Mortes com intenção
 
 Morrer = sinal claro de "volte mais forte" (entrada prematura de área), não
@@ -202,6 +225,89 @@ mortes concentradas em tentativa prematura.
 - [ ] P9.7 PLAYTEST RODADA 3 (dono, com v8 no jogo) → travar P9 ou abrir
       rodada 4. Pendência aspiracional herdada: re-subida ≤2 absoluto
       (v8 entrega 2.2–2.9 na métrica crua, cega às mecânicas).
+- [ ] RODADA 4 (direção aprovada pelo dono, grill jul/04 — número só com sim):
+      **onda cresce pra 4–5 mobs no fim do mapa** (packByGroup → algo como
+      [1,2,2,3,4,5]). Custos mapeados: UI de batalha precisa suportar 5
+      sprites (o teto 3 era restrição de UI) + re-fit do TTD de entrada
+      (5 atacantes simultâneos ≠ 3) + revisar cap do Escorted. Sinergia
+      declarada: Cleave ganha palco no G5–G6.
+- [ ] RODADA 4 (decisão do dono, grill jul/04 — número só com sim): **árvore
+      fecha 100% até a área 18** ("o player precisa de todo o poder pra
+      derrotar o Okhra"; fechar um pouco antes tudo bem). Pontos excedentes
+      pós-100% APENAS ACUMULAM — viram banco pro Tier II no Mapa 2 (sem
+      mecânica nova, sem conversão). Re-fit de custos da árvore + re-validar:
+      relógio 36±2 · Okhra 71–95 golpes (mais árvore = Okhra pode precisar de
+      re-fit de hpMult) · coroa ~conv 11 · re-subida (esperado MELHORAR —
+      candidata a entregar o ≤2 aspiracional). Substitui o alvo "66% no fim"
+      do v8. ESTRUTURA travada no grill (auditoria nó a nó, 16/16 mantidos):
+      maxLevel 10 UNIFORME em todos os nós · forma de custo MANTIDA (unlock
+      por profundidade + upgrades ×0.5 do unlock com rampa ×1.7 → nó completo
+      ≈ 85× o unlock) · o fit mexe só na ESCALA global dos custos · Golden
+      Wake re-orçamentado UNIT 1.0→0.6 (soma com Twice-Gilded no cap 10%) ·
+      nenhuma folha trocada (Shatterlight e demais chaves = Árvore II;
+      Lightshell fica sem chave no Mapa 1 de propósito — ver
+      MOB_MECHANICS_CATALOG.md §3).
+- [ ] RODADA 4 (decisão do dono, grill jul/04 — números via sim): **matriz de
+      gear ganha 2 afixos novos** — Twice-Gilded (Cloak: chance de Lumens 2×,
+      2ª fonte do Golden Wake, orçamento conjunto no cap 10%) e Hollowing
+      Light (Helmet: enemy −HP%, cap pequeno ~5%, substitui Steadfast
+      Guard/DR). Regra do dono: ATK não se espalha por peças (identidade
+      única por peça). Spec completa: `GEAR_BONUS_CATALOG.md §2b–2c`.
+      Hollowing Light toca HP efetivo dos mobs → re-validar relógio 36±2.
+- [ ] RODADA 4 (decisão do dono, grill jul/04 — números via sim): **promoção
+      em DOIS materiais no Mapa 1** — Common→Uncommon consome material comum
+      (massa) + material incomum (chave, drop raro novo ~2–5% em
+      elites/Corona/boss); regra geral `promover p/ N+1 = mat(N)+mat(N+1)`
+      (Mapa 2: incomum+raro). Spec: GEAR_BONUS_CATALOG.md §2d. Gates: momento
+      da promoção não atrasa vs v8 · relógio 36±2 · Forge mostra os dois
+      contadores. Lembrete registrado: mais TIPOS de material (partes por
+      slot) ficam pra depois.
+- [ ] RODADA 4 (decisão do dono, grill jul/04 — números via sim): **redesign
+      dos bônus do First Light** — o rito mais caro do jogo precisa ler à
+      altura do preço. Pacote (REVISADO pelo dono na mesma sessão): (1) piso
+      de ATK/HP **MAIOR DE PROPÓSITO** — "quem gastou o tempo não pode ver
+      só ×2.5"; número final fitado EM PAR com o Okhra (hpMult sobe junto);
+      (2) **The World Kindles** — **o tier CORONA É ELIMINADO do pré-awaken:
+      o First Light LIBERA o Corona no mundo** + sobe os caps de Ember/Lumen.
+      Uma cor inteira de criatura nasce com o rito. ⚠️ Cascatas mapeadas (o
+      fit resolve, mas são decisões visíveis): (a) modificadores de mob comum
+      moram no roll do Corona → pré-awaken os modificadores ficam SÓ nos
+      Harbingers (textura mais lisa, introdução mais gradual — validar em
+      playtest); (b) RESOLVIDO pelo dono: Corona Call SAI do Cloak —
+      substituto = **Fortune's Torrent** (chance de Lumens 4×, cap ≤5%;
+      escada com o Twice-Gilded 2×; spec no GEAR_BONUS_CATALOG §2c) — e
+      **Corona é REVELAÇÃO: zero menção em QUALQUER UI pré-awaken** (matriz
+      de stats, Rarity Find, tooltips — item da fase de UI); (c) economia de
+      materiais re-fitada sobre Ember/Lumen (Corona era fonte de 45%); (3) **Light Remembers** — re-subida pós-Convergence começa no
+      nível N em vez de 1 (à la Retained do Gaiadon; ataca re-subida ≤2 por
+      design); (4) **Vessel of Dawn** — Lightshell próprio PEQUENO (absorve N
+      golpes por onda), pequeno de propósito pra awakens futuros engordarem;
+      (5) +25 Lumens flat REMOVIDO. PRINCÍPIO TRAVADO: a escada de Awakens
+      (First Light→…→Lumière) fortalece as MESMAS assinaturas a cada mapa,
+      não inventa bônus novos. ⚠️ Gate cruzado: caps de rarity menores mexem
+      na economia de materiais (elites/Corona = fonte do material-chave §2d)
+      — fitar os dois patches JUNTOS. UI da tela de Awaken mostra ×N e as
+      assinaturas (casa com o onboarding do Awaken já pautado).
+- [ ] NOTA PRO RETUNE (dono, grill jul/04): **o dono tem comentários sobre o
+      relógio do Mapa 1 guardados** — coletar ANTES de re-fitar qualquer
+      número da rodada 4 (mesmo protocolo do P8.6: playtest antes de retune).
+- [ ] FASE DE UI (decisão do dono, grill jul/04 — zero balance): **tooltip de
+      gear v2** (mockup aprovado em sessão; referência: print endgame do
+      Gaiadon): (1) nome-lore do afixo em destaque acima do stat (dados já
+      existem em gearBase, UI esconde); (2) preview de degrau honesto em TODO
+      afixo com `step` ("next step: +X at Lv N" — hoje o atkSpeed exibe um
+      "per level" falso); (3) botão Level up mostra o ganho ("→ +1% Crit
+      Dmg" junto do custo). CORREÇÃO do dono: vender a promoção (assinatura
+      trancada 🔒 + "×8 all stats" + progresso N/50 materiais) é PAPEL DA
+      FORJA, não do tooltip — esse bloco vai pra tela da Forge (que já
+      existe; falta arte forge_bg/icon_forge). NÃO copiar do Gaiadon: parede
+      de 11 stats nem sufixos Primary/Bonus/Multiplier.
+- [ ] FASE DE UI (decisão do dono, grill jul/04 — zero balance): **onboarding
+      do Awaken** — explicar o que o Awaken é, o que ele dá (×2.5 ATK etc.) e
+      os requisitos (área 18 + coroa + 100k materiais); é o que justifica os
+      materiais aos olhos do jogador. Junto: progresso do material visível
+      (contador N/100.000) a partir do 1º drop. Item da agenda "jogável por
+      terceiros".
 - [ ] P9.2 Player scale + TTK wave (atkSpeed, HTK, curva de dano)
 - [ ] P9.3 Gear (promoção ×6–10 + per-level)
 - [ ] P9.4 Passivas (valores reais nas 3 árvores)
