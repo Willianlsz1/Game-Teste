@@ -62,6 +62,22 @@ Project slash commands (`.claude/commands/`):
 
 ---
 
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues (`Willianlsz1/eclats_of_lumiere`, via `gh` CLI). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default vocabulary (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `CONTEXT.md` at repo root (canonical glossary) + `docs/adr/`. See `docs/agents/domain.md`.
+
+---
+
 ## Regra 10-80-10 · Delegação e Escalação (modo de trabalho travado pelo dono)
 
 **Delegação escala com o tier: quanto mais alto o seu tier, mais você delega.**
