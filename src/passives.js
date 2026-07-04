@@ -111,7 +111,8 @@ G.passives = {
     "assets/passives/pv_3.png", // 2 Heal on Kill
     "assets/passives/pv_4.png", // 3 Vessel's Growth
     "assets/passives/pv_5.png", // 4 Hardened Light
-    null, null,                 // 5-6
+    "assets/passives/pv_6.png", // 5 Whetted Light
+    "assets/passives/pv_7.png", // 6 Bare Instinct
     null, null, null, null,     // 7-10
     null, null, null, null,     // 11-14
   ],
