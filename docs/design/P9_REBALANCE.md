@@ -435,6 +435,12 @@ Achados do dono (screenshots) e destino:
 | **Lumens com curva própria** | soltar Lumens do HP (hoje `goldRatio 0.35`, rígido). Curva independente à la Gaiadon (§2.2), pode ACELERAR no fim | dono: "usar a fórmula dele"; Lumens que crescem mais rápido que HP no endgame = espetáculo | MÉDIO — re-fitar custo de gear (balanceado contra renda de Lumens) |
 | **Custo de nível maior no início** | encarpar `xpCurveBase × nível^xpCurveExp` nos primeiros níveis (piso de custo mínimo por nível) | se o paradigma acima entrar, o vazamento já morre pela raiz → isto vira REFORÇO de sensação (cada nível pesa mais), não conserto | pequeno — entra no re-fit único |
 
+**Escolhas da bíblia adotadas no conjunto (dono, jul/04):**
+- **A — recompensa desproporcional dos raros** (Gaiadon §2.4: raro dá reward >> HP): hoje `rarityTiers` dão rewardMult ≈ hpMult (Corona hp×10/reward×10). Novo: rewardMult (Lumens/XP/material) MUITO acima do hpMult → caçar aceso = a economia central. Casa com acesos = fonte de material (§2d). Fitar no re-fit único.
+- **B — custo de gear quadrático** (Gaiadon §4.3): trocar `gearCostGrowth` geométrico (1.022) por soma aritmética (quadrático no nível) → custo não dispara logo após promover, grind mais confortável.
+- **C — promover exige gear no cap: JÁ É O ATUAL** (`gear.js:86,93` `isMaxed`) — não é mudança, confirmado pelo dono.
+- **D — salto de promoção ×8→maior:** fica pro P8.6 (não entra neste conjunto).
+
 **Ainda em aberto (dono não fechou):** falta o dono decidir as demais variáveis
 antes do re-fit. Probes de leitura já rodados como insumo: HP (gap de expoente
 — nosso fit manual não é gap puro, os desvios são deliberados), Lumens/XP
