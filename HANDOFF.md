@@ -30,7 +30,7 @@
 ## Decisões travadas (canon) — NÃO reabrir
 
 - **Lore/hierarquia (jul/2026):** `docs/lore/DECISOES_JUL26.md` — escada Vessels→Harbingers→Nihelim→Nihel; 7 Nihelim (Okhra=Map1); Map 1 = 18 áreas (Floresta+Porto), Harbinger a cada 3 áreas; tipos = bestiário; cores = assinaturas; Seeker de nome roubado; ranks da Ordre = escada de conhecimento. **Onde divergir de docs antigos, ele vence.**
-- **Tags de raridade:** Common (sem tag) · Ember (teal) · Lumen (azul) · Corona (violeta). *(Ainda NÃO implementado em `src/data.js` — de propósito; código usa Kindled/Luminous/Radiant.)*
+- **Tags de raridade:** Common (sem tag) · Ember (teal) · Lumen (azul) · Corona (violeta). *(✅ implementado — `src/data.js` já usa Ember/Lumen/Corona; auditoria jul/04 confirmou zero termos supersedidos em `src/`.)*
 - **Identidade do Tema A (jul/2026):** "a floresta que roubou a Lua e dorme sonhando" — física de sonho, Lua enjaulada no dossel, céu sem-lua cinzento; imagem impossível por área em `DECISOES_JUL26.md §4b`. **Ordem de produção de arte: backgrounds antes de mobs.**
 - **World Map em 2 atos (jul/2026):** Mapa 1 = 2 telas de mapa (A: áreas 1–9 · B: áreas 10–18); segue UM mapa (1 Nihelim, 1 Awaken). Backgrounds 7–9 fazem gancho visual pro Porto. Implementação da tela dupla = fase de UI (Etapa 5 do roadmap).
 - **Método de trabalho:** SPEC vs LOG (auditoria = agir e apagar) · definition-of-done (código+spec+sim+CLAUDE.md) · sim antes de número · um sistema por vez · decisão travada não reabre sem número novo.
@@ -52,7 +52,7 @@
 7. **Sweep de termos** nos docs (Archon→Nihelim etc.) — `node tools/check_canon.js` lista; exports consolidados (`GAME_CONTEXT`, `LORE_COMPLETE`) têm banner mas corpo antigo.
 8. Escolher **quais 3 Harbingers** da floresta viram titulares de grupo (lore). **⚠️ ATUALIZAÇÃO jul/03: o reboot de arte USOU Hollow Cantor (H1), Bramble King (H2) e Gilded Hollow (H3) como titulares — arte nova aprovada pros três.** Falta só o `/travar` formal confirmando (ou trocar ANTES de produzir mais arte deles; os 6 reservados seguem sem arte nova). Os comentários PLACEHOLDER no `data.js` saem no travamento.
 9. Fila da lore: **Séraphine + final/Convergence (Parte IX)** ← próximo item de lore; depois Mapa 2 (Naameth).
-10. Renomes no código (Kindled/Luminous/Radiant → Ember/Lumen/Corona etc.) — **DESBLOQUEADO: a escada fechou, o balance mandou.** Entra na fase de UI/design.
+10. ~~Renomes no código (Kindled/Luminous/Radiant → Ember/Lumen/Corona etc.)~~ **✅ FEITO** (confirmado por auditoria jul/04 — `src/` limpo de termos supersedidos).
 
 ## Infra & contexto operacional
 

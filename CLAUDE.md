@@ -12,11 +12,12 @@ Browser-based idle/loot game (Map 1 focus). Vanilla JS, no framework, no build s
 | Language | Vanilla JS (ES5-compatible, no modules, no TypeScript) |
 | Module system | Global `G` object — every module registers itself as `G.module = {...}` |
 | Entry point | `index.html` loads CSS then JS via `<script>` tags (order matters) |
+| Script order | `util → data → gear → state → economy → rates → enemyFactory → income → progression → combat → convergence → awaken → passives → ui-core → ui-{hud,battle,gear,forge,passives,awaken,convergence,worldmap} → main`. Hard constraints: `gear` before `state` (`state.fresh()` calls `G.gear.freshSet()`), `ui-core` before the other `ui-*` (it defines `G.ui`; screens `Object.assign` into it), `main` last. |
 | CSS | Split into `styles/base.css`, `components.css`, `hud.css`, `gear.css`, `convergence.css`, `awaken.css`, `worldmap.css`, `passives.css` |
 | Save | `localStorage` key `eclats_v5` (JSON). Falls back to in-memory if `file://` |
 | Fonts | Google Fonts: Cormorant Garamond (display), Outfit (UI) |
 | Dev server | `node .claude/static-server.js` or double-click `Jogar Eclats.bat` |
-| Tests | None |
+| Tests | `node tests/hygiene.test.js` (+ rarityfind, modifiers, economy, convergence, awaken) — run after any src/ change |
 | Libraries | None in source code (node_modules has break_infinity.js but it is not imported) |
 
 
