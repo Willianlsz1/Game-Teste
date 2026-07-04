@@ -438,7 +438,10 @@ global.document = {
   getElementById: () => fakeEl(), querySelectorAll: () => [], querySelector: () => fakeEl(),
   addEventListener() {}, body: { classList: { toggle() {} } },
 };
-eval(fs.readFileSync(path.join(SRC, "ui.js"), "utf8"));
+// ui.js foi decomposto em 9 arquivos (ui-core define G.ui base; cada tela faz Object.assign).
+// Carrega na mesma ordem do index.html: ui-core primeiro, depois as telas.
+for (const f of ["ui-core", "ui-hud", "ui-battle", "ui-gear", "ui-forge", "ui-passives", "ui-awaken", "ui-convergence", "ui-worldmap"])
+  eval(fs.readFileSync(path.join(SRC, f + ".js"), "utf8"));
 G.ui.cache();
 
 // bug 3: mapNodePos cobre todas as áreas, sem posições duplicadas
@@ -516,12 +519,12 @@ G.state.data.convergencePoints = 1e12;
   ok(html3.indexOf("Locked: requires") !== -1, "tooltip de nó travado: footer 'Locked: requires <pai>'");
 })();
 
-// grep global: nenhum resíduo do arco de progresso em src/ui.js ou styles/passives.css
+// grep global: nenhum resíduo do arco de progresso na UI de passivas ou styles/passives.css
 (function () {
-  const uiSrc = fs.readFileSync(path.join(SRC, "ui.js"), "utf8");
+  const uiSrc = fs.readFileSync(path.join(SRC, "ui-passives.js"), "utf8");
   const cssSrc = fs.readFileSync(path.join(__dirname, "..", "styles", "passives.css"), "utf8");
   ok(uiSrc.indexOf("pv-progress-arc") === -1 && uiSrc.indexOf("_pvProgressArc") === -1,
-    "src/ui.js: zero resíduo do arco de progresso (pv-progress-arc / _pvProgressArc)");
+    "src/ui-passives.js: zero resíduo do arco de progresso (pv-progress-arc / _pvProgressArc)");
   ok(cssSrc.indexOf("pv-progress-arc") === -1 && cssSrc.indexOf("pv-arc-seg") === -1,
     "styles/passives.css: zero resíduo do arco de progresso (pv-progress-arc / pv-arc-seg)");
   ok(cssSrc.indexOf(".pv-card-tag") === -1, "styles/passives.css: zero resíduo da tag de caminho (.pv-card-tag)");
