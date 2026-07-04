@@ -443,6 +443,7 @@ decide a âncora nova olhando o medido.
 | 11 | **Threshold do Harbinger** | **≥200 kills mínimo** (era 30–55; escada por grupo re-derivada acima de 200; regrind 1.0 mantido — medir impacto em Marcos e fluxo de material de boss no run de descoberta) |
 | 12 | Golden Wake (árvore) | UNIT 1.0 → 0.6 (orçamento com Twice-Gilded no cap 10%) |
 | 13 | Relógio | **SEM GATE** — medir; 36h±2 vira histórico até o dono ancorar de novo |
+| 14 | Âncora inicial do player | **ATK ~15 · HP ~50** (era base 1000/1000) — começo em DEZENAS; topo do mapa mantido (mob área 18 ~10¹¹) → crescimento total sentido SOBE (~×10⁷–⁸). Re-deriva: arrays da família (re-ancorar no gerador), gear early (perLevel re-escala pra unidades/dezenas no início), Lumens via goldRatio |
 
 Pré-requisito de código (antes do fit): batch de MECÂNICAS em src/ —
 dois materiais na promoção · Corona gateado pelo awaken (spawn + UI zero
