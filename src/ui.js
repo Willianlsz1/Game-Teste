@@ -877,42 +877,28 @@ G.ui = {
   _pvNode(i) {
     const P = G.passives;
     const node = P.nodes[i], pos = P.POSITIONS[i];
-    const level = P.level(i), maxed = P.isMax(i);
+    const level = P.level(i), maxed = P.isMax(i), nmax = P.nodeMax();
     const locked = !P.parentBought(i) && level === 0;
     const canBuy = P.canBuy(i);
     const wantBuy = !maxed && !locked && P.parentBought(i);          // comprável de topologia (pode faltar pontos)
+    const affordable = wantBuy && (G.state.data.convergencePoints || 0) >= P.nextCost(i);
     const cls = ["pv-node", node.depth === 4 ? "tip-below" : "", pos.x < 30 ? "tip-right" : pos.x > 70 ? "tip-left" : "",
-      maxed ? "is-maxed" : "", canBuy ? "is-buyable" : "", level > 0 && !maxed ? "is-owned" : "", locked ? "is-locked" : ""]
+      maxed ? "is-maxed" : "", wantBuy ? "is-buyable" : "", affordable ? "can-afford" : "",
+      level > 0 && !maxed ? "is-owned" : "", locked ? "is-locked" : ""]
       .filter(Boolean).join(" ");
-    const arc = this._pvProgressArc(level, P.nodeMax(), maxed);
     const ic = P.iconOf(i);
     const shape = ic
       ? `<img class="pv-sprite" src="${ic}" alt="" draggable="false" />`
       : `<span class="pv-ring-placeholder"></span>`;
+    const pillText = maxed ? `MAX ${nmax}/${nmax}` : `${level}/${nmax}`;
     return `<button class="${cls}" data-i="${i}"
         style="left:${pos.x}%;top:${pos.y}%">
       <span class="pv-shape${ic ? " has-sprite" : ""}">
-        <svg class="pv-progress-arc" viewBox="0 0 100 100" aria-hidden="true">${arc}</svg>
         ${shape}
       </span>
+      <span class="pv-level-pill">${pillText}</span>
       ${this._pvCard(i)}
     </button>`;
-  },
-
-  // arco fino de 10 traços — só visível no CSS hover (:hover .pv-progress-arc { opacity: 1 })
-  _pvProgressArc(level, nmax, maxed) {
-    const cx = 50, cy = 50, r = 44, n = 10, gap = 7;   // gap em graus entre traços
-    let s = "";
-    for (let k = 0; k < n; k++) {
-      const a0 = (k * 360 / n - 90 + gap / 2) * Math.PI / 180;
-      const a1 = ((k + 1) * 360 / n - 90 - gap / 2) * Math.PI / 180;
-      const x0 = +(cx + r * Math.cos(a0)).toFixed(2), y0 = +(cy + r * Math.sin(a0)).toFixed(2);
-      const x1 = +(cx + r * Math.cos(a1)).toFixed(2), y1 = +(cy + r * Math.sin(a1)).toFixed(2);
-      const on = k < level;
-      const c = maxed ? "pv-arc-seg is-max" : on ? "pv-arc-seg is-on" : "pv-arc-seg";
-      s += `<path class="${c}" d="M${x0},${y0} A${r},${r} 0 0 1 ${x1},${y1}" vector-effect="non-scaling-stroke"/>`;
-    }
-    return s;
   },
 
   _pvCard(i) {
@@ -920,29 +906,27 @@ G.ui = {
     const name = P.nodes[i].name, level = P.level(i), nmax = P.nodeMax();
     const maxed = P.isMax(i), locked = !P.parentBought(i) && level === 0;
     const ic = P.iconOf(i);
-    const sub = P.sideOf(i);
     const m = P.magnitude(i);
     let effRow = "";
     if (m) {
-      const per = m.perLevel;
-      if (maxed) effRow = `<div class="pv-card-eff"><b>${m.current}</b> <span class="pv-card-arrow">Maxed</span></div>`;
-      else if (level > 0) effRow = `<div class="pv-card-eff"><b>${m.current}</b> <span class="pv-card-arrow">→</span> <b>${per} next</b></div>`;
-      else effRow = `<div class="pv-card-eff"><b>${per}</b> <span class="pv-card-arrow">/ level</span></div>`;
+      if (level > 0) effRow = `<div class="pv-card-eff">Level ${level}: <b>${m.current}</b></div>`;
+      if (!maxed) effRow += `<div class="pv-card-next">Next: <b>${m.next}</b></div>`;
     }
-    const desc = (P.EFFECT_DESC && P.EFFECT_DESC[P.nodes[i].key]) || "";
     const parentName = P.parentOf(i) >= 0 ? P.nodes[P.parentOf(i)].name : "";
-    const have = `<span class="pv-card-have">You have ${G.util.fmt(G.state.data.convergencePoints || 0)} ◈</span>`;
     const foot = maxed ? `<div class="pv-card-foot is-max">Maxed</div>`
       : locked ? `<div class="pv-card-foot is-locked">Locked: requires ${parentName}</div>`
-      : `<div class="pv-card-foot is-cost">Cost ◈ ${G.util.fmt(P.nextCost(i))}${have}</div>`;
+      : `<div class="pv-card-foot is-cost">Cost ◈ ${G.util.fmt(P.nextCost(i))}</div>`;
     return `<div class="pv-card${ic ? "" : " no-art"}">
-      ${ic ? `<div class="pv-card-art"><img src="${ic}" alt="" loading="lazy" /></div>` : ""}
+      <div class="pv-card-head">
+        ${ic ? `<div class="pv-card-thumb"><img src="${ic}" alt="" loading="lazy" /></div>` : ""}
+        <div class="pv-card-headtext">
+          <div class="pv-card-name">${name}</div>
+          <div class="pv-card-sub">Level ${level}/${nmax}</div>
+        </div>
+      </div>
       <div class="pv-card-body">
-        <div class="pv-card-name">${name}</div>
-        <div class="pv-card-sub">${sub} · Level ${level}/${nmax}</div>
-        <div class="pv-card-lore">${P.loreOf(i)}</div>
-        <div class="pv-card-desc">${desc}</div>
         ${effRow}
+        <div class="pv-card-lore">${P.loreOf(i)}</div>
         ${foot}
       </div>
     </div>`;
@@ -960,13 +944,16 @@ G.ui = {
     const foot = on ? `<div class="pv-card-foot is-max">The Ring Closes · complete</div>`
       : `<div class="pv-card-foot is-locked">Locked: requires all 8 leaves (${lit}/8)</div>`;
     const card = `<div class="pv-card pv-card--crown${ic ? "" : " no-art"}">
-      ${ic ? `<div class="pv-card-art"><img src="${ic}" alt="" loading="lazy" /></div>` : ""}
+      <div class="pv-card-head">
+        ${ic ? `<div class="pv-card-thumb"><img src="${ic}" alt="" loading="lazy" /></div>` : ""}
+        <div class="pv-card-headtext">
+          <div class="pv-card-name">${P.CROWN.name}</div>
+          <div class="pv-card-sub">${on ? "Granted" : "Sealed"}</div>
+        </div>
+      </div>
       <div class="pv-card-body">
-        <div class="pv-card-name">${P.CROWN.name}</div>
-        <div class="pv-card-sub">Crown · ${on ? "Granted" : "Sealed"}</div>
-        <div class="pv-card-lore">${P.CROWN_LORE}</div>
-        <div class="pv-card-desc">${P.EFFECT_DESC.ringCloses}</div>
         <div class="pv-card-eff"><b>+${P.unit("ringCloses")}% ATK · HP · Lumens · XP</b></div>
+        <div class="pv-card-lore">${P.CROWN_LORE}</div>
         ${foot}
       </div>
     </div>`;

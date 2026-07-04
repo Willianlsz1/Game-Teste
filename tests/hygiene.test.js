@@ -472,5 +472,67 @@ G.ui.goToArea(3);
 ok(G.combat.enemies.length === 0, "troca de área (goToArea) limpa G.combat.enemies");
 ok(G.combat.enemy === null, "troca de área zera o alias G.combat.enemy");
 
+// ---------- World-Tree: moldura CSS + fração de nível + tooltip reformatado ----------
+fresh();
+G.state.data.convergences = 1;
+G.state.data.convergencePoints = 1e12;
+(function () {
+  const html0 = G.ui._pvNode(0);
+  ok(/class="pv-shape[^"]*"/.test(html0), "nó 0: moldura .pv-shape presente no DOM");
+  ok(/pv-level-pill">0\/10</.test(html0), "nó 0 (nível 0): fração de nível 0/10 no DOM");
+  ok(html0.indexOf("pv-progress-arc") === -1, "nó 0: nenhum resíduo do arco de progresso (pv-progress-arc)");
+
+  G.passives.buy(0);
+  const html1 = G.ui._pvNode(0);
+  ok(/pv-level-pill">1\/10</.test(html1), "nó 0 após compra (nível 1): fração 1/10 no DOM");
+  ok(html1.indexOf("First Spark") !== -1, "tooltip do nó 0 contém o nome (First Spark)");
+  ok(/Level 1: <b>/.test(html1), "tooltip contém a linha de bônus atual (Level X: ...)");
+  ok(html1.indexOf(G.passives.loreOf(0)) !== -1, "tooltip contém a lore do nó");
+  ok(html1.indexOf("Cost ◈") !== -1, "tooltip contém a linha de custo (Cost ◈ ...) quando não maxado");
+  ok(html1.indexOf("You have") === -1, "tooltip NÃO contém mais a linha 'You have' (removida por spec)");
+  ok(html1.indexOf("pv-card-tag") === -1, "tooltip NÃO contém mais a tag de caminho (pv-card-tag)");
+  ok(!/\bROOT\b/i.test(html1), "tooltip NÃO contém mais o texto da tag de caminho (Root/Hunt/Provision)");
+
+  for (let lv = 1; lv < G.passives.maxLevel - 1; lv++) G.passives.buy(0);
+  const html9 = G.ui._pvNode(0); // nível 9, Next: deve mostrar o TOTAL do nível 10 (não o incremento)
+  const nextTotal10 = G.passives.magnitude(0).next;
+  ok(new RegExp("Next: <b>" + nextTotal10.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "</b>").test(html9),
+    "linha Next mostra o TOTAL do próximo nível (magnitude(nível+1)), não o incremento");
+
+  G.passives.buy(0);
+  const htmlMax = G.ui._pvNode(0);
+  ok(/pv-level-pill">MAX 10\/10</.test(htmlMax), "nó 0 maxado: pílula mostra MAX 10/10");
+  ok(htmlMax.indexOf("Maxed") !== -1, "tooltip maxado: footer mostra Maxed");
+  ok(htmlMax.indexOf("Cost ◈") === -1, "tooltip maxado: sem linha de custo");
+})();
+
+// nó travado (pai não comprado): pílula esmaecida via classe is-locked no wrapper, tooltip com Locked
+fresh();
+G.state.data.convergences = 1;
+G.state.data.convergencePoints = 1e12;
+(function () {
+  const html3 = G.ui._pvNode(3); // Vessel's Growth, pai = 1 (Regeneration), não comprado
+  ok(html3.indexOf("is-locked") !== -1, "nó travado: classe is-locked presente no wrapper");
+  ok(html3.indexOf("Locked: requires") !== -1, "tooltip de nó travado: footer 'Locked: requires <pai>'");
+})();
+
+// grep global: nenhum resíduo do arco de progresso em src/ui.js ou styles/passives.css
+(function () {
+  const uiSrc = fs.readFileSync(path.join(SRC, "ui.js"), "utf8");
+  const cssSrc = fs.readFileSync(path.join(__dirname, "..", "styles", "passives.css"), "utf8");
+  ok(uiSrc.indexOf("pv-progress-arc") === -1 && uiSrc.indexOf("_pvProgressArc") === -1,
+    "src/ui.js: zero resíduo do arco de progresso (pv-progress-arc / _pvProgressArc)");
+  ok(cssSrc.indexOf("pv-progress-arc") === -1 && cssSrc.indexOf("pv-arc-seg") === -1,
+    "styles/passives.css: zero resíduo do arco de progresso (pv-progress-arc / pv-arc-seg)");
+  ok(cssSrc.indexOf(".pv-card-tag") === -1, "styles/passives.css: zero resíduo da tag de caminho (.pv-card-tag)");
+  ok(!/\.pv-card-lore\s*\{[^}]*border-left/.test(cssSrc),
+    "styles/passives.css: .pv-card-lore sem border-left (barra decorativa removida)");
+  ok(/\.pv-node\.is-maxed \.pv-card\s*\{[^}]*var\(--pv-steel-maxed\)/.test(cssSrc)
+    && /\.pv-node\.is-owned \.pv-card\s*\{[^}]*var\(--pv-steel-owned\)/.test(cssSrc)
+    && /\.pv-node\.is-buyable\.can-afford \.pv-card\s*\{[^}]*var\(--teal\)/.test(cssSrc)
+    && /\.pv-node\.is-locked \.pv-card\s*\{[^}]*var\(--pv-steel-locked\)/.test(cssSrc),
+    "styles/passives.css: borda do .pv-card espelha a cor de estado do .pv-node pai (maxed/owned/buyable/locked)");
+})();
+
 console.log(failed === 0 ? "\nALL PASS" : `\n${failed} FAIL`);
 process.exit(failed === 0 ? 0 : 1);

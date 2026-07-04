@@ -152,7 +152,7 @@ G.passives = {
   // Posições finais do dono (bake do design aprovado).
   POSITIONS: [
     { x: 50.0, y: 84.5 },                                          // 0  First Spark (raiz)
-    { x: 41.5, y: 54.0 }, { x: 58.5, y: 54.0 },                    // 1  Regeneration · 2 Heal on Kill (D2)
+    { x: 44.0, y: 75.5 }, { x: 55.5, y: 74.5 },                    // 1  Regeneration · 2 Heal on Kill (D2)
     { x: 30.0, y: 45.0 }, { x: 40.5, y: 39.0 }, { x: 59.5, y: 39.0 }, { x: 70.0, y: 45.0 }, // 3-6 D3
     { x: 14.0, y: 34.0 }, { x: 24.0, y: 26.5 }, { x: 34.5, y: 21.5 }, { x: 44.5, y: 19.0 }, // 7-10 folhas
     { x: 55.5, y: 19.0 }, { x: 65.5, y: 21.5 }, { x: 76.0, y: 26.5 }, { x: 86.0, y: 34.0 }, // 11-14 folhas
@@ -243,7 +243,8 @@ G.passives = {
     if (!fmt || per === 0) return null;
     const r = (x) => +(+x).toFixed(2);
     const lvl = this.level(i);
-    return { perLevel: fmt(r(per)), current: lvl > 0 ? fmt(r(per * lvl)) : null };
+    return { perLevel: fmt(r(per)), current: lvl > 0 ? fmt(r(per * lvl)) : null,
+      next: fmt(r(per * (lvl + 1))) };
   },
 
   // ---- progresso (UI/sim) ----

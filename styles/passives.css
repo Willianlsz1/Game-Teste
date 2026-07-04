@@ -8,6 +8,7 @@
    ============================================================= */
 .passives-screen {
   --gold: #e8b54a; --teal: #5ee0d2;
+  --pv-steel-locked: rgba(159,184,232,.22); --pv-steel-owned: #9fb8e8; --pv-steel-maxed: #dfe8f5;
   --pv-display: "Cormorant Garamond", serif;
   --pv-ink: #e7eefb; --pv-dim: #9aa3b8; --pv-faint: #6a7488; --pv-line: rgba(255,255,255,.12);
   position: fixed; inset: 0; z-index: 200; background: #060a14; overflow: hidden;
@@ -42,71 +43,90 @@
 .pv-node.pv-crown { cursor: default; }
 .pv-node:hover { z-index: 50; }
 
-/* tamanho do nó: sem moldura, a forma solta é o próprio elemento visual.
-   vmin mantém o sprite proporcional à viewport (não à largura do stage, que
-   agora é sempre >= viewport em modo cover). */
-.pv-shape { position: relative; width: 7.2vmin; height: 7.2vmin; min-width: 44px; min-height: 44px;
-  max-width: 92px; max-height: 92px; display: grid; place-items: center;
-  transition: transform .12s, filter .16s; }
+/* tamanho do nó: moldura de vidro fosco (estilo da casa) ao redor do sprite.
+   vmin mantém a moldura proporcional à viewport (não à largura do stage, que
+   agora é sempre >= viewport em modo cover). ~92px no desktop padrão. */
+.pv-shape { position: relative; width: 8.7vmin; height: 8.7vmin; min-width: 52px; min-height: 52px;
+  max-width: 112px; max-height: 112px; display: grid; place-items: center;
+  border-radius: 12px; overflow: hidden;
+  border: 4px solid rgba(255,255,255,.18);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.8);
+  transition: transform .12s, filter .16s, border-color .16s, box-shadow .16s; }
 .pv-node:not(.is-locked):hover .pv-shape { transform: translateY(-2px) scale(1.06); }
 
-/* sprite (único caso renderizado hoje): png com alpha, background contain, sem disco/borda */
-.pv-shape.has-sprite { background: none; }
-.pv-sprite { width: 100%; height: 100%; object-fit: contain; display: block;
-  user-select: none; -webkit-user-drag: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,.6)); }
+/* sprite (único caso renderizado hoje): tile 512×512 sólido, sem alpha — preenche a moldura de ponta a ponta */
+.pv-sprite { width: 100%; height: 100%; object-fit: cover; display: block;
+  user-select: none; -webkit-user-drag: none; }
 
-/* ---- ESTADOS ---- */
-.pv-node.is-locked .pv-sprite { filter: grayscale(1) brightness(.4); }
-.pv-node.is-buyable .pv-sprite { animation: pvPulseSprite 1.6s ease-in-out infinite; }
-.pv-node.is-maxed .pv-sprite { filter: drop-shadow(0 0 10px var(--gold)) drop-shadow(0 0 4px var(--gold)); }
+/* ---- ESTADOS DA MOLDURA (paleta azul-prata estelar da árvore) ---- */
+.pv-node.is-locked .pv-shape { border-color: var(--pv-steel-locked); }
+.pv-node.is-locked .pv-sprite { filter: grayscale(.9) brightness(.45); }
 
-@keyframes pvPulseSprite {
-  0%, 100% { filter: drop-shadow(0 0 4px var(--gold)); }
-  50%      { filter: drop-shadow(0 0 12px var(--gold)); }
+.pv-node.is-buyable .pv-shape { border-color: rgba(94,224,210,.35); }
+.pv-node.is-buyable.can-afford .pv-shape { border-color: var(--teal); animation: pvPulseFrame 1.6s ease-in-out infinite; }
+
+.pv-node.is-owned .pv-shape { border-color: var(--pv-steel-owned); }
+
+.pv-node.is-maxed .pv-shape { border-color: var(--pv-steel-maxed);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.8), 0 0 14px -2px var(--pv-steel-maxed); }
+
+@keyframes pvPulseFrame {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(0,0,0,.8), 0 0 6px -1px var(--teal); }
+  50%      { box-shadow: 0 0 0 1px rgba(0,0,0,.8), 0 0 16px 1px var(--teal); }
 }
 
-/* ---- ARCO DE PROGRESSO (10 traços) — só aparece no hover, junto do tooltip ---- */
-.pv-progress-arc { position: absolute; inset: -18%; width: 136%; height: 136%;
-  overflow: visible; z-index: 1; pointer-events: none;
-  opacity: 0; transition: opacity .12s; }
-.pv-node:hover .pv-progress-arc { opacity: 1; }
-.pv-arc-seg { fill: none; stroke: rgba(150,175,220,.22); stroke-width: 5; stroke-linecap: round; }
-.pv-arc-seg.is-on { stroke: var(--teal); filter: drop-shadow(0 0 2px rgba(94,224,210,.8)); }
-.pv-arc-seg.is-max { stroke: var(--gold); filter: drop-shadow(0 0 3px rgba(232,181,74,.9)); }
-
 /* ---- COROA (só renderiza quando CROWN_ICON existir — hoje null, oculta) ---- */
-.pv-node.pv-crown.crown-on .pv-sprite { filter: drop-shadow(0 0 12px var(--gold)); }
+.pv-node.pv-crown.crown-on .pv-shape { border-color: var(--gold);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.8), 0 0 14px -2px var(--gold); }
 
-/* ---- TOOLTIP-CARTA (hover no nó) ---- */
-.pv-card { display: none; position: absolute; z-index: 60; width: 320px; text-align: left; pointer-events: none;
+/* ---- FRAÇÃO DE NÍVEL (pílula sob a moldura, sempre visível) ---- */
+.pv-level-pill { position: absolute; left: 50%; top: 100%; transform: translate(-50%, 4px);
+  white-space: nowrap; font-family: "Outfit", sans-serif; font-size: 11.5px; font-weight: 600;
+  color: #dde4f3; background: rgba(8,10,22,.85); border: 1px solid rgba(255,255,255,.15);
+  border-radius: 999px; padding: 1px 7px; pointer-events: none; z-index: 2; }
+.pv-node.is-locked .pv-level-pill { opacity: .55; }
+.pv-node.is-maxed .pv-level-pill { color: var(--pv-steel-maxed); border-color: color-mix(in srgb, var(--pv-steel-maxed) 55%, rgba(255,255,255,.15)); }
+
+/* ---- TOOLTIP-CARTA (hover no nó), layout Gaiadon-like: header (thumb + nome/nível),
+   corpo (bônus atual/próximo), lore (assinatura, fecha o card), footer (custo).
+   Borda do card herda a cor de ESTADO do .pv-node pai (mesmo mapeamento da moldura do
+   nó — não duplicar a lógica de decisão, só espelhar a cor via seletor descendente). */
+.pv-card { display: none; position: absolute; z-index: 60; width: 440px; text-align: left; pointer-events: none;
   bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%);
   background: linear-gradient(180deg, rgba(12,16,30,.98), rgba(6,9,18,.99));
-  border: 1px solid color-mix(in srgb, var(--gold) 42%, var(--pv-line)); border-radius: 12px;
-  padding: 14px; box-shadow: 0 20px 44px -14px #000, 0 0 26px -12px var(--gold);
-  grid-template-columns: 118px 1fr; gap: 14px; }
-.pv-node:hover .pv-card { display: grid; }
-.pv-card.no-art { grid-template-columns: 1fr; }
+  border: 1px solid var(--pv-steel-locked); border-radius: 12px;
+  padding: 20px; box-shadow: 0 20px 44px -14px #000, 0 0 26px -12px var(--gold); }
+.pv-node:hover .pv-card { display: block; }
 .pv-node.tip-below .pv-card { bottom: auto; top: calc(100% + 12px); }
 .pv-node.tip-right .pv-card { left: 0; transform: none; }
 .pv-node.tip-left .pv-card { left: auto; right: 0; transform: none; }
-.pv-card-art { width: 118px; border-radius: 10px; overflow: hidden; background: #0a0e1c;
-  border: 1px solid rgba(255,255,255,.08); align-self: start; display: grid; place-items: center; }
-.pv-card-art img { width: 100%; height: 100%; display: block; object-fit: contain; }
+
+.pv-node.is-locked .pv-card { border-color: var(--pv-steel-locked); }
+.pv-node.is-buyable .pv-card { border-color: rgba(94,224,210,.35); }
+.pv-node.is-buyable.can-afford .pv-card { border-color: var(--teal); }
+.pv-node.is-owned .pv-card { border-color: var(--pv-steel-owned); }
+.pv-node.is-maxed .pv-card { border-color: var(--pv-steel-maxed); }
+
+.pv-card-head { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
+.pv-card-thumb { flex: 0 0 60px; width: 60px; height: 60px; border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--gold) 55%, rgba(255,255,255,.15)); display: grid; place-items: center; overflow: hidden; }
+.pv-card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pv-card-headtext { min-width: 0; flex: 1 1 auto; }
+.pv-card-name { font-family: var(--pv-display); font-weight: 700; font-size: 24px; color: #f2e6c2; line-height: 1.15; }
+.pv-card-sub { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: #a9bedd; margin-top: 3px; }
+
 .pv-card-body { min-width: 0; }
-.pv-card-name { font-family: var(--pv-display); font-weight: 700; font-size: 18px; color: #e7d9b0; line-height: 1.15; }
-.pv-card-sub { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--pv-dim); margin: 3px 0 9px; }
-.pv-card-lore { font-family: var(--pv-display); font-style: italic; font-size: 14px; line-height: 1.4;
-  color: #cbd6ea; border-left: 2px solid color-mix(in srgb, var(--teal) 70%, transparent); padding-left: 10px; margin-bottom: 9px; }
-.pv-card-desc { font-size: 12.5px; line-height: 1.45; color: #b9c4d8; margin-bottom: 9px; }
-.pv-card-eff { font-size: 13px; color: #e9dcb2; margin-bottom: 10px; }
+.pv-card-eff { font-size: 16.5px; color: #efe2ba; margin-bottom: 6px; }
 .pv-card-eff b { color: #ffe6a8; }
+.pv-card-next { font-size: 16.5px; color: var(--teal); margin-bottom: 13px; }
 .pv-card-arrow { color: var(--pv-faint); font-weight: 400; }
-.pv-card-foot { font-size: 13px; font-weight: 700; padding-top: 9px;
+.pv-card-lore { font-family: var(--pv-display); font-style: italic; font-size: 16.5px; line-height: 1.4;
+  color: #d7e0f0; margin-bottom: 13px; }
+.pv-card-foot { font-size: 15px; font-weight: 700; padding-top: 13px;
   border-top: 1px solid color-mix(in srgb, var(--gold) 16%, rgba(255,255,255,.06)); }
 .pv-card-foot.is-cost { color: #f0d9a0; }
 .pv-card-foot.is-max { color: var(--gold); }
 .pv-card-foot.is-locked { color: var(--pv-faint); font-weight: 600; }
-.pv-card-have { display: block; font-size: 11.5px; font-weight: 600; color: var(--pv-dim); margin-top: 3px; }
 .pv-card--crown { border-color: color-mix(in srgb, var(--gold) 55%, transparent); }
 
 /* ---- FLOATER "+X%" ---- */
