@@ -107,7 +107,8 @@ G.passives = {
   // nó mostra o anel-placeholder). Só o nó 0 tem sprite hoje; os outros 14 chegam 1/semana.
   ICONS: [
     "assets/passives/pv_1.png", // 0 First Spark
-    null, null,                 // 1-2
+    "assets/passives/pv_2.png", // 1 Regeneration
+    "assets/passives/pv_3.png", // 2 Heal on Kill
     null, null, null, null,     // 3-6
     null, null, null, null,     // 7-10
     null, null, null, null,     // 11-14
