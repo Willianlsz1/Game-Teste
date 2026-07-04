@@ -241,3 +241,11 @@ todo o RGB e permitido. E cada passiva tem IDENTIDADE cromatica propria (a
 cor-ancora dela na arvore), com a combinacao interna da Licao 5 construida ao
 redor dessa ancora. Mapa de identidades dos 16 tiles: ver tabela na secao de
 passivas (proposta Fable, veredito do dono pendente por tile, 1 a 1).
+
+### Licao 5c (dono, jul/04): o fundo do tile tambem varia
+
+O background embutido dos tiles NAO precisa seguir o navy azul do primeiro:
+cada tile pode ter fundo em outra familia de cor, harmonizando com a
+identidade da passiva (ex.: fundo verde-musgo profundo para Regeneration,
+ambar escuro para Vessel's Growth). O que fixa o set e o FORMATO (ponta a
+ponta, sujeito grande, legivel 64px), nao a cor do fundo.
