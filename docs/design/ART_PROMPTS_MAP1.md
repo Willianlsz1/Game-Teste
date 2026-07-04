@@ -233,3 +233,11 @@ coracao. Nunca "tudo teal", nunca "tudo dourado". Exemplo canonizado
 azul-violeta + sussurro rosa-morno no nucleo. Padrao dos tiles de passiva:
 formato TILE de ponta a ponta com fundo navy embutido (#0A1226-#101A38),
 sujeito GRANDE, legivel a 64px, sem moldura/texto (a moldura e do jogo).
+
+### Licao 5b (refinamento do dono, jul/04): espectro inteiro + identidade por passiva
+
+A combinacao de cores NAO se limita a paleta da casa (teal/violeta/dourado):
+todo o RGB e permitido. E cada passiva tem IDENTIDADE cromatica propria (a
+cor-ancora dela na arvore), com a combinacao interna da Licao 5 construida ao
+redor dessa ancora. Mapa de identidades dos 16 tiles: ver tabela na secao de
+passivas (proposta Fable, veredito do dono pendente por tile, 1 a 1).
