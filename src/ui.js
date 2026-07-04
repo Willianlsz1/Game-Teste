@@ -997,8 +997,13 @@ G.ui = {
   // só aparece quando a coroa existe (mesma regra de CROWN_ICON dos demais elementos).
   _pvTitle() {
     return `<div class="pv-title-wrap">
-      <div class="pv-title">Passives</div>
-      <div class="pv-title-tier">World Tree &middot; Tier I</div>
+      <div class="pv-title-eyebrow">&#10022; World Tree &#10022;</div>
+      <div class="pv-title-row">
+        <span class="pv-title-rule"></span>
+        <div class="pv-title">Passives</div>
+        <span class="pv-title-rule"></span>
+      </div>
+      <div class="pv-title-tier">Tier I</div>
     </div>`;
   },
 
