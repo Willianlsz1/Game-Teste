@@ -113,7 +113,9 @@ G.passives = {
     "assets/passives/pv_5.png", // 4 Hardened Light
     "assets/passives/pv_6.png", // 5 Whetted Light
     "assets/passives/pv_7.png", // 6 Bare Instinct
-    null, null, null, null,     // 7-10
+    "assets/passives/pv_8.png", // 7 Golden Wake
+    "assets/passives/pv_9.png", // 8 Pilgrim's Wisdom
+    null, null,                 // 9-10
     null, null, null, null,     // 11-14
   ],
   CROWN_ICON: null,
@@ -158,10 +160,10 @@ G.passives = {
     { x: 50.0, y: 84.5 },                                          // 0  First Spark (raiz)
     { x: 44.0, y: 75.5 }, { x: 55.5, y: 74.5 },                    // 1  Regeneration · 2 Heal on Kill (D2)
     { x: 33.7, y: 52.9 }, { x: 44.3, y: 57.8 }, { x: 59.4, y: 58.2 }, { x: 71.6, y: 55.8 }, // 3-6 D3
-    { x: 14.0, y: 34.0 }, { x: 24.0, y: 26.5 }, { x: 34.5, y: 21.5 }, { x: 44.5, y: 19.0 }, // 7-10 folhas
-    { x: 55.5, y: 19.0 }, { x: 65.5, y: 21.5 }, { x: 76.0, y: 26.5 }, { x: 86.0, y: 34.0 }, // 11-14 folhas
+    { x: 20.8, y: 44.4 }, { x: 27.1, y: 35.6 }, { x: 40.9, y: 40.6 }, { x: 48.5, y: 40.2 }, // 7-10 folhas
+    { x: 51.5, y: 40.2 }, { x: 59.1, y: 40.6 }, { x: 72.9, y: 35.6 }, { x: 79.2, y: 44.4 }, // 11-14 folhas
   ],
-  CROWN_POS: { x: 50.0, y: 13.0 },
+  CROWN_POS: { x: 50.0, y: 26.0 },
   // split decorativo (soquete pintado sem nó, a estrela do tronco) onde o galho bifurca
   // para os nós 1 e 2 — waypoint puramente visual da curva, não é um nó comprável.
   SPLIT_POS: { x: 50.0, y: 71.0 },
