@@ -1,5 +1,11 @@
 # Gaiadon: Eternal Quest — números e fórmulas (referência de gênero)
 
+> **⚠️ Este doc é HISTÓRICO DE MINERAÇÃO** (cronológico, por build). A
+> referência CONSOLIDADA por sistema (fórmula + exemplo + intenção de design +
+> mapa pro Éclats) vive em **`GAIADON_MATH.md`** — comece por lá para estudo.
+> Este arquivo permanece como registro de onde cada número foi extraído.
+
+
 > **Engenharia reversa dos fontes (jul/03/2026)** — Godot 4.2, build 0.8.2 Alpha (demo, itch.io).
 > Método: .pck baixado e extraído (136 fontes GDScript em texto + 7 JSONs de dados); dois agentes mineraram independentemente e os relatórios convergiram (verificação cruzada).
 > **Uso: REFERÊNCIA, nunca cópia.** Qualquer número do Éclats continua saindo do nosso `tools/sim.js`.
