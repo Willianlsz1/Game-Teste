@@ -18,9 +18,10 @@ G.passives = {
   // ---- gating / custo ----
   // custo de UNLOCK (1º nível) por PROFUNDIDADE do nó (D1..D4). Upgrades por nível
   // seguem o padrão geométrico: unlock × evoFactor × evoRamp^(nível-1).
-  // P9: tools/p9 — não editar à mão, re-fitar (era [80,120,200,350] / evoFactor 0.4 / evoRamp 1.5).
-  unlockByDepth: [100, 220, 500, 1200],
-  evoFactor: 0.5, evoRamp: 1.7,
+  // P9 r4: tools/p9 — não editar à mão, re-fitar (era [100,220,500,1200] / evoFactor 0.5 / evoRamp 1.7;
+  // antes disso [80,120,200,350] / evoFactor 0.4 / evoRamp 1.5). unlockByDepth escalado ×0.85 (r4 var 8).
+  unlockByDepth: [85, 187, 425, 1020],
+  evoFactor: 0.45, evoRamp: 1.6,
 
   // ================= MAGNITUDES POR NÍVEL (UNIT) =================
   // apenas o que a Árvore I usa. ringCloses = bônus da coroa (aplicado 1× ao acender).
@@ -30,22 +31,22 @@ G.passives = {
   // (firstSpark, atkPct, critRate, critDmg, lightbane). goldenWake/executioner (folhas
   // novas P9) e o resto ficam só no ×3. Não editar à mão, re-fitar via tools/p9.
   UNIT: {
-    firstSpark:      15,   // raiz — +% ATK e +% HP por nível (efeito duplo)
-    hpRegen:        1.5,   // % do HP máx regenerado por segundo
-    healOnKill:     7.5,   // % do HP máx curado por kill
+    firstSpark:     4000,  // raiz — +ATK e +HP FLAT por nível (P9 r4/r5: tools/p9 — não editar à mão, re-fitar; o SOCO de entrada, ~30–50% do ATK nas convs 1–5)
+    hpRegen:        0.25,  // % do HP máx regenerado por segundo (P9 r4: tools/p9 — não editar à mão, re-fitar; era 1.5)
+    healOnKill:      1.5,  // % do HP máx curado por kill (P9 r4: tools/p9 — não editar à mão, re-fitar; era 7.5)
     hpPct:           15,   // +% HP por nível
     damageReduction: 3.75, // +% redução de dano por nível (fonte passiva NOVA)
-    atkPct:          45,   // +% ATK por nível (P9 v8: era 30)
+    atkPct:          60,   // +% ATK por nível (P9 r4: tools/p9 — não editar à mão, re-fitar; era 45)
     critRate:         2,   // +% chance de crítico por nível (P9 v8: era 15)
-    goldenWake:     1.0,   // P9 — +% chance de Lumens EM DOBRO por kill (folha 7; máx 10% = cap Mapa 1)
-    xpPct:         22.5,   // +% XP por nível
+    goldenWake:     1.0,   // P9 r6 (§9 var 18): +1%/nível de chance de Lumens 15× (jackpot, topo da escada 15×→4×→2×; cap 10% = 10 níveis)
+    xpPct:           70,   // P9 r6 (§9 var 19): +70% XP por nível GORDO (Pilgrim = 5 níveis; banda de fit 60–80)
     convPointsPct:   18,   // +% Pontos de Convergence por nível (Deep Memory)
     overkillEcho:    36,   // dano excedente do golpe fatal → Lumens extra (mecânica NOVA)
     critDmg:        108,   // +% dano crítico por nível
     lightbane:       60,   // +% dano vs acesos (rares & elites, não boss) — NOVO
     executioner:    0.8,   // P9 — inimigo não-boss abaixo de X% do HP máx morre (folha 13; máx 8% = cap Mapa 1)
     bossDmg:         36,   // +% dano vs Marcos (Harbinger's Bane) — chave existente
-    ringCloses:      54,   // COROA — ×(1+54/100) em ATK, HP, Lumens e XP (aplicado 1×)
+    ringCloses:     300,   // COROA — ×(1+300/100) em ATK, HP, Lumens e XP (aplicado 1×) (P9 r4 §9 var 17: tools/p9 — não editar à mão, re-fitar; era 54)
     _default: 0,
   },
 
@@ -65,8 +66,10 @@ G.passives = {
     { name: "Hardened Light",   key: "damageReduction", parent: 1,  depth: 3 }, // 4  Provisão
     { name: "Whetted Light",    key: "atkPct",          parent: 2,  depth: 3 }, // 5  Caça
     { name: "Bare Instinct",    key: "critRate",        parent: 2,  depth: 3 }, // 6  Caça
-    { name: "Golden Wake",      key: "goldenWake",      parent: 3,  depth: 4 }, // 7  folha (P9 — Lumens em dobro)
-    { name: "Pilgrim's Wisdom", key: "xpPct",           parent: 3,  depth: 4 }, // 8  folha
+    { name: "Golden Wake",      key: "goldenWake",      parent: 3,  depth: 4 }, // 7  folha (P9 r6 var 18 — jackpot Lumens 15×)
+    // P9 r6 (var 19): Pilgrim = 5 níveis GORDOS (+70%/nível). costMult mantém o custo TOTAL do
+    // nó ≈ igual ao de 10 níveis (com evoFactor/evoRamp do src: total10 ≈ 85×unlock → costMult 16).
+    { name: "Pilgrim's Wisdom", key: "xpPct",           parent: 3,  depth: 4, maxLevel: 5, costMult: 16 }, // 8  folha
     { name: "Deep Memory",      key: "convPointsPct",   parent: 4,  depth: 4 }, // 9  folha
     { name: "Overkill Echo",    key: "overkillEcho",    parent: 4,  depth: 4 }, // 10 folha
     { name: "Deepcrack",        key: "critDmg",         parent: 5,  depth: 4 }, // 11 folha
@@ -92,7 +95,7 @@ G.passives = {
     "Light, folded enough times, learns to be a wall.",                     // 4
     "The light does not cut because it is sharp. It cuts because it has decided to.", // 5
     "Before there were eyes, something already knew where to strike.",      // 6
-    "Where the light passes, the world pays twice.",                        // 7
+    "Where the light passes, the world pays fifteenfold.",                  // 7  (P9 r6 var 18)
     "Every road remembers the ones who walked it burning.",                 // 8
     "The ring keeps what the flesh forgets.",                               // 9
     "No blow is wasted. The excess sings back as gold.",                    // 10
@@ -135,7 +138,7 @@ G.passives = {
     damageReduction: "Reduces the damage you take.",
     atkPct:          "Increases your ATK.",
     critRate:        "Increases your critical chance.",
-    goldenWake:      "Each kill has a chance to drop double Lumens.",
+    goldenWake:      "Each kill has a chance to drop fifteenfold Lumens.",
     xpPct:           "Increases XP gained.",
     convPointsPct:   "Increases Convergence Points earned.",
     overkillEcho:    "Damage spilled past a killing blow returns as extra Lumens.",
@@ -171,16 +174,21 @@ G.passives = {
     return (p && p.tree1 && p.tree1[i]) || 0;
   },
   parentOf(i) { return this.nodes[i].parent; },
-  nodeMax() { return this.maxLevel; },
-  isMax(i) { return this.level(i) >= this.maxLevel; },
+  // P9 r6 (var 19): maxLevel POR NÓ — nodes[i].maxLevel opcional (default = maxLevel global 10).
+  // Pilgrim's Wisdom = 5 níveis gordos.
+  nodeMax(i) { const n = this.nodes[i]; return (n && n.maxLevel) || this.maxLevel; },
+  isMax(i) { return this.level(i) >= this.nodeMax(i); },
   parentBought(i) { const p = this.nodes[i].parent; return p === -1 || this.level(p) >= 1; },
 
   // ---- custo / gating ----
   unlockCost(i) { return this.unlockByDepth[this.nodes[i].depth - 1]; },
+  // nodes[i].costMult (opcional, default 1): multiplica os UPGRADES (não o unlock) — usado por
+  // nós de menos níveis pra manter o custo TOTAL ≈ igual ao de 10 níveis (var 19).
   nextCost(i) {
     const lv = this.level(i);
     if (lv === 0) return this.unlockCost(i);
-    return Math.ceil(this.unlockCost(i) * this.evoFactor * Math.pow(this.evoRamp, lv - 1));
+    const cm = this.nodes[i].costMult || 1;
+    return Math.ceil(this.unlockCost(i) * this.evoFactor * cm * Math.pow(this.evoRamp, lv - 1));
   },
   canBuy(i) {
     return this.unlocked() && !this.isMax(i) && this.parentBought(i) &&
@@ -220,14 +228,14 @@ G.passives = {
   // formatação textual por chave de efeito (usada pelo tooltip por-nó E pelo painel
   // agregado Tree Blessings). Fonte única — nunca duplicar este mapa.
   EFFECT_FMT: {
-    firstSpark:      (v) => `+${v}% ATK & HP`,
+    firstSpark:      (v) => `+${G.util.fmt(v)} ATK & HP`,   // P9 r5 (var 15): FLAT, não %
     hpRegen:         (v) => `+${v}% max HP / s`,
     healOnKill:      (v) => `+${v}% max HP on kill`,
     hpPct:           (v) => `+${v}% HP`,
     damageReduction: (v) => `+${v}% Damage Reduction`,
     atkPct:          (v) => `+${v}% ATK`,
     critRate:        (v) => `+${v}% Crit Rate`,
-    goldenWake:      (v) => `+${v}% double Lumens chance`,
+    goldenWake:      (v) => `+${v}% fifteenfold Lumens chance`,   // P9 r6 (var 18): jackpot 15×
     xpPct:           (v) => `+${v}% XP`,
     convPointsPct:   (v) => `+${v}% Convergence Points`,
     overkillEcho:    (v) => `+${v}% of overkill as Lumens`,
@@ -284,8 +292,12 @@ G.passives = {
       const lv = arr[i] || 0;
       levels += lv;
       if (lv > 0) unlocked++;
-      if (lv >= this.maxLevel) maxed++;
+      if (lv >= this.nodeMax(i)) maxed++;
     }
-    return { unlocked, maxed, levels, total: this.nodes.length, crown: this.crownActive() };
+    // maxLevels = Σ nodeMax(i) — P9 r6 (var 19): com maxLevel por nó, o denominador do "% da
+    // árvore" deixa de ser total×10 (consumidores: sim/tests usam prog.maxLevels).
+    let maxLevels = 0;
+    for (let i = 0; i < this.nodes.length; i++) maxLevels += this.nodeMax(i);
+    return { unlocked, maxed, levels, maxLevels, total: this.nodes.length, crown: this.crownActive() };
   },
 };

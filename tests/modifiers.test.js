@@ -195,9 +195,16 @@ const near = (a, b) => Math.abs(a - b) < 1e-9;
   G.combat.markBossCleared({ isBoss: true });          // H6 → 6º Marco
   ok(G.state.data.harbingersFelled.indexOf(G.data.areas.length - 1) !== -1, "H6 credita o 6º Marco");
   G.state.invalidateStats();
+  // P9 r4 (§9 item 3): SEM First Light desperto, o regime é pré-awaken (8/3/0). Os 6 Marcos
+  // fecham os caps PRÉ-awaken em 8/3/0 (Corona só existe pós-First Light — regime pós = 30/15/5).
   const caps = G.state.stats().rarityCaps;
-  ok(near(caps.ember, 0.30) && near(caps.lumen, 0.15) && near(caps.corona, 0.05),
-    "6 Marcos (com H6) fecham os caps do Rarity Find em 30/15/5");
+  ok(near(caps.ember, 0.08) && near(caps.lumen, 0.03) && near(caps.corona, 0),
+    "6 Marcos (com H6) fecham os caps pré-awaken em 8/3/0 (Corona gateado)");
+  G.awaken.awaken = function () { G.state.data.awakens = ["first_light"]; return true; };
+  G.state.data.awakens = ["first_light"]; G.state.invalidateStats();
+  const capsA = G.state.stats().rarityCaps;
+  ok(near(capsA.ember, 0.30) && near(capsA.lumen, 0.15) && near(capsA.corona, 0.05),
+    "pós-First Light (World Kindles): os 6 Marcos abrem os caps em 30/15/5 (Corona revelado)");
   G.ui = realUi;
 })();
 

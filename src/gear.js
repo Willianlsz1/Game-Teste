@@ -64,17 +64,28 @@ G.gear = {
     return (idx >= 0 && idx < G.data.rarities.length - 1) ? G.data.rarities[idx + 1].id : null;
   },
 
-  // returns { kind, amount } for the promote cost of an item, or null if not promotable
+  // P9 r4 (§9 item 4): promoção em DOIS materiais. Common→Uncommon consome
+  //   commonMaterial (massa) + uncommonMaterial (chave). Regra geral N→N+1 = mat(N)+mat(N+1).
+  // Retorna ARRAY de { kind, amount } (cada custo em seu tier), ou null se não-promovível.
   promoteCost(item) {
-    if (item.rarity === 'common') return { kind: 'common', amount: G.data.balance.promoteCommonCost };
+    if (item.rarity === 'common') return [
+      { kind: 'common',   amount: G.data.balance.promoteCommonCost },
+      { kind: 'uncommon', amount: G.data.balance.promoteUncommonCost },
+    ];
     return null;   // uncommon é terminal no Mapa 1 (Rare volta no Mapa 2)
+  },
+
+  // tem todos os materiais do custo?
+  hasPromoteMats(item) {
+    const cost = this.promoteCost(item);
+    if (!cost) return false;
+    return cost.every(c => G.economy.getGear(c.kind) >= c.amount);
   },
 
   canPromote(item) {
     if (!this.isMaxed(item)) return false;
     if (!this._nextRarity(item.rarity)) return false;
-    const cost = this.promoteCost(item);
-    return cost ? G.economy.getGear(cost.kind) >= cost.amount : false;
+    return this.hasPromoteMats(item);
   },
 
   // consumes materials, promotes piece to next rarity keeping current level
@@ -83,9 +94,8 @@ G.gear = {
     const nextId = this._nextRarity(item.rarity);
     if (!nextId) return false;
     const cost = this.promoteCost(item);
-    if (!cost) return false;
-    if (G.economy.getGear(cost.kind) < cost.amount) return false;
-    G.economy.addGear(cost.kind, -cost.amount);
+    if (!cost || !this.hasPromoteMats(item)) return false;
+    for (const c of cost) G.economy.addGear(c.kind, -c.amount);
     const currentLevel = item.level || 1;
     const newPiece = this.buildPiece(item.slot, nextId);
     newPiece.level = currentLevel;

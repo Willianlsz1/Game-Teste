@@ -59,11 +59,14 @@ G.economy = {
   dropTable: {
     common:   {
       commonMaterial: { chance: 0.05, min: 1, max: 1, minAreaIndex: 2 },
-      awakenMaterial: { chance: 1, min: 1, max: 1, minAreaIndex: 12 },  // P9 v8: tools/p9 (v7 {1,2} × scale extra 0.56) — não editar à mão, re-fitar
+      awakenMaterial: { chance: 1, min: 1, max: 1, minAreaIndex: 12, qtyAreaMult: { 15: 1.7, 16: 2.3, 17: 3.2 } },  // P9 r4: tools/p9 (v7 {1,2} × scale extra 0.56) — não editar à mão, re-fitar
     },
     rare:     {
-      commonMaterial: { chance: 0.15, min: 1, max: 2, minAreaIndex: 2 },
-      awakenMaterial: { chance: 1, min: 1, max: 3, minAreaIndex: 12 },  // P9 v8: tools/p9 (v7 {2,5} × scale extra 0.56) — não editar à mão, re-fitar
+      commonMaterial:   { chance: 0.15, min: 1, max: 2, minAreaIndex: 2 },
+      awakenMaterial:   { chance: 1, min: 1, max: 3, minAreaIndex: 12, qtyAreaMult: { 15: 1.7, 16: 2.3, 17: 3.2 } },  // P9 r4: tools/p9 (v7 {2,5} × scale extra 0.56) — não editar à mão, re-fitar
+      // P9 r4 (§9 item 4): material INCOMUM (chave da promoção) — SÓ mobs acesos (Ember/Lumen/Corona) o dropam.
+      // chance/qtd a fitar (tools/p9). rare = qualquer mob com .rarity (aceso).
+      uncommonMaterial: { chance: 0.10, min: 1, max: 1, minAreaIndex: 0 },
     },
     elite:    {
       commonMaterial:   { chance: 1,   min: 1, max: 2, minAreaIndex: 2 },
@@ -74,7 +77,8 @@ G.economy = {
     },
     boss:     {
       commonMaterial:   { chance: 0.45, min: 2, max: 4, minAreaIndex: 2 },
-      awakenMaterial:   { chance: 1, min: 181, max: 454, minAreaIndex: 12 },  // P9 v8: tools/p9 (v7 {324,810} × scale extra 0.56) — não editar à mão, re-fitar
+      awakenMaterial:   { chance: 1, min: 181, max: 454, minAreaIndex: 12, qtyAreaMult: { 15: 1.7, 16: 2.3, 17: 3.2 } },  // P9 r4: tools/p9 (v7 {324,810} × scale extra 0.56) — não editar à mão, re-fitar
+      uncommonMaterial: { chance: 1, min: 2, max: 4, minAreaIndex: 0 },  // P9 r4 (§9 item 4): Harbingers dropam a chave (massa por boss); qtd a fitar
     },
   },
 
@@ -130,7 +134,11 @@ G.economy = {
       if (rng() >= chance) continue;
       const span = (d.max - d.min);
       const baseQty = d.min + (span > 0 ? Math.floor(rng() * (span + 1)) : 0);
-      const qty = Math.max(0, Math.round(baseQty * this.passiveQtyMult(matKey)));
+      // P9 r5 (§9 var 17c): escala de QUANTIDADE por área — d.qtyAreaMult = { areaIndex: mult }.
+      // Usada pro drop de awakenMaterial CRESCER dentro do G6 (área 16 < 17 < 18): a reta
+      // final acelera em vez de farm chapado. Ausente = 1 (nenhuma mudança nos demais drops).
+      const areaMult = (d.qtyAreaMult && d.qtyAreaMult[areaIndex] != null) ? d.qtyAreaMult[areaIndex] : 1;
+      const qty = Math.max(0, Math.round(baseQty * areaMult * this.passiveQtyMult(matKey)));
       if (qty <= 0) continue;
       const sink = this.MATERIAL_SINK[matKey];
       if (!sink) continue;

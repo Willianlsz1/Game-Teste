@@ -120,9 +120,13 @@ ok(G.passives.buy(7) === false && G.passives.buy(8) === false,
 ok(G.passives.buy(11) === false && G.passives.buy(13) === false,
   "folhas do OUTRO ramo D2 (2, Heal on Kill — não comprado) seguem totalmente bloqueadas");
 
-// custo: maxLevel 10, unlock por profundidade, upgrade geométrico
+// custo: maxLevel 10 (default), unlock por profundidade, upgrade geométrico
 fresh(); G.state.data.convergences = 1; G.state.data.convergencePoints = 1e12;
-ok(G.passives.nodeMax() === 10, "maxLevel = 10 por nó");
+// P9 r6 (var 19): maxLevel POR NÓ — default 10; Pilgrim's Wisdom (idx 8) = 5 níveis gordos
+ok(G.passives.nodeMax(0) === 10, "maxLevel default = 10 (raiz)");
+ok(G.passives.nodeMax(8) === 5, "Pilgrim's Wisdom (idx 8) = 5 níveis (P9 r6 var 19)");
+// costMult do Pilgrim: upgrades ×16 mantêm o custo TOTAL do nó ≈ igual ao de 10 níveis
+ok(G.passives.nodes[8].costMult === 16, "Pilgrim costMult = 16 (custo total ≈ nó de 10 níveis)");
 ok(G.passives.unlockCost(0) === G.passives.unlockByDepth[0], "unlock da raiz = unlockByDepth[D1]");
 ok(G.passives.unlockCost(7) === G.passives.unlockByDepth[3], "unlock de folha = unlockByDepth[D4]");
 ok(G.passives.nextCost(0) === G.passives.unlockCost(0), "nível 0: nextCost = unlockCost");
@@ -220,12 +224,16 @@ ok(G.passives.crownActive() === true, "coroa acende com as 8 folhas ≥1 (não p
 for (const i of G.passives.leaves()) setNode(i, 1);
 ok(G.passives.crownActive() === true, "coroa acende com as 8 folhas ≥1");
 ok(G.passives.effects().ringCloses === G.passives.unit("ringCloses"), "effects() injeta ringCloses com a coroa acesa");
-const leaf0 = G.passives.leaves()[0];   // idx 7 = lumensPct (não toca ATK) → isola o mult da coroa
+const leaf0 = G.passives.leaves()[0];   // idx 7 = Golden Wake (combat-only, não toca ATK) → isola o mult da coroa
+// P9 r4 (§9 item 14): a âncora do player caiu p/ dezenas — no nível 1 o ATK é ~20, então o
+// arredondamento inteiro domina a razão. Sobe o nível p/ tirar a razão do ruído de round.
+G.state.data.level = 400; G.state.invalidateStats();
 setNode(leaf0, 0); const atkNoCrown = G.state.stats().atk;
 setNode(leaf0, 1); const atkCrown = G.state.stats().atk;
 ok(atkCrown > atkNoCrown, "coroa eleva ATK via mult ×(1+ringCloses%)");
 ok(Math.abs(atkCrown / atkNoCrown - (1 + G.passives.unit("ringCloses") / 100)) < 0.02,
   "coroa: mult de ATK ≈ 1+ringCloses%");
+G.state.data.level = 1; G.state.invalidateStats();
 
 // chaves mortas removidas do UNIT (capstones, matPct, hpToDamage, eliteDmg, deferidos)
 ok(G.passives.UNIT.capstoneEclat === undefined && G.passives.UNIT.matCommonPct === undefined &&
@@ -240,7 +248,7 @@ const P1 = (slot, i) => G.gear.buildPiece(slot, "common").affixes[i];
 ok(P1("weapon", 0).stat === "atk"  && P1("weapon", 0).layer === "flat", "Weapon P1 = ATK flat (Gilded Edge)");
 ok(P1("weapon", 1).stat === "atk"  && P1("weapon", 1).layer === "pct",  "Weapon P2 = ATK% (Searing Light)");
 ok(P1("helmet", 0).stat === "xpBonus",                                  "Helmet P1 = XP% (Watcher's Lens)");
-ok(P1("helmet", 1).stat === "damageReduction",                          "Helmet P2 = Dmg Reduction (Steadfast Guard)");
+ok(P1("helmet", 1).stat === "hollowing",                                "Helmet P2 = Enemy HP Reduction (Hollowing Light, P9 r4)");
 ok(P1("armor",  0).stat === "hp"   && P1("armor", 0).layer === "flat",  "Armor P1 = HP flat (Sealed Vessel)");
 ok(P1("armor",  1).stat === "hp"   && P1("armor", 1).layer === "pct",   "Armor P2 = HP% (Golden Seam)");
 ok(P1("gloves", 0).stat === "crit" && P1("gloves", 0).layer === "flat", "Gloves P1 = Crit Rate (Bare Hand's Instinct)");
@@ -248,7 +256,7 @@ ok(P1("gloves", 1).stat === "critDmg",                                  "Gloves 
 ok(P1("boots",  0).stat === "atkSpeed",                                 "Boots P1 = Attack Speed (Pathfinder's Pace)");
 ok(P1("boots",  1).stat === "rarityFindEmber",                          "Boots P2 = Ember Trail (rarityFindEmber, inerte)");
 ok(P1("cloak",  0).stat === "lumensBonus" && P1("cloak", 0).layer === "flat", "Cloak P1 = Lumens flat (Gilded Fringe)");
-ok(P1("cloak",  1).stat === "lumensBonus" && P1("cloak", 1).layer === "pct",  "Cloak P2 = Lumens% (Fortune's Weave)");
+ok(P1("cloak",  1).stat === "twiceGilded",                              "Cloak P2 = Double Lumens Chance (Twice-Gilded, P9 r4)");
 // o ATK% do cloak MORRE (conserta o glass-cannon acidental)
 ok(G.gear.buildPiece("cloak", "uncommon").affixes.every((a) => a.stat !== "atk"), "Cloak não tem mais nenhum afixo de ATK");
 
@@ -259,7 +267,7 @@ ok(hasStat("armor",  "bulwark"),           "Armor despertar = bulwark (Last Vess
 ok(G.gear.buildPiece("gloves", "uncommon").affixes.some((a) => a.stat === "critDmg" && a.layer === "pct"), "Gloves despertar = Crit Dmg% (Fracture Sense)");
 ok(hasStat("helmet", "rarityFindLumen"),   "Helmet despertar = rarityFindLumen (Second Sight)");
 ok(hasStat("boots",  "momentum"),          "Boots despertar = momentum (Momentum)");
-ok(hasStat("cloak",  "rarityFindCorona"),  "Cloak despertar = rarityFindCorona (Corona Call)");
+ok(hasStat("cloak",  "fortuneTorrent"),    "Cloak despertar = Quadruple Lumens Chance (Fortune's Torrent, P9 r4)");
 
 // Cleave (weapon): overkill do golpe fatal transfere s.cleave% pro próximo inimigo vivo (combat.onKill)
 fresh();
@@ -337,7 +345,10 @@ G.state.invalidateStats();
 const rf = G.state.stats();
 ok("rarityFindLumen"  in rf && rf.rarityFindLumen  > 0, "rarityFindLumen exposto em stats()");
 ok("rarityFindEmber"  in rf && rf.rarityFindEmber >= 0, "rarityFindEmber exposto em stats()");
-ok("rarityFindCorona" in rf && rf.rarityFindCorona > 0, "rarityFindCorona exposto em stats()");
+// P9 r4: Corona Call SAIU do Cloak (Corona é revelação). O afixo do cloak agora é Fortune's
+// Torrent (Lumens 4×). rarityFindCorona segue EXPOSTO na cache (chave viva p/ o Mapa 2) mas sem fonte = 0.
+ok("rarityFindCorona" in rf && rf.rarityFindCorona === 0, "rarityFindCorona ainda exposto (chave Mapa 2, sem fonte no Mapa 1 = 0)");
+ok("fortuneTorrent" in rf && rf.fortuneTorrent > 0, "Fortune's Torrent (Cloak ✦) exposto e > 0 no gear");
 
 // save antigo (afixos velhos, cloak com ATK%) → reconcile reconstrói do gearBase novo, nível preservado
 store = {};
@@ -352,7 +363,7 @@ G.state.data = null; G.state.load();
 ok(G.state.data.equipped.cloak.level === 1200, "save antigo: nível do cloak preservado (1200)");
 ok(G.state.data.equipped.weapon.level === 400,  "save antigo: nível da weapon preservado (400)");
 ok(G.state.data.equipped.cloak.affixes.every((a) => a.stat !== "atk"), "save antigo: cloak reconstruído sem ATK% (afixos novos)");
-ok(G.state.data.equipped.cloak.affixes.some((a) => a.stat === "rarityFindCorona"), "save antigo: cloak ganha o despertar novo (rarityFindCorona)");
+ok(G.state.data.equipped.cloak.affixes.some((a) => a.stat === "fortuneTorrent"), "save antigo: cloak ganha o despertar novo (Fortune's Torrent, P9 r4)");
 
 // ---------- P8.4: o finale encenado (emenda ao PORTÃO do P7) ----------
 // A área 18 tem DOIS estágios: H6 (area.boss, ungated) → Okhra (area.mapBoss, gated pelo First Light).

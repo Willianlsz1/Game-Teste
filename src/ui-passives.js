@@ -194,7 +194,7 @@ Object.assign(G.ui, {
   _pvNode(i) {
     const P = G.passives;
     const node = P.nodes[i], pos = P.POSITIONS[i];
-    const level = P.level(i), maxed = P.isMax(i), nmax = P.nodeMax();
+    const level = P.level(i), maxed = P.isMax(i), nmax = P.nodeMax(i);   // P9 r6: maxLevel por nó
     const locked = !P.parentBought(i) && level === 0;
     const canBuy = P.canBuy(i);
     const wantBuy = !maxed && !locked && P.parentBought(i);          // comprável de topologia (pode faltar pontos)
@@ -220,7 +220,7 @@ Object.assign(G.ui, {
 
   _pvCard(i) {
     const P = G.passives;
-    const name = P.nodes[i].name, level = P.level(i), nmax = P.nodeMax();
+    const name = P.nodes[i].name, level = P.level(i), nmax = P.nodeMax(i);   // P9 r6: maxLevel por nó
     const maxed = P.isMax(i), locked = !P.parentBought(i) && level === 0;
     const ic = P.iconOf(i);
     const m = P.magnitude(i);

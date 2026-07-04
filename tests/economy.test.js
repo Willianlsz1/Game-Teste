@@ -46,16 +46,18 @@ let d = G.economy.rollDrops({}, Object.assign({ type: "common", areaIndex: 2 }, 
 ok(d.commonMaterial >= 1 && !d.uncommonMaterial && !d.awakenMaterial, "common dropa só Common material (Área 3)");
 ok(G.economy.getGear("common") >= 1, "Common material foi ao inventário");
 
-// 5) Harbinger em G5+ (idx>=12) -> Common + Awaken, NUNCA Uncommon (Rare/Forge = Mapa 2)
+// 5) Harbinger em G5+ (idx>=12) -> Common + Awaken + Uncommon (P9 r4 §9 item 4: boss dropa a chave)
 d = G.economy.rollDrops({ isBoss: true }, Object.assign({ areaIndex: 14 }, R0));
-ok(d.commonMaterial && !d.uncommonMaterial && d.awakenMaterial, "Harbinger (G5+, idx 14) dropa Common+Awaken, sem Uncommon");
+ok(d.commonMaterial && d.uncommonMaterial && d.awakenMaterial, "Harbinger (G5+, idx 14) dropa Common+Awaken+Uncommon (chave da promoção)");
 ok(G.economy.getAwaken("firstLight") >= 1, "Awaken material (firstLight) foi ao inventário");
+ok(G.economy.getGear("uncommon") >= 1, "Uncommon material (chave) foi ao inventário");
 
-// 6) gate de drops: Áreas 1-2 (idx 0-1) não dropam nada; Área 3 (idx 2) só Common (Awaken=G5+)
+// 6) gate de drops: Áreas 1-2 (idx 0-1) — o awaken/common ainda gateiam, mas a CHAVE incomum de
+//    boss é ungated (minAreaIndex 0): o Harbinger da área 1 já dropa Uncommon (P9 r4).
 let d0 = G.economy.rollDrops({ isBoss: true }, Object.assign({ areaIndex: 0 }, R0));
-ok(Object.keys(d0).length === 0, "gate: Área 1 (idx 0) não dropa material algum");
+ok(!d0.commonMaterial && !d0.awakenMaterial && d0.uncommonMaterial, "gate: Área 1 (idx 0) — boss só dropa a chave Uncommon (common/awaken ainda gateados)");
 let d2 = G.economy.rollDrops({ isBoss: true }, Object.assign({ areaIndex: 2 }, R0));
-ok(d2.commonMaterial && !d2.uncommonMaterial && !d2.awakenMaterial, "gate: Área 3 (idx 2) só Common (Awaken=G5+/idx 12)");
+ok(d2.commonMaterial && d2.uncommonMaterial && !d2.awakenMaterial, "gate: Área 3 (idx 2) — boss dropa Common + Uncommon (Awaken=G5+/idx 12)");
 
 // 7) as passivas de material NÃO existem na Árvore I (voltam na Árvore II) — logo os
 // multiplicadores da economia são inertes (=1). O PLUMBING segue correto: injetar um

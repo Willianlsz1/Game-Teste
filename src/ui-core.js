@@ -24,6 +24,10 @@ G.ui = {
     rarityFindEmber:  "Ember Light Chance",
     rarityFindLumen:  "Lumen Light Chance",
     rarityFindCorona: "Corona Light Chance",
+    // P9 r4 — afixos novos
+    twiceGilded:      "Double Lumens Chance",
+    fortuneTorrent:   "Quadruple Lumens Chance",
+    hollowing:        "Enemy HP Reduction",
   },
 
   cache() {

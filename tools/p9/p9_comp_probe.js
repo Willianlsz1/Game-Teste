@@ -72,17 +72,18 @@ const HOOK = `
     }
     const total = flatTot * (1 + pctTot / 100) * mult;
     const fE = flatBy['Equipment'] || 0, fL = flatBy['Character Level'] || 0, fB = flatBy['Base'] || 0;
+    const fP = flatBy['Passives'] || 0;   // P9 r5 (var 15): First Spark é FLAT de Passives — conta em gear+passivas
     const pE = pctBy['Equipment'] || 0, pP = pctBy['Passives'] || 0, pC = pctBy['Convergence Legacy'] || 0;
     const k = (1 + pctTot / 100) * mult;
-    const cFlatE = fE * k, cFlatL = fL * k, cFlatB = fB * k;
+    const cFlatE = fE * k, cFlatL = fL * k, cFlatB = fB * k, cFlatP = fP * k;
     const cPctE = flatTot * (pE / 100) * mult, cPctP = flatTot * (pP / 100) * mult, cPctC = flatTot * (pC / 100) * mult;
     const cMultP = flatTot * (1 + pctTot / 100) * (mult - 1);
-    const sum = cFlatE + cFlatL + cFlatB + cPctE + cPctP + cPctC + cMultP;
-    const gearPass = cFlatE + cPctE + cPctP + cMultP;
+    const sum = cFlatE + cFlatL + cFlatB + cFlatP + cPctE + cPctP + cPctC + cMultP;
+    const gearPass = cFlatE + cFlatP + cPctE + cPctP + cMultP;
     return {
       total: Math.round(total), frac: sum > 0 ? gearPass / sum : 0,
       gearFlat: fE, levelFlat: fL, pE, pP, mult,
-      cFlatE, cFlatL, cFlatB, cPctE, cPctP, cPctC, cMultP, sum,
+      cFlatE, cFlatL, cFlatB, cFlatP, cPctE, cPctP, cPctC, cMultP, sum,
     };
   }
 

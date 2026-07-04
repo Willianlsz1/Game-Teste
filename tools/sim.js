@@ -184,7 +184,7 @@ function policyTick(sim) {
     const prog = G.passives.treeProgress();
     G.convergence.converge();
     sim.runs.push({ n: d.convergences, t: sim.t, dur: sim.t - (sim.lastConvT || 0), gate, level: lvl, areaMax, grpMax, kills, pts, cum: d.convergencePoints, nodesBought: sim.nodeLevelsBought,
-      treePct: Math.round(prog.levels / (prog.total * G.passives.maxLevel) * 100), treeNodes: prog.unlocked, crown: prog.crown });
+      treePct: Math.round(prog.levels / (prog.maxLevels || prog.total * G.passives.maxLevel) * 100), treeNodes: prog.unlocked, crown: prog.crown });   // P9 r6: maxLevel por nó (prog.maxLevels)
     sim.lastConvT = sim.t;
     sim.lastAreaEntered = -1;
     if (sim.onConverge) sim.onConverge(sim);

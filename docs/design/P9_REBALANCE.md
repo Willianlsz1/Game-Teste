@@ -422,6 +422,20 @@ Achados do dono (screenshots) e destino:
    compensar em gear/árvore, com RE-FIT das áreas e re-validação de TODOS os
    gates do §7 (relógio 36±2, Okhra, coroa, re-subida ≥ estado atual).
 
+## 8b. RODADA 4 — estado (jul/04)
+
+- [x] v9-r4 → r5 → r6: mecânicas implementadas (Opus), 3 runs de descoberta,
+      anatomia da curva + probe A/B da coroa, conflitos resolvidos pelo dono.
+- [x] **v9-r6 BAKED em src/ (jul/04)**: review adversarial independente
+      (Sonnet — 0 achados ALTOS; pegou o mobAtkByArea não-bakeado) · bake
+      completo com prova de reprodução BYTE-A-BYTE (sim direto = candidato,
+      seeds 1/3/7: FL 35h57–36h04, Okhra 93–102, coroa conv 10, árvore 100%
+      conv 14) · testes 6/6 · canon 0 drift. COMMITADO.
+- [ ] v9-r7 (Sonnet): threshold em escada [200..8000] (var 22) + copy
+      "manifests in N kills" (var 23) + re-medição com os 3 gates da var 22.
+- [ ] Âncora formal do relógio pelo dono (/travar, sobre o número do r7) +
+      playtest de validação no build bakeado.
+
 ## 9. RODADA 4 — variáveis do candidato v9-r4 (coletadas com o dono, grill jul/04)
 
 **Protocolo: DESCOBERTA, não fit de relógio** — rodar SEM gate de tempo

@@ -26,6 +26,7 @@ G.combat = {
   _momentumStacks:  0,    // P9: stacks de Momentum (boots) — cada kill +1 até momentumMaxStacks
   _momentumTimer:   0,    // P9: segundos restantes antes de zerar os stacks de Momentum
   _cleaving:        false, // P9: guarda anti-recursão do Cleave (1 salto só — a cadeia não re-propaga)
+  _vesselShield:    0,     // P9 r4 (Vessel of Dawn): golpes recebidos ainda absorvidos NESTA onda (reseta por spawn)
 
   // reset comum da onda: usado ao trocar/viajar de área, ao converger e à morte do Seeker.
   // cada site com semântica extra (ex.: onDeath zera bossKills/momentum) mantém seu próprio delta.
@@ -95,7 +96,17 @@ G.combat = {
     }
 
     this.enemy = this.enemies[0];
+    // Vessel of Dawn (First Light): o Seeker absorve os N primeiros golpes de CADA onda.
+    // O escudo reseta a cada spawn de onda. Só existe com o First Light desperto (bonus.vesselOfDawn).
+    this._vesselShield = this._vesselAbsorb();
     if (G.ui && G.ui.renderEnemy) G.ui.renderEnemy();
+  },
+
+  // P9 r4: quantos golpes o Vessel of Dawn absorve por onda (0 sem First Light desperto).
+  _vesselAbsorb() {
+    if (!(G.awaken && G.awaken.isDone("first_light"))) return 0;
+    const a = G.awaken.def && G.awaken.def("first_light");
+    return (a && a.bonus && a.bonus.vesselOfDawn) || 0;
   },
 
   // The Tide Rises (P8.4): Okhra re-invoca a escolta — enche até tide.maxEscort comuns vivos.
@@ -217,6 +228,13 @@ G.combat = {
 
   applyHitToHero(dmg, source) {
     const s = G.state.stats();
+    // Vessel of Dawn (First Light): absorve por completo os N primeiros golpes de cada onda (0 dano).
+    if (this._vesselShield > 0) {
+      this._vesselShield--;
+      if (G.ui && G.ui.floater) G.ui.floater(0, "enemy");
+      if (G.ui && G.ui.renderHeroHp) G.ui.renderHeroHp();
+      return;
+    }
     // Bulwark (armor assinatura): redução EXTRA só quando o HP atual está abaixo de bulwarkHpThreshold% do máx.
     // A SOMA (damageReduction + bulwark) continua clampada em dmgReductionCap.
     let dr = s.damageReduction || 0;
@@ -256,11 +274,17 @@ G.combat = {
     let lumens = Math.ceil(e.lumens * (1 + s.lumensBonus / 100));
     const xp     = Math.round(e.xp    * (1 + s.xpBonus    / 100));
 
-    // Golden Wake (folha): chance por kill de Lumens EM DOBRO (clamp goldenWakeCap por segurança).
-    if (G.passives) {
-      let gw = G.passives.effect("goldenWake") || 0;
+    // Lumens multiplier por kill — a ESCADA de apostas do eixo Lumens (P9 r6, §9 var 18):
+    // Golden Wake 15× (folha, topo) → Fortune's Torrent 4× (assinatura) → Twice-Gilded 2×
+    // (primário). Rola do topo pra base; o PRIMEIRO que acerta ganha — não empilham.
+    {
+      let gw = G.passives ? (G.passives.effect("goldenWake") || 0) : 0;
       gw = G.util.clamp(gw, 0, G.data.balance.goldenWakeCap);
-      if (gw > 0 && G.util.chance(gw / 100)) lumens *= 2;
+      const torrent = G.util.clamp(s.fortuneTorrent || 0, 0, G.data.balance.fortuneTorrentCap);
+      const dbl = G.util.clamp(s.twiceGilded || 0, 0, G.data.balance.twiceGildedCap);
+      if (gw > 0 && G.util.chance(gw / 100)) lumens *= 15;
+      else if (torrent > 0 && G.util.chance(torrent / 100)) lumens *= 4;
+      else if (dbl > 0 && G.util.chance(dbl / 100)) lumens *= 2;
     }
 
     // Overkill Echo (passiva): dano excedente ALÉM da morte vira Lumens extra. Cap = lumens base do mob.

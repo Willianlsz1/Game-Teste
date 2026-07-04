@@ -107,6 +107,15 @@ G.enemyFactory = {
       lightshell = isBoss ? ls.bossAbsorb : ls.absorb;
     }
 
+    // Hollowing Light (Helmet, P9 r4): o inimigo NÃO-boss nasce com −X% do HP máx.
+    // Só mobs (bosses/Okhra são Marcos com hpMult fitado — não são enfraquecidos). Lumens
+    // seguem o HP REAL do spawn (goldRatio abaixo lê o maxHp já reduzido → sem exploit de farm).
+    if (!isBoss) {
+      const s = G.state.stats();
+      const hollow = G.util.clamp(s.hollowing || 0, 0, b.hollowingCap);
+      if (hollow > 0) maxHp *= (1 - hollow / 100);
+    }
+
     let lumens = maxHp * b.goldRatio;
     if (isBoss) lumens *= b.bossLumenMult;
     G.combat.spawnCount++;

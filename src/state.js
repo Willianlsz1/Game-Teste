@@ -96,8 +96,11 @@ G.state = {
     let passEff = null;
     if (G.passives) {
       passEff = G.passives.effects();
-      add("atk", "pct",  passEff.firstSpark || 0, "Passives");   // raiz: ATK% + HP%
-      add("hp",  "pct",  passEff.firstSpark || 0, "Passives");
+      // P9 r5 (§9 var 15): First Spark (raiz) é ATK & HP FLAT por nível — o SOCO de entrada.
+      // Forte nas convs 1–5 (~30–50% do ATK total), dilui no late DE PROPÓSITO (galhos % assumem).
+      // Bônus de UI: Passives passa a aparecer na coluna PRIMARY do breakdown.
+      add("atk", "flat", passEff.firstSpark || 0, "Passives");
+      add("hp",  "flat", passEff.firstSpark || 0, "Passives");
       add("atk", "pct",  passEff.atkPct   || 0, "Passives");
       add("hp",  "pct",  passEff.hpPct    || 0, "Passives");
       add("crit", "flat", passEff.critRate || 0, "Passives");
@@ -119,8 +122,11 @@ G.state = {
 
     // Rarity Find (P8.1): chance de gear (rarityFind, fração 0-1) e teto dos Marcos (rarityCaps).
     // Cada Harbinger abatido levanta 1/6 do teto (capMax/6), clampado no máximo. Fração p/ chance().
+    // P9 r4 (§9 item 3): DOIS regimes de cap — pré-First Light (Corona 0, não existe) vs pós
+    //   (worldKindles revela o Corona e abre os caps). O regime é escolhido pelo awaken.
     const felled = (d.harbingersFelled && d.harbingersFelled.length) || 0;
-    const rcMax = G.data.rarityCaps;
+    const awakened = !!(G.awaken && G.awaken.isDone("first_light"));
+    const rcMax = awakened ? G.data.rarityCapsAwakened : G.data.rarityCaps;
     const capFrac = (max) => Math.min(max, felled * (max / 6)) / 100;
 
     this._cache = {
@@ -140,6 +146,10 @@ G.state = {
       bulwark:          G.util.clamp(fin("bulwark"), 0, G.data.balance.dmgReductionCap),  // gear (Last Vessel): dmgRed extra abaixo de 35% HP
       overcrit:         G.util.clamp(fin("overcrit"), 0, 30),      // gear (Fracture Sense): teto de chance de golpe duplo (crit acima de 100)
       momentum:         Math.max(0, fin("momentum")),              // gear (Momentum): +atkSpeed% por stack de kill
+      // P9 r4 — afixos novos: Twice-Gilded (Lumens 2×), Fortune's Torrent (Lumens 4×), Hollowing Light (−HP% do mob)
+      twiceGilded:      G.util.clamp(fin("twiceGilded"),    0, G.data.balance.twiceGildedCap),
+      fortuneTorrent:   G.util.clamp(fin("fortuneTorrent"), 0, G.data.balance.fortuneTorrentCap),
+      hollowing:        G.util.clamp(fin("hollowing"),      0, G.data.balance.hollowingCap),
       rarityFindLumen:  fin("rarityFindLumen"),       // % Lumen do gear (Second Sight)
       rarityFindEmber:  fin("rarityFindEmber"),       // % Ember do gear (Ember Trail)
       rarityFindCorona: fin("rarityFindCorona"),      // % Corona do gear (Corona Call)
@@ -213,6 +223,11 @@ G.state = {
     // de "Map 1 complete" nunca voltaria a disparar ao derrotar Okhra de verdade.
     if (this.data.mapOneCleared && (this.data.maxAreaUnlocked || 0) < G.data.areas.length - 1)
       this.data.mapOneCleared = false;
+
+    // P9 r4: highestLevel (Light Remembers) — saves antigos sem o campo inicializam do nível atual
+    // (Object.assign com fresh() deixa 1; se o jogador já subiu, ancora no nível salvo).
+    if (typeof this.data.highestLevel !== "number" || this.data.highestLevel < this.data.level)
+      this.data.highestLevel = this.data.level || 1;
 
     // Awaken: garante a lista canônica e o tier em saves antigos
     if (!Array.isArray(this.data.awakens)) this.data.awakens = [];

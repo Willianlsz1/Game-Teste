@@ -56,14 +56,21 @@ G.convergence = {
     d.convergencePoints = (d.convergencePoints || 0) + gained;
     d.convergences = (d.convergences || 0) + 1;
 
+    // Light Remembers (First Light, P9 r4 §9 item 5): a re-subida pós-Convergence NÃO recomeça
+    // do nível 1 — começa em X% do MAIOR nível já alcançado (highestLevel). Só com o rito desperto.
     d.level = 1;
+    if (G.awaken && G.awaken.isDone("first_light")) {
+      const a = G.awaken.def && G.awaken.def("first_light");
+      const frac = (a && a.bonus && a.bonus.lightRemembers) || 0;
+      if (frac > 0) d.level = Math.max(1, Math.floor((d.highestLevel || 1) * frac));
+    }
     d.xp = 0;
     d.lumens = 0;
     d.areaIndex = 0;
     d.runKills = 0;
     d.runBosses = 0;
     d.runMaxAreaIndex = 0;
-    if (G.combat) { G.combat._bossKills = 0; G.combat._momentumStacks = 0; G.combat._momentumTimer = 0; }   // não carregar progresso de boss/momentum pro novo ciclo
+    if (G.combat) { G.combat._bossKills = 0; G.combat._momentumStacks = 0; G.combat._momentumTimer = 0; G.combat._vesselShield = 0; }   // não carregar progresso de boss/momentum/escudo pro novo ciclo
 
     G.state.invalidateStats();
     d.hp = G.state.maxHp();

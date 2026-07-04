@@ -4,7 +4,8 @@
 G.data = {
   // afixos exibidos como % (não flat) — fonte única; gear.buildPiece e ui.statMatrixHtml leem daqui
   pctStats: ["crit", "critDmg", "xpBonus", "lumensBonus", "rarityFindEmber", "rarityFindLumen",
-    "rarityFindCorona", "cleave", "bulwark", "overcrit", "momentum", "damageReduction"],
+    "rarityFindCorona", "cleave", "bulwark", "overcrit", "momentum", "damageReduction",
+    "twiceGilded", "fortuneTorrent", "hollowing"],  // P9 r4: novos afixos exibidos como %
 
   // Tiers do Seeker (visual progression)
   tiers: [
@@ -36,7 +37,7 @@ G.data = {
     weapon: {
       name: "Worn Blade",
       affixes: [
-        { id: "atk",  label: "Gilded Edge",   stat: "atk", layer: "flat", base: 0, perLevel: 300 },  // perLevel P9 v8: tools/p9 (era 220)
+        { id: "atk",  label: "Gilded Edge",   stat: "atk", layer: "flat", base: 0, perLevel: 55 },  // perLevel P9 r4: tools/p9 — não editar à mão, re-fitar (era 300)
         { id: "atkp", label: "Searing Light", stat: "atk", layer: "pct",  base: 0, perLevel: 1  },
       ],
       uncommonAffixes: [
@@ -46,8 +47,10 @@ G.data = {
     helmet: {
       name: "Worn Helm",
       affixes: [
-        { id: "xp",     label: "Watcher's Lens",  stat: "xpBonus",         layer: "flat", base: 0, perLevel: 0.5   },
-        { id: "dmgRed", label: "Steadfast Guard", stat: "damageReduction", layer: "flat", base: 0, perLevel: 0.001 },
+        { id: "xp",     label: "Watcher's Lens",  stat: "xpBonus", layer: "flat", base: 0, perLevel: 0.5 },
+        // P9 r4: Steadfast Guard (DR) SAI (redundante com árvore Hardened Light + Bulwark), entra
+        // Hollowing Light — inimigo spawna com −X% do HP máx (perStep, cap 5). Aplicado no _buildOne.
+        { id: "hollowing", label: "Hollowing Light", stat: "hollowing", layer: "flat", base: 0, perStep: 0.25, step: 100, cap: 5 },
       ],
       uncommonAffixes: [
         { id: "rarityFindLumen", label: "Second Sight", stat: "rarityFindLumen", layer: "flat", base: 0, perStep: 0.25, step: 50, cap: 15 }, // P8.1 Rarity Find — +0.25% Lumen chance por degrau de 50 níveis (teto 15%)
@@ -56,7 +59,7 @@ G.data = {
     armor: {
       name: "Worn Cuirass",
       affixes: [
-        { id: "hp",  label: "Sealed Vessel", stat: "hp", layer: "flat", base: 0, perLevel: 80 },  // perLevel P9 v8: tools/p9 (era 60)
+        { id: "hp",  label: "Sealed Vessel", stat: "hp", layer: "flat", base: 0, perLevel: 22 },  // perLevel P9 r4: tools/p9 — não editar à mão, re-fitar (era 80)
         { id: "hpp", label: "Golden Seam",   stat: "hp", layer: "pct",  base: 0, perLevel: 2  },
       ],
       uncommonAffixes: [
@@ -86,11 +89,15 @@ G.data = {
     cloak: {
       name: "Worn Cloak",
       affixes: [
-        { id: "lumens",   label: "Gilded Fringe",   stat: "lumensBonus", layer: "flat", base: 5, perLevel: 0.2, step: 50, cap: 150 },
-        { id: "lumensBP", label: "Fortune's Weave", stat: "lumensBonus", layer: "pct",  base: 0, perLevel: 0.01 },
+        { id: "lumens",     label: "Gilded Fringe",   stat: "lumensBonus", layer: "flat", base: 5, perLevel: 0.2, step: 50, cap: 150 },
+        // P9 r4: Fortune's Weave (lumensBP) SAI, entra Twice-Gilded — chance de Lumens 2× por kill,
+        // em degraus (perStep, sem mult de raridade); soma com goldenWake (árvore) no goldenWakeCap 10 (combat).
+        { id: "twiceGilded", label: "Twice-Gilded", stat: "twiceGilded", layer: "flat", base: 0, perStep: 0.25, step: 100, cap: 4 },
       ],
       uncommonAffixes: [
-        { id: "rarityFindCorona", label: "Corona Call", stat: "rarityFindCorona", layer: "flat", base: 0, perStep: 0.085, step: 50, cap: 5 }, // P8.1 Rarity Find — +0.085% Corona chance por degrau de 50 níveis (teto 5%)
+        // P9 r4: Corona Call SAI (Corona é revelação, zero menção em UI pré-awaken), entra
+        // Fortune's Torrent — chance de Lumens 4× por kill (perStep, cap 5). Rola ANTES do 2× (combat); não empilham.
+        { id: "fortuneTorrent", label: "Fortune's Torrent", stat: "fortuneTorrent", layer: "flat", base: 0, perStep: 0.3, step: 100, cap: 5 },
       ],
     },
   },
@@ -115,7 +122,14 @@ G.data = {
         crown: true,
         materials: { firstLight: 100000 },  // P9: tools/p9 — não editar à mão, re-fitar
       },
-      bonus: { atkMult: 2.5, hpMult: 1.5, lumensBonus: 25 },
+      // P9 rodada 4 (§9): piso ×5 ATK / ×3 HP (fitado EM PAR com o Okhra hpMult).
+      // lumensBonus flat REMOVIDO. As mecânicas de revelação/re-subida/escudo do rito:
+      //   worldKindles → revela o tier Corona no mundo (pré-awaken NÃO spawna nem aparece
+      //     em UI) e abre os caps de Rarity Find (pós = rarityCapsAwakened).
+      //   lightRemembers → re-subida pós-Convergence começa no nível = X% do MAIOR nível
+      //     já alcançado (persistido em state.highestLevel).
+      //   vesselOfDawn → o Seeker absorve os N primeiros golpes recebidos de cada onda.
+      bonus: { atkMult: 5, hpMult: 3, worldKindles: true, lightRemembers: 0.10, vesselOfDawn: 2 },
     },
   ],
 
@@ -157,10 +171,14 @@ G.data = {
     tide:       { interval: 10, maxEscort: 6 },
   },
 
-  // Tetos máximos (%) do Rarity Find — atingidos com os 6 Marcos. capPerHarbinger = cap/6:
-  // cada Harbinger morto pela 1ª vez levanta 1/6 (permanente, sobrevive à Convergence).
-  // 6 Marcos (idx 2,5,8,11,14 + H6 na área 18) → a 6ª morte fecha os caps em 30/15/5.
-  rarityCaps: { ember: 30, lumen: 15, corona: 5 },
+  // Tetos máximos (%) do Rarity Find. P9 rodada 4 (§9 item 3): DOIS regimes —
+  //   • pré-First Light: Ember 8 · Lumen 3 · Corona 0 (o tier Corona NÃO EXISTE — não
+  //     spawna, não aparece em NENHUMA UI: princípio de revelação do The World Kindles).
+  //   • pós-First Light (worldKindles): Ember 30 · Lumen 15 · Corona 5 — o rito revela
+  //     o Corona e abre os caps. Os 6 Marcos ainda escalonam de 0→cap em 1/6 por morte.
+  // state.stats() escolhe o regime lendo G.awaken.isDone("first_light").
+  rarityCaps:         { ember: 8,  lumen: 3,  corona: 0 },  // pré-awaken (Corona gateado)
+  rarityCapsAwakened: { ember: 30, lumen: 15, corona: 5 },  // pós-First Light (Corona revelado)
 
   // 6 Harbingers da floresta guardados (DECISOES_JUL26 §4) — sem função por enquanto
   reservedHarbingers: [
@@ -182,7 +200,7 @@ G.data = {
       lore: "The Seeker wakes here because the forest allows it. The oldest boughs remember the Lumiere whole, and they dream it still, aurora dripping like sap. Nothing here wants to hurt you. That is what makes it a lie.",
       img: "assets/areas/dreaming_wood.png",
       levelRange: [1, 80],
-      hp: [2584, 138922],  // P9: gerado pela família de expoentes (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar
+      hp: [48, 5085],  // P9 r4: tools/p9 — não editar à mão, re-fitar
       enemies: [
         { name: "Candlewisp Shade",  sprite: "🔥", img: "assets/enemies/candlewisp_shade.png"  },
         { name: "Mothlight Herald",  sprite: "🦋", img: "assets/enemies/mothlight_herald.png"  },
@@ -195,7 +213,7 @@ G.data = {
       lore: "Every lantern in the bog was lit by a Fragmented soul that believed the light would lead it home. The bog kept the lanterns and the souls both. They gutter, but they refuse to go out.",
       img: "assets/areas/lantern_mire.png",
       levelRange: [81, 171],
-      hp: [463074, 890836],  // P9: gerado pela família de expoentes (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar
+      hp: [16949, 57212],  // P9 r4: tools/p9 — não editar à mão, re-fitar
       enemies: [
         { name: "Mirelight Drifter", sprite: "🏮", img: "assets/enemies/mirelight_drifter.png" },
         { name: "Candlewisp Shade",  sprite: "🔥", img: "assets/enemies/candlewisp_shade.png"  },
@@ -208,13 +226,13 @@ G.data = {
       lore: "The hollow trees sing because light is trapped inside them, and trapped light does not stay quiet. Pilgrims once pressed their ears to the bark to hear it. Some are still listening. The Hollow Cantor conducts them.",
       img: "assets/areas/whispering_hollows.png",
       levelRange: [172, 276],
-      hp: [2969452, 2969452],  // P9: gerado pela família de expoentes (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar
+      hp: [190707, 190707],  // P9 r4: tools/p9 — não editar à mão, re-fitar
       enemies: [
         { name: "Husklight Murmur",  sprite: "🌳", img: "assets/enemies/husklight_murmur.png"  },
         { name: "Dreamhorn Warden",  sprite: "🦌", img: "assets/enemies/dreamhorn_warden.png"  },
         { name: "Mirelight Drifter", sprite: "🏮", img: "assets/enemies/mirelight_drifter.png" },
       ],
-      boss: { name: "The Hollow Cantor", sprite: "🎶", hpMult: 0.45, dmgMult: 2.0, signature: ["lightshell"], img: "assets/enemies/hollow_cantor.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H1 = Lightshell. hpMult P9: tools/p9
+      boss: { name: "The Hollow Cantor", sprite: "🎶", hpMult: 3.5, dmgMult: 2.0, signature: ["lightshell"], img: "assets/enemies/hollow_cantor.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H1 = Lightshell. hpMult P9 r4: tools/p9 — não editar à mão, re-fitar
     },
     {
       id: 4, name: "The Moonlit Canopy", theme: "forest",
@@ -222,7 +240,7 @@ G.data = {
       lore: "Closest to the aurora, the canopy is where the forest touches what it lost. Moths carry flecks of pale light between the branches like offerings. The wardens do not guard the canopy. They guard the way down.",
       img: "assets/areas/moonlit_canopy.png",
       levelRange: [277, 396],
-      hp: [6169355, 6169355],  // P9: gerado pela família de expoentes (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar
+      hp: [592527, 592527],  // P9 r4: tools/p9 — não editar à mão, re-fitar
       enemies: [
         { name: "Boughlight Creeper", sprite: "🍃", img: "assets/enemies/boughlight_creeper.png" },
         { name: "Mothlight Herald",   sprite: "🦋", img: "assets/enemies/mothlight_herald.png"   },
@@ -235,7 +253,7 @@ G.data = {
       lore: "The pools do not reflect the sky. They reflect the Mist, patient and creeping, wearing the faces of things that once drank here. The Seeker's own reflection arrives a moment late.",
       img: "assets/areas/sunken_grove.png",
       levelRange: [397, 534],
-      hp: [9575306, 9575306],  // P9: gerado pela família de expoentes (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar
+      hp: [1132001, 1132001],  // P9 r4: tools/p9 — não editar à mão, re-fitar
       enemies: [
         { name: "Glasswater Wraith",  sprite: "💧", img: "assets/enemies/glasswater_wraith.png"  },
         { name: "Mirelight Drifter",  sprite: "🏮", img: "assets/enemies/mirelight_drifter.png"  },
@@ -248,13 +266,13 @@ G.data = {
       lore: "Here the gold began. It climbed the thorns like a beautiful infection, gilding everything it touched and hollowing everything it gilded. The Bramble King wears the first crown it ever made.",
       img: "assets/areas/gilded_thicket.png",
       levelRange: [535, 693],
-      hp: [13267958, 230919084],  // P9: gerado pela família de expoentes (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar
+      hp: [1752816, 1752816],  // P9 r4: tools/p9 — não editar à mão, re-fitar
       enemies: [
         { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
         { name: "Candlewisp Shade",   sprite: "🔥", img: "assets/enemies/candlewisp_shade.png"   },
         { name: "Glasswater Wraith",  sprite: "💧", img: "assets/enemies/glasswater_wraith.png"  },
       ],
-      boss: { name: "The Bramble King", sprite: "🥀", hpMult: 3.6, dmgMult: 2.0, signature: ["escorted"], img: "assets/enemies/bramble_king.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H2 = Escorted. hpMult P9: tools/p9
+      boss: { name: "The Bramble King", sprite: "🥀", hpMult: 3.0, dmgMult: 2.0, signature: ["escorted"], img: "assets/enemies/bramble_king.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H2 = Escorted. hpMult P9 r4: tools/p9 — não editar à mão, re-fitar
     },
     {
       id: 7, name: "The Hollow Cathedral", theme: "forest",
@@ -262,7 +280,7 @@ G.data = {
       lore: "No one built the cathedral. The wood grew it around the kneeling Fragmented, arch by arch, as if the forest wanted to keep their worship. The captured light burns on the altar, and it is not grateful.",
       img: "assets/areas/hollow_cathedral.png",
       levelRange: [694, 876],
-      hp: [769730279, 769730279],  // P9: gerado pela família de expoentes (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar
+      hp: [3038355, 3038355],  // P9 r4: tools/p9 — não editar à mão, re-fitar
       enemies: [
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
         { name: "Husklight Murmur",   sprite: "🌳", img: "assets/enemies/husklight_murmur.png"   },
@@ -275,7 +293,7 @@ G.data = {
       lore: "The deep roots bleed raw light where the corruption cut them. The forest mourns loudly here, sap and glow running together. Everything that grieves eventually comes down to drink.",
       img: "assets/areas/weeping_roots.png",
       levelRange: [877, 1086],
-      hp: [1004147640, 1004147640],  // P9: gerado pela família de expoentes (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar
+      hp: [3873431, 3873431],  // P9 r4: tools/p9 — não editar à mão, re-fitar
       enemies: [
         { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
         { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
@@ -288,13 +306,13 @@ G.data = {
       lore: "The heart of the Dreaming, hushed like a held breath. The Gilded Hollow waits at the center with its stolen radiance, the forest's whole sickness gathered into one patient shape. Beyond it, the land smells of salt.",
       img: "assets/areas/hollow_sanctum.png",
       levelRange: [1087, 1328],
-      hp: [1165585696, 1165585696],  // P9: gerado pela família de expoentes (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar
+      hp: [4260405, 23886372],  // P9 r4: tools/p9 — não editar à mão, re-fitar
       enemies: [
         { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
         { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
       ],
-      boss: { name: "The Gilded Hollow", sprite: "👁", hpMult: 24.3, dmgMult: 2.0, signature: ["siphoning"], img: "assets/enemies/gilded_hollow.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H3 = Siphoning. hpMult P9: tools/p9
+      boss: { name: "The Gilded Hollow", sprite: "👁", hpMult: 3.2, dmgMult: 2.0, signature: ["siphoning"], img: "assets/enemies/gilded_hollow.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H3 = Siphoning. hpMult P9 r4: tools/p9 — não editar à mão, re-fitar
     },
     {
       id: 10, name: "The Salt-Eaten Quay", theme: "port",
@@ -302,7 +320,7 @@ G.data = {
       lore: "The wave stopped mid-bite the day the tide learned patience. The quay lives dry inside its shadow, salt falling like slow snow. The dockfolk never left. They just stopped being folk.",
       img: "assets/areas/salt_eaten_quay.png",
       levelRange: [1329, 1606],
-      hp: [1395277820, 1395277820],  // P9: gerado pela família de expoentes (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar
+      hp: [1433182338, 1433182338],  // P9 r4: tools/p9 — não editar à mão, re-fitar
       enemies: [
         { name: "Saltmarrow Wader",  sprite: "🧂", img: "assets/enemies/saltmarrow_wader.png"  },
         { name: "Lanternjaw Angler", sprite: "🏮", img: "assets/enemies/lanternjaw_angler.png" },
@@ -315,7 +333,7 @@ G.data = {
       lore: "Trade never ended, it only drowned. The lanterns burn under the water because the tide likes them lit, and the pale shoals make their rounds of the stalls, browsing for what is left of the sellers.",
       img: "assets/areas/drowned_market.png",
       levelRange: [1607, 1926],
-      hp: [1418315668, 1418315668],  // P9: gerado pela família de expoentes (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar
+      hp: [2875677648, 2875677648],  // P9 r4: tools/p9 — não editar à mão, re-fitar
       enemies: [
         { name: "Lanternjaw Angler", sprite: "🏮", img: "assets/enemies/lanternjaw_angler.png" },
         { name: "The Pale Shoal",    sprite: "🐟", img: "assets/enemies/pale_shoal.png"        },
@@ -328,13 +346,13 @@ G.data = {
       lore: "The bell was rung to warn the port. The tide swallowed the tower mid-toll and kept the sound. Now the Drowned Bell tolls a count of drownings that have not happened yet. Yours has a number.",
       img: "assets/areas/sunken_belfry.png",
       levelRange: [1927, 2294],
-      hp: [1700854873, 6833035722],  // P9: gerado pela família de expoentes (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar
+      hp: [4469275998, 4473725184],  // P9 r4: tools/p9 — não editar à mão, re-fitar
       enemies: [
         { name: "Mooring Strangler", sprite: "⚓", img: "assets/enemies/mooring_strangler.png" },
         { name: "Saltmarrow Wader",  sprite: "🧂", img: "assets/enemies/saltmarrow_wader.png"  },
         { name: "Hollowed Diver",    sprite: "🤿", img: "assets/enemies/hollowed_diver.png"    },
       ],
-      boss: { name: "The Drowned Bell", sprite: "🔔", hpMult: 32.9, dmgMult: 2.0, signature: ["quickened"], img: "assets/enemies/drowned_bell.png" }, // P8.3 H4 = Quickened. hpMult P9: tools/p9
+      boss: { name: "The Drowned Bell", sprite: "🔔", hpMult: 4.8, dmgMult: 2.0, signature: ["quickened"], img: "assets/enemies/drowned_bell.png" }, // P8.3 H4 = Quickened. hpMult P9 r4: tools/p9 — não editar à mão, re-fitar
     },
     {
       id: 13, name: "The Wreckfields", theme: "port",
@@ -342,7 +360,7 @@ G.data = {
       lore: "A graveyard where nothing is allowed to finish dying. The hulls hang frozen mid-fall, chains straining toward a surface the tide keeps only as a memory. Divers move between the wrecks, tending them.",
       img: "assets/areas/wreckfields.png",
       levelRange: [2295, 2717],
-      hp: [22776785741, 22776785741],  // P9: gerado pela família de expoentes (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar
+      hp: [8284676270, 8284676270],  // P9 r4: tools/p9 — não editar à mão, re-fitar
       enemies: [
         { name: "Wrackwood Hulk",  sprite: "🚢", img: "assets/enemies/wrackwood_hulk.png"  },
         { name: "Hollowed Diver",  sprite: "🤿", img: "assets/enemies/hollowed_diver.png"  },
@@ -355,7 +373,7 @@ G.data = {
       lore: "The shipwrights fled and the water took up their tools. It finishes the half-built hulls in coral and verdigris, patient and wrong, building ships for a fleet that no one living will sail.",
       img: "assets/areas/drowned_shipyard.png",
       levelRange: [2718, 3203],
-      hp: [31770544265, 31770544265],  // P9: gerado pela família de expoentes (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar
+      hp: [10145538068, 10145538068],  // P9 r4: tools/p9 — não editar à mão, re-fitar
       enemies: [
         { name: "Coralbone Creeper", sprite: "🦀", img: "assets/enemies/coralbone_creeper.png" },
         { name: "Wrackwood Hulk",    sprite: "🚢", img: "assets/enemies/wrackwood_hulk.png"    },
@@ -368,13 +386,13 @@ G.data = {
       lore: "The port's great fleet never sailed. The tide fused it into a single vast body, masts for ribs, sails for skin, and lit the deck-lights itself. The Hollow Fleet answers no flag. It answers the hunger.",
       img: "assets/areas/hollow_armada.png",
       levelRange: [3204, 3762],
-      hp: [41310869512, 41310869512],  // P9: gerado pela família de expoentes (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar
+      hp: [53309767812, 53309767812],  // P9 r4: tools/p9 — não editar à mão, re-fitar
       enemies: [
         { name: "Depthlight Lure", sprite: "🪼", img: "assets/enemies/depthlight_lure.png" },
         { name: "Wrackwood Hulk",  sprite: "🚢", img: "assets/enemies/wrackwood_hulk.png"  },
         { name: "Hollowed Diver",  sprite: "🤿", img: "assets/enemies/hollowed_diver.png"  },
       ],
-      boss: { name: "The Hollow Fleet", sprite: "🚢", hpMult: 8.5, dmgMult: 2.0, signature: ["lightshell", "quickened"], img: "assets/enemies/hollow_fleet.png" }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar. P8.3 H5 = par Lightshell+Quickened (burst→velocidade; sem stacking de dano recebido). hpMult P9: tools/p9
+      boss: { name: "The Hollow Fleet", sprite: "🚢", hpMult: 7, dmgMult: 2.0, signature: ["lightshell", "quickened"], img: "assets/enemies/hollow_fleet.png" }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar. P8.3 H5 = par Lightshell+Quickened (burst→velocidade; sem stacking de dano recebido). hpMult P9 r4: tools/p9 — não editar à mão, re-fitar
     },
     {
       id: 16, name: "The Abyssal Shelf", theme: "port",
@@ -382,7 +400,7 @@ G.data = {
       lore: "The last shelf of stone before the dark goes all the way down. The surface hangs far above like a dead sky. What passes beneath the shelf is too large to fight and too slow to flee, and it knows you are on the edge.",
       img: "assets/areas/abyssal_shelf.png",
       levelRange: [3763, 4405],
-      hp: [51792908706, 51792908706],  // P9: gerado pela família de expoentes (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar
+      hp: [34282396049, 34282396049],  // P9 r4: tools/p9 — não editar à mão, re-fitar
       enemies: [
         { name: "Siltveil Shade",    sprite: "🧜", img: "assets/enemies/siltveil_shade.png"    },
         { name: "Depthlight Lure",   sprite: "🪼", img: "assets/enemies/depthlight_lure.png"   },
@@ -395,7 +413,7 @@ G.data = {
       lore: "The trench pulses like a throat swallowing. Light bends toward the mouth, wreckage bends, even the water leans. The port was not sunk. It is being digested.",
       img: "assets/areas/starving_trench.png",
       levelRange: [4406, 5144],
-      hp: [63155230487, 63155230487],  // P9: gerado pela família de expoentes (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar
+      hp: [37142327811, 37142327811],  // P9 r4: tools/p9 — não editar à mão, re-fitar
       enemies: [
         { name: "Tidespawn Husk",  sprite: "🌀", img: "assets/enemies/tidespawn_husk.png"  },
         { name: "Siltveil Shade",  sprite: "🧜", img: "assets/enemies/siltveil_shade.png"  },
@@ -409,7 +427,7 @@ G.data = {
       img: "assets/areas/tides_maw.png",
       imgFinale: "assets/areas/tides_maw_finale.png",
       levelRange: [5145, 6000],
-      hp: [76186535396, 114279803094],  // P9: gerado pela família de expoentes (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar
+      hp: [37870659195, 56805988795],  // P9 r4: tools/p9 — não editar à mão, re-fitar
       enemies: [
         { name: "Tidespawn Husk",    sprite: "🌀", img: "assets/enemies/tidespawn_husk.png"    },
         { name: "Siltveil Shade",    sprite: "🧜", img: "assets/enemies/siltveil_shade.png"    },
@@ -417,8 +435,8 @@ G.data = {
       ],
       // P8.4 — o finale encenado (dois estágios): H6 (Harbinger, ungated) → Okhra (mapBoss, gated pelo First Light).
       // Matar H6 pela 1ª vez fecha os Marcos 6/6. Okhra manifesta após o H6 SÓ com First Light desperto.
-      boss:    { name: "The Tidebound Choir", sprite: "🎼", hpMult: 21.9, dmgMult: 2.0, signature: ["siphoning", "escorted"], img: "assets/enemies/tidebound_choir.png" }, // PLACEHOLDER (lore): Harbinger H6 do Porto Afundado. P8.3 par Siphoning+Escorted (ensaio geral do Okhra: cura + onda, sem acelerar ataque). hpMult P9: tools/p9
-      mapBoss: { name: "Okhra, the Starving Tide", sprite: "🌊", hpMult: 690, dmgMult: 2.5, signature: ["siphoning"] }, // PLACEHOLDER (lore): chefe de Mapa — Siphoning + The Tide Rises; matar Okhra completa o Mapa 1. hpMult P9: tools/p9
+      boss:    { name: "The Tidebound Choir", sprite: "🎼", hpMult: 36, dmgMult: 2.0, signature: ["siphoning", "escorted"], img: "assets/enemies/tidebound_choir.png" }, // PLACEHOLDER (lore): Harbinger H6 do Porto Afundado. P8.3 par Siphoning+Escorted (ensaio geral do Okhra: cura + onda, sem acelerar ataque). hpMult P9 r4: tools/p9 — não editar à mão, re-fitar
+      mapBoss: { name: "Okhra, the Starving Tide", sprite: "🌊", hpMult: 1240, dmgMult: 2.5, signature: ["siphoning"] }, // PLACEHOLDER (lore): chefe de Mapa — Siphoning + The Tide Rises; matar Okhra completa o Mapa 1. hpMult P9 r4: tools/p9 — não editar à mão, re-fitar
     },
   ],
 
@@ -452,9 +470,9 @@ G.data = {
   balance: {
     // ATK do mob POR ÁREA (idx 0-17), as 18 áreas. P9: gerado pela família de expoentes
     // (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar.
-    mobAtkByArea:      [40,792,5251,5481,8573,12040,17906,21389,25692,692469,852555,958653,1097956,1346576,1602030,1881510,2190865,2551078],
+    mobAtkByArea:      [2,35,464,752,1443,2223,3855,4933,5420,12422,82928,136833,185808,192968,214382,195197,210921,316087],
     groupSize:         3,     // Harbinger (boss) a cada 3 áreas — fronteira de grupo
-    packByGroup:       [1, 2, 2, 3, 3, 3],   // P2.4: ondas por grupo (teto 3 = restrição de UI)
+    packByGroup:       [1, 2, 2, 3, 4, 5],   // P9 r4 (§9 item 2): onda cresce a 4 (G5) e 5 (G6); UI de batalha suporta 5
     atkSpeedBase:      0.9,
     map1AtkSpeedCap:   2,     // teto-assíntota Mapa 1
     map2AtkSpeedCap:   4,     // teto-assíntota Mapa 2 (placeholder — Mapa 2 fora de escopo)
@@ -468,17 +486,19 @@ G.data = {
     bossLumenMult:     5,
     goldRatio:         0.35,   // lumens/HP — calibrado p/ gear acompanhar (não estourar) o HP do mob
     baseXp:            245,     // valor P5/P8.5b mantido pelo P9; o relógio agora é ~36h (First Light 36h13 seed 1, banda 36±2 nas seeds 1/3/7) — ver docs/design/P9_REBALANCE.md §7
-    xpMultByGroup:     [1, 1, 1, 1, 1, 1],  // P9: tools/p9 — não editar à mão, re-fitar (era acelerador por grupo P7)
+    xpMultByGroup:     [1, 1.7, 2.3, 0.6, 0.6, 1],  // P9 r4: tools/p9 — não editar à mão, re-fitar
     xpCurveBase:       14,      // XP p/ próximo nível = xpCurveBase × nível^xpCurveExp
     xpCurveExp:        1.9,     // P9 v8: tools/p9 — não editar à mão, re-fitar (expoente: late-game pesa; era 1.62)
     respawnDelay:      0.5,     // respawn mais ágil → kills/min sem precisar de one-shot
-    bossKillThresholdBase:     25,   // P2.5: threshold do Harbinger = base + perGroup×(grupo+1) → 30..55 kills sem morrer
-    bossKillThresholdPerGroup: 5,    // P2.5: escalada por grupo. Morte zera o contador. Ver docs/design/ENEMY_POWER_PYRAMID.md
+    bossKillThresholdBase:     200,  // P9 r4 (§9 item 11): threshold do Harbinger = base + perGroup×(grupo+1); base ≥200
+    bossKillThresholdPerGroup: 20,   // P9 r4: escada re-derivada acima de 200 (+20/grupo → 220..320). Morte zera o contador.
     bossRegrindFrac:           1.0,  // re-grind CHEIO — matar o Harbinger zera o contador; re-invocar = re-farmar o threshold inteiro (decisão do dono, P8.5b; 0 = respawn direto era o bug pré-P8.5)
     gearCostBase:      2500,
     gearCostGrowth:    1.022,   // P2.2: freio principal — testado no sim
-    promoteCommonCost:    50,   // common material (common → uncommon) — dimensionado no P3
-    // promoteUncommonCost / convertCommonToUncommon removidos — Rare e Forge voltam no Mapa 2
+    // P9 r4 (§9 item 4): promoção em DOIS materiais. Common→Uncommon consome
+    //   commonMaterial (massa) + uncommonMaterial (chave). Ver gear.promoteCost.
+    promoteCommonCost:      50,  // common material (massa) por promoção Common→Uncommon
+    promoteUncommonCost:     8,  // uncommon material (chave) por promoção Common→Uncommon (a fitar)
     convLegacyAtkPct:     2,    // P9: tools/p9 — não editar à mão, re-fitar (+atk% direto POR convergence; era 8)
     convLegacyHpPct:      2,    // P9: tools/p9 — não editar à mão, re-fitar (+hp%  direto POR convergence; era 8)
     convGateBase:       276,    // P5.1: gate₁ = fim do G1. gateₙ₊₁ = gateₙ × convGateGrowth (escada)
@@ -491,15 +511,21 @@ G.data = {
     overcritCritCeil:    100,   // crit acima deste valor vira chance de golpe duplo (Overcrit, gloves)
     momentumMaxStacks:     3,   // stacks de Momentum (boots) — cada kill +1, teto Mapa 1
     momentumDuration:      6,   // segundos até o timer de Momentum zerar os stacks
-    goldenWakeCap:        10,   // teto de chance de Lumens em dobro por kill (folha Golden Wake)
+    goldenWakeCap:        10,   // teto da folha Golden Wake — chance de Lumens 15× (P9 r6 var 18; escada 15×→4×→2×; Twice-Gilded tem cap próprio)
     executionerCap:        8,   // teto do limiar de execução (% do HP máx) da folha Executioner's Light
+    // P9 r4 (§9 item 7): caps dos afixos novos (Mapa 1 = degustação).
+    twiceGildedCap:        4,   // teto de Twice-Gilded (Cloak): chance de Lumens 2× (somada ao goldenWakeCap conjunto)
+    fortuneTorrentCap:     5,   // teto de Fortune's Torrent (Cloak ✦): chance de Lumens 4× (rola antes do 2×)
+    hollowingCap:          5,   // teto de Hollowing Light (Helmet): −% do HP máx do inimigo no spawn
     // P9: crescimento de atk/hp do player por nível — flat(nível) = base (Lv.1) + coef × nível^exp (Character Level, state.js:stats()).
     // Substitui a reta linear (era (nível-1)×5 atk, (nível-1)×2 hp). Não editar à mão, re-fitar via tools/p9.
-    playerAtkBase:      1000,
-    playerAtkCoef:         8,
-    playerAtkExp:       1.42,
-    playerHpBase:       1000,
-    playerHpCoef:          4,
-    playerHpExp:         1.4,
+    // P9 r4 (§9 item 14): âncora inicial em DEZENAS (era 1000). O topo do mapa se mantém
+    // (mob área 18 ~10¹¹) → o crescimento total sentido sobe (~×10⁷–⁸). coef/exp re-fitam via tools/p9.
+    playerAtkBase:        15,
+    playerAtkCoef:         4,   // P9 r4: tools/p9 — não editar à mão, re-fitar (era 8)
+    playerAtkExp:       1.30,   // P9 r4: tools/p9 — não editar à mão, re-fitar (era 1.42)
+    playerHpBase:         50,
+    playerHpCoef:          2,   // P9 r4: tools/p9 — não editar à mão, re-fitar (era 4)
+    playerHpExp:        1.30,   // P9 r4: tools/p9 — não editar à mão, re-fitar (era 1.4)
   },
 };

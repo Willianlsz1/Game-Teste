@@ -159,22 +159,32 @@
 .enemies-container.pack-1 .enemy-figure { height: 420px; }
 .enemies-container.pack-2 .enemy-figure { height: 320px; }
 .enemies-container.pack-3 .enemy-figure { height: 260px; }
+.enemies-container.pack-4 .enemy-figure { height: 220px; }   /* P9 r4: onda 4 (G5) */
+.enemies-container.pack-5 .enemy-figure { height: 190px; }   /* P9 r4: onda 5 (G6) */
 
 /* largura máxima do card por tamanho de onda — space-evenly distribui o resto
    como respiro, espalhando os mobs pela direita sem encostar */
 .enemies-container.pack-1 .enemy-card { max-width: 380px; }
 .enemies-container.pack-2 .enemy-card { max-width: 320px; }
 .enemies-container.pack-3 .enemy-card { max-width: 280px; }
+.enemies-container.pack-4 .enemy-card { max-width: 230px; }   /* P9 r4 */
+.enemies-container.pack-5 .enemy-card { max-width: 200px; }   /* P9 r4 */
 
 /* texto escala para cards menores */
 .enemies-container.pack-2 .enemy-name { font-size: 20px; }
 .enemies-container.pack-3 .enemy-name { font-size: 18px; }
+.enemies-container.pack-4 .enemy-name { font-size: 16px; }
+.enemies-container.pack-5 .enemy-name { font-size: 15px; }
 .enemies-container.pack-2 .card-sub,
-.enemies-container.pack-3 .card-sub { font-size: 12px; }
+.enemies-container.pack-3 .card-sub,
+.enemies-container.pack-4 .card-sub,
+.enemies-container.pack-5 .card-sub { font-size: 12px; }
 
 .enemy-figure .art-ph { font-size: 90px; animation: float 3s ease-in-out infinite; }
 .enemies-container.pack-2 .art-ph { font-size: 60px; }
 .enemies-container.pack-3 .art-ph { font-size: 48px; }
+.enemies-container.pack-4 .art-ph { font-size: 40px; }
+.enemies-container.pack-5 .art-ph { font-size: 34px; }
 
 .enemy-figure .art-img {
   position: static; inset: auto; width: 100%; height: 100%; object-fit: contain;

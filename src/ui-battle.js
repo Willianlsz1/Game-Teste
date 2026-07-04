@@ -71,7 +71,7 @@ Object.assign(G.ui, {
 
     if (this._enemySig !== sig) {
       this._enemySig = sig;
-      container.className = `enemies-container pack-${Math.min(list.length, 3)}`;
+      container.className = `enemies-container pack-${Math.min(list.length, 5)}`;   // P9 r4: ondas até 5 (+boss)
       // cópia com índice original preservada; sort estável (Array#sort é estável no V8/Chrome
       // moderno) — mobs comuns mantêm a ordem relativa entre si, boss(es) vão pro fim.
       const order = list.map((e, i) => ({ e, i })).sort((a, b) => (a.e.isBoss ? 1 : 0) - (b.e.isBoss ? 1 : 0));

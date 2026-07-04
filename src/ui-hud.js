@@ -65,7 +65,7 @@ Object.assign(G.ui, {
 
     // Assinaturas (P9): só aparecem se o jogador tiver a peça (valor > 0); sem stat-pop de
     // breakdown (mesmo tratamento das linhas de Lights) — usa classe stat-row--light.
-    const sigKeys = ["cleave", "bulwark", "overcrit", "momentum"];
+    const sigKeys = ["cleave", "bulwark", "overcrit", "momentum", "twiceGilded", "fortuneTorrent", "hollowing"];
     const sigHtml = sigKeys
       .filter((key) => (s[key] || 0) > 0)
       .map((key) => `<li class="stat-row--light"><span>${this.STAT_NAMES[key]}</span><b>${(s[key]).toFixed(1)}%</b></li>`)
@@ -78,11 +78,14 @@ Object.assign(G.ui, {
       const capPct = (cap[t] * 100).toFixed(1);
       return `<li class="stat-row--light"><span style="color:${color}">${label}</span><b>${chance}% / ${capPct}%</b></li>`;
     };
+    // P9 r4 (§9 item 3): revelação — a linha Corona só existe DEPOIS do First Light.
+    // Pré-awaken o tier Corona não spawna nem aparece em NENHUMA UI (nem como "0%").
+    const coronaRevealed = !!(G.awaken && G.awaken.isDone("first_light"));
     const lightsHtml =
       `<li class="stat-row--section"><span>Lights</span><span class="stat-row__hint">chance / cap</span></li>` +
       lightRow("Ember", "#5ee0d2", "ember") +
       lightRow("Lumen", "#4fa8ff", "lumen") +
-      lightRow("Corona", "#9d7bff", "corona");
+      (coronaRevealed ? lightRow("Corona", "#9d7bff", "corona") : "");
 
     if (this.el["gear-stats"]) this.el["gear-stats"].innerHTML = html + sigHtml + lightsHtml;
   },

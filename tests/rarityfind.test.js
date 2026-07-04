@@ -29,21 +29,30 @@ G.state.invalidateStats();
 let caps = G.state.stats().rarityCaps;
 ok(caps.ember === 0 && caps.lumen === 0 && caps.corona === 0, "0 Marcos: todos os tetos = 0 (base 0%, só Common)");
 
+// P9 r4 (§9 item 3): DOIS regimes. PRÉ-First Light os tetos máximos são Ember 8 / Lumen 3 / Corona 0.
 G.state.data.harbingersFelled = [2]; G.state.invalidateStats();
 caps = G.state.stats().rarityCaps;
-ok(near(caps.ember, 0.05) && near(caps.lumen, 0.025) && near(caps.corona, 5 / 6 / 100),
-  "1 Marco: teto sobe 1/6 (Ember 5% · Lumen 2.5% · Corona 0.833%)");
+ok(near(caps.ember, 8 / 6 / 100) && near(caps.lumen, 3 / 6 / 100) && near(caps.corona, 0),
+  "pré-awaken · 1 Marco: teto sobe 1/6 (Ember 1.33% · Lumen 0.5% · Corona 0 — gateado)");
 
 G.state.data.harbingersFelled = [2, 5, 8, 11, 14]; G.state.invalidateStats();
 caps = G.state.stats().rarityCaps;
-ok(near(caps.ember, 0.25) && near(caps.lumen, 0.125) && near(caps.corona, 5 * 5 / 6 / 100),
-  "5 Marcos (roster atual): 25% / 12.5% / 4.17% (5/6 do máximo)");
+ok(near(caps.ember, 8 * 5 / 6 / 100) && near(caps.lumen, 3 * 5 / 6 / 100) && near(caps.corona, 0),
+  "pré-awaken · 5 Marcos: 6.67% / 2.5% / 0 (5/6 do máximo pré-awaken)");
 
-// clamp: 6+ Marcos nunca passam do teto máximo (30/15/5)
+// clamp: 6+ Marcos nunca passam do teto máximo pré-awaken (8/3/0)
 G.state.data.harbingersFelled = [2, 5, 8, 11, 14, 17, 99, 100]; G.state.invalidateStats();
 caps = G.state.stats().rarityCaps;
+ok(near(caps.ember, 0.08) && near(caps.lumen, 0.03) && near(caps.corona, 0),
+  "pré-awaken · clamp: 6+ Marcos travam em 8% / 3% / 0 (Corona nunca spawna)");
+
+// PÓS-First Light (The World Kindles): os tetos abrem para 30 / 15 / 5 e o Corona é revelado.
+G.awaken.awaken = function () { G.state.data.awakens = ["first_light"]; return true; };  // stub p/ marcar desperto
+G.state.data.awakens = ["first_light"]; G.state.invalidateStats();
+caps = G.state.stats().rarityCaps;
 ok(near(caps.ember, 0.30) && near(caps.lumen, 0.15) && near(caps.corona, 0.05),
-  "clamp: 6+ Marcos travam nos tetos máximos 30% / 15% / 5% (nunca ultrapassa)");
+  "pós-awaken · clamp: 6+ Marcos abrem em 30% / 15% / 5% (Corona revelado)");
+G.state.data.awakens = [];   // volta ao regime pré-awaken para o resto dos testes
 
 // ---------- 2) roll em _buildOne respeita min(find, cap), ordem corona→lumen→ember ----------
 fresh();
@@ -90,7 +99,7 @@ G.state.data.areaIndex = 2;      // idx 2 = Harbinger do G1 (tem boss)
 G.combat.markBossCleared();
 ok(G.state.data.harbingersFelled.length === 1 && G.state.data.harbingersFelled[0] === 2,
   "1ª morte do Harbinger: registra o Marco (harbingersFelled = [2])");
-ok(near(G.state.stats().rarityCaps.ember, 0.05), "1ª morte: teto Ember sobe para 5%");
+ok(near(G.state.stats().rarityCaps.ember, 8 / 6 / 100), "1ª morte: teto Ember sobe 1/6 (pré-awaken 8% → 1.33%)");
 G.combat.markBossCleared();       // mata o MESMO Harbinger de novo
 ok(G.state.data.harbingersFelled.length === 1, "2ª morte do MESMO Harbinger: NÃO levanta o teto de novo");
 
@@ -117,8 +126,8 @@ G.ui = realUi2;
 ok(did === true, "converge() executou (nível ≥ gate)");
 ok(G.state.data.level === 1, "convergence resetou o nível (sanidade)");
 ok(G.state.data.harbingersFelled.length === 2, "harbingersFelled SOBREVIVE à Convergence (permanente)");
-ok(near(G.state.stats().rarityCaps.ember, capsBefore) && near(capsBefore, 0.10),
-  "tetos do Rarity Find intactos após a Convergence (2 Marcos = 10% Ember)");
+ok(near(G.state.stats().rarityCaps.ember, capsBefore) && near(capsBefore, 2 * 8 / 6 / 100),
+  "tetos do Rarity Find intactos após a Convergence (pré-awaken · 2 Marcos = 2.67% Ember)");
 
 // ---------- 5) degrau do afixo de gear (perStep): 49→0, 50→1, 100→2 ----------
 fresh();

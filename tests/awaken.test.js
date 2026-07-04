@@ -94,9 +94,10 @@ satisfyAll(); G.state.invalidateStats();
 const atkBefore = G.state.stats().atk, hpBefore = G.state.stats().hp;
 G.awaken.awaken(FL); G.state.invalidateStats();
 const b = G.awaken.def(FL).bonus;
-ok(G.state.stats().atk > atkBefore && Math.abs(G.state.stats().atk - atkBefore * b.atkMult) < 2,
+// tolerância ∝ mult (o round interno × mult amplia o erro de arredondamento; P9 r4 mults ×5/×3)
+ok(G.state.stats().atk > atkBefore && Math.abs(G.state.stats().atk - atkBefore * b.atkMult) <= b.atkMult + 1,
   "bônus aplicado: ATK ×atkMult");
-ok(Math.abs(G.state.stats().hp - hpBefore * b.hpMult) < 2, "bônus aplicado: HP ×hpMult");
+ok(Math.abs(G.state.stats().hp - hpBefore * b.hpMult) <= b.hpMult + 1, "bônus aplicado: HP ×hpMult");
 
 // 7) persistência: awaken concluído sobrevive a save/load
 G.state.save(); G.state.data = null; G.state.load();

@@ -43,13 +43,16 @@ Object.assign(G.ui, {
       }
       const nextRar = G.data.rarities.find((r) => r.id === next);
       const maxed   = G.gear.isMaxed(item);
-      const cost    = G.gear.promoteCost(item);
-      const have    = G.economy.getGear(cost.kind);
-      const costLabel = cost.kind === "uncommon" ? "Uncommon" : "Common";
+      const cost    = G.gear.promoteCost(item);   // ARRAY de { kind, amount } (P9 r4: dois materiais)
+      const MATLBL  = { common: "Common", uncommon: "Uncommon" };
+      const costHtml = cost.map((c) => {
+        const have = G.economy.getGear(c.kind);
+        return `<span class="forge-prom__cost ${have >= c.amount ? "ok" : "short"}">${fmt(have)} / ${c.amount} ${MATLBL[c.kind] || c.kind}</span>`;
+      }).join("");
       const sel = this._forgeSel === slot.id ? " is-selected" : "";
       const action = !maxed
         ? `<span class="forge-prom__note">Reach max level first</span>`
-        : `<span class="forge-prom__cost ${have >= cost.amount ? "ok" : "short"}">${fmt(have)} / ${cost.amount} ${costLabel}</span>
+        : `${costHtml}
            <span class="forge-prom__sel">View ›</span>`;
       return `<div class="forge-prom forge-prom--click${sel}" data-select="${slot.id}">
         <span class="forge-prom__name">${item.slotLabel}</span>
@@ -94,10 +97,13 @@ Object.assign(G.ui, {
         <span class="anvil-affix__val"><b>+${newV}${sign}</b> <em class="tag-new">NEW</em></span></div>`;
     }).join("");
 
-    const cost = G.gear.promoteCost(item);
-    const have = G.economy.getGear(cost.kind);
+    const cost = G.gear.promoteCost(item);   // ARRAY de { kind, amount } (P9 r4: dois materiais)
     const can  = G.gear.canPromote(item);
-    const costLabel = cost.kind === "uncommon" ? "Uncommon" : "Common";
+    const MATLBL = { common: "Common", uncommon: "Uncommon" };
+    const costHtml = cost.map((c) => {
+      const have = G.economy.getGear(c.kind);
+      return `<div class="anvil-cost ${have >= c.amount ? "ok" : "short"}">${G.util.fmt(have)} / ${c.amount} ${MATLBL[c.kind] || c.kind}</div>`;
+    }).join("");
     const icon = (G.data.slots.find((s) => s.id === item.slot) || {}).icon || "❔";
 
     anvil.innerHTML = `<div class="anvil-icon" style="--rar:${nextRar.color}">
@@ -108,7 +114,7 @@ Object.assign(G.ui, {
       <div class="anvil-name">${item.slotLabel}</div>
       <div class="anvil-rar"><b style="color:${item.color}">${item.rarityName}</b> <em>→</em> <b style="color:${nextRar.color}">${nextRar.name}</b></div>
       <div class="anvil-affixes">${rows}</div>
-      <div class="anvil-cost ${have >= cost.amount ? "ok" : "short"}">${G.util.fmt(have)} / ${cost.amount} ${costLabel}</div>
+      ${costHtml}
       <button class="forge-btn forge-btn--up" data-promote="${item.slot}" ${can ? "" : "disabled"}>Promote</button>
     </div>`;
     anvil.hidden = false;
