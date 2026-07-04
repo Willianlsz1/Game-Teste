@@ -68,6 +68,10 @@ não melhoram o farm de mob comum.
 **TTK** (Time-To-Kill):
 Tempo-alvo para matar cada tipo de inimigo, a régua de balanceamento de combate
 (de `CONSTITUICAO.md`): Mob 1–3s · Elite 10–20s · Mini Boss 30–60s · Boss 1–3min.
+**Desde jul/04 (decisão do dono), TTK é a ÂNCORA de balance** (substitui HTK):
+o combate é medido em segundos, a velocidade de ataque vira DPS sem teto baixo.
+_Contraste_: HTK (golpes contados) era a âncora até o P9; foi trocado na virada
+pro paradigma do gênero (ver P9_REBALANCE §8c).
 
 **Power Sources** (fontes de poder do Mapa 1):
 Três fontes, três papéis — a distribuição é por FASE, não por fatia fixa:

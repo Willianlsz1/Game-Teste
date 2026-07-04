@@ -436,6 +436,17 @@ Achados do dono (screenshots) e destino:
 | **Custo de nível maior no início** | encarpar `xpCurveBase × nível^xpCurveExp` nos primeiros níveis (piso de custo mínimo por nível) | se o paradigma acima entrar, o vazamento já morre pela raiz → isto vira REFORÇO de sensação (cada nível pesa mais), não conserto | pequeno — entra no re-fit único |
 
 **Escolhas da bíblia adotadas no conjunto (dono, jul/04):**
+- **ÂNCORA TTK, não HTK** (dono, jul/04 — modelo Gaiadon): o balance passa a
+  ser medido em SEGUNDOS (tempo-pra-matar), não em golpes contados. Consequência
+  estrutural: **velocidade de ataque perde o teto** (`map1AtkSpeedCap 2` sai ou
+  sobe muito) e vira stat de DPS de verdade (Boots/Momentum ganham peso); o
+  combate muda de "pedaços contados" pra "fluxo" (padrão idle do gênero). A
+  régua já existe (CONSTITUICAO: Mob 1–3s · Elite 10–20s · Boss 1–3min); o sim
+  já mede tempo. Todos os gates de HTK do §2.3/§9 viram gates de TTK no re-fit.
+  Sub-decisão pendente pro fit: quanto a velocidade de ataque pode subir (uncap
+  total à la Gaiadon vs teto alto) — resolver no re-fit. **Nota de identidade:**
+  junto com "mob=área" e "Lumens curva própria", forma a virada consciente do
+  Éclats pro paradigma padrão do gênero (RPG/idle) em vez do HTK-legível bespoke.
 - **A — recompensa desproporcional dos raros** (Gaiadon §2.4: raro dá reward >> HP): hoje `rarityTiers` dão rewardMult ≈ hpMult (Corona hp×10/reward×10). Novo: rewardMult (Lumens/XP/material) MUITO acima do hpMult → caçar aceso = a economia central. Casa com acesos = fonte de material (§2d). Fitar no re-fit único.
 - **B — custo de gear quadrático** (Gaiadon §4.3): trocar `gearCostGrowth` geométrico (1.022) por soma aritmética (quadrático no nível) → custo não dispara logo após promover, grind mais confortável.
 - **C — promover exige gear no cap: JÁ É O ATUAL** (`gear.js:86,93` `isMaxed`) — não é mudança, confirmado pelo dono.
