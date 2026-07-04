@@ -431,10 +431,14 @@ Achados do dono (screenshots) e destino:
       completo com prova de reprodução BYTE-A-BYTE (sim direto = candidato,
       seeds 1/3/7: FL 35h57–36h04, Okhra 93–102, coroa conv 10, árvore 100%
       conv 14) · testes 6/6 · canon 0 drift. COMMITADO.
-- [ ] v9-r7 (Sonnet): threshold em escada [200..8000] (var 22) + copy
-      "manifests in N kills" (var 23) + re-medição com os 3 gates da var 22.
-- [ ] Âncora formal do relógio pelo dono (/travar, sobre o número do r7) +
-      playtest de validação no build bakeado.
+- [x] **v9-r7 BAKED (jul/04)**: escada [200,500,1000,2000,4000,8000] + copy
+      "manifests in N kills". Medido sem compensar: **First Light 38h25–38h44**
+      (+2h30, custo integral da escada) · H6 cai com folga (~35h) · promoções
+      não atrasam · awakenMaterial inalterado · mortes só prematuras · árvore
+      100% conv 14 · Okhra 86/56/84 (seed 3 na borda baixa — variância).
+      Testes 6/6. COMMITADO (b7c35ac).
+- [ ] Âncora formal do relógio pelo dono (/travar, sobre ~38h30 medido) +
+      playtest de validação no build bakeado (o jogo no disco JÁ é o r7).
 
 ## 9. RODADA 4 — variáveis do candidato v9-r4 (coletadas com o dono, grill jul/04)
 
