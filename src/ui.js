@@ -274,10 +274,14 @@ G.ui = {
     for (const src of ORDER) if (bd.some((e) => e.source === src)) sources.push(src);
     bd.forEach((e) => { if (!sources.includes(e.source)) sources.push(e.source); });
 
+    const PCT_STATS = ["crit", "critDmg", "xpBonus", "lumensBonus", "rarityFindEmber", "rarityFindLumen",
+      "rarityFindCorona", "cleave", "bulwark", "overcrit", "momentum", "damageReduction"];
+    const isPctStat = PCT_STATS.indexOf(key) !== -1;
+
     const sumF  = (src) => bd.filter((e) => e.source === src && e.type === "flat").reduce((a, e) => a + e.amount, 0);
     const sumP  = (src) => bd.filter((e) => e.source === src && e.type === "pct").reduce((a, e) => a + e.amount, 0);
     const prodM = (src) => bd.filter((e) => e.source === src && e.type === "mult").reduce((a, e) => a * e.amount, 1);
-    const cF = (v) => v ? `+${G.util.fmt(Math.round(v))}` : "";
+    const cF = (v) => v ? (isPctStat ? `+${+v.toFixed(2)}%` : `+${G.util.fmt(Math.round(v))}`) : "";
     const cP = (v) => v ? `+${+v.toFixed(2)}%` : "";
     const cM = (v) => (v && v !== 1) ? `×${+v.toFixed(2)}` : "";
 

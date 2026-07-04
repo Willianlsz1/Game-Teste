@@ -22,7 +22,7 @@ fs.readFileSync = function (p, enc) {
     src = src + '\n' + cand.econPatch;
   } else if (base === 'passives.js' && cand.passivesPatch) {
     src = src + '\n' + cand.passivesPatch;
-  } else if (base === 'state.js') {
+  } else if (base === 'state.js' && cand.statePatch) {
     const sp = cand.statePatch;
     if (!src.includes(sp.from1) || !src.includes(sp.from2)) {
       throw new Error('P9 statePatch: âncora não encontrada no state.js — atualizar gerador');
