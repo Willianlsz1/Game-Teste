@@ -99,7 +99,7 @@ G.gear = {
     const base   = G.data.gearBase[slotId];
     const slot   = G.data.slots.find((s) => s.id === slotId);
     const rarity = G.data.rarities.find((r) => r.id === rarityId) || G.data.rarities[0];
-    const DISP_PCT = ["crit", "critDmg", "xpBonus", "lumensBonus", "rarityFindEmber", "rarityFindLumen", "rarityFindCorona", "cleave", "bulwark", "overcrit", "momentum", "damageReduction"];
+    const DISP_PCT = G.data.pctStats;
     const rarityExtras = base[rarityId + "Affixes"] || [];
     const allAffixes = [...base.affixes, ...rarityExtras];
     return {

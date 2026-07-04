@@ -124,15 +124,6 @@ G.passives = {
   ],
   CROWN_ICON: "assets/passives/pv_16.png",
 
-  // lado da topologia (p/ o sub-título do tooltip). Provisão = ramo do nó 1; Caça = ramo do nó 2.
-  SIDE: {
-    0: "Root",
-    1: "Path of Provision", 3: "Path of Provision", 4: "Path of Provision",
-    7: "Path of Provision", 8: "Path of Provision", 9: "Path of Provision", 10: "Path of Provision",
-    2: "Path of the Hunt", 5: "Path of the Hunt", 6: "Path of the Hunt",
-    11: "Path of the Hunt", 12: "Path of the Hunt", 13: "Path of the Hunt", 14: "Path of the Hunt",
-  },
-  sideOf(i) { return this.SIDE[i] || "Root"; },
   iconOf(i) { return this.ICONS[i] || null; },
   loreOf(i) { return this.LORE[i] || ""; },
 
@@ -179,8 +170,6 @@ G.passives = {
     const p = G.state.data.passives;
     return (p && p.tree1 && p.tree1[i]) || 0;
   },
-  keyOf(i) { return this.nodes[i].key; },
-  depthOf(i) { return this.nodes[i].depth; },
   parentOf(i) { return this.nodes[i].parent; },
   nodeMax() { return this.maxLevel; },
   isMax(i) { return this.level(i) >= this.maxLevel; },
@@ -287,6 +276,7 @@ G.passives = {
   },
 
   // ---- progresso (UI/sim) ----
+  // consumidor: tools/sim.js e tests/ apenas (G.passives.treeProgress) — mantido aqui por decisão do lote 2
   treeProgress() {
     const arr = (G.state.data.passives && G.state.data.passives.tree1) || [];
     let unlocked = 0, maxed = 0, levels = 0;

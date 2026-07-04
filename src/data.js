@@ -2,6 +2,10 @@
 // Balanceamento = mexer só aqui. Nenhuma lógica.
 
 G.data = {
+  // afixos exibidos como % (não flat) — fonte única; gear.buildPiece e ui.statMatrixHtml leem daqui
+  pctStats: ["crit", "critDmg", "xpBonus", "lumensBonus", "rarityFindEmber", "rarityFindLumen",
+    "rarityFindCorona", "cleave", "bulwark", "overcrit", "momentum", "damageReduction"],
+
   // Tiers do Seeker (visual progression)
   tiers: [
     { level: 1,    name: "Seeker",     code: "T1" },
@@ -452,7 +456,6 @@ G.data = {
     groupSize:         3,     // Harbinger (boss) a cada 3 áreas — fronteira de grupo
     packByGroup:       [1, 2, 2, 3, 3, 3],   // P2.4: ondas por grupo (teto 3 = restrição de UI)
     atkSpeedBase:      0.9,
-    atkSpeedCap:       15,    // teto-assíntota FINAL do jogo (futuros mapas; nunca alcançado em Mapa 1/2)
     map1AtkSpeedCap:   2,     // teto-assíntota Mapa 1
     map2AtkSpeedCap:   4,     // teto-assíntota Mapa 2 (placeholder — Mapa 2 fora de escopo)
     atkSpeedSoftFrac:  0.85,  // soft cap começa a comprimir em ceil×frac (Mapa1≈1.7, Mapa2≈3.4)

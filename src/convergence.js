@@ -68,10 +68,7 @@ G.convergence = {
     G.state.invalidateStats();
     d.hp = G.state.maxHp();
 
-    G.combat.enemies = [];
-    G.combat.enemy = null;
-    G.combat.pendingHits = [];
-    G.combat.respawnTimer = G.data.balance.respawnDelay;
+    G.combat.clearWave();
     // P8.4: converger NO MEIO do finale do Okhra não pode deixar o palco/maré presos —
     // sem isto, `.okhra-manifest` (classe no body) e a maré ficam ativos sobre a área 1
     // até o próximo spawn() (nunca, se o jogo estiver pausado; ver combat.paused em main.js).

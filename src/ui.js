@@ -281,9 +281,7 @@ G.ui = {
     for (const src of ORDER) if (bd.some((e) => e.source === src)) sources.push(src);
     bd.forEach((e) => { if (!sources.includes(e.source)) sources.push(e.source); });
 
-    const PCT_STATS = ["crit", "critDmg", "xpBonus", "lumensBonus", "rarityFindEmber", "rarityFindLumen",
-      "rarityFindCorona", "cleave", "bulwark", "overcrit", "momentum", "damageReduction"];
-    const isPctStat = PCT_STATS.indexOf(key) !== -1;
+    const isPctStat = G.data.pctStats.indexOf(key) !== -1;
 
     const sumF  = (src) => bd.filter((e) => e.source === src && e.type === "flat").reduce((a, e) => a + e.amount, 0);
     const sumP  = (src) => bd.filter((e) => e.source === src && e.type === "pct").reduce((a, e) => a + e.amount, 0);
@@ -370,9 +368,6 @@ G.ui = {
     node.innerHTML = G.data.slots.map(slotCard).join("");
     node.querySelectorAll("[data-levelup]").forEach((b) => {
       b.addEventListener("click", () => this.doGearLevelUp(b.dataset.levelup));
-    });
-    node.querySelectorAll("[data-promote]").forEach((b) => {
-      b.addEventListener("click", () => this.doGearPromote(b.dataset.promote));
     });
     if (this.el["gear-materials"]) this.el["gear-materials"].innerHTML = "";
     node.querySelectorAll(".gear-slot[data-tip]").forEach((s) => {
@@ -577,19 +572,6 @@ G.ui = {
     this.renderAll();
   },
 
-  doGearPromote(slotId) {
-    const item = G.state.data.equipped[slotId];
-    if (!item) return;
-    if (G.gear.promote(item)) {
-      const promoted = G.state.data.equipped[slotId];
-      this.log(`✦ ${promoted.name} promoted to ${promoted.rarityName}!`, "good");
-    } else {
-      this.log("Not enough materials to promote.", "bad");
-    }
-    G.state.save();
-    this.renderAll();
-  },
-
   // Area navigation
   goToArea(delta) {
     const d    = G.state.data;
@@ -597,7 +579,7 @@ G.ui = {
     const ni   = G.util.clamp(d.areaIndex + delta, 0, maxU);
     if (ni === d.areaIndex) return;
     d.areaIndex = ni;
-    G.combat.enemies = []; G.combat.enemy = null; G.combat.pendingHits = []; G.combat.respawnTimer = G.data.balance.respawnDelay;
+    G.combat.clearWave();
     this.onAreaChange();
   },
 
@@ -607,7 +589,7 @@ G.ui = {
     const close = () => { const m = document.getElementById("modal-worldmap"); if (m) m.hidden = true; };
     if (i < 0 || i > maxU || i === d.areaIndex) { close(); return; }
     d.areaIndex = i;
-    G.combat.enemies = []; G.combat.enemy = null; G.combat.pendingHits = []; G.combat.respawnTimer = G.data.balance.respawnDelay;
+    G.combat.clearWave();
     this.onAreaChange();
     close();
   },
@@ -629,7 +611,7 @@ G.ui = {
     const liveBoss = G.combat.enemies.find(e => e.isBoss && !e.dead);
     if (liveBoss) {
       el.classList.add("is-here");
-      el.innerHTML = liveBoss.isMapBoss ? "◆ THE NIHELIM IS HERE" : "⟡ THE HARBINGER IS HERE";
+      el.innerHTML = liveBoss.isMapBoss ? `◆ ${(liveBoss.baseName || liveBoss.name || "OKHRA").toUpperCase()} IS HERE` : "⟡ THE HARBINGER IS HERE";
       el.style.display = "";
       return;
     }
@@ -692,7 +674,7 @@ G.ui = {
           const sig = (e.modifiers || [])
             .map((k) => G.data.modifiers[k] && G.data.modifiers[k].label)
             .filter(Boolean).join(" · ").toUpperCase();
-          header = `<span class="harbinger-tag">${e.isMapBoss ? "◆ NIHELIM ◆" : "⟡ HARBINGER ⟡"}</span>
+          header = `<span class="harbinger-tag">${e.isMapBoss ? `◆ ${(e.baseName || e.name || "OKHRA").split(",")[0].toUpperCase()} ◆` : "⟡ HARBINGER ⟡"}</span>
           <span class="boss-nameplate${e.isMapBoss ? " nihelim" : ""}">${(e.baseName || e.name).toUpperCase()}</span>
           ${sig ? `<span class="boss-signature">${sig}</span>` : ""}`;
         } else {

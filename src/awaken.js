@@ -11,7 +11,6 @@
 // Cada Awaken exige apenas os campos PRESENTES em requirements (subconjunto livre).
 
 G.awaken = {
-  ALL() { return G.data.awakens; },
   def(id) { return G.data.awakens.find((a) => a.id === id); },
 
   done() { return G.state.data.awakens || G.state.data.awakensUnlocked || []; },

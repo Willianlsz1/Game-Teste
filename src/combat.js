@@ -24,6 +24,15 @@ G.combat = {
   _momentumTimer:   0,    // P9: segundos restantes antes de zerar os stacks de Momentum
   _cleaving:        false, // P9: guarda anti-recursão do Cleave (1 salto só — a cadeia não re-propaga)
 
+  // reset comum da onda: usado ao trocar/viajar de área, ao converger e à morte do Seeker.
+  // cada site com semântica extra (ex.: onDeath zera bossKills/momentum) mantém seu próprio delta.
+  clearWave() {
+    this.enemies = [];
+    this.enemy = null;
+    this.pendingHits = [];
+    this.respawnTimer = G.data.balance.respawnDelay;
+  },
+
   // tracker de taxas (Gold/Min, XP/Min) — janela rolante
   _clock:      0,
   _gains:      [],
@@ -468,10 +477,7 @@ G.combat = {
     this._bossKills = 0;   // morreu → perde o progresso rumo ao Boss de Área
     this._momentumStacks = 0; this._momentumTimer = 0;   // P9: morte zera o embalo do Momentum
     if (G.ui && G.ui.log) G.ui.log("☠ The Seeker fell, recovered and returned.", "bad");
-    this.pendingHits = [];
-    this.enemies = [];
-    this.enemy   = null;
-    this.respawnTimer = G.data.balance.respawnDelay;
+    this.clearWave();
   },
 
   // inimigo (primeiro vivo) morreu: recompensas, marca como morto, avança onda se limpa

@@ -5,6 +5,7 @@ G.state = {
   _cache: null,
 
   SAVE_KEY: "eclats_v5",   // P6: bump estrutural (Árvore I única). Sem migração de v4 — não há saves reais.
+  _saveWarned: false,      // avisa 1x se localStorage falhar em runtime (quota etc.) e cair pro fallback em memória
 
   fresh() {
     return {
@@ -181,8 +182,16 @@ G.state = {
   save() {
     this.data.lastSeen = Date.now();
     const json = JSON.stringify(this.data);
-    if (this.storageOk()) try { localStorage.setItem(this.SAVE_KEY, json); } catch (e) {}
-    else this._mem[this.SAVE_KEY] = json;
+    if (this.storageOk()) {
+      try { localStorage.setItem(this.SAVE_KEY, json); }
+      catch (e) {
+        this._mem[this.SAVE_KEY] = json;
+        if (!this._saveWarned) {
+          this._saveWarned = true;
+          if (G.ui && G.ui.log) G.ui.log("Warning: could not write save to browser storage, progress is kept in memory only.", "bad");
+        }
+      }
+    } else this._mem[this.SAVE_KEY] = json;
   },
 
   load() {
