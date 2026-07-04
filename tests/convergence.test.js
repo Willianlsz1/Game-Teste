@@ -22,9 +22,9 @@ function ok(c, m) { console.log((c ? "PASS" : "FAIL") + " — " + m); if (!c) fa
 
 const b = G.data.balance;
 
-// 1) escada exata — gate(n) = round(convGateBase × convGateGrowth^n), spec travada
-//    (BALANCE_FRAMEWORK_MAP1.md §PASSO 5): 276·359·466·606·788·1025·1332·1732·2251·2927·3805·4946
-const LADDER = [276, 359, 466, 606, 788, 1025, 1332, 1732, 2251, 2927, 3805, 4946];
+// 1) escada exata — gate(n) = round(convGateBase × convGateGrowth^n). P9 (tools/p9) mudou
+//    convGateGrowth de 1.30 para 1.35 — escada atualizada: 276·373·503·679·917·1238·1671·2256·3045·4111·5549·7492
+const LADDER = [276, 373, 503, 679, 917, 1238, 1671, 2256, 3045, 4111, 5549, 7492];
 store = {}; G.state.data = null; G.state.load();
 for (let n = 0; n < LADDER.length; n++) {
   G.state.data.convergences = n;

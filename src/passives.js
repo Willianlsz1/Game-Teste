@@ -18,30 +18,34 @@ G.passives = {
   // ---- gating / custo ----
   // custo de UNLOCK (1º nível) por PROFUNDIDADE do nó (D1..D4). Upgrades por nível
   // seguem o padrão geométrico: unlock × evoFactor × evoRamp^(nível-1).
-  unlockByDepth: [80, 120, 200, 350],
-  evoFactor: 0.4, evoRamp: 1.5,
+  // P9: tools/p9 — não editar à mão, re-fitar (era [80,120,200,350] / evoFactor 0.4 / evoRamp 1.5).
+  unlockByDepth: [100, 220, 500, 1200],
+  evoFactor: 0.5, evoRamp: 1.7,
 
   // ================= MAGNITUDES POR NÍVEL (UNIT) =================
   // apenas o que a Árvore I usa. ringCloses = bônus da coroa (aplicado 1× ao acender).
-  // Magnitudes finais = sugeridas do framework × ESCALA GLOBAL ~1.25 (a grade do P6
-  // ajustou a escala p/ os âncoras do P5 segurarem com a Árvore I dentro — ver relatório).
+  // P9 (tools/p9): ×3 nas chaves de stat antigas (firstSpark, hpRegen, healOnKill, hpPct,
+  // damageReduction, atkPct, critRate, xpPct, convPointsPct, overkillEcho, critDmg,
+  // lightbane, bossDmg, ringCloses) + ×2 EXTRA (total ×6) nas ofensivas
+  // (firstSpark, atkPct, critRate, critDmg, lightbane). goldenWake/executioner (folhas
+  // novas P9) e o resto ficam só no ×3. Não editar à mão, re-fitar via tools/p9.
   UNIT: {
-    firstSpark:     2.5,   // raiz — +% ATK e +% HP por nível (efeito duplo)
-    hpRegen:        0.5,   // % do HP máx regenerado por segundo
-    healOnKill:     2.5,   // % do HP máx curado por kill
-    hpPct:            5,   // +% HP por nível
-    damageReduction: 1.25, // +% redução de dano por nível (fonte passiva NOVA)
-    atkPct:           5,   // +% ATK por nível
-    critRate:       2.5,   // +% chance de crítico por nível
+    firstSpark:      15,   // raiz — +% ATK e +% HP por nível (efeito duplo)
+    hpRegen:        1.5,   // % do HP máx regenerado por segundo
+    healOnKill:     7.5,   // % do HP máx curado por kill
+    hpPct:           15,   // +% HP por nível
+    damageReduction: 3.75, // +% redução de dano por nível (fonte passiva NOVA)
+    atkPct:          30,   // +% ATK por nível
+    critRate:        15,   // +% chance de crítico por nível
     goldenWake:     1.0,   // P9 — +% chance de Lumens EM DOBRO por kill (folha 7; máx 10% = cap Mapa 1)
-    xpPct:          7.5,   // +% XP por nível
-    convPointsPct:    6,   // +% Pontos de Convergence por nível (Deep Memory)
-    overkillEcho:    12,   // dano excedente do golpe fatal → Lumens extra (mecânica NOVA)
-    critDmg:         18,   // +% dano crítico por nível
-    lightbane:       10,   // +% dano vs acesos (rares & elites, não boss) — NOVO
+    xpPct:         22.5,   // +% XP por nível
+    convPointsPct:   18,   // +% Pontos de Convergence por nível (Deep Memory)
+    overkillEcho:    36,   // dano excedente do golpe fatal → Lumens extra (mecânica NOVA)
+    critDmg:        108,   // +% dano crítico por nível
+    lightbane:       60,   // +% dano vs acesos (rares & elites, não boss) — NOVO
     executioner:    0.8,   // P9 — inimigo não-boss abaixo de X% do HP máx morre (folha 13; máx 8% = cap Mapa 1)
-    bossDmg:         12,   // +% dano vs Marcos (Harbinger's Bane) — chave existente
-    ringCloses:      18,   // COROA — ×(1+18/100) em ATK, HP, Lumens e XP (aplicado 1×)
+    bossDmg:         36,   // +% dano vs Marcos (Harbinger's Bane) — chave existente
+    ringCloses:      54,   // COROA — ×(1+54/100) em ATK, HP, Lumens e XP (aplicado 1×)
     _default: 0,
   },
 

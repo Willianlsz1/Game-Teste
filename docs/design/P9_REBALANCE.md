@@ -184,13 +184,17 @@ mortes concentradas em tentativa prematura.
       regressão nv200 byte-idêntica, saves antigos migram grátis (reconcile
       reconstrói afixos). Fix pós-review: spill do cleave roteado por
       _dealDamage (consome Lightshell, ativa Executioner, guard intacto).
-- [ ] P9.5 BATCH FINAL DE NÚMEROS — recalibrar com as mecânicas dentro:
-      relógio 30h12 → 36h±2 (material/xp) · Okhra 126 golpes → banda 60–120 ·
-      RE-SUBIDA (10 áreas > HTK 2; execute cap 8% não morde com HTK ≤ 11 —
-      fecha via números da árvore, ou dono decide abrir o cap) · projeção de
-      income é PISO (sem Cleave/GoldenWake/Momentum, comentado no código) ·
-      baked: v6 dials + statePatch do player pra data.js/state.js · seeds 1/3/7
-      → playtest do dono → travar.
+- [x] P9.5 TUNING (v7, Opus) + BAKE em src/ (Sonnet) + review adversarial
+      (Opus, jul/04): sim DIRETO reproduz v7 byte a byte (FL 36h13, Okhra 90);
+      saves antigos migram limpos; testes 40/40; ressalvas cosméticas
+      corrigidas (comentário baseXp; p9_run explode sobre o bake = quebra
+      histórica esperada, prova válida é via sim.js). Re-subida: melhor
+      alcançável nas alavancas permitidas (§7; áreas 15-18 = fronteira viva,
+      não re-subida). COMMITADO.
+- [ ] P9.6 RODADA 2 (playtest do dono, §8): lote de formatação % (em voo) ·
+      v8: crit Mapa 1 com pico real ~45% + overcritThreshold por mapa (50 no
+      Mapa 1, decisão pendente do dono) + composição do ATK (gear+passivas
+      ≥75%, re-fit completo + re-validação 3 seeds) → playtest → travar.
 - [ ] P9.2 Player scale + TTK wave (atkSpeed, HTK, curva de dano)
 - [ ] P9.3 Gear (promoção ×6–10 + per-level)
 - [ ] P9.4 Passivas (valores reais nas 3 árvores)
@@ -275,6 +279,31 @@ instável por natureza (1º contato salta de estado; mult 3.0 = meio da banda
 nas 3 seeds, nunca 1-hit).
 
 **Pendência herdada:** re-subida (P9.1f → resolve com P9.4).
+
+## 8. Playtest do dono — rodada 1 (jul/04, sobre o bake v7)
+
+Achados do dono (screenshots) e destino:
+
+1. **Formatação de %**: notas "per level" de afixos percentuais sem o símbolo
+   ("+0.012 per level" → "+0.012% per level"); tooltip "+25 Cleave" → "+25%";
+   breakdown do Lumens Bonus mistura "+10/+100" flat com % (a stat É
+   percentual — TODAS as camadas dela exibem %; idem XP Bonus).
+   → lote de UI (Sonnet).
+2. **Crit 100% no Mapa 1 não pode — teto sentido ~40–50%**: fontes de crit
+   (afixo das luvas + critRate da árvore ×6) saturam o clamp. Retune v8:
+   fontes de crit dimensionadas pra pico real ~45% no fim do Mapa 1.
+   **Tensão de design**: o Overcrit converte crit ACIMA DE 100 — com crit
+   real ≤50 ele nunca ativaria no Mapa 1. Resolução (Fable, a validar com o
+   dono): `overcritThreshold` vira constante de balance por mapa — Mapa 1 =
+   50 (excesso acima de 50% vira chance de golpe duplo). A assinatura
+   continua viva, os números ficam pequenos, e mapas futuros sobem o
+   threshold junto com o teto de crit.
+3. **Composição do ATK**: hoje Character Level (1.25M flat) > Equipment
+   (878K flat) — o dono quer **gear + passivas dominantes** ("a maior parte
+   não deve vir de level up"). Gate novo do v8: gear+passivas ≥ ~75% do ATK
+   total nos checkpoints (fim de G2/G4/G6). Rebaixar playerAtkCoef/Exp e
+   compensar em gear/árvore, com RE-FIT das áreas e re-validação de TODOS os
+   gates do §7 (relógio 36±2, Okhra, coroa, re-subida ≥ estado atual).
 
 ## Superseded
 

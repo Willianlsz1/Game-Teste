@@ -1,8 +1,10 @@
 // =============================================================
 // economy.js — FUNDAÇÃO ECONÔMICA: materiais + sistema de drop configurável
 // =============================================================
-// Apenas INFRAESTRUTURA — nenhum balanceamento. Probabilidades, quantidades e
-// gates de área abaixo são PLACEHOLDERS configuráveis (não finais).
+// Apenas INFRAESTRUTURA — nenhum balanceamento (exceto awakenMaterial, ver abaixo).
+// Probabilidades, quantidades e gates de área abaixo são PLACEHOLDERS configuráveis (não finais).
+// awakenMaterial (common/rare/boss): P9-calibrado (tools/p9) — relógio do First Light; não editar
+// à mão, re-fitar. O resto (commonMaterial, elite, miniBoss.awakenMaterial) continua placeholder.
 //
 // Recursos novos (em G.state.data):
 //   gearMaterials:   { common, uncommon }   → futuras promoções de raridade
@@ -55,8 +57,14 @@ G.economy = {
   // P3: Mapa 1 só tem Common + Awaken. uncommonMaterial/Forge = Mapa 2 (fora daqui).
   // Common mat: G1 3ª área+ (idx≥2). Awaken mat: G5+ (idx≥12). Harbinger SEM garantia (chance<1).
   dropTable: {
-    common:   { commonMaterial: { chance: 0.05, min: 1, max: 1, minAreaIndex: 2 } },
-    rare:     { commonMaterial: { chance: 0.15, min: 1, max: 2, minAreaIndex: 2 } },
+    common:   {
+      commonMaterial: { chance: 0.05, min: 1, max: 1, minAreaIndex: 2 },
+      awakenMaterial: { chance: 1, min: 1, max: 2, minAreaIndex: 12 },  // P9: tools/p9 (base {1,3} × scale 0.54) — não editar à mão, re-fitar
+    },
+    rare:     {
+      commonMaterial: { chance: 0.15, min: 1, max: 2, minAreaIndex: 2 },
+      awakenMaterial: { chance: 1, min: 2, max: 5, minAreaIndex: 12 },  // P9: tools/p9 (base {4,10} × scale 0.54) — não editar à mão, re-fitar
+    },
     elite:    {
       commonMaterial:   { chance: 1,   min: 1, max: 2, minAreaIndex: 2 },
     },
@@ -66,7 +74,7 @@ G.economy = {
     },
     boss:     {
       commonMaterial:   { chance: 0.45, min: 2, max: 4, minAreaIndex: 2 },
-      awakenMaterial:   { chance: 0.5,  min: 1, max: 1, minAreaIndex: 12 },
+      awakenMaterial:   { chance: 1, min: 324, max: 810, minAreaIndex: 12 },  // P9: tools/p9 (base {600,1500} × scale 0.54) — não editar à mão, re-fitar
     },
   },
 

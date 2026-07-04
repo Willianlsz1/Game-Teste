@@ -62,10 +62,12 @@ G.state = {
     };
 
     // base + nível (separados p/ o breakdown: Base Game vs Character Level)
-    add("atk", "flat", 1000, "Base");
-    add("atk", "flat", (d.level - 1) * 5, "Character Level");
-    add("hp",  "flat", 1000, "Base");
-    add("hp",  "flat", (d.level - 1) * 2, "Character Level");
+    // P9: curva de crescimento em lei de potência (era linear) — constantes em G.data.balance, ver tools/p9.
+    const b = G.data.balance;
+    add("atk", "flat", b.playerAtkBase, "Base");
+    add("atk", "flat", b.playerAtkCoef * Math.pow(d.level, b.playerAtkExp), "Character Level");
+    add("hp",  "flat", b.playerHpBase, "Base");
+    add("hp",  "flat", b.playerHpCoef * Math.pow(d.level, b.playerHpExp), "Character Level");
     add("crit", "flat", 5, "Base");
     add("critDmg", "flat", 50, "Base");
     add("atkSpeed", "flat", G.data.balance.atkSpeedBase, "Base");

@@ -1,0 +1,39 @@
+{
+  "dial": {
+    "hp1": 2500,
+    "hpEndTarget": 100000000000,
+    "gap": 0.5,
+    "atk1": 40,
+    "yRampShape": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "yBase": 1.35,
+    "pAtkCoef": 8,
+    "pAtkExp": 1.5,
+    "pHpCoef": 4,
+    "pHpExp": 1.45,
+    "uncommonStatMult": 8,
+    "weaponPerLevel": 220,
+    "armorPerLevel": 60,
+    "v2": "awaken massa 50k · boss hpMult 5.5 · arvore x3 custosa · convLegacy 2%",
+    "v3": "xpMult 1s · xpCurveExp 1.78 · firstLight 75k · boss hpMult ratio-fit v2 · okhra 810",
+    "v4": "xpCurveExp 1.9 · gateGrowth 1.35 · okhra 15000",
+    "v5": "boss-fit: BM={\"2\":0.483,\"5\":3,\"8\":90,\"11\":5.49,\"14\":1.33,\"17\":13.87} okhra=208 · firstLight=100000 · xpCurveExp=1.9",
+    "v6": "passivesPatch P9: ×3 só nas chaves antigas de stat · goldenWake/executioner sem ×3 · atkSpeed×2 removido",
+    "v7": "okhra=323 · matScale=0.54 · xpExp=1.9 · treeOff=×2 treeDef=×1 · evoRamp=1.7 unlocks=[100,220,500,1200]"
+  },
+  "dataPatch": "\n;(function (G) {\n  const HP = [[2584,104957],[349857,800178],[2667261,2667261],[6693870,6693870],[12123953,12123953],[19302327,19302327],[22818714,290026931],[966756435,966756435],[1354200911,1354200911],[1653628261,1653628261],[1858231353,20649847393],[68832824643,68832824643],[97749688304,97749688304],[113168313595,113168313595],[310162551483,310162551483],[417438402162,417438402162],[502538281661,502538281661],[431768682174,647653023261]];\n  G.data.areas.forEach((a, i) => { a.hp = HP[i]; });\n  G.data.balance.mobAtkByArea = [40,616,4391,4971,8342,12498,18481,23939,30245,680187,783113,954409,1174337,1348758,3475185,4402042,5221176,6638968];\n  G.data.rarities[1].statMult = 8;\n  const gb = G.data.gearBase;\n  gb.weapon.affixes[0].perLevel = 220;\n  gb.armor.affixes[0].perLevel = 60;\n})(G);\n\n;(function (G) {\n  G.data.awakens[0].requirements.materials.firstLight = 50000;\n  G.data.areas.forEach((a) => { if (a.boss) a.boss.hpMult = 5.5; });\n  const last = G.data.areas[G.data.areas.length - 1];\n  if (last.mapBoss) last.mapBoss.hpMult = 9;\n  G.data.balance.convLegacyAtkPct = 2;\n  G.data.balance.convLegacyHpPct = 2;\n})(G);\n\n;(function (G) {\n  G.data.balance.xpMultByGroup = [1, 1, 1, 1, 1, 1];\n  G.data.balance.xpCurveExp = 1.78;\n  G.data.awakens[0].requirements.materials.firstLight = 75000;\n  const BM = {\"2\":1.9,\"5\":2.4,\"8\":15,\"11\":82,\"14\":18,\"17\":165};\n  G.data.areas.forEach((a, i) => { if (a.boss && BM[i] != null) a.boss.hpMult = BM[i]; });\n  const last = G.data.areas[G.data.areas.length - 1];\n  if (last.mapBoss) last.mapBoss.hpMult = 810;\n})(G);\n\n;(function (G) {\n  G.data.balance.xpCurveExp = 1.9;\n  G.data.balance.convGateGrowth = 1.35;\n  const last = G.data.areas[G.data.areas.length - 1];\n  if (last.mapBoss) last.mapBoss.hpMult = 15000;\n})(G);\n\n;(function (G) {\n  const BM = {\"2\":0.483,\"5\":3,\"8\":90,\"11\":5.49,\"14\":1.33,\"17\":13.87};\n  G.data.areas.forEach((a, i) => { if (a.boss && BM[i] != null) a.boss.hpMult = BM[i]; });\n  const last = G.data.areas[G.data.areas.length - 1];\n  if (last.mapBoss) last.mapBoss.hpMult = 208;\n  G.data.awakens[0].requirements.materials.firstLight = 100000;\n  G.data.balance.xpCurveExp = 1.9;\n})(G);\n\n;(function (G) {\n  const last = G.data.areas[G.data.areas.length - 1];\n  if (last.mapBoss) last.mapBoss.hpMult = 323;\n  G.data.balance.xpCurveExp = 1.9;\n})(G);\n",
+  "econPatch": "\n;(function (G) {\n  const dt = G.economy.dropTable;\n  dt.common.awakenMaterial = { chance: 1, min: 1, max: 3, minAreaIndex: 12 };\n  dt.rare.awakenMaterial   = { chance: 1, min: 4, max: 10, minAreaIndex: 12 };\n  dt.boss.awakenMaterial   = { chance: 1, min: 600, max: 1500, minAreaIndex: 12 };\n})(G);\n\n;(function (G) {\n  const S = 0.54;\n  const dt = G.economy.dropTable;\n  for (const t of ['common', 'rare', 'boss']) {\n    const d = dt[t] && dt[t].awakenMaterial;\n    if (d) { d.min = Math.max(0, Math.round(d.min * S)); d.max = Math.max(d.min, Math.round(d.max * S)); }\n  }\n})(G);\n",
+  "passivesPatch": "\n;(function (G) {\n  const U = G.passives.UNIT;\n  const X3 = [\"firstSpark\",\"hpRegen\",\"healOnKill\",\"hpPct\",\"damageReduction\",\"atkPct\",\"critRate\",\"xpPct\",\"convPointsPct\",\"overkillEcho\",\"critDmg\",\"lightbane\",\"bossDmg\",\"ringCloses\"];\n  for (const k of X3) if (U[k] != null) U[k] = U[k] * 3;\n  G.passives.unlockByDepth = [150, 300, 700, 1600];\n  G.passives.evoFactor = 0.5;\n  G.passives.evoRamp = 1.9;\n})(G);\n\n;(function (G) {\n  const U = G.passives.UNIT;\n  const OFF = [\"firstSpark\",\"atkPct\",\"critRate\",\"critDmg\",\"lightbane\"], OFFM = 2;\n  const DEF = [\"hpPct\",\"damageReduction\"], DEFM = 1;\n  for (const k of OFF) if (U[k] != null) U[k] = U[k] * OFFM;\n  for (const k of DEF) if (U[k] != null) U[k] = U[k] * DEFM;\n  G.passives.unlockByDepth = [100,220,500,1200];\n  G.passives.evoRamp = 1.7;\n})(G);\n",
+  "statePatch": {
+    "from1": "add(\"atk\", \"flat\", (d.level - 1) * 5, \"Character Level\");",
+    "to1": "add(\"atk\", \"flat\", 8 * Math.pow(d.level, 1.5), \"Character Level\");",
+    "from2": "add(\"hp\",  \"flat\", (d.level - 1) * 2, \"Character Level\");",
+    "to2": "add(\"hp\",  \"flat\", 4 * Math.pow(d.level, 1.45), \"Character Level\");"
+  }
+}
