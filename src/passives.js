@@ -109,7 +109,9 @@ G.passives = {
     "assets/passives/pv_1.png", // 0 First Spark
     "assets/passives/pv_2.png", // 1 Regeneration
     "assets/passives/pv_3.png", // 2 Heal on Kill
-    null, null, null, null,     // 3-6
+    "assets/passives/pv_4.png", // 3 Vessel's Growth
+    "assets/passives/pv_5.png", // 4 Hardened Light
+    null, null,                 // 5-6
     null, null, null, null,     // 7-10
     null, null, null, null,     // 11-14
   ],
@@ -154,7 +156,7 @@ G.passives = {
   POSITIONS: [
     { x: 50.0, y: 84.5 },                                          // 0  First Spark (raiz)
     { x: 44.0, y: 75.5 }, { x: 55.5, y: 74.5 },                    // 1  Regeneration · 2 Heal on Kill (D2)
-    { x: 30.0, y: 45.0 }, { x: 40.5, y: 39.0 }, { x: 59.5, y: 39.0 }, { x: 70.0, y: 45.0 }, // 3-6 D3
+    { x: 33.7, y: 52.9 }, { x: 44.3, y: 57.8 }, { x: 59.4, y: 58.2 }, { x: 71.6, y: 55.8 }, // 3-6 D3
     { x: 14.0, y: 34.0 }, { x: 24.0, y: 26.5 }, { x: 34.5, y: 21.5 }, { x: 44.5, y: 19.0 }, // 7-10 folhas
     { x: 55.5, y: 19.0 }, { x: 65.5, y: 21.5 }, { x: 76.0, y: 26.5 }, { x: 86.0, y: 34.0 }, // 11-14 folhas
   ],
