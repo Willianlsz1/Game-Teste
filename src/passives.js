@@ -83,6 +83,49 @@ G.passives = {
     return out;
   },
 
+  // lore lines por nó (copy aprovada — literal). Índice 15 = coroa.
+  LORE: [
+    "Every dawn the world has ever known began as one refusal to go dark.", // 0
+    "The light does not hurry. It returns.",                                // 1
+    "What the hunt takes, the hunter keeps.",                               // 2
+    "A vessel is not measured by what it holds, but by what it can bear.",  // 3
+    "Light, folded enough times, learns to be a wall.",                     // 4
+    "The light does not cut because it is sharp. It cuts because it has decided to.", // 5
+    "Before there were eyes, something already knew where to strike.",      // 6
+    "Where the light passes, the world pays twice.",                        // 7
+    "Every road remembers the ones who walked it burning.",                 // 8
+    "The ring keeps what the flesh forgets.",                               // 9
+    "No blow is wasted. The excess sings back as gold.",                    // 10
+    "Every wound has a bottom. Reach it.",                                  // 11
+    "The kindled burn brighter, and fall harder.",                         // 12
+    "Mercy, delivered at the speed of light.",                             // 13
+    "Crowns break. The light remembers how.",                              // 14
+  ],
+  CROWN_LORE: "What was broken above the world closes here, in you.",
+
+  // arte por nó: sprite solto (png com alpha, sem disco/borda) ou null (sem sprite ainda —
+  // nó mostra o anel-placeholder). Só o nó 0 tem sprite hoje; os outros 14 chegam 1/semana.
+  ICONS: [
+    "assets/passives/pv_1.png", // 0 First Spark
+    null, null,                 // 1-2
+    null, null, null, null,     // 3-6
+    null, null, null, null,     // 7-10
+    null, null, null, null,     // 11-14
+  ],
+  CROWN_ICON: null,
+
+  // lado da topologia (p/ o sub-título do tooltip). Provisão = ramo do nó 1; Caça = ramo do nó 2.
+  SIDE: {
+    0: "Root",
+    1: "Path of Provision", 3: "Path of Provision", 4: "Path of Provision",
+    7: "Path of Provision", 8: "Path of Provision", 9: "Path of Provision", 10: "Path of Provision",
+    2: "Path of the Hunt", 5: "Path of the Hunt", 6: "Path of the Hunt",
+    11: "Path of the Hunt", 12: "Path of the Hunt", 13: "Path of the Hunt", 14: "Path of the Hunt",
+  },
+  sideOf(i) { return this.SIDE[i] || "Root"; },
+  iconOf(i) { return this.ICONS[i] || null; },
+  loreOf(i) { return this.LORE[i] || ""; },
+
   EFFECT_DESC: {
     firstSpark:      "The first ember, raises both ATK and HP.",
     hpRegen:         "Regenerates % of max HP per second.",
@@ -104,14 +147,20 @@ G.passives = {
 
   // posição de cada nó (%x,%y) na Árvore-Mundo: raiz embaixo, folhas na copa,
   // coroa como 16º marcador no topo. Topologia 1/2/4/8 espelhada nos filhos.
+  // % relativos ao RETÂNGULO DA IMAGEM (não à viewport) — o stage é a imagem em modo
+  // cover, então os nós assentam no lugar certo em qualquer proporção de janela.
+  // Posições finais do dono (bake do design aprovado).
   POSITIONS: [
-    { x: 50, y: 84 },                                    // 0 raiz
-    { x: 26, y: 65 }, { x: 74, y: 65 },                  // 1,2 D2
-    { x: 13, y: 46 }, { x: 38, y: 46 }, { x: 62, y: 46 }, { x: 87, y: 46 },  // 3-6 D3
-    { x: 4, y: 25 }, { x: 17, y: 25 }, { x: 30, y: 25 }, { x: 43, y: 25 },   // 7-10 folhas
-    { x: 57, y: 25 }, { x: 70, y: 25 }, { x: 83, y: 25 }, { x: 96, y: 25 },  // 11-14 folhas
+    { x: 50.0, y: 84.5 },                                          // 0  First Spark (raiz)
+    { x: 41.5, y: 54.0 }, { x: 58.5, y: 54.0 },                    // 1  Regeneration · 2 Heal on Kill (D2)
+    { x: 30.0, y: 45.0 }, { x: 40.5, y: 39.0 }, { x: 59.5, y: 39.0 }, { x: 70.0, y: 45.0 }, // 3-6 D3
+    { x: 14.0, y: 34.0 }, { x: 24.0, y: 26.5 }, { x: 34.5, y: 21.5 }, { x: 44.5, y: 19.0 }, // 7-10 folhas
+    { x: 55.5, y: 19.0 }, { x: 65.5, y: 21.5 }, { x: 76.0, y: 26.5 }, { x: 86.0, y: 34.0 }, // 11-14 folhas
   ],
-  CROWN_POS: { x: 50, y: 7 },
+  CROWN_POS: { x: 50.0, y: 13.0 },
+  // split decorativo (soquete pintado sem nó, a estrela do tronco) onde o galho bifurca
+  // para os nós 1 e 2 — waypoint puramente visual da curva, não é um nó comprável.
+  SPLIT_POS: { x: 50.0, y: 71.0 },
 
   // ---- estado / metadados de nó ----
   freshSet() { return new Array(15).fill(0); },

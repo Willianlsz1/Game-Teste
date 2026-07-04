@@ -43,7 +43,7 @@ G.ui = {
       // Awaken
       "awaken-essence", "awaken-list", "awaken-preview",
       // Passives
-      "pv-points", "pv-body", "pv-lock",
+      "pv-body", "pv-lock",
     ];
     for (const id of ids) this.el[id] = document.getElementById(id);
   },
@@ -128,12 +128,15 @@ G.ui = {
         if (G.awaken.unlock(btn.dataset.awaken)) this.renderAwaken();
       });
 
-    // Passivas (Árvore I — árvore única): comprar nó (clique delegado; a coroa não é comprável)
+    // Passivas (World-Tree I): comprar nó (clique delegado; a coroa não é comprável).
+    // buy() já faz invalidateStats + save; aqui só disparamos o floater e re-renderizamos.
     const pscreen = document.getElementById("modal-passives");
     if (pscreen)
       pscreen.addEventListener("click", (e) => {
         const node = e.target.closest(".pv-node");
-        if (node && !node.classList.contains("pv-crown") && G.passives.buy(+node.dataset.i)) this.renderPassives();
+        if (!node || node.classList.contains("pv-crown")) return;
+        const i = +node.dataset.i;
+        if (G.passives.buy(i)) { this._pvFloater(node, i); this.renderPassives(); }
       });
   },
 
@@ -151,6 +154,10 @@ G.ui = {
     if (id === "modal-passives") this.renderPassives();
     const m = document.getElementById(id);
     if (m) m.hidden = false;
+    // passivas: o fit do stage roda dentro de renderPassives() (linha acima), mas nesse
+    // instante a tela ainda está hidden (display:none) — getBoundingClientRect() dá 0×0.
+    // Re-fita agora que .hidden=false já tirou o display:none do layout.
+    if (id === "modal-passives" && this.el["pv-body"]) this._pvFitStage(this.el["pv-body"]);
   },
 
   resetGame() {
@@ -771,86 +778,216 @@ G.ui = {
     setTimeout(() => img.remove(), dur * 1000 + 80);
   },
 
-  // ---------- PASSIVES (Árvore I — árvore única binária + coroa) ----------
+  // ---------- PASSIVES (World-Tree I — árvore única binária + coroa) ----------
+  // Design final (bake): a pintura cobre a viewport inteira em modo COVER (sem letterbox).
+  // Nós são posicionados por % do RETÂNGULO DA IMAGEM (P.POSITIONS), então assentam no
+  // lugar certo em qualquer proporção de janela. Chrome zero: só pintura + nós + galhos +
+  // fechar. Um nó só é RENDERIZADO quando tem sprite (ICONS[i] != null) — nós sem sprite
+  // ainda são totalmente invisíveis (sem placeholder, sem galho apontando pra eles). A
+  // coroa segue a mesma regra (CROWN_ICON != null). Toda informação vive no tooltip.
   renderPassives() {
     const P = G.passives;
-    if (this.el["pv-points"]) this.el["pv-points"].textContent = G.util.fmt(G.state.data.convergencePoints || 0);
     const unlocked = P.unlocked();
     if (this.el["pv-lock"]) this.el["pv-lock"].hidden = unlocked;
     const body = this.el["pv-body"];
-    if (body) {
-      body.style.visibility = unlocked ? "" : "hidden";
-      body.className = "pv-body pv-tree1";
-      body.innerHTML = unlocked ? this._pvTreeHtml() : "";
+    if (!body) return;
+    body.style.visibility = unlocked ? "" : "hidden";
+    body.className = "pv-body pv-tree1";
+    body.innerHTML = unlocked ? this._pvTreeHtml() : "";
+    if (unlocked) {
+      this._pvFitStage(body);
+      this._pvBindResize();
     }
+  },
+
+  // stage full-bleed COVER: escala o retângulo 1672×941 pelo MAIOR dos dois eixos
+  // (viewport width/height), centraliza, excesso cortado por overflow hidden no
+  // .passives-screen. Tamanho final aplicado inline em px porque um div vazio não
+  // tem conteúdo intrínseco pro CSS puro resolver "escala pelo máximo" sozinho.
+  // Roda a cada renderPassives() e a cada resize da janela.
+  _pvFitStage(body) {
+    const stage = body.querySelector(".pv-stage");
+    if (!stage) return;
+    const ratio = 1672 / 941;
+    const bodyRect = body.getBoundingClientRect();
+    const vw = bodyRect.width, vh = bodyRect.height;
+    let w = vw, h = w / ratio;
+    if (h < vh) { h = vh; w = h * ratio; }   // cover: garante cobertura total, corta o excesso
+    stage.style.width = w + "px";
+    stage.style.height = h + "px";
+  },
+
+  // re-fita o stage no resize da janela, só enquanto a tela de passivas está aberta
+  // (evita custo em telas fechadas; rAF evita disparo excessivo durante o drag do resize)
+  _pvBindResize() {
+    if (this._pvResizeBound) return;
+    this._pvResizeBound = true;
+    let raf = 0;
+    window.addEventListener("resize", () => {
+      const screen = document.querySelector(".passives-screen");
+      if (!screen || screen.hidden) return;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => this._pvFitStage(this.el["pv-body"]));
+    });
   },
 
   _pvTreeHtml() {
     const P = G.passives;
-    const pr = P.treeProgress();
-    const summary = `<div class="pv-summary">
-      <span class="pv-sum-orb"></span><span class="pv-sum-l">World-Tree I</span>
-      <span class="pv-sum-div"></span><span class="pv-total">${pr.unlocked}/${pr.total}</span>
-      <span class="pv-sum-stat">${pr.crown ? "✦ Ring Closed" : pr.maxed + " maxed"}</span></div>`;
+    const branches = this._pvBranches();
     let nodes = "";
-    for (let i = 0; i < P.nodes.length; i++) nodes += this._pvNode(i);
-    nodes += this._pvCrown();
-    return summary + `<div class="pv-tree">${nodes}</div>`;
+    for (let i = 0; i < P.nodes.length; i++) if (P.iconOf(i)) nodes += this._pvNode(i);
+    if (P.CROWN_ICON) nodes += this._pvCrown();
+    return `<div class="pv-stage">
+      <img class="pv-art" src="assets/passives/passives_tree.webp" alt="" draggable="false" />
+      <svg class="pv-branches" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${branches}</svg>
+      <div class="pv-nodes">${nodes}</div>
+    </div>`;
+  },
+
+  // galhos de luz pai→filho (bezier suave), desenhados SÓ entre nós visíveis (ambos com
+  // sprite) — um nó sem sprite não recebe galho apontando pra ele, mesmo se comprado.
+  _pvBranches() {
+    const P = G.passives, pos = P.POSITIONS, sp = P.SPLIT_POS;
+    const visible = (i) => !!P.iconOf(i);
+    const bought = (i) => (i === -1 ? true : P.level(i) >= 1);
+    const seg = (ax, ay, bx, by, on) => {
+      const cy = +((ay + by) / 2).toFixed(2);
+      const d = `M${ax},${ay} C${ax},${cy} ${bx},${cy} ${bx},${by}`;
+      const stroke = on ? "pv-branch is-on" : "pv-branch";
+      return `<path class="${stroke}" d="${d}" vector-effect="non-scaling-stroke"/>`;
+    };
+    let out = "";
+    // tronco: raiz(0) → split; depois split → nós 1 e 2 — só desenhado se a raiz E ao
+    // menos um dos dois filhos forem visíveis (o split é um waypoint decorativo, não um
+    // nó real; sem nenhum filho visível não há segmento para puxar dele)
+    if (visible(0) && (visible(1) || visible(2))) {
+      out += seg(pos[0].x, pos[0].y, sp.x, sp.y, bought(0));
+      if (visible(1)) out += seg(sp.x, sp.y, pos[1].x, pos[1].y, bought(0));
+      if (visible(2)) out += seg(sp.x, sp.y, pos[2].x, pos[2].y, bought(0));
+    }
+    // demais nós (>=3): curva pai→filho, só se AMBOS (pai e filho) forem visíveis
+    for (let i = 3; i < P.nodes.length; i++) {
+      const p = P.parentOf(i);
+      if (!visible(i) || !visible(p)) continue;
+      out += seg(pos[p].x, pos[p].y, pos[i].x, pos[i].y, bought(p));
+    }
+    return out;
   },
 
   _pvNode(i) {
     const P = G.passives;
-    const node = P.nodes[i], name = node.name;
-    const pos = P.POSITIONS[i];
-    const level = P.level(i);
-    const maxed = P.isMax(i);
+    const node = P.nodes[i], pos = P.POSITIONS[i];
+    const level = P.level(i), maxed = P.isMax(i);
     const locked = !P.parentBought(i) && level === 0;
-    const cls = ["pv-node", node.depth === 4 ? "tip-below" : "", maxed ? "maxed" : "",
-      P.canBuy(i) ? "buyable" : "", level > 0 && !maxed ? "owned" : "", locked ? "locked" : ""]
+    const canBuy = P.canBuy(i);
+    const wantBuy = !maxed && !locked && P.parentBought(i);          // comprável de topologia (pode faltar pontos)
+    const cls = ["pv-node", node.depth === 4 ? "tip-below" : "", pos.x < 30 ? "tip-right" : pos.x > 70 ? "tip-left" : "",
+      maxed ? "is-maxed" : "", canBuy ? "is-buyable" : "", level > 0 && !maxed ? "is-owned" : "", locked ? "is-locked" : ""]
       .filter(Boolean).join(" ");
-    const nmax = P.nodeMax();
-    const lvlText = maxed ? "✦" : (level > 0 ? `${level}/${nmax}` : "");
-    const foot = maxed ? `<div class="pv-tip-foot max">Max Level</div>`
-      : locked ? `<div class="pv-tip-foot locked">Locked, buy the node below first</div>`
-      : `<div class="pv-tip-foot cost">${level === 0 ? "Unlock" : "Upgrade"} · ${G.util.fmt(P.nextCost(i))} pts</div>`;
-    return `<button class="${cls}" data-i="${i}" style="left:${pos.x}%;top:${pos.y}%;--p:${(level / nmax).toFixed(3)}">
-      <span class="pv-disc"><i class="pv-ring"></i></span>
-      <span class="pv-node-name">${name}</span>
-      <span class="pv-node-lvl">${lvlText}</span>
-      <div class="pv-tip">
-        <div class="pv-tip-head"><div class="pv-tip-htext"><div class="pv-tip-name">${name} <span class="pv-tip-tag">Passive</span></div>
-          <div class="pv-tip-lvl">Level ${level}/${nmax}</div></div></div>
-        <p class="pv-tip-eff">${this._pvEffect(i)}</p>${foot}
-      </div>
+    const arc = this._pvProgressArc(level, P.nodeMax(), maxed);
+    const ic = P.iconOf(i);
+    const shape = ic
+      ? `<img class="pv-sprite" src="${ic}" alt="" draggable="false" />`
+      : `<span class="pv-ring-placeholder"></span>`;
+    return `<button class="${cls}" data-i="${i}"
+        style="left:${pos.x}%;top:${pos.y}%">
+      <span class="pv-shape${ic ? " has-sprite" : ""}">
+        <svg class="pv-progress-arc" viewBox="0 0 100 100" aria-hidden="true">${arc}</svg>
+        ${shape}
+      </span>
+      ${this._pvCard(i)}
     </button>`;
+  },
+
+  // arco fino de 10 traços — só visível no CSS hover (:hover .pv-progress-arc { opacity: 1 })
+  _pvProgressArc(level, nmax, maxed) {
+    const cx = 50, cy = 50, r = 44, n = 10, gap = 7;   // gap em graus entre traços
+    let s = "";
+    for (let k = 0; k < n; k++) {
+      const a0 = (k * 360 / n - 90 + gap / 2) * Math.PI / 180;
+      const a1 = ((k + 1) * 360 / n - 90 - gap / 2) * Math.PI / 180;
+      const x0 = +(cx + r * Math.cos(a0)).toFixed(2), y0 = +(cy + r * Math.sin(a0)).toFixed(2);
+      const x1 = +(cx + r * Math.cos(a1)).toFixed(2), y1 = +(cy + r * Math.sin(a1)).toFixed(2);
+      const on = k < level;
+      const c = maxed ? "pv-arc-seg is-max" : on ? "pv-arc-seg is-on" : "pv-arc-seg";
+      s += `<path class="${c}" d="M${x0},${y0} A${r},${r} 0 0 1 ${x1},${y1}" vector-effect="non-scaling-stroke"/>`;
+    }
+    return s;
+  },
+
+  _pvCard(i) {
+    const P = G.passives;
+    const name = P.nodes[i].name, level = P.level(i), nmax = P.nodeMax();
+    const maxed = P.isMax(i), locked = !P.parentBought(i) && level === 0;
+    const ic = P.iconOf(i);
+    const sub = P.sideOf(i);
+    const m = P.magnitude(i);
+    let effRow = "";
+    if (m) {
+      const per = m.perLevel;
+      if (maxed) effRow = `<div class="pv-card-eff"><b>${m.current}</b> <span class="pv-card-arrow">Maxed</span></div>`;
+      else if (level > 0) effRow = `<div class="pv-card-eff"><b>${m.current}</b> <span class="pv-card-arrow">→</span> <b>${per} next</b></div>`;
+      else effRow = `<div class="pv-card-eff"><b>${per}</b> <span class="pv-card-arrow">/ level</span></div>`;
+    }
+    const desc = (P.EFFECT_DESC && P.EFFECT_DESC[P.nodes[i].key]) || "";
+    const parentName = P.parentOf(i) >= 0 ? P.nodes[P.parentOf(i)].name : "";
+    const have = `<span class="pv-card-have">You have ${G.util.fmt(G.state.data.convergencePoints || 0)} ◈</span>`;
+    const foot = maxed ? `<div class="pv-card-foot is-max">Maxed</div>`
+      : locked ? `<div class="pv-card-foot is-locked">Locked: requires ${parentName}</div>`
+      : `<div class="pv-card-foot is-cost">Cost ◈ ${G.util.fmt(P.nextCost(i))}${have}</div>`;
+    return `<div class="pv-card${ic ? "" : " no-art"}">
+      ${ic ? `<div class="pv-card-art"><img src="${ic}" alt="" loading="lazy" /></div>` : ""}
+      <div class="pv-card-body">
+        <div class="pv-card-name">${name}</div>
+        <div class="pv-card-sub">${sub} · Level ${level}/${nmax}</div>
+        <div class="pv-card-lore">${P.loreOf(i)}</div>
+        <div class="pv-card-desc">${desc}</div>
+        ${effRow}
+        ${foot}
+      </div>
+    </div>`;
   },
 
   _pvCrown() {
     const P = G.passives;
     const pos = P.CROWN_POS, on = P.crownActive();
     const lit = P.leaves().filter((i) => P.level(i) >= 1).length;
-    const cls = ["pv-node", "pv-crown", "tip-below", on ? "maxed crown-on" : "locked"].join(" ");
-    const foot = on ? `<div class="pv-tip-foot max">The Ring Closes, complete</div>`
-      : `<div class="pv-tip-foot locked">Light all 8 leaves (${lit}/8)</div>`;
-    return `<button class="${cls}" data-crown disabled style="left:${pos.x}%;top:${pos.y}%">
-      <span class="pv-disc"><i class="pv-ring"></i></span>
-      <span class="pv-node-name">${P.CROWN.name}</span>
-      <span class="pv-node-lvl">${on ? "✦" : lit + "/8"}</span>
-      <div class="pv-tip">
-        <div class="pv-tip-head"><div class="pv-tip-htext"><div class="pv-tip-name">${P.CROWN.name} <span class="pv-tip-tag">Crown</span></div>
-          <div class="pv-tip-lvl">${on ? "Granted" : "Locked"}</div></div></div>
-        <p class="pv-tip-eff">${P.EFFECT_DESC.ringCloses}<br><b>+${P.unit("ringCloses")}% ATK · HP · Lumens · XP</b></p>${foot}
+    const cls = ["pv-node", "pv-crown", "tip-below", on ? "crown-on" : "is-locked"].join(" ");
+    const ic = P.CROWN_ICON;
+    const shape = ic
+      ? `<img class="pv-sprite" src="${ic}" alt="" draggable="false" />`
+      : `<span class="pv-ring-placeholder"></span>`;
+    const foot = on ? `<div class="pv-card-foot is-max">The Ring Closes · complete</div>`
+      : `<div class="pv-card-foot is-locked">Locked: requires all 8 leaves (${lit}/8)</div>`;
+    const card = `<div class="pv-card pv-card--crown${ic ? "" : " no-art"}">
+      ${ic ? `<div class="pv-card-art"><img src="${ic}" alt="" loading="lazy" /></div>` : ""}
+      <div class="pv-card-body">
+        <div class="pv-card-name">${P.CROWN.name}</div>
+        <div class="pv-card-sub">Crown · ${on ? "Granted" : "Sealed"}</div>
+        <div class="pv-card-lore">${P.CROWN_LORE}</div>
+        <div class="pv-card-desc">${P.EFFECT_DESC.ringCloses}</div>
+        <div class="pv-card-eff"><b>+${P.unit("ringCloses")}% ATK · HP · Lumens · XP</b></div>
+        ${foot}
       </div>
-    </button>`;
+    </div>`;
+    return `<div class="${cls}" data-crown style="left:${pos.x}%;top:${pos.y}%">
+      <span class="pv-shape${ic ? " has-sprite" : ""}">${shape}</span>
+      ${card}
+    </div>`;
   },
 
-  _pvEffect(i) {
-    const P = G.passives, key = P.nodes[i].key;
-    const desc = (P.EFFECT_DESC && P.EFFECT_DESC[key]) || "Effect pending balancing.";
-    const m = P.magnitude(i);
-    if (!m) return desc;
-    const now = m.current ? ` · now <b>${m.current}</b>` : "";
-    return `${desc}<br><b>${m.perLevel}</b> / level${now}`;
+  // floater "+X%" subindo do nó comprado (padrão dos floaters de combate: span animado)
+  _pvFloater(btn, i) {
+    const P = G.passives, m = P.magnitude(i);
+    const txt = m ? m.perLevel : "+1";
+    const rect = btn.getBoundingClientRect();
+    const f = document.createElement("span");
+    f.className = "pv-floater";
+    f.textContent = txt;
+    f.style.left = (rect.left + rect.width / 2) + "px";
+    f.style.top = (rect.top + rect.height * 0.32) + "px";
+    document.body.appendChild(f);
+    setTimeout(() => f.remove(), 900);
   },
 
   // ---------- AWAKEN ----------

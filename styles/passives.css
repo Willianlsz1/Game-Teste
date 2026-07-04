@@ -1,86 +1,129 @@
 /* =============================================================
-   passives.css — Tela Árvore de Passivas (tela própria full-screen)
+   passives.css — World-Tree I (tela própria full-screen)
+   Design final: pintura full-bleed cover ocupa a viewport inteira, sem
+   letterbox. Chrome zero — só pintura + nós + galhos + botão fechar.
+   Toda a informação (nome, lore, efeito, custo, pontos) mora no tooltip.
+   Um nó só é renderizado quando tem sprite (G.passives.ICONS[i] != null) — nós
+   sem sprite ainda ficam totalmente ausentes do DOM (sem placeholder visível).
    ============================================================= */
 .passives-screen {
-  --eclat: #f0e3b0;
+  --gold: #e8b54a; --teal: #5ee0d2;
   --pv-display: "Cormorant Garamond", serif;
   --pv-ink: #e7eefb; --pv-dim: #9aa3b8; --pv-faint: #6a7488; --pv-line: rgba(255,255,255,.12);
-  position: fixed; inset: 0; z-index: 200; background: #070b16; overflow: hidden;
+  position: fixed; inset: 0; z-index: 200; background: #060a14; overflow: hidden;
 }
 .passives-screen[hidden] { display: none; }
-/* botão fechar acima do lock-overlay (z 10) e das camadas internas */
-.passives-screen .modal-close { z-index: 20; }
-.passives-screen .pv-screen { position: absolute; inset: 0; z-index: 0; pointer-events: none;
-  background: url('../assets/passives/passives_tree.webp') center / cover no-repeat, #070b16; }
-.passives-screen .pv-points { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); z-index: 6;
-  font-size: 15px; color: #cdd6ea; background: rgba(7,10,22,.72); padding: 6px 16px; border-radius: 999px;
-  border: 1px solid var(--pv-line); }
-.passives-screen .pv-points b { color: #ffd98a; }
+.passives-screen .modal-close { z-index: 40; }
 
 .pv-body { position: absolute; inset: 0; z-index: 2; }
-.pv-body.pv-tree1 { --tree-c: var(--eclat); }   /* Árvore I — árvore única */
-/* Coroa "The Ring Closes": auto-concedida, não clicável */
-.pv-node.pv-crown { --c: #ffd98a; cursor: default; }
-.pv-node.pv-crown .pv-node-name { color: #ffe6a8; }
-.pv-node.pv-crown.crown-on .pv-disc { box-shadow: 0 0 0 2px #ffd98a, 0 0 34px 0 #ffd98a; }
-.pv-node.pv-crown.locked .pv-disc { filter: grayscale(.55) brightness(.7); }
-.pv-node.pv-crown.locked .pv-node-name { color: #8a97ad; }
-.pv-summary { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 3;
-  display: flex; align-items: center; gap: 12px; padding: 9px 22px; border-radius: 999px;
-  background: rgba(8,12,24,.86); border: 1px solid color-mix(in srgb, var(--tree-c) 38%, transparent);
-  box-shadow: 0 8px 26px -10px #000, 0 0 24px -10px var(--tree-c); }
-.pv-sum-orb { width: 9px; height: 9px; border-radius: 50%; background: var(--tree-c); box-shadow: 0 0 10px 1px var(--tree-c); }
-.pv-sum-l { font-size: 12px; color: var(--pv-dim); text-transform: uppercase; letter-spacing: .18em; }
-.pv-sum-div { width: 1px; height: 16px; background: color-mix(in srgb, var(--tree-c) 35%, transparent); }
-.pv-total { font-family: var(--pv-display); font-weight: 700; font-size: 22px; color: #fff;
-  text-shadow: 0 0 18px color-mix(in srgb, var(--tree-c) 60%, transparent); }
-.pv-sum-stat { font-size: 12px; font-weight: 600; color: var(--tree-c); text-transform: uppercase; letter-spacing: .1em; }
 
-.pv-tree { position: absolute; inset: 0; }
+/* ---- STAGE: retângulo da arte (1672×941) em modo COVER, preenchendo a viewport
+   inteira — escala pelo MAIOR dos dois eixos, centrado, excesso cortado (overflow
+   hidden no body). Tamanho final (width/height inline, px) calculado em JS por
+   _pvFitStage() a cada resize; os valores abaixo são só um piso pré-JS. Nós/galhos
+   são posicionados em % DESTE retângulo, não da viewport, então permanecem sobre
+   os soquetes pintados em qualquer proporção de janela. */
+.pv-stage { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 100%; height: 100%; }
+.pv-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill;
+  display: block; user-select: none; -webkit-user-drag: none; }
+.pv-branches { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+.pv-nodes { position: absolute; inset: 0; z-index: 2; }
+
+/* ---- GALHOS DE LUZ ---- */
+.pv-branch { fill: none; stroke: rgba(120,150,210,.16); stroke-width: 2.4;
+  stroke-linecap: round; stroke-linejoin: round; }
+.pv-branch.is-on { stroke: rgba(232,181,74,.85); stroke-width: 2.8;
+  filter: drop-shadow(0 0 3px rgba(232,181,74,.7)); }
+
+/* ---- NÓ ---- */
 .pv-node { position: absolute; transform: translate(-50%, -50%); appearance: none; cursor: pointer;
-  background: none; border: 0; display: flex; flex-direction: column; align-items: center; gap: 4px;
-  color: var(--pv-ink); --c: var(--tree-c); }
-.pv-disc { position: relative; width: 58px; height: 58px; border-radius: 50%;
-  background: radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--c) 26%, #0a1024), color-mix(in srgb, var(--c) 9%, #0a1024));
-  border: 1px solid color-mix(in srgb, var(--c) 40%, transparent); display: grid; place-items: center;
-  transition: box-shadow .15s, transform .1s; box-shadow: 0 4px 14px -4px #000a; }
-.pv-ring { position: absolute; inset: -4px; border-radius: 50%;
-  background: conic-gradient(var(--c) calc(var(--p, 0) * 360deg), rgba(170,200,255,.14) 0);
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
-          mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px)); }
-.pv-node-name { font-family: var(--pv-display); font-size: 15px; line-height: 1.05; text-align: center;
-  color: #e7eefb; max-width: 120px; text-shadow: 0 1px 4px #000, 0 0 8px #000; }
-.pv-node-lvl { font-size: 14px; color: #c5d3ea; min-height: 13px; text-shadow: 0 1px 3px #000; }
-.pv-node.locked .pv-disc { filter: grayscale(.85) brightness(.65); }
-.pv-node.locked .pv-node-name { color: #8a97ad; }
-.pv-node.owned .pv-disc { box-shadow: 0 0 16px -3px color-mix(in srgb, var(--c) 65%, transparent); }
-.pv-node.buyable .pv-disc { box-shadow: 0 0 0 2px var(--c), 0 0 22px -3px var(--c); }
-.pv-node.maxed .pv-disc { box-shadow: 0 0 0 2px var(--c), 0 0 28px -2px var(--c); }
-.pv-node.maxed .pv-node-lvl { color: var(--c); font-weight: 700; }
-.pv-node:not(.locked):hover .pv-disc { transform: translateY(-2px); }
+  background: none; border: 0; padding: 0; display: block; color: var(--pv-ink); }
+.pv-node.pv-crown { cursor: default; }
 .pv-node:hover { z-index: 50; }
 
-.pv-tip { display: none; position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%);
-  z-index: 30; width: 290px; text-align: left; pointer-events: none;
-  background: linear-gradient(180deg, rgba(10,14,28,.98), rgba(6,9,18,.98));
-  border: 1px solid color-mix(in srgb, var(--c) 42%, var(--pv-line)); border-radius: 13px;
-  padding: 13px 15px 12px; box-shadow: 0 18px 40px -12px #000, 0 0 26px -12px var(--c); }
-.pv-node:hover .pv-tip { display: block; }
-.pv-node.tip-below .pv-tip { bottom: auto; top: calc(100% + 10px); }
-.pv-tip-head { display: flex; align-items: center; gap: 11px; margin-bottom: 10px; }
-.pv-tip-name { font-family: var(--pv-display); font-weight: 700; font-size: 20px; color: #f3f7ff; display: flex; align-items: center; gap: 8px; }
-.pv-tip-tag { font-size: 12px; font-weight: 700; color: #8be0a0; letter-spacing: .12em; text-transform: uppercase;
-  padding: 2px 9px; border-radius: 999px; background: rgba(127,208,138,.14); border: 1px solid rgba(127,208,138,.4); }
-.pv-tip-lvl { font-size: 13px; color: var(--pv-dim); text-transform: uppercase; margin-top: 3px; }
-.pv-tip-eff { margin: 0 0 12px; font-size: 14px; line-height: 1.5; color: #d3deef; }
-.pv-tip-foot { font-size: 14px; font-weight: 700; padding-top: 10px;
-  border-top: 1px solid color-mix(in srgb, var(--c) 16%, rgba(255,255,255,.06)); }
-.pv-tip-foot.cost { color: #f0d9a0; } .pv-tip-foot.max { color: var(--c); } .pv-tip-foot.locked { color: var(--pv-faint); }
+/* tamanho do nó: sem moldura, a forma solta é o próprio elemento visual.
+   vmin mantém o sprite proporcional à viewport (não à largura do stage, que
+   agora é sempre >= viewport em modo cover). */
+.pv-shape { position: relative; width: 7.2vmin; height: 7.2vmin; min-width: 44px; min-height: 44px;
+  max-width: 92px; max-height: 92px; display: grid; place-items: center;
+  transition: transform .12s, filter .16s; }
+.pv-node:not(.is-locked):hover .pv-shape { transform: translateY(-2px) scale(1.06); }
 
+/* sprite (único caso renderizado hoje): png com alpha, background contain, sem disco/borda */
+.pv-shape.has-sprite { background: none; }
+.pv-sprite { width: 100%; height: 100%; object-fit: contain; display: block;
+  user-select: none; -webkit-user-drag: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,.6)); }
+
+/* ---- ESTADOS ---- */
+.pv-node.is-locked .pv-sprite { filter: grayscale(1) brightness(.4); }
+.pv-node.is-buyable .pv-sprite { animation: pvPulseSprite 1.6s ease-in-out infinite; }
+.pv-node.is-maxed .pv-sprite { filter: drop-shadow(0 0 10px var(--gold)) drop-shadow(0 0 4px var(--gold)); }
+
+@keyframes pvPulseSprite {
+  0%, 100% { filter: drop-shadow(0 0 4px var(--gold)); }
+  50%      { filter: drop-shadow(0 0 12px var(--gold)); }
+}
+
+/* ---- ARCO DE PROGRESSO (10 traços) — só aparece no hover, junto do tooltip ---- */
+.pv-progress-arc { position: absolute; inset: -18%; width: 136%; height: 136%;
+  overflow: visible; z-index: 1; pointer-events: none;
+  opacity: 0; transition: opacity .12s; }
+.pv-node:hover .pv-progress-arc { opacity: 1; }
+.pv-arc-seg { fill: none; stroke: rgba(150,175,220,.22); stroke-width: 5; stroke-linecap: round; }
+.pv-arc-seg.is-on { stroke: var(--teal); filter: drop-shadow(0 0 2px rgba(94,224,210,.8)); }
+.pv-arc-seg.is-max { stroke: var(--gold); filter: drop-shadow(0 0 3px rgba(232,181,74,.9)); }
+
+/* ---- COROA (só renderiza quando CROWN_ICON existir — hoje null, oculta) ---- */
+.pv-node.pv-crown.crown-on .pv-sprite { filter: drop-shadow(0 0 12px var(--gold)); }
+
+/* ---- TOOLTIP-CARTA (hover no nó) ---- */
+.pv-card { display: none; position: absolute; z-index: 60; width: 320px; text-align: left; pointer-events: none;
+  bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(12,16,30,.98), rgba(6,9,18,.99));
+  border: 1px solid color-mix(in srgb, var(--gold) 42%, var(--pv-line)); border-radius: 12px;
+  padding: 14px; box-shadow: 0 20px 44px -14px #000, 0 0 26px -12px var(--gold);
+  grid-template-columns: 118px 1fr; gap: 14px; }
+.pv-node:hover .pv-card { display: grid; }
+.pv-card.no-art { grid-template-columns: 1fr; }
+.pv-node.tip-below .pv-card { bottom: auto; top: calc(100% + 12px); }
+.pv-node.tip-right .pv-card { left: 0; transform: none; }
+.pv-node.tip-left .pv-card { left: auto; right: 0; transform: none; }
+.pv-card-art { width: 118px; border-radius: 10px; overflow: hidden; background: #0a0e1c;
+  border: 1px solid rgba(255,255,255,.08); align-self: start; display: grid; place-items: center; }
+.pv-card-art img { width: 100%; height: 100%; display: block; object-fit: contain; }
+.pv-card-body { min-width: 0; }
+.pv-card-name { font-family: var(--pv-display); font-weight: 700; font-size: 18px; color: #e7d9b0; line-height: 1.15; }
+.pv-card-sub { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--pv-dim); margin: 3px 0 9px; }
+.pv-card-lore { font-family: var(--pv-display); font-style: italic; font-size: 14px; line-height: 1.4;
+  color: #cbd6ea; border-left: 2px solid color-mix(in srgb, var(--teal) 70%, transparent); padding-left: 10px; margin-bottom: 9px; }
+.pv-card-desc { font-size: 12.5px; line-height: 1.45; color: #b9c4d8; margin-bottom: 9px; }
+.pv-card-eff { font-size: 13px; color: #e9dcb2; margin-bottom: 10px; }
+.pv-card-eff b { color: #ffe6a8; }
+.pv-card-arrow { color: var(--pv-faint); font-weight: 400; }
+.pv-card-foot { font-size: 13px; font-weight: 700; padding-top: 9px;
+  border-top: 1px solid color-mix(in srgb, var(--gold) 16%, rgba(255,255,255,.06)); }
+.pv-card-foot.is-cost { color: #f0d9a0; }
+.pv-card-foot.is-max { color: var(--gold); }
+.pv-card-foot.is-locked { color: var(--pv-faint); font-weight: 600; }
+.pv-card-have { display: block; font-size: 11.5px; font-weight: 600; color: var(--pv-dim); margin-top: 3px; }
+.pv-card--crown { border-color: color-mix(in srgb, var(--gold) 55%, transparent); }
+
+/* ---- FLOATER "+X%" ---- */
+.pv-floater { position: fixed; z-index: 300; pointer-events: none; transform: translate(-50%, 0);
+  font-family: var(--pv-display); font-weight: 700; font-size: 20px; color: #ffe08a;
+  text-shadow: 0 2px 8px #000, 0 0 12px rgba(232,181,74,.7); animation: pvFloat .9s ease-out forwards; }
+@keyframes pvFloat {
+  0%   { opacity: 0; transform: translate(-50%, 6px) scale(.9); }
+  20%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -46px) scale(1.05); }
+}
+
+/* ---- LOCK OVERLAY (árvore adormecida) ---- */
 .pv-lock { position: absolute; inset: 0; z-index: 10; display: grid; place-content: center; text-align: center;
   padding: 60px; background: rgba(6,9,18,.6); }
 .pv-lock[hidden] { display: none; }
-.pv-lock .glyph { font-size: 96px; color: var(--eclat); filter: drop-shadow(0 0 20px var(--eclat)); margin-bottom: 12px; }
+.pv-lock .glyph { font-size: 96px; color: var(--gold); filter: drop-shadow(0 0 20px var(--gold)); margin-bottom: 12px; }
 .pv-lock h2 { margin: 0 0 8px; font-family: var(--pv-display); font-weight: 700; font-size: 30px; color: var(--pv-ink); }
 .pv-lock p { max-width: 520px; margin: 0 auto; color: var(--pv-dim); font-size: 17px; font-family: var(--pv-display); font-style: italic; line-height: 1.4; }
-.pv-lock b { color: var(--eclat); font-style: normal; }
+.pv-lock b { color: var(--gold); font-style: normal; }
