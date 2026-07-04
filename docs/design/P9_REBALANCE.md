@@ -422,6 +422,27 @@ Achados do dono (screenshots) e destino:
    compensar em gear/árvore, com RE-FIT das áreas e re-validação de TODOS os
    gates do §7 (relógio 36±2, Okhra, coroa, re-subida ≥ estado atual).
 
+## 8c. CANDIDATOS "MODELO GAIADON" — acumular, NÃO fitar até o dono fechar o conjunto
+
+> Decisão de PROCESSO do dono (jul/04, pós-bíblia GAIADON_MATH): estas
+> direções mudam o paradigma; fitar uma a uma vira churn. **Acumular TODAS as
+> decisões e rodar UM re-fit no fim.** Nenhum agente/fit até o dono declarar o
+> conjunto fechado. Estas substituiriam parte do v9-r7 (que fica de pé até lá).
+
+| Direção | O que muda | Resolve | Custo |
+|---|---|---|---|
+| **Nível do mob = ÁREA, não Seeker** (paradigma RPG de zona) | `enemyFactory.js:57` hoje faz `level = clamp(SEU nível, áreaMin, áreaMax)` → mob escala com você. Novo: nível do mob fixo pela área. HTK dentro da área passa de CONSTANTE → DECRESCENTE (entra difícil, derrete ao subir de nível). | **HP** (dono gosta do modelo Gaiadon: cada área dificuldade fixa, "o HP disparou") **E XP** (pós-Convergence você é nv1 mas o mob está no nível real → cascata de níveis morre sozinha; "só o Seeker reseta, não os mobs") — é UMA mudança pros dois | GRANDE — reabre o fit inteiro (relógio 36h, golpes, re-subida). Descarta o fit do v9-r7 |
+| **Lumens com curva própria** | soltar Lumens do HP (hoje `goldRatio 0.35`, rígido). Curva independente à la Gaiadon (§2.2), pode ACELERAR no fim | dono: "usar a fórmula dele"; Lumens que crescem mais rápido que HP no endgame = espetáculo | MÉDIO — re-fitar custo de gear (balanceado contra renda de Lumens) |
+| **Custo de nível maior no início** | encarpar `xpCurveBase × nível^xpCurveExp` nos primeiros níveis (piso de custo mínimo por nível) | se o paradigma acima entrar, o vazamento já morre pela raiz → isto vira REFORÇO de sensação (cada nível pesa mais), não conserto | pequeno — entra no re-fit único |
+
+**Ainda em aberto (dono não fechou):** falta o dono decidir as demais variáveis
+antes do re-fit. Probes de leitura já rodados como insumo: HP (gap de expoente
+— nosso fit manual não é gap puro, os desvios são deliberados), Lumens/XP
+(Lumens rígido ao HP; freio de backtrack do Gaiadon é no-op aqui; causa do
+vazamento = curva de custo rasa no início). Quando o conjunto fechar: UM
+re-fit (paradigma novo → provavelmente Opus, várias rodadas), depois bake +
+travar.
+
 ## 8b. RODADA 4 — estado (jul/04)
 
 - [x] v9-r4 → r5 → r6: mecânicas implementadas (Opus), 3 runs de descoberta,
