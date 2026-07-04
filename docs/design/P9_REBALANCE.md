@@ -288,9 +288,13 @@ mortes concentradas em tentativa prematura.
       na economia de materiais (elites/Corona = fonte do material-chave §2d)
       — fitar os dois patches JUNTOS. UI da tela de Awaken mostra ×N e as
       assinaturas (casa com o onboarding do Awaken já pautado).
-- [ ] NOTA PRO RETUNE (dono, grill jul/04): **o dono tem comentários sobre o
-      relógio do Mapa 1 guardados** — coletar ANTES de re-fitar qualquer
-      número da rodada 4 (mesmo protocolo do P8.6: playtest antes de retune).
+- [ ] NOTA PRO RETUNE (dono, grill jul/04): ~~comentários de relógio
+      guardados~~ **COLETADO (jul/04, fim da sessão): a rodada 4 RODA SEM CAP
+      DE RELÓGIO** — nenhum gate de 36±2 no fit; timeout do sim estendido
+      (rodar até 60h+); medir quanto tempo leva pra LIMPAR o Mapa 1 inteiro
+      (First Light + Okhra) com o design novo, nas 3 seeds. O dono decide a
+      âncora nova OLHANDO o número medido (descoberta primeiro, âncora
+      depois). O alvo 36h±2 do v8 vira registro histórico até essa decisão.
 - [ ] FASE DE UI (decisão do dono, grill jul/04 — zero balance): **tooltip de
       gear v2** (mockup aprovado em sessão; referência: print endgame do
       Gaiadon): (1) nome-lore do afixo em destaque acima do stat (dados já
@@ -417,6 +421,36 @@ Achados do dono (screenshots) e destino:
    total nos checkpoints (fim de G2/G4/G6). Rebaixar playerAtkCoef/Exp e
    compensar em gear/árvore, com RE-FIT das áreas e re-validação de TODOS os
    gates do §7 (relógio 36±2, Okhra, coroa, re-subida ≥ estado atual).
+
+## 9. RODADA 4 — variáveis do candidato v9-r4 (coletadas com o dono, grill jul/04)
+
+**Protocolo: DESCOBERTA, não fit de relógio** — rodar SEM gate de tempo
+(timeout 60h+), medir quanto o Mapa 1 inteiro leva nas seeds 1/3/7; o dono
+decide a âncora nova olhando o medido.
+
+| # | Variável | Valor decidido |
+|---|---|---|
+| 1 | First Light — piso | **×5 ATK · ×3 HP** (Okhra re-fita pra manter 71–95 golpes) |
+| 2 | Onda por grupo | **[1, 2, 2, 3, 4, 5]** (G5=4, G6=5; TTD re-fita) |
+| 3 | Rarity Find pré-awaken | **Ember 8% · Lumen 3% · Corona 0 (não existe)**; pós-awaken (World Kindles): 30/15 + Corona 5 revelado |
+| 4 | Material incomum (chave) | portadores = **só acesos (Ember/Lumen) + Harbingers**; chances/qtd via fit |
+| 5 | Light Remembers | **~10% do maior nível alcançado** (banda 8–12 pro fit; awakens futuros sobem o %) |
+| 6 | Vessel of Dawn | absorve **2 golpes por onda** (fixo; awakens futuros engordam) |
+| 7 | Caps dos afixos novos | Twice-Gilded 4% · Hollowing Light 5% · Fortune's Torrent 5% |
+| 8 | Árvore 100% | fecha na banda **conv 14–16 (≈ área 17–18)**; excedente acumula (banco Tier II) |
+| 9 | TTK/TTD | alvos do v8 mantidos (entrada 8–12 · farm 2–4 · pós-conv 1 · TTD 25s · Harbinger 20–40 HTK) |
+| 10 | Mortes | só entrada prematura (gate §2.7 mantido) |
+| 11 | **Threshold do Harbinger** | **≥200 kills mínimo** (era 30–55; escada por grupo re-derivada acima de 200; regrind 1.0 mantido — medir impacto em Marcos e fluxo de material de boss no run de descoberta) |
+| 12 | Golden Wake (árvore) | UNIT 1.0 → 0.6 (orçamento com Twice-Gilded no cap 10%) |
+| 13 | Relógio | **SEM GATE** — medir; 36h±2 vira histórico até o dono ancorar de novo |
+
+Pré-requisito de código (antes do fit): batch de MECÂNICAS em src/ —
+dois materiais na promoção · Corona gateado pelo awaken (spawn + UI zero
+menção) · bônus novos do awaken (Kindles/Remembers/Vessel) · afixos novos
+(Twice-Gilded/Hollowing/Torrent no lugar de Fortune's Weave/Steadfast
+Guard/Corona Call) · packByGroup 4–5 (+ UI de batalha p/ 5 sprites) ·
+threshold ≥200. Implementação via Opus (10-80-10), review adversarial,
+depois p9_generate/p9_fit no harness.
 
 ## Superseded
 
