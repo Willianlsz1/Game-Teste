@@ -13,7 +13,7 @@ global.localStorage = {
   removeItem: (k) => { delete store[k]; },
 };
 const SRC = path.join(__dirname, '..', '..', 'src');
-for (const f of ['util', 'data', 'gear', 'passives', 'awaken', 'state', 'economy', 'convergence', 'combat'])
+for (const f of ['util', 'data', 'gear', 'passives', 'awaken', 'state', 'economy', 'rates', 'enemyFactory', 'income', 'progression', 'convergence', 'combat'])
   eval(fs.readFileSync(path.join(SRC, f + '.js'), 'utf8'));
 
 let failed = 0;

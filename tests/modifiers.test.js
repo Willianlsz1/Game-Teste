@@ -15,7 +15,7 @@ global.localStorage = {
   removeItem: (k) => { delete store[k]; },
 };
 const SRC = path.join(__dirname, "..", "src");
-for (const f of ["util", "data", "gear", "passives", "awaken", "state", "economy", "convergence", "combat"])
+for (const f of ["util", "data", "gear", "passives", "awaken", "state", "economy", "rates", "enemyFactory", "income", "progression", "convergence", "combat"])
   eval(fs.readFileSync(path.join(SRC, f + ".js"), "utf8"));
 
 let failed = 0;
@@ -75,10 +75,10 @@ const near = (a, b) => Math.abs(a - b) < 1e-9;
 // ---------- 4) Escorted: enche a onda de comuns ----------
 (function () {
   const m = G.data.modifiers.escorted;
-  ok(G.combat._escortedSize(1) === m.fullWave, "Escorted: onda de 1 → cheia (fullWave)");
-  ok(G.combat._escortedSize(2) === m.fullWave, "Escorted: onda de 2 → cheia (fullWave)");
-  ok(G.combat._escortedSize(m.fullWave) === m.fullWave + m.extra, "Escorted: onda já cheia → +extra");
-  ok(G.combat._escortedSize(m.cap) === m.cap, "Escorted: respeita o teto (cap)");
+  ok(G.enemyFactory._escortedSize(1) === m.fullWave, "Escorted: onda de 1 → cheia (fullWave)");
+  ok(G.enemyFactory._escortedSize(2) === m.fullWave, "Escorted: onda de 2 → cheia (fullWave)");
+  ok(G.enemyFactory._escortedSize(m.fullWave) === m.fullWave + m.extra, "Escorted: onda já cheia → +extra");
+  ok(G.enemyFactory._escortedSize(m.cap) === m.cap, "Escorted: respeita o teto (cap)");
 
   fresh(); const realUi = G.ui; G.ui = null;
   // idx 5 = H2 (Escorted); packSize do G2 = 2 → escolta cheia = 3
@@ -87,8 +87,8 @@ const near = (a, b) => Math.abs(a - b) < 1e-9;
   G.combat.spawn();
   const boss = G.combat.enemies.find((e) => e.isBoss);
   const escort = G.combat.enemies.filter((e) => !e.isBoss).length;
-  ok(boss && G.combat._hasMod(boss, "escorted"), "H2 spawna com a assinatura Escorted");
-  ok(escort === G.combat._escortedSize(2), "Escorted: escolta cheia (2→3 comuns) junto do boss");
+  ok(boss && G.enemyFactory._hasMod(boss, "escorted"), "H2 spawna com a assinatura Escorted");
+  ok(escort === G.enemyFactory._escortedSize(2), "Escorted: escolta cheia (2→3 comuns) junto do boss");
   G.ui = realUi; G.combat.enemies = [];
 })();
 
@@ -98,7 +98,7 @@ const near = (a, b) => Math.abs(a - b) < 1e-9;
   const realStats = G.state.stats.bind(G.state), realChance = G.util.chance;
   G.state.stats = () => ({ rarityFind: { ember: 1, lumen: 1, corona: 1 }, rarityCaps: { ember: 1, lumen: 1, corona: 1 } });
   G.util.chance = () => true;   // Corona (1ª da ordem) vence
-  const lit = G.combat._buildOne(false, { name: "base", sprite: "", img: "" });
+  const lit = G.enemyFactory._buildOne(false, { name: "base", sprite: "", img: "" });
   G.util.chance = realChance; G.state.stats = realStats;
   ok(lit.rarity.tier === "corona" && Array.isArray(lit.modifiers) && lit.modifiers.length === 1,
     "Corona rola EXATAMENTE 1 modificador");
@@ -109,7 +109,7 @@ const near = (a, b) => Math.abs(a - b) < 1e-9;
 // ---------- 6) Assinaturas FIXAS por Harbinger (P8.3) ----------
 (function () {
   fresh();
-  const sigOf = (idx) => { G.state.data.areaIndex = idx; return G.combat._buildOne(true, G.data.areas[idx].boss).modifiers.slice().sort().join(","); };
+  const sigOf = (idx) => { G.state.data.areaIndex = idx; return G.enemyFactory._buildOne(true, G.data.areas[idx].boss).modifiers.slice().sort().join(","); };
   ok(sigOf(2) === "lightshell", "H1 (idx 2) = Lightshell");
   ok(sigOf(5) === "escorted", "H2 (idx 5) = Escorted");
   ok(sigOf(8) === "siphoning", "H3 (idx 8) = Siphoning");
@@ -117,11 +117,11 @@ const near = (a, b) => Math.abs(a - b) < 1e-9;
   ok(sigOf(14) === "lightshell,quickened", "H5 (idx 14) = par Lightshell+Quickened");
   ok(sigOf(17) === "escorted,siphoning", "H6 (idx 17) = par Siphoning+Escorted");
   G.state.data.areaIndex = 17;
-  const okhra = G.combat._buildOne(true, G.data.areas[17].mapBoss);
+  const okhra = G.enemyFactory._buildOne(true, G.data.areas[17].mapBoss);
   ok(okhra.modifiers.join(",") === "siphoning", "Okhra (mapBoss) = Siphoning (+ The Tide Rises à parte)");
   // Lightshell no boss usa bossAbsorb (N maior)
   G.state.data.areaIndex = 2;
-  const h1 = G.combat._buildOne(true, G.data.areas[2].boss);
+  const h1 = G.enemyFactory._buildOne(true, G.data.areas[2].boss);
   ok(h1.lightshell === G.data.modifiers.lightshell.bossAbsorb, "Lightshell no boss usa bossAbsorb (N maior que o do mob)");
 })();
 

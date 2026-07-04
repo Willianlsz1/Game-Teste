@@ -322,7 +322,7 @@ G.ui = {
     const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
     const dps = Math.round(s.atk / G.state.attackInterval());
 
-    const r = G.combat.getRates();
+    const r = G.rates.getRates();
     set("rate-gold",  G.util.fmt(Math.round(r.lumens)));
     set("rate-xp",    G.util.fmt(Math.round(r.xp)));
     set("rate-kills", (r.kills || 0).toFixed(1));
@@ -618,7 +618,7 @@ G.ui = {
     el.classList.remove("is-here");
 
     const stirs = (name) => {
-      const n = Math.max(0, G.combat._bossThreshold() - G.combat._bossKills);
+      const n = Math.max(0, G.enemyFactory._bossThreshold() - G.combat._bossKills);
       el.innerHTML = `⟡ ${name} stirs in <b>${n}</b> kills`;
       el.style.display = "";
     };
@@ -1307,7 +1307,7 @@ G.ui = {
 
     // ameaça
     this.el["wmap-info-level"].textContent = `${a.levelRange[0]}–${a.levelRange[1]}`;
-    const pack = G.combat.packSizeFor(i);
+    const pack = G.enemyFactory.packSizeFor(i);
     this.el["wmap-info-enemies"].textContent = pack + " per wave";
 
     const mobs = this.el["wmap-info-mobs"];
@@ -1331,10 +1331,10 @@ G.ui = {
       let cadence = "";
       if (!shrouded) {
         if (isCurrent) {
-          const n = Math.max(0, G.combat.bossThresholdFor(i) - G.combat._bossKills);
+          const n = Math.max(0, G.enemyFactory.bossThresholdFor(i) - G.combat._bossKills);
           cadence = `stirs in ${n} kills`;
         } else {
-          cadence = `stirs every ${G.combat.bossThresholdFor(i)} kills`;
+          cadence = `stirs every ${G.enemyFactory.bossThresholdFor(i)} kills`;
         }
       }
       // Área 18: linha extra do Okhra (2º estágio pós-H6), preservando a lógica de portão/First Light.
@@ -1356,7 +1356,7 @@ G.ui = {
     }
 
     // spoils — projeção real do income do jogador atual
-    const est = G.combat.estimateAreaIncome(i);
+    const est = G.income.estimateAreaIncome(i);
     let res;
     if (est.deadly) {
       res = `<li class="is-warning">Beyond your strength. The tide would take you.</li>`;

@@ -14,7 +14,7 @@ global.localStorage = {
   removeItem: (k) => { delete store[k]; },
 };
 const SRC = path.join(__dirname, "..", "src");
-for (const f of ["util", "data", "gear", "passives", "awaken", "state", "economy", "convergence", "combat"])
+for (const f of ["util", "data", "gear", "passives", "awaken", "state", "economy", "rates", "enemyFactory", "income", "progression", "convergence", "combat"])
   eval(fs.readFileSync(path.join(SRC, f + ".js"), "utf8"));
 
 let failed = 0;
@@ -455,7 +455,7 @@ ok(G.ui.mapNodePos.length === G.data.areas.length,
   const b = G.data.balance; let packOk = true;
   for (let i = 0; i < G.data.areas.length; i++) {
     const exp = b.packByGroup[G.util.clamp(Math.floor(i / b.groupSize), 0, b.packByGroup.length - 1)];
-    if (G.combat.packSizeFor(i) !== exp) packOk = false;
+    if (G.enemyFactory.packSizeFor(i) !== exp) packOk = false;
   }
   ok(packOk, "packSizeFor === packByGroup para os 18 índices (painel derivado da fonte de combat)");
 })();

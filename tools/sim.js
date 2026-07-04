@@ -48,7 +48,7 @@ function mulberry32(seed) {
 
 // ---------- shims de navegador + load dos módulos reais ----------
 global.window = global;
-const LOAD_ORDER = ['util.js', 'data.js', 'gear.js', 'state.js', 'economy.js', 'combat.js', 'convergence.js', 'awaken.js', 'passives.js'];
+const LOAD_ORDER = ['util.js', 'data.js', 'gear.js', 'state.js', 'economy.js', 'rates.js', 'enemyFactory.js', 'income.js', 'progression.js', 'combat.js', 'convergence.js', 'awaken.js', 'passives.js'];
 for (const f of LOAD_ORDER) {
   const p = path.join(__dirname, '..', 'src', f);
   vm.runInThisContext(fs.readFileSync(p, 'utf8'), { filename: p });
@@ -111,7 +111,7 @@ function combatSnapshot() {
   const dmgHit = s.atk * (1 + (s.crit / 100) * (s.critMult - 1));
   const eDps = dmgHit / G.state.attackInterval();
   const aIdx = G.util.clamp(d.areaIndex, 0, G.data.balance.mobAtkByArea.length - 1);
-  const pack = G.combat._packSize();
+  const pack = G.enemyFactory._packSize();
   const incoming = pack * G.data.balance.mobAtkByArea[aIdx] * (1 - (s.damageReduction || 0) / 100) / G.combat.enemyInterval;
   return { ttk: mobHp / eDps, htk: mobHp / dmgHit, ttd: s.hp / incoming, mobHp, atk: s.atk, hp: s.hp };
 }
@@ -216,8 +216,8 @@ function freshSim(opts) {
     enemies: [], enemy: null, atkTimer: 0, respawnTimer: 0,
     pendingHits: [], spawnCount: 0, _lastAreaIndex: -1, _bossKills: 0,
     _okhraManifest: false, _tideTimer: 0, _tideRisen: false,
-    _clock: 0, _gains: [],
   });
+  Object.assign(G.rates, { _clock: 0, _gains: [] });
   M.income = 0; M.deaths = 0; M.matByGroup = {}; M.litByGroup = {};
   // P5: gate escalonado — a política converge quando canConverge() (o gate JÁ força
   // profundidade). push = multiplicador opcional sobre o gate corrente (empurrar mais fundo).
@@ -553,7 +553,7 @@ function scenarioCalibrate() {
 
   // ---- amostragem ----
   const dmgHitNow = () => { const s = G.state.stats(); return s.atk * (1 + (s.crit / 100) * (s.critMult - 1)); };
-  const snapNow = () => { const s = G.state.stats(); return { dmgHit: dmgHitNow(), hp: s.hp, atkInt: G.state.attackInterval(), pack: G.combat._packSize() }; };
+  const snapNow = () => { const s = G.state.stats(); return { dmgHit: dmgHitNow(), hp: s.hp, atkInt: G.state.attackInterval(), pack: G.enemyFactory._packSize() }; };
 
   let ENTRY, END, BOSS;
   const origMBC = G.combat.markBossCleared;

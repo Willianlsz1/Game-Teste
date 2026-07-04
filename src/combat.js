@@ -3,6 +3,9 @@
 // Wave system: areas 0-1 = 1 enemy/wave, areas 2-4 = 2/wave, areas 5+ = 3/wave.
 // Boss (at level cap) is always solo. Each enemy in a wave attacks simultaneously.
 // Player targets enemies[0] (front); on kill the next enemy auto-engages.
+//
+// Fábrica de inimigos / pool / thresholds → G.enemyFactory · taxas → G.rates
+// projeção de income → G.income · unlock/level-up → G.progression.
 
 G.combat = {
   enemies:          [],     // current wave (array); enemy = enemies[0]
@@ -33,245 +36,6 @@ G.combat = {
     this.respawnTimer = G.data.balance.respawnDelay;
   },
 
-  // tracker de taxas (Gold/Min, XP/Min) — janela rolante
-  _clock:      0,
-  _gains:      [],
-  rateWindow:  60,   // segundos
-
-  getRates() {
-    const cutoff = this._clock - this.rateWindow;
-    const g = this._gains;
-    while (g.length && g[0].t < cutoff) g.shift();
-    let lum = 0, xp = 0;
-    for (let i = 0; i < g.length; i++) { lum += g[i].lumens; xp += g[i].xp; }
-    const mins = this.rateWindow / 60;
-    return { lumens: lum / mins, xp: xp / mins, kills: g.length / mins };
-  },
-
-  // pool de mobs da área atual (acumula só as áreas do mesmo tema, até a atual)
-  enemyPool() {
-    const areas = G.data.areas;
-    const idx   = G.util.clamp(G.state.data.areaIndex || 0, 0, areas.length - 1);
-    const theme = areas[idx].theme;
-    let start = idx;
-    while (start > 0 && areas[start - 1].theme === theme) start--;
-    const pool = [], seen = {};
-    for (let i = start; i <= idx; i++)
-      for (const e of areas[i].enemies)
-        if (!seen[e.name]) { seen[e.name] = 1; pool.push(e); }
-    return pool;
-  },
-
-  // quantos inimigos por onda para uma área dada (boss é sempre solo) — P2.4: por grupo.
-  // Fonte única do tamanho da onda (combat.spawn e ui.openAreaInfo consomem daqui).
-  packSizeFor(idx) {
-    const b = G.data.balance;
-    idx = G.util.clamp(idx || 0, 0, G.data.areas.length - 1);
-    const g = G.util.clamp(Math.floor(idx / b.groupSize), 0, b.packByGroup.length - 1);
-    return b.packByGroup[g];
-  },
-
-  _packSize() { return this.packSizeFor(G.state.data.areaIndex || 0); },
-
-  // P8.2/P8.3: o inimigo carrega o modificador `key`?
-  _hasMod(e, key) { return !!(e && e.modifiers && e.modifiers.indexOf(key) !== -1); },
-
-  // Escorted (P8.2): tamanho da onda com escolta CHEIA — enche até fullWave; se já cheia, +extra até cap.
-  _escortedSize(base) {
-    const m = G.data.modifiers.escorted;
-    let t = Math.max(m.fullWave, base);
-    if (base >= m.fullWave) t = base + m.extra;
-    return Math.min(t, m.cap);
-  },
-
-  // P2.5: threshold do Harbinger escalado por grupo (base + perGroup×(grupo+1)) — para uma área dada.
-  bossThresholdFor(idx) {
-    const b = G.data.balance;
-    idx = G.util.clamp(idx || 0, 0, G.data.areas.length - 1);
-    const g = Math.floor(idx / b.groupSize);
-    return b.bossKillThresholdBase + b.bossKillThresholdPerGroup * (g + 1);
-  },
-
-  _bossThreshold() { return this.bossThresholdFor(G.state.data.areaIndex || 0); },
-
-  // Projeção read-only do farm do jogador atual na área idx. NÃO muta estado, não toca RNG.
-  // Usa SÓ as fórmulas reais já existentes (data.js + state.js); nada de constante numérica copiada.
-  estimateAreaIncome(idx) {
-    const b     = G.data.balance;
-    const areas = G.data.areas;
-    idx = G.util.clamp(idx || 0, 0, areas.length - 1);
-    const area  = areas[idx];
-    const lvl   = G.util.clamp(G.state.data.level, area.levelRange[0], area.levelRange[1]);
-
-    const mobHp  = G.data.mobHpAt(lvl, area);
-    const mobAtk = b.mobAtkByArea[G.util.clamp(idx, 0, b.mobAtkByArea.length - 1)];
-
-    // XP/kill: mesma expressão do _buildOne (base × nível × xpMultByGroup[grupo])
-    const grp = G.util.clamp(Math.floor(idx / b.groupSize), 0, (b.xpMultByGroup || []).length - 1);
-    const xpGroupMult = (b.xpMultByGroup && b.xpMultByGroup[grp] != null) ? b.xpMultByGroup[grp] : 1;
-    const baseXpPerKill = b.baseXp * lvl * xpGroupMult;
-
-    // dano esperado por golpe: atk com expectativa de crit. crit é % (0-100), critMult é fração (=1+critDmg/100).
-    const s = G.state.stats();
-    const critChance = G.util.clamp(s.crit, 0, 100) / 100;
-    let dmgPerHit  = s.atk * (1 + critChance * (s.critMult - 1));
-    // Overcrit (gloves): crit acima de 100% vira chance de golpe duplo, mesma fórmula de playerHit.
-    // Cleave/Golden Wake/Momentum ficam FORA da projeção (dinâmicos demais) — isto é um PISO, não a média real.
-    const doubleChance = G.util.clamp(Math.max((s.critRaw || 0) - 100, 0), 0, s.overcrit || 0) / 100;
-    dmgPerHit *= (1 + doubleChance);
-    const interval   = G.state.attackInterval();
-
-    // Rarity Find (P8.1): mesma ordem de roll do _buildOne — rarityTiers do mais raro pro mais
-    // comum, chance efetiva = min(find, cap). find/caps já vêm em FRAÇÃO 0-1 de state.stats()
-    // (ver state.js: rarityFind.* = fin(...)/100, rarityCaps.* = capFrac(...)/100 já dividido) —
-    // sem dividir por 100 de novo aqui. remaining = probabilidade de "ainda não caiu" tier raro.
-    let remaining = 1;
-    const tierProbs = [];
-    for (const t of G.data.rarityTiers) {
-      const ch = G.util.clamp(Math.min(s.rarityFind[t.findKey], s.rarityCaps[t.findKey]), 0, 1);
-      const p  = remaining * ch;
-      if (p > 0) tierProbs.push({ p, hpMult: t.hpMult, rewardMult: t.rewardMult });
-      remaining -= p;
-    }
-    tierProbs.push({ p: remaining, hpMult: 1, rewardMult: 1 });   // mob comum
-
-    // valor esperado por kill (rare = mais HP = mais lumens E mais tempo de TTK)
-    let eLumensPerKill = 0, eXpPerKill = 0, eTtk = 0;
-    for (const t of tierProbs) {
-      const hpT   = mobHp * t.hpMult;
-      const hitsT = Math.ceil(hpT / dmgPerHit);
-      // flight = projectileTravel do Seeker (o par no tick: pendingHits.push({..., travel: this.projectileTravel}))
-      const ttkT  = hitsT * interval + this.projectileTravel;
-      eLumensPerKill += t.p * hpT * b.goldRatio;
-      eXpPerKill     += t.p * baseXpPerKill * t.rewardMult;
-      eTtk           += t.p * ttkT;
-    }
-
-    const pack        = this.packSizeFor(idx);
-    const waveSeconds = pack * eTtk + b.respawnDelay;
-    const killsPerMin = 60 * pack / waveSeconds;
-
-    // letalidade: dps recebido ≈ atk do mob × (front+resto)/2, no intervalo fixo do inimigo (enemyInterval, 0.99s)
-    // raridade não muda a letalidade média de forma relevante (atkMult dos tiers ignorado aqui, como no mob comum).
-    const dpsIn = mobAtk * ((pack + 1) / 2) / this.enemyInterval;
-    const ttd   = s.hp / dpsIn;
-    const deadly = ttd < eTtk;   // morre antes do 1º kill → income real ~0
-
-    return {
-      killsPerMin,
-      lumensPerMin: eLumensPerKill * killsPerMin,
-      xpPerMin:     eXpPerKill * killsPerMin,
-      lumensPerKill: eLumensPerKill,
-      xpPerKill:     eXpPerKill,
-      ttk: eTtk,
-      deadly,
-    };
-  },
-
-  // constrói um inimigo individual (boss ou mob comum)
-  _buildOne(isBossSpawn, def) {
-    const b     = G.data.balance;
-    const area  = G.data.currentArea();
-    const level = G.util.clamp(G.state.data.level, area.levelRange[0], area.levelRange[1]);
-    const hp    = G.data.mobHpAt(level, area);
-    const aIdx  = G.util.clamp(G.state.data.areaIndex || 0, 0, b.mobAtkByArea.length - 1);
-    const atk   = b.mobAtkByArea[aIdx];
-    // P7 (First Light na banda): acelerador de XP nos grupos finais — barateia a SUBIDA,
-    // não as provas (requisitos do Awaken intactos). xpMultByGroup[grupo], default 1.
-    const grp   = G.util.clamp(Math.floor(aIdx / b.groupSize), 0, (b.xpMultByGroup || []).length - 1);
-    const xpGroupMult = (b.xpMultByGroup && b.xpMultByGroup[grp] != null) ? b.xpMultByGroup[grp] : 1;
-
-    let maxHp = hp, dmg = atk, xp = b.baseXp * level * xpGroupMult;
-    let isBoss = false, name, rarity = null, modifiers = [];
-
-    if (isBossSpawn) {
-      isBoss = true;
-      maxHp *= (def.hpMult != null ? def.hpMult : b.bossHpMult); dmg *= (def.dmgMult != null ? def.dmgMult : b.bossDmgMult); xp *= b.bossRewardMult;
-      name = def.name;
-      // P8.3: assinatura FIXA do Harbinger/Okhra (tutorial encarnado do modificador)
-      if (Array.isArray(def.signature)) modifiers = def.signature.slice();
-    } else {
-      name = def.name;
-      // Rarity Find (P8.1): roll do mais raro pro mais comum. chance = min(find do gear, teto dos Marcos).
-      const s = G.state.stats();
-      const find = s.rarityFind, caps = s.rarityCaps;
-      let tier = null;
-      for (const t of G.data.rarityTiers) {
-        const ch = Math.min(find[t.findKey], caps[t.findKey]);
-        if (ch > 0 && G.util.chance(ch)) { tier = t; break; }
-      }
-      if (tier) {
-        maxHp *= tier.hpMult; dmg *= tier.atkMult; xp *= tier.rewardMult;
-        name = G.util.pick(tier.names);
-        rarity = { tag: tier.tag, color: tier.color, tier: tier.key };
-        // P8.2: SÓ Corona carrega modificador — rola EXATAMENTE 1 dos 4 (uniforme).
-        if (tier.key === "corona") {
-          modifiers = [G.util.pick(G.data.modifiers.order)];
-          this._noteFirstModifier(modifiers[0]);
-        }
-        this._noteFirstSpawn(tier.key);
-      }
-    }
-
-    // Nome vira prefixo com o(s) modificador(es): "Lightshell <nome>" (P8.2/P8.3)
-    const baseName = name;
-    if (modifiers.length) {
-      const pre = modifiers.map((k) => G.data.modifiers[k] && G.data.modifiers[k].label).filter(Boolean).join(" ");
-      if (pre) name = pre + " " + name;
-    }
-    // Lightshell: contador de golpes absorvidos (N do mob ou bossAbsorb do boss)
-    let lightshell = 0;
-    if (modifiers.indexOf("lightshell") !== -1) {
-      const ls = G.data.modifiers.lightshell;
-      lightshell = isBoss ? ls.bossAbsorb : ls.absorb;
-    }
-
-    let lumens = maxHp * b.goldRatio;
-    if (isBoss) lumens *= b.bossLumenMult;
-    this.spawnCount++;
-
-    return {
-      name, baseName, sprite: def.sprite, img: def.img,
-      level, isBoss,
-      rarity: rarity ? { tag: rarity.tag, color: rarity.color, tier: rarity.tier } : null,
-      modifiers, lightshell,
-      maxHp:  Math.ceil(maxHp), hp: Math.ceil(maxHp),
-      dmg:    Math.max(1, Math.ceil(dmg)),
-      lumens: Math.ceil(lumens), xp: Math.ceil(xp),
-      atkTimer: 0,   // per-enemy attack timer
-    };
-  },
-
-  // onboarding (P8.1 toque 3): log no 1º spawn de cada tier (flag persistida em state.data)
-  _noteFirstSpawn(tierKey) {
-    const d = G.state.data;
-    if (!d.rarityFirstSeen) d.rarityFirstSeen = {};
-    if (d.rarityFirstSeen[tierKey]) return;
-    d.rarityFirstSeen[tierKey] = true;
-    if (G.ui && G.ui.log) {
-      const T = { ember: "Ember", lumen: "Lumen", corona: "Corona" };
-      G.ui.log(`✦ A ${T[tierKey]} light kindles within a creature, rarer, fiercer, richer prey.`, "boss");
-    }
-  },
-
-  // onboarding (P8.2): log no 1º spawn de cada MODIFICADOR de Corona (flag persistida)
-  _noteFirstModifier(key) {
-    const d = G.state.data;
-    if (!d.modifierFirstSeen) d.modifierFirstSeen = {};
-    if (d.modifierFirstSeen[key]) return;
-    d.modifierFirstSeen[key] = true;
-    if (G.ui && G.ui.log) {
-      const M = G.data.modifiers[key];
-      const desc = {
-        lightshell: "shrugs off the first blows, batter through its shell.",
-        quickened:  "strikes faster than the eye can follow, brace and endure.",
-        siphoning:  "drinks the light of every wound it deals, out-damage its thirst.",
-        escorted:   "never walks alone, a full tide of the drowned comes with it.",
-      };
-      G.ui.log(`✦ ${M.label}, this Corona ${desc[key] || "carries a stranger light."}`, "boss");
-    }
-  },
-
   // spawna a próxima onda
   spawn() {
     const d    = G.state.data;
@@ -288,7 +52,7 @@ G.combat = {
 
     const lastIdx      = G.data.areas.length - 1;
     const isFinalArea  = d.areaIndex === lastIdx;
-    const thresholdMet = this._bossKills >= this._bossThreshold();
+    const thresholdMet = this._bossKills >= G.enemyFactory._bossThreshold();
 
     // P8.4 — o finale encenado: a área 18 tem DOIS estágios.
     //  1) H6 (area.boss) spawna por threshold, SEM exigir First Light (emenda ao P7.4).
@@ -309,25 +73,25 @@ G.combat = {
     }
 
     this.enemies = [];
-    let n = this._packSize();
+    let n = G.enemyFactory._packSize();
     let escortBumped = false;
 
     if (bossDef) {
-      const boss = this._buildOne(true, bossDef);
+      const boss = G.enemyFactory._buildOne(true, bossDef);
       if (isMapBoss) {
         boss.isMapBoss = true;
         if (!this._okhraManifest) { this._okhraManifest = true; this._tideTimer = 0; this._tideRisen = false; }
         if (G.ui && G.ui.setOkhraStage) G.ui.setOkhraStage(true);
       }
       this.enemies.push(boss);   // boss à frente
-      if (this._hasMod(boss, "escorted")) { n = this._escortedSize(n); escortBumped = true; }
+      if (G.enemyFactory._hasMod(boss, "escorted")) { n = G.enemyFactory._escortedSize(n); escortBumped = true; }
     }
 
-    const pool = this.enemyPool();
+    const pool = G.enemyFactory.enemyPool();
     for (let i = 0; i < n; i++) {
-      const mob = this._buildOne(false, G.util.pick(pool));            // escolta (ou onda normal)
+      const mob = G.enemyFactory._buildOne(false, G.util.pick(pool));            // escolta (ou onda normal)
       this.enemies.push(mob);
-      if (!escortBumped && this._hasMod(mob, "escorted")) { n = this._escortedSize(n); escortBumped = true; }
+      if (!escortBumped && G.enemyFactory._hasMod(mob, "escorted")) { n = G.enemyFactory._escortedSize(n); escortBumped = true; }
     }
 
     this.enemy = this.enemies[0];
@@ -340,9 +104,9 @@ G.combat = {
     const aliveEscort = this.enemies.filter((e) => !e.dead && !e.isBoss && !e.isMapBoss).length;
     const room = tide.maxEscort - aliveEscort;
     if (room <= 0) return;
-    const add  = Math.min(this._packSize(), room);
-    const pool = this.enemyPool();
-    for (let i = 0; i < add; i++) this.enemies.push(this._buildOne(false, G.util.pick(pool)));
+    const add  = Math.min(G.enemyFactory._packSize(), room);
+    const pool = G.enemyFactory.enemyPool();
+    for (let i = 0; i < add; i++) this.enemies.push(G.enemyFactory._buildOne(false, G.util.pick(pool)));
     if (!this._tideRisen) {
       this._tideRisen = true;
       if (G.ui && G.ui.log) G.ui.log("🌊 The Starving Tide rises. The drowned surge to Okhra's call.", "boss");
@@ -462,7 +226,7 @@ G.combat = {
     if (G.ui && G.ui.floater) G.ui.floater(reduced, "enemy");
     G.state.data.hp -= reduced;
     // Siphoning (P8.2): o mob cura-se de healFrac do dano que causou (clamp no maxHp dele).
-    if (source && !source.dead && this._hasMod(source, "siphoning")) {
+    if (source && !source.dead && G.enemyFactory._hasMod(source, "siphoning")) {
       const sip  = G.data.modifiers.siphoning;
       const frac = source.isBoss ? sip.bossHealFrac : sip.healFrac;
       source.hp  = Math.min(source.maxHp, source.hp + reduced * frac);
@@ -509,7 +273,7 @@ G.combat = {
     const d = G.state.data;
     d.lumens    += lumens + overkillLumens;
     d.xp        += xp;
-    if (G.ui) this._gains.push({ t: this._clock, lumens: lumens + overkillLumens, xp });
+    if (G.ui) G.rates._gains.push({ t: G.rates._clock, lumens: lumens + overkillLumens, xp });
     d.totalKills = (d.totalKills || 0) + 1;
     d.runKills   = (d.runKills  || 0) + 1;
     // Momentum (boots): cada kill +1 stack (teto momentumMaxStacks) e reseta o timer.
@@ -529,7 +293,7 @@ G.combat = {
     G.state.data.hp = Math.min(G.state.maxHp(), G.state.data.hp + G.state.maxHp() * healFrac);
 
     if (e.isBoss) this.markBossCleared(e);
-    this.checkLevelUp();
+    G.progression.checkLevelUp();
 
     // marca como morto (permanece visível mas greyed-out até a onda limpar)
     e.dead = true;
@@ -574,7 +338,7 @@ G.combat = {
     // Harbinger caiu → re-grind parcial do threshold pra re-invocá-lo (mata o farm de boss em toda onda).
     // O mapBoss (Okhra) NÃO re-invoca por re-grind: sua re-luta é gated por threshold cheio, não pelo re-grind parcial.
     if (!isMapBoss)
-      this._bossKills = Math.floor(this._bossThreshold() * (1 - (G.data.balance.bossRegrindFrac != null ? G.data.balance.bossRegrindFrac : 1)));
+      this._bossKills = Math.floor(G.enemyFactory._bossThreshold() * (1 - (G.data.balance.bossRegrindFrac != null ? G.data.balance.bossRegrindFrac : 1)));
 
     // Marco (Harbinger): a 1ª morte levanta os tetos do Rarity Find em 1/6 (permanente,
     // sobrevive à Convergence). H6 (Harbinger da área 18) É Marco — fecha os caps 6/6.
@@ -602,7 +366,7 @@ G.combat = {
       this._okhraManifest = false; this._tideTimer = 0; this._tideRisen = false;
       if (G.ui && G.ui.setOkhraStage) G.ui.setOkhraStage(false);
     } else if (idx < lastIdx) {
-      this.unlockNext();
+      G.progression.unlockNext();
     } else {
       // H6 caiu na área 18 (P8.4): com First Light → Okhra manifesta (spawn no ciclo seguinte);
       // sem → portão. A invocação/spawn efetivo do Okhra acontece em spawn().
@@ -616,52 +380,9 @@ G.combat = {
     }
   },
 
-  unlockNext() {
-    const d = G.state.data;
-    if (typeof d.maxAreaUnlocked !== "number") d.maxAreaUnlocked = d.areaIndex;
-    if (d.areaIndex < G.data.areas.length - 1 && d.areaIndex + 1 > d.maxAreaUnlocked) {
-      d.maxAreaUnlocked = d.areaIndex + 1;
-      if (G.ui && G.ui.log) {
-        const next = G.data.areas[d.areaIndex + 1];
-        G.ui.log(`✦ ${next.name} unlocked, advance when ready.`, "good");
-      }
-      if (G.ui && G.ui.renderResources) G.ui.renderResources();
-    }
-  },
-
-  checkLevelUp() {
-    while (G.state.data.xp >= G.state.xpToNext()) {
-      G.state.data.xp -= G.state.xpToNext();
-      G.state.data.level += 1;
-      if (G.state.data.level > (G.state.data.highestLevel || 0)) G.state.data.highestLevel = G.state.data.level;
-      G.state.invalidateStats();
-      G.state.data.hp = G.state.maxHp();
-      if (G.ui && G.ui.log) G.ui.log(`★ Level ${G.state.data.level}!`, "level");
-    }
-    this.checkGroupUnlock();
-  },
-
-  // Dentro de um grupo, a próxima área destrava por NÍVEL (a fronteira de grupo continua
-  // travada pelo Harbinger via unlockNext). Estende a fronteira desbloqueada enquanto o
-  // nível qualificar e a área seguinte for do MESMO grupo.
-  checkGroupUnlock() {
-    const d  = G.state.data;
-    const gs = G.data.balance.groupSize;
-    if (typeof d.maxAreaUnlocked !== "number") d.maxAreaUnlocked = d.areaIndex;
-    while (true) {
-      const idx = d.maxAreaUnlocked, nextIdx = idx + 1;
-      if (nextIdx >= G.data.areas.length) return;
-      if (Math.floor(idx / gs) !== Math.floor(nextIdx / gs)) return;   // fronteira de grupo → gate do Harbinger
-      if (d.level < G.data.areas[nextIdx].levelRange[0]) return;
-      d.maxAreaUnlocked = nextIdx;
-      if (G.ui && G.ui.log) G.ui.log(`✦ ${G.data.areas[nextIdx].name} unlocked, the grove deepens.`, "good");
-      if (G.ui && G.ui.renderResources) G.ui.renderResources();
-    }
-  },
-
   // avança o tempo
   tick(dt) {
-    this._clock += dt;
+    G.rates._clock += dt;
     this.resolvePending(dt);
 
     const anyAlive = this.enemies.length > 0 && this.enemies.some(e => !e.dead);
@@ -708,7 +429,7 @@ G.combat = {
     for (let i = 0; i < this.enemies.length; i++) {
       const e = this.enemies[i];
       if (!e || e.dead) continue;
-      const eInt = this._hasMod(e, "quickened")
+      const eInt = G.enemyFactory._hasMod(e, "quickened")
         ? this.enemyInterval / G.data.modifiers.quickened.atkSpeedFactor
         : this.enemyInterval;
       e.atkTimer += dt;

@@ -15,7 +15,7 @@ global.localStorage = {
   removeItem: (k) => { delete store[k]; },
 };
 const SRC = path.join(__dirname, "..", "src");
-for (const f of ["util", "data", "gear", "passives", "awaken", "state", "economy", "convergence", "combat"])
+for (const f of ["util", "data", "gear", "passives", "awaken", "state", "economy", "rates", "enemyFactory", "income", "progression", "convergence", "combat"])
   eval(fs.readFileSync(path.join(SRC, f + ".js"), "utf8"));
 
 let failed = 0;
@@ -57,7 +57,7 @@ const seen = [];
 const realChance = G.util.chance;
 G.util.chance = (p) => { seen.push(p); return false; };   // registra a prob e nunca spawna
 G.state.data.areaIndex = 0;
-G.combat._buildOne(false, { name: "x", sprite: "", img: "" });
+G.enemyFactory._buildOne(false, { name: "x", sprite: "", img: "" });
 G.util.chance = realChance;
 G.state.stats = realStats;
 ok(seen.length === 3 && near(seen[0], 0.008) && near(seen[1], 0.02) && near(seen[2], 0.05),
@@ -67,7 +67,7 @@ ok(seen.length === 3 && near(seen[0], 0.008) && near(seen[1], 0.02) && near(seen
 G.state.stats = () => ({ rarityFind: { ember: 0.9, lumen: 0.9, corona: 0.9 }, rarityCaps: { ember: 0, lumen: 0, corona: 0 } });
 const seen2 = [];
 G.util.chance = (p) => { seen2.push(p); return false; };
-const mob = G.combat._buildOne(false, { name: "x", sprite: "", img: "" });
+const mob = G.enemyFactory._buildOne(false, { name: "x", sprite: "", img: "" });
 G.util.chance = realChance;
 G.state.stats = realStats;
 ok(seen2.length === 0 && mob.rarity === null, "cap 0: nenhum tier é rolado — só Common spawna (base 0%)");
@@ -75,7 +75,7 @@ ok(seen2.length === 0 && mob.rarity === null, "cap 0: nenhum tier é rolado — 
 // tier acende quando o roll passa: aplica poder e tag
 G.state.stats = () => ({ rarityFind: { ember: 1, lumen: 1, corona: 1 }, rarityCaps: { ember: 1, lumen: 1, corona: 1 } });
 G.util.chance = () => true;   // Corona (1º da ordem) vence
-const lit = G.combat._buildOne(false, { name: "base", sprite: "", img: "" });
+const lit = G.enemyFactory._buildOne(false, { name: "base", sprite: "", img: "" });
 G.util.chance = realChance;
 G.state.stats = realStats;
 const corona = G.data.rarityTiers.find((t) => t.key === "corona");

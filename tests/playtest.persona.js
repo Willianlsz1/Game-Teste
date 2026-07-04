@@ -21,7 +21,7 @@ global.localStorage = {
 };
 // Date.now é usado por state.save/fresh; ok no Node.
 const SRC = path.join(__dirname, "..", "src");
-for (const f of ["util", "data", "gear", "passives", "awaken", "state", "economy", "convergence", "combat"])
+for (const f of ["util", "data", "gear", "passives", "awaken", "state", "economy", "rates", "enemyFactory", "income", "progression", "convergence", "combat"])
   eval(fs.readFileSync(path.join(SRC, f + ".js"), "utf8"));
 G.ui = null; // headless: combat resolve hits na hora (sem projéteis)
 
