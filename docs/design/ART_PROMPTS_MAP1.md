@@ -222,3 +222,14 @@ acima). Faces de mobs NUNCA convergem (variar material/olhos/temperatura/silhuet
 - **Backgrounds:** 16:9 (1536×864+), sem personagens, meio-de-cena aberto.
 - **Nomes de arquivo:** snake_case igual aos atuais (`candlewisp_shade.png`) — trocar o arquivo em `assets/enemies/` e `assets/areas/` não exige mexer em código.
 - Antes de substituir em massa: valide 1 sprite no jogo (proporção no card do inimigo).
+
+## Licao 5 — LEI DE COR: nunca monocromatico (dono, jul/04)
+
+"O mundo nao e composto por uma unica cor." Toda arte (mob, background, tile
+de passiva, icone) especifica uma COMBINACAO de cores no prompt: corpo numa
+familia, luz noutra, ambiente numa terceira, e um acento (quente ou frio) no
+coracao. Nunca "tudo teal", nunca "tudo dourado". Exemplo canonizado
+(Regeneration, tile pv_2): folha esmeralda + bordas teal + ambiente
+azul-violeta + sussurro rosa-morno no nucleo. Padrao dos tiles de passiva:
+formato TILE de ponta a ponta com fundo navy embutido (#0A1226-#101A38),
+sujeito GRANDE, legivel a 64px, sem moldura/texto (a moldura e do jogo).
