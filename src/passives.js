@@ -164,8 +164,8 @@ G.passives = {
     { x: 50.0, y: 84.5 },                                          // 0  First Spark (raiz)
     { x: 44.0, y: 75.5 }, { x: 55.5, y: 74.5 },                    // 1  Regeneration · 2 Heal on Kill (D2)
     { x: 33.7, y: 52.9 }, { x: 44.3, y: 57.8 }, { x: 59.4, y: 58.2 }, { x: 71.6, y: 55.8 }, // 3-6 D3
-    { x: 20.8, y: 44.4 }, { x: 27.1, y: 35.6 }, { x: 40.9, y: 40.6 }, { x: 48.5, y: 40.2 }, // 7-10 folhas
-    { x: 51.5, y: 40.2 }, { x: 59.1, y: 40.6 }, { x: 72.9, y: 35.6 }, { x: 79.2, y: 44.4 }, // 11-14 folhas
+    { x: 20.8, y: 44.4 }, { x: 27.1, y: 35.6 }, { x: 37.0, y: 40.0 }, { x: 45.5, y: 35.5 }, // 7-10 folhas
+    { x: 54.5, y: 35.5 }, { x: 63.0, y: 40.0 }, { x: 72.9, y: 35.6 }, { x: 79.2, y: 44.4 }, // 11-14 folhas
   ],
   CROWN_POS: { x: 50.0, y: 26.0 },
   // split decorativo (soquete pintado sem nó, a estrela do tronco) onde o galho bifurca
@@ -228,33 +228,62 @@ G.passives = {
   },
   effect(key) { return this.effects()[key] || 0; },
 
+  // formatação textual por chave de efeito (usada pelo tooltip por-nó E pelo painel
+  // agregado Tree Blessings). Fonte única — nunca duplicar este mapa.
+  EFFECT_FMT: {
+    firstSpark:      (v) => `+${v}% ATK & HP`,
+    hpRegen:         (v) => `+${v}% max HP / s`,
+    healOnKill:      (v) => `+${v}% max HP on kill`,
+    hpPct:           (v) => `+${v}% HP`,
+    damageReduction: (v) => `+${v}% Damage Reduction`,
+    atkPct:          (v) => `+${v}% ATK`,
+    critRate:        (v) => `+${v}% Crit Rate`,
+    goldenWake:      (v) => `+${v}% double Lumens chance`,
+    xpPct:           (v) => `+${v}% XP`,
+    convPointsPct:   (v) => `+${v}% Convergence Points`,
+    overkillEcho:    (v) => `+${v}% of overkill as Lumens`,
+    critDmg:         (v) => `+${v}% Crit Damage`,
+    lightbane:       (v) => `+${v}% vs kindled`,
+    executioner:     (v) => `execute below ${v}% HP`,
+    bossDmg:         (v) => `+${v}% vs Harbingers`,
+    ringCloses:      (v) => `+${v}% ATK, HP, Lumens & XP`,
+  },
+
   // texto da magnitude real de um nó (p/ o tooltip): { perLevel, current }
   magnitude(i) {
     const key = this.nodes[i].key;
     const per = this.unit(key);
-    const FMT = {
-      firstSpark:      (v) => `+${v}% ATK & HP`,
-      hpRegen:         (v) => `+${v}% max HP / s`,
-      healOnKill:      (v) => `+${v}% max HP on kill`,
-      hpPct:           (v) => `+${v}% HP`,
-      damageReduction: (v) => `+${v}% Damage Reduction`,
-      atkPct:          (v) => `+${v}% ATK`,
-      critRate:        (v) => `+${v}% Crit Rate`,
-      goldenWake:      (v) => `+${v}% double Lumens chance`,
-      xpPct:           (v) => `+${v}% XP`,
-      convPointsPct:   (v) => `+${v}% Convergence Points`,
-      overkillEcho:    (v) => `+${v}% of overkill as Lumens`,
-      critDmg:         (v) => `+${v}% Crit Damage`,
-      lightbane:       (v) => `+${v}% vs kindled`,
-      executioner:     (v) => `execute below ${v}% HP`,
-      bossDmg:         (v) => `+${v}% vs Harbingers`,
-    };
-    const fmt = FMT[key];
+    const fmt = this.EFFECT_FMT[key];
     if (!fmt || per === 0) return null;
     const r = (x) => +(+x).toFixed(2);
     const lvl = this.level(i);
     return { perLevel: fmt(r(per)), current: lvl > 0 ? fmt(r(per * lvl)) : null,
       next: fmt(r(per * (lvl + 1))) };
+  },
+
+  // nome legível de uma chave de efeito (p/ o painel Tree Blessings — reusa EFFECT_DESC
+  // como fallback do nome do nó dono da chave, já que 1 chave = 1 nó nesta árvore).
+  effectLabel(key) {
+    for (let i = 0; i < this.nodes.length; i++) if (this.nodes[i].key === key) return this.nodes[i].name;
+    if (key === "ringCloses") return this.CROWN.name;
+    return key;
+  },
+
+  // soma agregada de TODOS os bônus concedidos pelos níveis já comprados, formatada
+  // no mesmo padrão de texto do tooltip. Usado pelo painel "Tree Blessings" (UI).
+  // Retorna [{ key, label, text }], só com chaves de valor não-zero.
+  blessingsSummary() {
+    const eff = this.effects();
+    const out = [];
+    for (const key in eff) {
+      const v = eff[key];
+      if (!v) continue;
+      const fmt = this.EFFECT_FMT[key];
+      if (!fmt) continue;
+      const r = +(+v).toFixed(2);
+      out.push({ key, label: this.effectLabel(key), text: fmt(r) });
+    }
+    return out;
   },
 
   // ---- progresso (UI/sim) ----

@@ -843,6 +843,24 @@ G.ui = {
       <svg class="pv-branches" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${branches}</svg>
       <div class="pv-nodes">${nodes}</div>
       ${title}
+      ${this._pvBlessings()}
+    </div>`;
+  },
+
+  // painel "Tree Blessings" — soma agregada de todos os bônus concedidos pelos níveis
+  // já comprados (agrupado por efeito), no mesmo formato de texto do tooltip por-nó.
+  // Re-renderiza no mesmo fluxo que os nós (renderPassives -> _pvTreeHtml), então
+  // atualiza sozinho a cada compra (ui.js linha ~139: buy() -> renderPassives()).
+  _pvBlessings() {
+    const rows = G.passives.blessingsSummary();
+    const body = rows.length
+      ? `<ul class="pv-blessings-list">${rows.map((r) =>
+          `<li class="pv-blessings-row"><span>${r.label}</span><span class="pv-blessings-val">${r.text}</span></li>`
+        ).join("")}</ul>`
+      : `<div class="pv-blessings-empty">The tree is silent. Buy your first passive.</div>`;
+    return `<div class="pv-blessings">
+      <div class="pv-blessings-head">Tree Blessings</div>
+      ${body}
     </div>`;
   },
 
