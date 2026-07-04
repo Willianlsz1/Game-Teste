@@ -191,10 +191,17 @@ mortes concentradas em tentativa prematura.
       histórica esperada, prova válida é via sim.js). Re-subida: melhor
       alcançável nas alavancas permitidas (§7; áreas 15-18 = fronteira viva,
       não re-subida). COMMITADO.
-- [ ] P9.6 RODADA 2 (playtest do dono, §8): lote de formatação % (em voo) ·
-      v8: crit Mapa 1 com pico real ~45% + overcritThreshold por mapa (50 no
-      Mapa 1, decisão pendente do dono) + composição do ATK (gear+passivas
-      ≥75%, re-fit completo + re-validação 3 seeds) → playtest → travar.
+- [x] P9.6 RODADA 2 FECHADA (jul/04): formatação % commitada · v8 tunado
+      (Opus) e BAKEADO (Sonnet, reprodução linha a linha): crit final 44.5% ·
+      composição gear+passivas 83–91% (level caiu pra 8–17%) · Overcrit fora
+      do Mapa 1 (decisão do dono: passiva tier 2 no Mapa 2; luvas = Fracture
+      Sense critDmg%) · FL 37h29–37h58 (3 seeds) · Okhra 71–95 · re-subida
+      HTK ≤2.9 (era 7–10; a composição resolveu o que a árvore não conseguia) ·
+      hygiene.test re-sincronizado (quebrado desde P9.3) + teste órfão do nó 13
+      corrigido. Achado de método: o relógio do FL é MATERIAL-GATED (dial limpo).
+- [ ] P9.7 PLAYTEST RODADA 3 (dono, com v8 no jogo) → travar P9 ou abrir
+      rodada 4. Pendência aspiracional herdada: re-subida ≤2 absoluto
+      (v8 entrega 2.2–2.9 na métrica crua, cega às mecânicas).
 - [ ] P9.2 Player scale + TTK wave (atkSpeed, HTK, curva de dano)
 - [ ] P9.3 Gear (promoção ×6–10 + per-level)
 - [ ] P9.4 Passivas (valores reais nas 3 árvores)

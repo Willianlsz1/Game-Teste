@@ -35,8 +35,8 @@ G.passives = {
     healOnKill:     7.5,   // % do HP máx curado por kill
     hpPct:           15,   // +% HP por nível
     damageReduction: 3.75, // +% redução de dano por nível (fonte passiva NOVA)
-    atkPct:          30,   // +% ATK por nível
-    critRate:        15,   // +% chance de crítico por nível
+    atkPct:          45,   // +% ATK por nível (P9 v8: era 30)
+    critRate:         2,   // +% chance de crítico por nível (P9 v8: era 15)
     goldenWake:     1.0,   // P9 — +% chance de Lumens EM DOBRO por kill (folha 7; máx 10% = cap Mapa 1)
     xpPct:         22.5,   // +% XP por nível
     convPointsPct:   18,   // +% Pontos de Convergence por nível (Deep Memory)

@@ -59,11 +59,11 @@ G.economy = {
   dropTable: {
     common:   {
       commonMaterial: { chance: 0.05, min: 1, max: 1, minAreaIndex: 2 },
-      awakenMaterial: { chance: 1, min: 1, max: 2, minAreaIndex: 12 },  // P9: tools/p9 (base {1,3} × scale 0.54) — não editar à mão, re-fitar
+      awakenMaterial: { chance: 1, min: 1, max: 1, minAreaIndex: 12 },  // P9 v8: tools/p9 (v7 {1,2} × scale extra 0.56) — não editar à mão, re-fitar
     },
     rare:     {
       commonMaterial: { chance: 0.15, min: 1, max: 2, minAreaIndex: 2 },
-      awakenMaterial: { chance: 1, min: 2, max: 5, minAreaIndex: 12 },  // P9: tools/p9 (base {4,10} × scale 0.54) — não editar à mão, re-fitar
+      awakenMaterial: { chance: 1, min: 1, max: 3, minAreaIndex: 12 },  // P9 v8: tools/p9 (v7 {2,5} × scale extra 0.56) — não editar à mão, re-fitar
     },
     elite:    {
       commonMaterial:   { chance: 1,   min: 1, max: 2, minAreaIndex: 2 },
@@ -74,7 +74,7 @@ G.economy = {
     },
     boss:     {
       commonMaterial:   { chance: 0.45, min: 2, max: 4, minAreaIndex: 2 },
-      awakenMaterial:   { chance: 1, min: 324, max: 810, minAreaIndex: 12 },  // P9: tools/p9 (base {600,1500} × scale 0.54) — não editar à mão, re-fitar
+      awakenMaterial:   { chance: 1, min: 181, max: 454, minAreaIndex: 12 },  // P9 v8: tools/p9 (v7 {324,810} × scale extra 0.56) — não editar à mão, re-fitar
     },
   },
 

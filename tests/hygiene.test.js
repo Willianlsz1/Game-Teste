@@ -192,11 +192,19 @@ fresh(); G.passives.UNIT.bossDmg = 100; setNode(14, 1);
 ok(G.passives.effect("bossDmg") === 100, "Harbinger's Bane: bossDmg +100% (×2 vs Boss no playerHit)");
 G.passives.UNIT.bossDmg = 10;
 
-// Quickened Pulse: atkSpeed flat (soft cap comprime o excesso)
+// Executioner's Light (folha, nó 13): inimigo não-boss abaixo de exec% do HP máx morre no golpe (combat._dealDamage)
 fresh();
-const as0 = G.state.stats().atkSpeed;
-G.passives.UNIT.atkSpeed = 0.03; setNode(13, 10);
-ok(G.state.stats().atkSpeed > as0, "Quickened Pulse: atkSpeed sobe (soft cap comprime)");
+G.passives.UNIT.executioner = 5; setNode(13, 1);   // 5% do HP máx
+ok(Math.abs(G.passives.effect("executioner") - 5) < 1e-9, "Executioner's Light: effect() agrega nível × unit");
+(function () {
+  const realUi3 = G.ui; G.ui = null;
+  const target = { hp: 40, maxHp: 1000, dead: false, isBoss: false, isMapBoss: false };  // 4% do máx, abaixo do exec 5%
+  G.combat.enemies = [target]; G.combat.enemy = target;
+  G.combat._dealDamage(target, 1, { floater: false });   // qualquer golpe > 0 já dispara a checagem
+  ok(target.hp <= 0, "Executioner's Light: golpe em não-boss abaixo do limiar mata na hora");
+  G.combat.enemies = []; G.ui = realUi3;
+})();
+G.passives.UNIT.executioner = 0.8;
 
 // A COROA "The Ring Closes": auto-concedida com as 8 folhas ≥1; mult em ATK/HP/Lumens/XP
 fresh(); G.state.data.convergences = 1;
@@ -244,67 +252,82 @@ ok(P1("cloak",  1).stat === "lumensBonus" && P1("cloak", 1).layer === "pct",  "C
 // o ATK% do cloak MORRE (conserta o glass-cannon acidental)
 ok(G.gear.buildPiece("cloak", "uncommon").affixes.every((a) => a.stat !== "atk"), "Cloak não tem mais nenhum afixo de ATK");
 
-// despertares (afixo exclusivo do Uncommon)
+// despertares (afixo exclusivo do Uncommon) — assinaturas P9.3/P9.4 (v8)
 const hasStat = (slot, stat) => G.gear.buildPiece(slot, "uncommon").affixes.some((a) => a.stat === stat);
-ok(hasStat("weapon", "specialDmg"),        "Weapon despertar = specialDmg (Marked Blade)");
-ok(hasStat("armor",  "siegeWard"),         "Armor despertar = siegeWard (Siege Ward)");
-ok(G.gear.buildPiece("gloves", "uncommon").affixes.some((a) => a.stat === "crit" && a.layer === "pct"), "Gloves despertar = Crit% (Fracture Sense)");
+ok(hasStat("weapon", "cleave"),            "Weapon despertar = cleave (Riven Edge)");
+ok(hasStat("armor",  "bulwark"),           "Armor despertar = bulwark (Last Vessel)");
+ok(G.gear.buildPiece("gloves", "uncommon").affixes.some((a) => a.stat === "critDmg" && a.layer === "pct"), "Gloves despertar = Crit Dmg% (Fracture Sense)");
 ok(hasStat("helmet", "rarityFindLumen"),   "Helmet despertar = rarityFindLumen (Second Sight)");
-ok(hasStat("boots",  "xpBonus"),           "Boots despertar = XP menor (Long Road)");
+ok(hasStat("boots",  "momentum"),          "Boots despertar = momentum (Momentum)");
 ok(hasStat("cloak",  "rarityFindCorona"),  "Cloak despertar = rarityFindCorona (Corona Call)");
 
-// specialDmg agora é SÓ de gear (Marked Blade) — a passiva Giant Slayer morreu no P6
+// Cleave (weapon): overkill do golpe fatal transfere s.cleave% pro próximo inimigo vivo (combat.onKill)
 fresh();
 G.state.data.equipped.weapon = G.gear.buildPiece("weapon", "uncommon");
-G.state.data.equipped.weapon.level = 100;
+G.state.data.equipped.weapon.level = G.gear.cap(G.state.data.equipped.weapon);   // max uncommon
 G.state.invalidateStats();
-const wSD = G.state.data.equipped.weapon.affixes.find((a) => a.stat === "specialDmg");
-const gearSD = G.gear.affixValue(G.state.data.equipped.weapon, wSD);
-ok(gearSD > 0, "specialDmg de gear > 0 no Uncommon");
-ok(Math.abs(G.state.stats().specialDmg - gearSD) < 1e-6, "specialDmg = só gear (Giant Slayer removido)");
+ok(G.state.stats().cleave > 0, "cleave exposto (>0 no weapon Uncommon maxado)");
+(function () {
+  const realUi = G.ui; G.ui = null;
+  const s = G.state.stats();
+  const killed = { hp: -500, maxHp: 1000, dead: false, isBoss: false, rarity: null };
+  const next   = { hp: 1e9,  maxHp: 1e9,  dead: false, isBoss: false, rarity: null };
+  G.combat.enemies = [killed, next]; G.combat.enemy = killed;
+  G.combat._cleaving = false;
+  G.combat.onKill();
+  const expectedSpill = Math.ceil(500 * s.cleave / 100);
+  ok(Math.abs((next.maxHp - next.hp) - expectedSpill) <= 1,
+    "cleave: overkill do golpe fatal (500) transfere cleave% pro próximo inimigo vivo");
+  G.combat.enemies = []; G.ui = realUi;
+})();
 
-// siegeWard: exposto, e a redução extra SÓ conta com 2+ inimigos vivos (combat.applyHitToHero)
+// Bulwark (armor): redução EXTRA só entra quando HP atual < bulwarkHpThreshold% do máx (combat.applyHitToHero)
 fresh();
 G.state.data.equipped.armor = G.gear.buildPiece("armor", "uncommon");
 G.state.data.equipped.armor.level = G.gear.cap(G.state.data.equipped.armor);   // max uncommon
 G.state.invalidateStats();
-ok(G.state.stats().siegeWard > 0, "siegeWard exposto (>0 no armor Uncommon maxado)");
+ok(G.state.stats().bulwark > 0, "bulwark exposto (>0 no armor Uncommon maxado)");
 const realUi = G.ui; G.ui = null;
-G.state.data.hp = 1e15;
-G.combat.enemies = [{ dead: false }];                 // 1 vivo → siegeWard NÃO aplica
-let b0 = G.state.data.hp; G.combat.applyHitToHero(1e6); const dmg1 = b0 - G.state.data.hp;
-G.state.data.hp = 1e15;
-G.combat.enemies = [{ dead: false }, { dead: false }]; // 2 vivos → siegeWard aplica (dano menor)
-b0 = G.state.data.hp; G.combat.applyHitToHero(1e6); const dmg2 = b0 - G.state.data.hp;
+G.state.data.hp = G.state.maxHp();               // HP cheio → acima do threshold → bulwark NÃO aplica
+let b0 = G.state.data.hp; G.combat.applyHitToHero(1e6); const dmgFull = b0 - G.state.data.hp;
+G.state.data.hp = G.state.maxHp() * 0.1;         // HP baixo → abaixo do threshold → bulwark aplica
+b0 = G.state.data.hp; G.combat.applyHitToHero(1e6); const dmgLow = b0 - G.state.data.hp;
 G.ui = realUi; G.combat.enemies = [];
-ok(dmg2 < dmg1, "siegeWard reduz dano só com 2+ inimigos vivos na onda");
+ok(dmgLow < dmgFull, "bulwark reduz dano extra só abaixo do bulwarkHpThreshold% do HP máx");
 
-// siegeWard: boss sozinho (1 vivo) NÃO conta; boss + 1 escolta (2 vivos) conta certo
-G.state.data.hp = 1e15;
-G.combat.enemies = [{ isBoss: true, dead: false }];                       // só o boss → 1 vivo
-b0 = G.state.data.hp; G.combat.applyHitToHero(1e6); const dmgBoss1 = b0 - G.state.data.hp;
-G.state.data.hp = 1e15;
-G.combat.enemies = [{ isBoss: true, dead: false }, { dead: false }];      // boss + escolta → 2 vivos
-b0 = G.state.data.hp; G.combat.applyHitToHero(1e6); const dmgBossEscort = b0 - G.state.data.hp;
-G.combat.enemies = [];
-ok(dmgBoss1 === dmg1, "siegeWard: boss sozinho (1 vivo) não aplica, igual ao caso genérico de 1 vivo");
-ok(dmgBossEscort < dmgBoss1, "siegeWard: boss + 1 escolta (2 vivos) aplica a redução extra");
-
-// siegeWard: clamp do TOTAL (damageReduction + siegeWard) em 75, não de cada termo isolado.
-// damageReduction e siegeWard já vêm CADA UM clampado a 75 individualmente em stats() (state.js);
-// forçamos os dois perto do teto individual (via cache) pra provar que a SOMA em combat.js
-// (dr += s.siegeWard; dr = clamp(dr, 0, 75)) reclampa o total, e não deixa a soma passar de 75.
+// Bulwark: clamp do TOTAL (damageReduction + bulwark) em dmgReductionCap, não de cada termo isolado
+fresh();
+G.state.data.equipped.armor = G.gear.buildPiece("armor", "uncommon");
+G.state.data.equipped.armor.level = G.gear.cap(G.state.data.equipped.armor);
+G.state.invalidateStats();
 G.state.stats();   // popula o cache
 G.state._cache.damageReduction = 75;
-G.state._cache.siegeWard = 75;
-ok(G.state._cache.damageReduction + G.state._cache.siegeWard > 75,
-  "setup: damageReduction + siegeWard isolados somam > 75 (pré-condição do clamp)");
-G.state.data.hp = 1e15;
-G.combat.enemies = [{ dead: false }, { dead: false }];   // 2 vivos → siegeWard entra na soma
+G.state._cache.bulwark = 75;
+G.ui = null;
+G.state.data.hp = 1; // bem abaixo do threshold → bulwark entra na soma
+b0 = G.state.data.hp; G.state.data.hp = G.state.maxHp() * 0.01;
 b0 = G.state.data.hp; G.combat.applyHitToHero(1e6);
 const reducedClamped = b0 - G.state.data.hp;
-G.combat.enemies = [];
-ok(Math.abs(reducedClamped - Math.ceil(1e6 * 0.25)) < 1, "siegeWard: total clampado em 75% (dano final = 25% do bruto), não a soma de dois 75%s isolados");
+G.ui = realUi; G.combat.enemies = [];
+ok(Math.abs(reducedClamped - Math.ceil(1e6 * (1 - G.data.balance.dmgReductionCap / 100))) < 1,
+  "bulwark: total clampado em dmgReductionCap, não a soma de dois tetos isolados");
+
+// Momentum (boots): cada kill soma stack (teto momentumMaxStacks) e acelera playerInterval()
+fresh();
+G.state.data.equipped.boots = G.gear.buildPiece("boots", "uncommon");
+G.state.data.equipped.boots.level = G.gear.cap(G.state.data.equipped.boots);   // max uncommon
+G.state.invalidateStats();
+ok(G.state.stats().momentum > 0, "momentum exposto (>0 no boots Uncommon maxado)");
+(function () {
+  const realUi2 = G.ui; G.ui = null;
+  const baseInterval = G.combat.playerInterval();
+  const mob = { name: "m", level: 1, maxHp: 1000, hp: -1, dmg: 1, lumens: 0, xp: 0, isBoss: false, rarity: null };
+  G.combat.enemies = [mob]; G.combat.enemy = mob;
+  G.combat.onKill();
+  ok(G.combat._momentumStacks === 1, "momentum: 1 kill soma 1 stack");
+  ok(G.combat.playerInterval() < baseInterval, "momentum: stack acelera playerInterval() (intervalo menor)");
+  G.combat.enemies = []; G.ui = realUi2;
+})();
 
 // rarityFind* expostos e INERTES (stats() os expõe; nada os consome até o P8)
 fresh();
@@ -409,7 +432,7 @@ function fakeEl() {
   return { textContent: "", innerHTML: "", style: {},
     classList: { toggle() {}, add() {}, remove() {}, contains() { return false; } },
     getAttribute: () => null, setAttribute() {}, addEventListener() {},
-    querySelectorAll: () => [], appendChild() {}, children: [] };
+    querySelectorAll: () => [], querySelector: () => fakeEl(), appendChild() {}, children: [] };
 }
 global.document = {
   getElementById: () => fakeEl(), querySelectorAll: () => [], querySelector: () => fakeEl(),
