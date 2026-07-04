@@ -48,15 +48,15 @@ To reset save from the browser console: `G.state.reset(); location.reload()`
 
 **`HANDOFF.md` (repo root) is the living state between sessions — read it before any work.** It says where work stopped, what is locked, and the ordered pending list. Do not re-derive established facts or reopen locked decisions.
 
-Project slash commands (`.claude/commands/`):
+Project skills (`.claude/skills/<name>/SKILL.md` — migradas de `.claude/commands/` em jul/04; saída do canon check e do git log é INJETADA no prompt via `` !`comando` ``, não dependa de o modelo lembrar de rodar):
 
-| Command | When | What it does |
+| Skill | When | What it does |
 |---------|------|--------------|
-| `/retomar` | start of session | read HANDOFF + active track doc, run canon check, report position in ≤10 lines |
-| `/handoff` | end of session | rewrite HANDOFF, verify definition-of-done, run canon check, commit+push |
-| `/travar <decisão>` | a decision is made | record it in the right SPEC + HANDOFF, with sim validation if numeric |
+| `/retomar` | start of session | read fable-mode + HANDOFF + active track doc, canon check injetado, report position in ≤10 lines |
+| `/handoff` | end of session | rewrite HANDOFF, verify definition-of-done, run canon check, commit+push (só o dono invoca) |
+| `/travar <decisão>` | a decision is made | record it in the right SPEC + HANDOFF, with sim validation if numeric (só o dono invoca) |
 | `/balance <pergunta>` | any balance question | answer ONLY via `tools/sim.js` (never from theory); in-memory overrides for candidates |
-| `/canon` | doc hygiene | run `tools/check_canon.js`, fix live drift (superseded terms), extend TERMS list |
+| `/canon` | doc hygiene | roda isolado (fork, modelo barato): fix live drift (superseded terms), extend TERMS list |
 
 **Doc discipline:** SPEC (living, one per system) vs LOG (dated audit — act on it, then delete or banner). A doc that contradicts the code gets fixed or bannered within the session that notices it. `node tools/check_canon.js` exits 1 on live drift (docs only; `src/` is exempt until renames are ordered by the balance work).
 
@@ -78,58 +78,20 @@ Single-context: `CONTEXT.md` at repo root (canonical glossary) + `docs/adr/`. Se
 
 ---
 
-## Regra 10-80-10 · Delegação e Escalação (modo de trabalho travado pelo dono)
+## Como pensar e como delegar (os dois docs obrigatórios do orquestrador)
 
-**Delegação escala com o tier: quanto mais alto o seu tier, mais você delega.**
-Empurre o trabalho pra baixo e preserve o próprio contexto pro julgamento.
-O modelo de ponta (Fable) **NUNCA implementa, testa, roda ou itera código** —
-isso inclui código do jogo, harness de simulação, scripts de fit, batches de
-dados e loops empíricos. Divisão obrigatória:
+1. **`docs/agents/fable-mode.md` — leia ANTES de responder à primeira mensagem
+   do dono.** O modo de trabalho que destravou o projeto: extrair intenção (o
+   dono explica por sensação/exemplo — traduzir é papel SEU), converter feel
+   em critério mensurável no sim, assumir a matemática, uma pergunta por vez
+   com recomendação, registrar decisões na hora, terminar em vez de recomeçar.
+   Vale para QUALQUER modelo orquestrando (Opus incluso).
 
-- **10% Fable** — planejamento, decisão de design, lore/docs/prompts de arte,
-  e o PLANO de qualquer tarefa de código (arquivos, mudanças, dials, alvos,
-  critérios de aceite executáveis).
-- **80% executores via Agent tool** — implementação, testes, execução de
-  sims/candidatos, primeira revisão.
-- **10% Fable** — revisão final dos diffs e dos números medidos, validação
-  in-game, commit.
-
-### Roteamento por tier
-
-| Modelo | Melhor para | Delega? | Effort |
-|---|---|---|---|
-| Haiku | mecânico em massa (renomear, mover, varredura braçal SEM julgamento) | nunca | low |
-| Sonnet | spec clara/mecânica · pesquisa escopada · review adversarial padrão | quando ajudar | medium |
-| Opus | raciocínio multi-passo · ambíguo/combate/estado · fitting iterativo · review de diff em balance travado | com benefício claro | xhigh |
-| Fable | julgamento, taste, design, plano, revisão final | por padrão | medium |
-
-Fable só vai a xhigh nas decisões mais duras; pula o high. Haiku só entra em
-tarefa 100% mecânica sem nenhuma decisão — na dúvida, Sonnet.
-
-### Briefing de todo filho (obrigatório no prompt de cada Agent)
-
-O filho nasce EM BRANCO e não herda nada. Todo prompt de agente carrega:
-o CONTEXTO (onde está, o que existe), o PORQUÊ (a decisão que originou), e
-COMO É "PRONTO" (critérios de aceite executáveis — o agente prova com saída
-de comando, não promete).
-
-### Escalação (nos dois sentidos)
-
-- **Pra cima sem pedir:** Fable tem permissão permanente de escalar
-  Sonnet→Opus quando o output não bate a régua. Escalar custa menos que
-  shipar mediocridade.
-- **O pai não precisa ser o topo:** um agente Opus pode gerar um filho Fable
-  pra UMA decisão dura de julgamento; o filho responde e retorna.
-- **Trabalho acima do seu tier? DEVOLVA — não queime tokens nele.** Agente
-  que encontrar decisão de design/julgamento fora do seu alcance reporta e
-  encerra, em vez de chutar.
-- **Anti-preguiça:** agente que devolve "estou aguardando" em vez de trabalho:
-  matar e relançar UMA vez com regra dura ("não delegue; o relatório É a
-  mensagem final"); nunca insistir 2× no mesmo agente zumbi.
-
-**ESCOPO DESTA REGRA — leia antes de se aplicar a ela:** ela rege o
-ORQUESTRADOR da sessão (Fable). **Se você é um SUBAGENTE lançado via Agent
-tool, você É a camada dos 80%: implementar/executar/testar é o SEU papel,
-com as próprias mãos, nesta sessão.** Re-delegar a outro agente ou devolver
-"aguardando" é violação da regra — a única exceção é a escalação legítima:
-devolver ao orquestrador trabalho ACIMA do seu tier.
+2. **`docs/agents/delegacao-10-80-10.md` — leia ANTES de spawnar qualquer
+   agente via Agent tool.** Regra 10-80-10 completa (travada pelo dono):
+   orquestrador planeja/decide/revisa (10+10); executores implementam/testam/
+   rodam (80), com roteamento por tier, briefing obrigatório (contexto +
+   porquê + critério de aceite executável), escalação nos dois sentidos e
+   review adversarial em trabalho grande. **Se você é um SUBAGENTE: você É a
+   camada dos 80% — implementar/executar/testar com as próprias mãos é o seu
+   papel; não re-delegue e não devolva "aguardando".**
