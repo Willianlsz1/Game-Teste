@@ -444,6 +444,7 @@ decide a âncora nova olhando o medido.
 | 12 | Golden Wake (árvore) | UNIT 1.0 → 0.6 (orçamento com Twice-Gilded no cap 10%) |
 | 13 | Relógio | **SEM GATE** — medir; 36h±2 vira histórico até o dono ancorar de novo |
 | 14 | Âncora inicial do player | **ATK ~15 · HP ~50** (era base 1000/1000) — começo em DEZENAS; topo do mapa mantido (mob área 18 ~10¹¹) → crescimento total sentido SOBE (~×10⁷–⁸). Re-deriva: arrays da família (re-ancorar no gerador), gear early (perLevel re-escala pra unidades/dezenas no início), Lumens via goldRatio |
+| 15 | First Spark = FLAT forte (dono, playtest v9-r4 jul/04) | A raiz da árvore volta a ser **ATK & HP FLAT por nível** (não %). Papel declarado: o SOCO de entrada — alvo de fit: nas convs 1–5, First Spark maxado ≈ +30–50% do ATK total; dilui no late DE PROPÓSITO (galhos %, crit e folhas assumem — não é regressão do F4: era "todos os nós flats fracos", isto é UM nó flat forte com papel). Bônus de UI: Passives aparece na coluna PRIMARY do breakdown. Demais nós seguem % (glossário "Additive fades" intacto) |
 
 Pré-requisito de código (antes do fit): batch de MECÂNICAS em src/ —
 dois materiais na promoção · Corona gateado pelo awaken (spawn + UI zero
