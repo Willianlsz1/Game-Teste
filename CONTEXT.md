@@ -91,6 +91,13 @@ Vessel of Dawn), nunca inventa bônus novos — o jogador aprende o rito uma
 vez e cada mapa cumpre a promessa mais alto.
 _Avoid_: prestige (Awaken não reseta nada), ascension.
 
+**Offering** (Oferenda):
+Requisito de Lumens do rito do Awaken, pago uma vez além dos materiais —
+devolver a luz colhida para despertar. É o sink de fim de mapa que dá destino
+à aceleração de Lumens (P3); depois de paga, o excedente de Lumens é
+espetáculo, não desperdício.
+_Avoid_: taxa, custo do Awaken (o custo em materiais é outro requisito).
+
 **Power Curve / Difficulty Curve**:
 Power Curve = quão forte o jogador fica (Gear + Passivas + Convergence + Awaken).
 Difficulty Curve = quão forte o inimigo fica (HP e ATK do mob). Balancear é manter

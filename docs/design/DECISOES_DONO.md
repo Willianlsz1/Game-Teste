@@ -7,23 +7,33 @@
 
 ---
 
-## PARTE I — A VIRADA DE PARADIGMA (pendente de re-fit único; NÃO fitar até o dono fechar o conjunto)
+## PARTE I — A VIRADA DE PARADIGMA (✅ CONJUNTO FECHADO no grill de 2026-07-04 — re-fit autorizado)
 
 > Decisão de processo: acumular TODAS as decisões e rodar **UM** re-fit no fim.
 > Estas substituem parte do v9-r7 (que fica de pé até o re-fit). Juntas, viram
 > o Éclats do "HTK-legível bespoke" pro "padrão do gênero (Gaiadon)".
+> **Status: o dono fechou o conjunto (P1–P8) no grill de jul/04 e autorizou o
+> re-fit ("pode seguir com esse por enquanto"). Roteamento travado pelo dono:
+> implementação = Opus; execução de testes/sims = Sonnet.**
 
 | # | Decisão | O que muda | Resolve/porquê |
 |---|---|---|---|
 | P1 | **Nível do mob = ÁREA, não Seeker** | mob deixa de escalar com você (`enemyFactory.js:57`); dificuldade fixa por zona; HTK dentro da área vira DECRESCENTE (entra difícil, derrete) | HP (cada área "o HP disparou") **e** XP (pós-Convergence a cascata de níveis morre sozinha) — uma mudança pros dois |
 | P2 | **Âncora TTK, não HTK** | balance medido em SEGUNDOS; velocidade de ataque perde o teto (`map1AtkSpeedCap 2` sai/sobe) e vira DPS; combate vira "fluxo", não "golpes contados" | combate padrão do gênero idle; Boots/Momentum passam a importar. Régua já existe (Constituição: Mob 1–3s etc.) |
+| P2b | **Forma da curva TTK na área** (grill jul/04): entrada FURA a banda (~5–8s no mob comum), derrete até ~1s na saída | banda 1–3s = regime de cruzeiro; sair da área com ~1s é o sinal sentido de "pronto pra avançar"; generaliza o G6 (parede parcial de entrada) pra TODA área, com intensidade crescente por grupo; números por grupo saem do re-fit | o spike de entrada É a Wall local que vende o crescimento — sem ele a área nova nunca assusta |
 | P3 | **Lumens com curva própria** | soltar Lumens do HP (`goldRatio 0.35` rígido); curva independente que pode ACELERAR no fim | Lumens crescendo mais rápido que HP no endgame = espetáculo |
-| P4 | **Custo de nível maior no início** | encarpar `xpCurveBase × nível^exp` nos primeiros níveis | com P1 o vazamento já morre; isto vira reforço de sensação (cada nível pesa) |
-| P5 | **A — recompensa desproporcional dos raros** | rewardMult dos acesos (Lumens/XP/material) MUITO acima do hpMult (hoje são ~iguais) | caçar Ember/Lumen/Corona vira a economia central; casa com acesos = fonte de material |
+| P4 | **Custo de nível maior no início** | encarpar `xpCurveBase × nível^exp` nos primeiros níveis. **Critério travado (grill jul/04): o alvo é a curva NUA** — sem nenhum bônus de XP (conta nova, zero passivas/gear de XP), nenhum kill concede 2+ níveis; **com bônus de XP, cascata de níveis é FEATURE** (poder conquistado do Loop), não vazamento — o fit não deve suprimi-la | com P1 o vazamento já morre; isto vira reforço de sensação (cada nível pesa) — mas só no baseline nu; pós-Convergence com bônus, derreter níveis é a recompensa |
+| P5 | **A — recompensa desproporcional dos raros** | rewardMult dos acesos (Lumens/XP/material) MUITO acima do hpMult (hoje são ~iguais). **Forma travada (grill jul/04): o ratio recompensa/HP CRESCE com o tier** — Ember = bônus claro, Lumen = achado, Corona = evento-jackpot na banda Gaiadon (~10–15× o hpMult); números por tier no re-fit | caçar Ember/Lumen/Corona vira a economia central; casa com acesos = fonte de material; Corona jackpot dá ao pós-awaken uma economia nova, não só mobs mais grossos |
 | P6 | **B — custo de gear quadrático** | trocar `gearCostGrowth` geométrico (1.022) por soma aritmética | custo não dispara logo após promover; grind mais confortável |
+| P7 | **Freio de backtrack = penalidade de XP** (grill jul/04, decorrência do P1) | Seeker acima do nível da área ⇒ XP do mob reduzido (linear com floor, estilo Gaiadon §2.3 ~2%); Lumens e material INTACTOS; nunca bite na re-subida pós-Convergence (herói renasce abaixo da área); **invisível em UI** (sem tag/floater — como no Gaiadon) | com mob=área, farmar área velha viraria ótimo; a penalidade garante o freio por construção em vez de depender do fit |
+| P8 | **Sink de fim de mapa = Oferenda de Lumens no Awaken** (grill jul/04, decorrência de P3×P6) | First Light exige, além dos materiais, uma oferenda grande one-time de Lumens (número do re-fit, na casa do acumulado da fase final); sink repetível continua sendo promoção (degraus por tier) + level-up quadrático; pós-oferenda, excedente é espetáculo puro (P3) | P3 acelera renda enquanto P6 desacelera o custo repetível — sem um consumidor de fim de mapa os Lumens perderiam sentido; oferenda é temática (devolver a luz colhida) e entra no onboarding do Awaken já planejado |
 
-**Sub-decisão pendente pro fit:** quão livre a velocidade de ataque fica (uncap
-total vs teto alto). Resolver com número no re-fit.
+**Sub-decisão RESOLVIDA (grill jul/04):** velocidade de ataque = **cap global
+15 golpes/s pro jogo inteiro** (não por mapa). Atk speed é cadência (2.0 = 2
+golpes/s de dano cheio; DPS = ATK × golpes/s). O Mapa 1 alcança ~2–3/s — o
+teto só encosta em mapas futuros. Nota de implementação (não é design): perto
+do teto a camada visual agrupa golpes (menos swings, floaters em lote), a
+matemática não muda.
 
 **Não adotado do cardápio Gaiadon:** C (promover exige cap — JÁ é o atual,
 `gear.js:86`) · D (salto de promoção maior — fica pro P8.6). Registrados pra
@@ -84,6 +94,13 @@ Fit validado em 3 seeds, clear ~38h30. Detalhe e âncoras em `P9_REBALANCE.md §
 
 ## Como fechar
 
-Quando o dono declarar **"fechei o conjunto"**, roda-se UM re-fit (paradigma
-novo → provavelmente Opus, várias rodadas) implementando a Parte I + Parte II
-sobrevivente, medindo em TTK, sem gate de relógio (descoberta) → bake → travar.
+✅ **Declarado fechado em 2026-07-04 (grill).** Roda-se UM re-fit implementando
+a Parte I (P1–P8) + Parte II sobrevivente, medindo em TTK, sem gate de relógio
+(descoberta) → bake → travar. **Roteamento do dono: Opus implementa a
+estrutura e julga o fitting; Sonnet roda os testes e os batches de sim.**
+Critérios de aceite vindos do grill: entrada de área fura a banda (~5–8s mob
+comum) e derrete a ~1s · atk speed cap global 15/s (cadência, dano cheio por
+golpe) · penalidade de XP invisível com floor (Lumens/material intactos) ·
+oferenda de Lumens pagável no acumulado da fase final de UMA run · P4 só na
+curva nua (cascata com bônus de XP é feature) · ratio recompensa/HP dos acesos
+cresce por tier (Corona ~10–15× hpMult).
