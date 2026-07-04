@@ -115,7 +115,8 @@ G.passives = {
     "assets/passives/pv_7.png", // 6 Bare Instinct
     "assets/passives/pv_8.png", // 7 Golden Wake
     "assets/passives/pv_9.png", // 8 Pilgrim's Wisdom
-    null, null,                 // 9-10
+    "assets/passives/pv_10.png", // 9 Deep Memory
+    "assets/passives/pv_11.png", // 10 Overkill Echo
     null, null, null, null,     // 11-14
   ],
   CROWN_ICON: null,
