@@ -1014,7 +1014,10 @@ G.ui = {
   // título "Passives" flutuando sobre o céu da arte, ancorado acima da coroa —
   // só aparece quando a coroa existe (mesma regra de CROWN_ICON dos demais elementos).
   _pvTitle() {
-    return `<div class="pv-title">Passives</div>`;
+    return `<div class="pv-title-wrap">
+      <div class="pv-title">Passives</div>
+      <div class="pv-title-tier">World Tree &middot; Tier I</div>
+    </div>`;
   },
 
   _pvCrown() {
