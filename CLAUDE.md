@@ -101,6 +101,12 @@ escalar Sonnet→Opus sem perguntar quando o output não bate a régua. Agente q
 devolve "estou aguardando" em vez de trabalho: matar e relançar UMA vez com
 regra dura ("não delegue; o relatório É a mensagem final").
 
+**ESCOPO DESTA REGRA — leia antes de se aplicar a ela:** ela rege o
+ORQUESTRADOR da sessão (Fable). **Se você é um SUBAGENTE lançado via Agent
+tool, você É a camada dos 80%: implementar/executar/testar é o SEU papel,
+com as próprias mãos, nesta sessão.** Re-delegar a outro agente ou devolver
+"aguardando" é violação da regra, não obediência a ela.
+
 ---
 
 ## Architecture Rules

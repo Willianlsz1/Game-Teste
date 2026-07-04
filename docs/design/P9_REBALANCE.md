@@ -292,12 +292,12 @@ Achados do dono (screenshots) e destino:
 2. **Crit 100% no Mapa 1 não pode — teto sentido ~40–50%**: fontes de crit
    (afixo das luvas + critRate da árvore ×6) saturam o clamp. Retune v8:
    fontes de crit dimensionadas pra pico real ~45% no fim do Mapa 1.
-   **Tensão de design**: o Overcrit converte crit ACIMA DE 100 — com crit
-   real ≤50 ele nunca ativaria no Mapa 1. Resolução (Fable, a validar com o
-   dono): `overcritThreshold` vira constante de balance por mapa — Mapa 1 =
-   50 (excesso acima de 50% vira chance de golpe duplo). A assinatura
-   continua viva, os números ficam pequenos, e mapas futuros sobem o
-   threshold junto com o teto de crit.
+   **DECISÃO DO DONO (jul/04): Overcrit SAI do Mapa 1 — vira passiva de
+   TIER 2, desbloqueada no Mapa 2** (Árvore II; registrado, fora de escopo
+   implementar agora). No Mapa 1: as luvas perdem o afixo overcrit e ganham
+   substituto (Fable: "Fracture Sense" vira Crit Damage % — identidade de
+   golpe pesado sem tensionar o teto de crit). O engine do golpe duplo fica
+   INERTE (sem fonte, como o specialDmg) esperando o Mapa 2.
 3. **Composição do ATK**: hoje Character Level (1.25M flat) > Equipment
    (878K flat) — o dono quer **gear + passivas dominantes** ("a maior parte
    não deve vir de level up"). Gate novo do v8: gear+passivas ≥ ~75% do ATK
