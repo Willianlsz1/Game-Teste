@@ -199,9 +199,9 @@ Object.assign(G.ui, {
       if (!shrouded) {
         if (isCurrent) {
           const n = Math.max(0, G.enemyFactory.bossThresholdFor(i) - G.combat._bossKills);
-          cadence = `stirs in ${n} kills`;
+          cadence = `manifests in ${n} kills`;
         } else {
-          cadence = `stirs every ${G.enemyFactory.bossThresholdFor(i)} kills`;
+          cadence = `manifests every ${G.enemyFactory.bossThresholdFor(i)} kills`;
         }
       }
       // Área 18: linha extra do Okhra (2º estágio pós-H6), preservando a lógica de portão/First Light.

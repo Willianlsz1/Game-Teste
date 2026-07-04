@@ -27,7 +27,7 @@ Object.assign(G.ui, {
 
     const stirs = (name) => {
       const n = Math.max(0, G.enemyFactory._bossThreshold() - G.combat._bossKills);
-      el.innerHTML = `⟡ ${name} stirs in <b>${n}</b> kills`;
+      el.innerHTML = `⟡ ${name} manifests in <b>${n}</b> kills`;
       el.style.display = "";
     };
 

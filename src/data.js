@@ -490,8 +490,10 @@ G.data = {
     xpCurveBase:       14,      // XP p/ próximo nível = xpCurveBase × nível^xpCurveExp
     xpCurveExp:        1.9,     // P9 v8: tools/p9 — não editar à mão, re-fitar (expoente: late-game pesa; era 1.62)
     respawnDelay:      0.5,     // respawn mais ágil → kills/min sem precisar de one-shot
-    bossKillThresholdBase:     200,  // P9 r4 (§9 item 11): threshold do Harbinger = base + perGroup×(grupo+1); base ≥200
-    bossKillThresholdPerGroup: 20,   // P9 r4: escada re-derivada acima de 200 (+20/grupo → 220..320). Morte zera o contador.
+    // P9 r7 (§9 var 22): threshold do Harbinger em ESCADA GEOMÉTRICA por grupo (G1→G6),
+    //   indexado por Math.floor(areaIndex/groupSize). Substitui o antigo base+perGroup (200,220..320).
+    //   Morte zera o contador (bossRegrindFrac 1.0 = re-farm do threshold inteiro).
+    bossKillThresholdByGroup: [200, 500, 1000, 2000, 4000, 8000],
     bossRegrindFrac:           1.0,  // re-grind CHEIO — matar o Harbinger zera o contador; re-invocar = re-farmar o threshold inteiro (decisão do dono, P8.5b; 0 = respawn direto era o bug pré-P8.5)
     gearCostBase:      2500,
     gearCostGrowth:    1.022,   // P2.2: freio principal — testado no sim

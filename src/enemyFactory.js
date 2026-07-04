@@ -39,12 +39,13 @@ G.enemyFactory = {
     return Math.min(t, m.cap);
   },
 
-  // P2.5: threshold do Harbinger escalado por grupo (base + perGroup×(grupo+1)) — para uma área dada.
+  // P9 r7 (§9 var 22): threshold do Harbinger em escada geométrica por grupo — para uma área dada.
   bossThresholdFor(idx) {
     const b = G.data.balance;
     idx = G.util.clamp(idx || 0, 0, G.data.areas.length - 1);
-    const g = Math.floor(idx / b.groupSize);
-    return b.bossKillThresholdBase + b.bossKillThresholdPerGroup * (g + 1);
+    const arr = b.bossKillThresholdByGroup;
+    const g = G.util.clamp(Math.floor(idx / b.groupSize), 0, arr.length - 1);
+    return arr[g];
   },
 
   _bossThreshold() { return this.bossThresholdFor(G.state.data.areaIndex || 0); },
