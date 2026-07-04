@@ -837,10 +837,12 @@ G.ui = {
     let nodes = "";
     for (let i = 0; i < P.nodes.length; i++) if (P.iconOf(i)) nodes += this._pvNode(i);
     if (P.CROWN_ICON) nodes += this._pvCrown();
+    const title = P.CROWN_ICON ? this._pvTitle() : "";
     return `<div class="pv-stage">
       <img class="pv-art" src="assets/passives/passives_tree.webp" alt="" draggable="false" />
       <svg class="pv-branches" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${branches}</svg>
       <div class="pv-nodes">${nodes}</div>
+      ${title}
     </div>`;
   },
 
@@ -930,6 +932,12 @@ G.ui = {
         ${foot}
       </div>
     </div>`;
+  },
+
+  // título "Passives" flutuando sobre o céu da arte, ancorado acima da coroa —
+  // só aparece quando a coroa existe (mesma regra de CROWN_ICON dos demais elementos).
+  _pvTitle() {
+    return `<div class="pv-title">Passives</div>`;
   },
 
   _pvCrown() {

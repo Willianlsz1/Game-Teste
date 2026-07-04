@@ -122,7 +122,7 @@ G.passives = {
     "assets/passives/pv_14.png", // 13 Executioner's Light
     "assets/passives/pv_15.png", // 14 Harbinger's Bane
   ],
-  CROWN_ICON: null,
+  CROWN_ICON: "assets/passives/pv_16.png",
 
   // lado da topologia (p/ o sub-título do tooltip). Provisão = ramo do nó 1; Caça = ramo do nó 2.
   SIDE: {

@@ -75,6 +75,21 @@
   50%      { box-shadow: 0 0 0 1px rgba(0,0,0,.8), 0 0 16px 1px var(--teal); }
 }
 
+/* ---- TÍTULO DA TELA ("Passives") — flutua sobre o céu da arte, ancorado acima da
+   coroa. Espelha o nameplate do Harbinger (.enemy-name em styles/hud.css): Cormorant
+   Garamond itálico + text-shadow multi-direção pra legibilidade sobre a pintura, sem
+   caixa/fundo. Tom dourado (--gold) em vez do laranja do inimigo, pra combinar com a
+   paleta da coroa. Só renderiza quando CROWN_ICON existir (mesma regra dos demais). ---- */
+.pv-title {
+  position: absolute; left: 50%; top: 13%; transform: translate(-50%, -50%);
+  z-index: 3; pointer-events: none; white-space: nowrap;
+  font-family: "Cormorant Garamond", serif; font-style: italic; font-weight: 600;
+  font-size: 34px; letter-spacing: 3px; color: var(--gold);
+  text-shadow:
+    -1.2px -1.2px 0 #1a0e02, 1.2px -1.2px 0 #1a0e02, -1.2px 1.2px 0 #1a0e02, 1.2px 1.2px 0 #1a0e02,
+    0 0 8px #000, 0 2px 10px rgba(0, 0, 0, 0.9);
+}
+
 /* ---- COROA (só renderiza quando CROWN_ICON existir — hoje null, oculta) ---- */
 .pv-node.pv-crown.crown-on .pv-shape { border-color: var(--gold);
   box-shadow: 0 0 0 1px rgba(0,0,0,.8), 0 0 14px -2px var(--gold); }
