@@ -50,6 +50,20 @@ ajustável por playtest):
 - Textos do rito do Awaken (First Light) e da 1ª Convergence.
 - Fonte: docs/LORE_COMPLETE.md + eclats_lore.md — adaptar, não inventar.
 
+### Lotes de polimento da tela de batalha (crítica jul/04, decisões do dono)
+
+**Lote P-UI-1 (aprovado; rodar APÓS o L3 pra não conflitar nos arquivos de HUD):**
+"GOLD/MIN"→"LUMENS/MIN" · "DMG"→DPS real (dano×cadência) · barra de HP do
+inimigo em cor única esvaziando · Chronicle agrupa kills repetidos ("×3"),
+linha individual só pra evento (drop/revelação/Harbinger/área).
+
+**Decisões do dono na crítica:** Lv do mob FICA visível (será sempre
+relevante) · pause/reset são botões de teste; arte do ⚙ o dono faz ·
+contador de Harbinger só nas áreas de Harbinger (comportamento correto).
+
+**Pendente de aprovação (item 6):** placa única do Seeker (nome+Lv+barras
+numa moldura) com marcador da porta da próxima área na barra de XP.
+
 ### L5 — Empacotamento itch.io — **🔒 CONGELADA PELO DONO (jul/04)**
 
 > **Não executar em nenhuma sessão.** O dono sente que o nível de polimento
