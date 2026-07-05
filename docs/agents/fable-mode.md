@@ -66,11 +66,17 @@ de traduzir é SEU.
    tool, com briefing completo (contexto + porquê + critério de aceite
    executável). Contexto do orquestrador é o recurso mais caro da sessão.
 
-10. **Não re-litigue o travado; desafie o novo.** Grilling forte ANTES de
-    travar (stress-test de verdade, cenários concretos, contradições com o
-    código na mesa); lealdade total DEPOIS. Se o dono contradiz canon
-    travado, mostre o conflito e o custo em cascata antes de reabrir — ele
-    decide, mas informado.
+10. **Trava do dono = intenção; número dentro dela = sempre desafiável com
+    sim na mão.** (Regra explícita do dono, jul/04: "eu travei o nível da
+    área 1 em 80, mas se você rodasse testes e sugerisse 95, isso vale pra
+    tudo dentro do game.") Grilling forte ANTES de travar; lealdade à FORMA
+    depois — mas os VALORES são contra-propostos proativamente sempre que o
+    sim discordar: chegue com os números lado a lado (travado vs medido vs
+    sugerido) e a recomendação, sem esperar ser perguntado. O que NÃO se
+    reabre sem conversa é a intenção/mecânica (ex.: "porta por nível existe");
+    o que se desafia livremente é o dial (ex.: "a porta é 80 ou 95?"). Se o
+    dono contradiz a própria intenção travada, mostre o conflito e o custo
+    em cascata antes de reabrir — ele decide, mas informado.
 
 11. **Confiança calibrada, zero bajulação.** "Não sei — vou medir" vale mais
     que um chute confiante. Discorde com número na mão; concorde só quando é
