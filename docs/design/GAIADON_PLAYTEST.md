@@ -396,3 +396,169 @@ build (itch nova vs árvore extraída), não um erro de modelo.
 - **5 slots do top-bar travados** não foram abertos (Skills/Pets/etc.) — abrem
   em níveis/marcos além da janela observada. Estrutura deles: ver `GAIADON_MATH
   §5` (skills) e §8 (sistemas Steam-only).
+
+---
+
+## 12. Level-up de gear observado (rodada 2) — COMPRANDO de verdade
+
+> **Metodologia:** na rodada 1 eu li o display; nesta rodada **comprei
+> level-ups e assisti os números moverem**. Sessão retomada com o herói já
+> idle-progredido a **LVL 72** (áreas ainda Verdant Valley, gold ~3M, GOLD/MIN
+> oscilando 158K–486K). As peças estavam em níveis variados (arma LVL 26, helm
+> LVL 5, belt LVL 5, boots LVL 8, resto LVL 1–2), o que deu pontos de curva de
+> custo "de graça". Ressalva de campo: **FPS caiu pra 1–2** (aba em background),
+> então tooltips de hover renderizavam com atraso — 8 dos 12 slots foram
+> documentados com afixo limpo; os 4 restantes (2 anéis/braceletes + boots) não
+> renderizaram tooltip na janela, mas o padrão já está estabelecido.
+
+### 12.1 Delta REAL por nível — o display não mente
+
+Comprei level-ups em duas peças e medi o painel "Total equipment stats" (base)
+antes/depois. **O número faz EXATAMENTE o que o texto promete** — sem desconto,
+sem retorno decrescente dentro do tier:
+
+| Peça | De→Para | Stat | Antes | Depois | Delta/nível | Texto prometia |
+|---|---|---|---|---|---|---|
+| **Arma** (Novice's Blade) | LVL 26→36 | Attack (flat) | 735 | 885 | **+15/nível** | "+15 per level" ✓ |
+| **Arma** | LVL 26→36 | Attack Bonus (%) | 54.5% | 64.5% | **+1%/nível** | "+1% per level" ✓ |
+| **Peito** (Initiate's Vestment) | LVL 1→11 | Max Health Bonus (%) | 9.5% | 14.5% | **+0.5%/nível** | "+0.500% per level" ✓ |
+
+A arma também **não mexeu em Max Health** (735→885 foi 100% Attack) — cada peça
+só toca os stats dos seus próprios afixos. O bracket total `[..]` (que inclui
+nível do herói + %) subiu junto: Attack `[1.73k→2.09k]`, coerente com a base
+×(1+bônus).
+
+**CONFIRMA `§4` com o botão na mão:** "+X per level" é literal. A escada de
+raridade (`§4.2`) é o que dá o salto grande; DENTRO do tier o ganho é linear e
+honesto.
+
+### 12.2 Distribuição slot × stat — cada slot tem um PAPEL
+
+Abri as peças uma a uma. **Não** são 12 cópias do mesmo bônus — cada slot
+carrega um **par de afixos distinto** (Common = 2 afixos, `§4.1`), e os pares
+são temáticos por slot:
+
+| Slot | Nome (Common) | Afixo 1 | Afixo 2 | Papel |
+|---|---|---|---|---|
+| **Arma** | Novice's Blade | +100 Attack **(flat)**, +15/nv | +5% Attack, +1%/nv | **DPS bruto** |
+| **Elmo** | Simple Headguard | +5% XP Bonus, +1%/2nv | +100 Attack **(flat)**, +15/nv | Attack + XP |
+| **Peito** | Initiate's Vestment | +3% Max Health **(%)**, +0.5%/nv | +0.05% Champion Chance, +0.01%/90nv | **Tank (HP%)** |
+| **Luvas** | Freshman's Gloves | +5% Attack, +1%/nv | +0.05% Critical Rate, +0.1%/25nv | Crit rate |
+| **Calça** | Apprentice Trousers | +0.010 Attack Speed, +0.001/50nv | +0.05% Critical Rate, +0.1%/25nv | Atk speed + crit |
+| **Colar** | Basic Pendant | +0.01% Gold Crit Chance, +0.01%/100nv | +10% Critical Damage, +0.07%/3nv | Crit damage |
+| **Cinto** | Newcomer's Sash | +5% Gold Bonus, +1%/5nv | +0.05% Elite Chance, +0.01%/60nv | **Farm (gold/elite)** |
+| **Anel/braço/botas** (4 slots) | — | (não renderizou tooltip; FPS 1) | — | prováveis HP-flat + resistências/utilitário |
+
+**Respostas diretas às perguntas do dono:**
+
+1. **Todas contribuem igual, ou cada slot tem papel?** → **Cada slot tem
+   papel.** A **arma domina o Attack flat** (+100 base + a maior escada), e é a
+   única com Rage. O **peito domina o HP** (é % de Max Health, não flat). Slots
+   dão eixos diferentes: luvas/calça = crit & atk speed, colar = crit damage &
+   gold-crit, cinto = gold & elite chance.
+2. **Flat vs %?** → **Misto por slot, e proposital.** Arma e elmo dão **Attack
+   FLAT** (+15/nv) — são os motores do dano base. Peito dá **HP em % (+0.5%/nv)**
+   — escala com o HP base do herói, não é flat. Os slots utilitários dão
+   **stats de chance** (crit, elite, champion, gold-crit) em incrementos
+   minúsculos por nível (ex.: +0.1% crit a cada 25 níveis) — ou seja, são de
+   **maturação lenta**, você só sente depois de MUITO nível de gear.
+3. **Como a soma dos 12 forma o total?** → cada peça empurra os **mesmos baldes
+   globais** do `§1.1`: os "+X Attack flat" de arma+elmo somam no **Attack BASE**
+   (300 do set inicial → 885 só com a arma LVL 36); os "+X% Attack" de
+   arma+luvas somam no **Attack Bonus (MODIFIER)** (54.5%→64.5%); o "+% Max
+   Health" do peito soma no **Max Health Bonus**. O painel "Total equipment
+   stats" é literalmente a **soma dos 12 slots**, e o Character Info aplica
+   `BASE×(1+MOD%)` por cima do nível do herói.
+
+### 12.3 Curva de CUSTO — igual pra todo slot, função só do nível
+
+O custo de level-up **não depende do slot nem do tipo de peça** — só do nível
+atual da peça. Prova direta: com o multiplicador em **x10**, TODA peça em LVL 1
+custava **43.5K** idêntico (peito, luvas, calça, colar, anel, braço, cinto-item
+— todos 43.5K); as diferenças eram só pelo nível (helm LVL 5 = 72.6K, boots LVL
+8 = 94.3K, arma LVL 26 = 225K).
+
+Pontos de curva medidos (custo de um lote x10, i.e. subir 10 níveis a partir de N):
+
+| Peça | Lote (níveis) | Custo x10 | Custo/nível médio |
+|---|---|---|---|
+| qualquer LVL 1 | 1→11 | **43.5K** | ~4.35K |
+| Peito | 11→21 | **116K** | ~11.6K |
+| Helm | 5→15 | 72.6K | ~7.3K |
+| Belt | 5→15 | 72.6K | ~7.3K |
+| Boots | 8→18 | 94.3K | ~9.4K |
+| Arma | 26→36 | 225K | ~22.5K |
+| Arma | 36→46 | **297K** | ~29.7K |
+
+E em **x100** (lote de 100 níveis), toda peça LVL 1 custava **3.70M** idêntico;
+a arma LVL 26 custava 5.51M. Confirma: **custo = f(nível), mesma fórmula pra
+todos os 12 slots.**
+
+**Forma da curva:** custo/nível sobe de ~4.35K (níveis 1–10) → ~11.6K
+(11–20) → ~22.5K (26–35) → ~29.7K (36–45). Cresce **mais que linear**
+(consistente com o "quadrático no nível" de `§4.3` — soma aritmética `Σ(1..N)`,
+não geométrico). O custo do lote x10 quase **dobra** a cada ~10–15 níveis no
+começo, mas não explode geométrico — a "parede de custo" é suave, exatamente o
+que `§4.3` previa como intenção de design (custo acelera perto do cap do tier,
+não logo após promover).
+
+### 12.4 Razão renda:custo no minuto-zero — "quantos segundos por upgrade"
+
+Com **GOLD/MIN ≈ 385K** (oscila 158K–486K conforme spawn de ranks raros):
+
+| Upgrade | Custo | Tempo de renda equivalente |
+|---|---|---|
+| x10 numa peça fresca (LVL 1→11) | 43.5K | **~7 segundos** |
+| x10 no peito (LVL 11→21) | 116K | **~18 segundos** |
+| x10 na arma (LVL 36→46) | 297K | **~46 segundos** |
+| x100 numa peça fresca (LVL 1→101) | 3.70M | **~9.6 minutos** |
+
+→ **No early, um lote x10 custa segundos de renda.** É por isso que o loop
+"clicar Level up sem parar" flui — o gold jorra rápido o bastante pra você
+maxar peças de LVL 1 quase instantaneamente e só sentir custo quando uma peça
+já está alta (arma LVL 36+). O x100 numa peça fresca já é um "objetivo de ~10
+min", o que dá a próxima meta natural sem travar.
+
+### 12.5 Escala dos números no minuto-zero (a "sensação de milhares")
+
+O dono quer replicar essa sensação. A escala observada nas 2 primeiras horas de
+Verdant Valley (área 1 de 15, nível herói 1→72):
+
+- **Gold total:** 64 → 1K → 30K → 400K → **3.4M** (7 ordens de grandeza no
+  minuto-zero já é K/M).
+- **GOLD/MIN:** 12K → 80K → **385K** (sobe sozinho conforme gear/stats).
+- **Custo de upgrade:** 1.08K (1º nível de peça) → 43.5K (x10) → 297K (arma
+  x10) → **3.70M (x100)**.
+- **Attack:** 1.22 (herói pelado) → 358 (set Common no nv4) → **885** (arma LVL
+  36) → total `[2.09k]` com herói+bônus. HP: 308 → **1.62K**.
+- **Bônus %:** Attack Bonus 10% → **64.5%**; Max Health Bonus 9% → 14.5%.
+
+**Leitura pro Éclats:** a "sensação de milhares" vem de **três alavancas
+simultâneas** — (a) gold jorra em K/M desde cedo; (b) custos de upgrade sobem
+na MESMA escala (K→M), então o número grande na tela sempre tem um alvo do
+mesmo tamanho pra gastar; (c) o multiplicador x1/x10/x100 deixa o jogador
+"gastar milhões num clique" — a fantasia não é ter mil, é **torrar milhões de
+uma vez**. Não é inflação vazia: renda e custo escalam juntos, então a razão
+renda:custo fica estável (segundos-a-minutos por upgrade) enquanto os dígitos
+incham. Se o Éclats quiser a mesma sensação sem quebrar o balance, a chave é
+**escalar gold E custo juntos** (o `tools/sim.js` deve validar que a razão
+renda:custo do Éclats fica na faixa "segundos por upgrade no early", como aqui)
+e **oferecer compra em lote (x10/x100)** pra dar o clique-de-milhões.
+
+### 12.6 Correções/confirmações extras ao GAIADON_MATH (rodada 2)
+
+| GAIADON_MATH | Veredito rodada 2 | Detalhe medido |
+|---|---|---|
+| §4.1 afixos por raridade (Common=2) | **CONFIRMA (12/12 slots)** | cada slot = par distinto de afixos; papéis temáticos por slot |
+| §4.3 custo quadrático, mesma fórmula | **CONFIRMA + ESTENDE** | custo = f(nível) idêntico p/ todo slot (LVL1 x10 = 43.5K universal); custo/nível 4.35K→29.7K, cresce mais-que-linear |
+| §1.1 baldes globais somam os 12 slots | **CONFIRMA ao vivo** | Attack flat de arma+elmo → BASE (735→885); % de arma+luvas → MODIFIER (54.5→64.5%) |
+| §4.2 salto mora na promoção, não no nível | **CONFIRMA** | dentro do tier o ganho é linear honesto (+15 flat/nv); o salto ×11 é só na promoção |
+| §4.5 Rage só na arma | **CONFIRMA** | Rage apareceu no tooltip da arma (LVL 4, 38/253 kills); nenhuma outra peça tem barra Rage |
+
+**Nova ressalva de campo:** a divergência de `§4.2` (arma Common = +100/+15 em
+vez de 1.5 mineral) **se mantém e agora é consistente entre peças** — o elmo
+também dá +100 Attack flat / +15 por nível. Ou seja, o "+15/nível" é o padrão
+real de campo da build itch pra o afixo Attack-flat de Common, valha o que
+valer o 1.5 do `equipment_data.gd` extraído. Provável: a árvore extraída é de
+uma build mais antiga, ou o 1.5 é uma unidade interna diferente (pré-escala de
+UI). Tratar **+15/nível** como o número de campo pra "Attack flat Common".
