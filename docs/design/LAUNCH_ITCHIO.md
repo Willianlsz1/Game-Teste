@@ -36,6 +36,20 @@ ajustável por playtest):
 | Awaken | oculto | 1º material INCOMUM dropa (G3+) | beacon + "A distant light calls." — onboarding do rito (o que é, o que dá, requisitos) |
 | Corona (tier) | oculto | pós-First Light (canon The World Kindles) | revelação do rito — zero menção antes |
 
+### L2.5 — Onboarding GUIADO nos desbloqueios (dono, jul/04 — evolução do beacon)
+
+O pulso passivo do L2 vira **spotlight de 2 passos** a cada sistema novo:
+1. No desbloqueio: tela escurece levemente, o botão novo fica iluminado com
+   indicador apontando + 1 linha ("The Forge has awakened — open it").
+   Clicar fora PULA o guia (marca como visto).
+2. Dentro da tela nova, UM spotlight no elemento central + 1 linha:
+   Forge → botão de promoção · World Map → nó da próxima área · Convergence →
+   botão de convergir · Passives → nó First Spark (a tela já abre sozinha) ·
+   Awaken → painel de requisitos (materiais + Offering).
+Nunca repete (flags `d.hints` do sistema existente). O beacon dourado
+continua existindo APENAS como fallback se o jogador pular o passo 1.
+Rodar APÓS o lote P-UI-1 (mesmos arquivos de HUD).
+
 ### L3 — Onboarding dos primeiros minutos
 - Intro curta (1 tela, skippável): 3–4 linhas de lore situando o Seeker no
   bosque + o verbo do jogo ("fight, gather Lumens, grow").
@@ -55,7 +69,10 @@ ajustável por playtest):
 **Lote P-UI-1 (aprovado; rodar APÓS o L3 pra não conflitar nos arquivos de HUD):**
 "GOLD/MIN"→"LUMENS/MIN" · "DMG"→DPS real (dano×cadência) · barra de HP do
 inimigo em cor única esvaziando · Chronicle agrupa kills repetidos ("×3"),
-linha individual só pra evento (drop/revelação/Harbinger/área).
+linha individual só pra evento (drop/revelação/Harbinger/área) · **botões da
+toolbar SEM brilho dourado permanente** (dono, jul/04: desbloqueado = moldura
+normal; tela aberta = marcação sutil; pulso dourado é EXCLUSIVO do beacon
+one-shot do L2).
 
 **Decisões do dono na crítica:** Lv do mob FICA visível (será sempre
 relevante) · pause/reset são botões de teste; arte do ⚙ o dono faz ·
