@@ -259,6 +259,7 @@ G.combat = {
     this._bossKills = 0;   // morreu → perde o progresso rumo ao Boss de Área
     this._momentumStacks = 0; this._momentumTimer = 0;   // P9: morte zera o embalo do Momentum
     if (G.ui && G.ui.log) G.ui.log("☠ The Seeker fell, recovered and returned.", "bad");
+    if (G.reveals) G.reveals.checkDeathHint();   // L3: hint one-shot na 1ª morte
     this.clearWave();
   },
 
@@ -297,7 +298,7 @@ G.combat = {
     const d = G.state.data;
     d.lumens    += lumens + overkillLumens;
     d.xp        += xp;
-    if (G.reveals) G.reveals.checkGearHint();
+    if (G.reveals) { G.reveals.checkGearHint(); G.reveals.checkPromotionHint(); }
     if (G.ui) G.rates._gains.push({ t: G.rates._clock, lumens: lumens + overkillLumens, xp });
     d.totalKills = (d.totalKills || 0) + 1;
     d.runKills   = (d.runKills  || 0) + 1;

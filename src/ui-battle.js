@@ -15,12 +15,15 @@ Object.assign(G.ui, {
     const area = G.data.currentArea();
     const d = G.state.data;
     const lastIdx = G.data.areas.length - 1;
+    // L3: hint one-shot na 1ª vez que o contador fica visível nesta função (qualquer branch
+    // que o mostre) — dispara DEPOIS de setar display, uma vez só por save (ver reveals.js).
+    const showAndHint = () => { el.style.display = ""; if (G.reveals) G.reveals.checkHarbingerHint(); };
 
     const liveBoss = G.combat.enemies.find(e => e.isBoss && !e.dead);
     if (liveBoss) {
       el.classList.add("is-here");
       el.innerHTML = liveBoss.isMapBoss ? `◆ ${(liveBoss.baseName || liveBoss.name || "OKHRA").toUpperCase()} IS HERE` : "⟡ THE HARBINGER IS HERE";
-      el.style.display = "";
+      showAndHint();
       return;
     }
     el.classList.remove("is-here");
@@ -28,7 +31,7 @@ Object.assign(G.ui, {
     const stirs = (name) => {
       const n = Math.max(0, G.enemyFactory._bossThreshold() - G.combat._bossKills);
       el.innerHTML = `⟡ ${name} manifests in <b>${n}</b> kills`;
-      el.style.display = "";
+      showAndHint();
     };
 
     if (area.boss && d.areaIndex === lastIdx) {
@@ -37,7 +40,7 @@ Object.assign(G.ui, {
       if (!h6Felled) { stirs(area.boss.name); return; }
       if (awake && area.mapBoss) { stirs(area.mapBoss.name); return; }
       el.innerHTML = "The tide stirs... awaken the First Light.";
-      el.style.display = "";
+      showAndHint();
       return;
     }
 

@@ -129,6 +129,35 @@
   98% { transform: translateX(-2px); }
 }
 
+/* ---- L3: toast — hint contextual one-shot (docs/design/LAUNCH_ITCHIO.md §L3) ----
+   Empilha no canto superior, não-bloqueante (nunca cobre a arena de combate central),
+   some sozinho (G.ui.TOAST_MS) ou no clique. Reusa a paleta dourado/teal das demais telas. */
+.toast-wrap {
+  position: fixed; top: 90px; left: 50%; transform: translateX(-50%);
+  z-index: 200; display: flex; flex-direction: column; gap: 8px; align-items: center;
+  pointer-events: none;
+}
+.toast {
+  pointer-events: auto; cursor: pointer;
+  max-width: min(440px, 86vw);
+  padding: 10px 18px; border-radius: 10px; text-align: center;
+  font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 16px;
+  color: #fff7e6;
+  background: linear-gradient(180deg, rgba(16, 22, 40, 0.92), rgba(8, 10, 22, 0.92));
+  border: 1px solid color-mix(in srgb, var(--gold) 55%, transparent);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5), 0 0 18px -6px var(--gold);
+  animation: toast-in 0.22s ease-out;
+}
+.toast.is-leaving { animation: toast-out 0.28s ease-in forwards; }
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes toast-out {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-8px); }
+}
+
 /* ---- pílula de recurso ---- */
 .res-pill {
   display: inline-flex; align-items: center; gap: 8px;

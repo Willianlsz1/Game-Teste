@@ -15,10 +15,20 @@
 //
 // Saves ANTIGOS (sem os campos d.reveals/d.hints): reconcile() deriva as flags do estado
 // já alcançado — um jogador veterano NUNCA vê algo sumir. Saves NOVOS: tudo false/oculto.
+//
+// L3 (docs/design/LAUNCH_ITCHIO.md §L3 — onboarding dos primeiros minutos), reusa o MESMO
+// mecanismo de d.hints (one-shot, persistido, nunca repete):
+//   introSeen   — tela de intro de jogo novo (full-screen, só fecha no botão "Begin").
+//   gearUpgrade — já existia (L2): 1º acúmulo de Lumens pro 1º level-up de QUALQUER peça.
+//   death       — 1ª morte do Seeker (combat.js:onDeath).
+//   promotion   — 1ª peça no cap + materiais suficientes pra promover (Forge).
+//   harbinger   — 1ª vez que o contador do Harbinger fica visível.
+// Save antigo (veterano): ver _deriveFromLegacyState — introSeen e os demais hints são
+// marcados true junto com gearUpgrade (nunca retroativos).
 
 G.reveals = {
   KEYS: ["forge", "worldmap", "convergence", "passives", "awaken"],
-  HINT_KEYS: ["gearUpgrade"],
+  HINT_KEYS: ["gearUpgrade", "introSeen", "death", "promotion", "harbinger"],
 
   // ~80% do 1º gate de Convergence (dial isolado, não mexe em balance real de Convergence)
   CONVERGENCE_GATE_FRAC: 0.8,
@@ -150,6 +160,38 @@ G.reveals = {
     if (!drops) return;
     if (drops.commonMaterial) this.reveal("forge", "The Forge remembers fire.");
     if (drops.uncommonMaterial) this.reveal("awaken", "A distant light calls.");
+  },
+
+  // ---------- L3: hints one-shot dos primeiros minutos (docs/design/LAUNCH_ITCHIO.md §L3) ----------
+
+  // combat.js:onDeath — hint one-shot na 1ª morte do Seeker.
+  checkDeathHint() {
+    if (this.hintSeen("death")) return;
+    this.markHintSeen("death");
+    if (G.ui && G.ui.toast) G.ui.toast("The light retreats, not you. Grow stronger and return.");
+  },
+
+  // gear.js/ui-gear.js/ui-forge.js — hint one-shot na 1ª peça que está no cap E tem
+  // materiais suficientes pra promover (canPromote real, não só "maxada").
+  checkPromotionHint() {
+    const d = G.state.data;
+    if (!d || this.hintSeen("promotion")) return;
+    const equipped = d.equipped || {};
+    for (const slot in equipped) {
+      const item = equipped[slot];
+      if (item && G.gear.canPromote && G.gear.canPromote(item)) {
+        this.markHintSeen("promotion");
+        if (G.ui && G.ui.toast) G.ui.toast("The Forge can awaken this piece.");
+        break;
+      }
+    }
+  },
+
+  // ui-battle.js:renderHarbingerCounter — hint one-shot na 1ª vez que o contador aparece.
+  checkHarbingerHint() {
+    if (this.hintSeen("harbinger")) return;
+    this.markHintSeen("harbinger");
+    if (G.ui && G.ui.toast) G.ui.toast("Something stirs beneath the grove — count the kills.");
   },
 
   // progression.js:checkGroupUnlock/unlockNext — World Map: porta da área 2 batida.

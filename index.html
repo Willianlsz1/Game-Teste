@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="styles/worldmap.css" />
   <link rel="stylesheet" href="styles/passives.css" />
   <link rel="stylesheet" href="styles/menu.css" />
+  <link rel="stylesheet" href="styles/intro.css" />
 </head>
 <body class="game">
 
@@ -389,6 +390,19 @@
     </div>
   </div>
 
+  <!-- SCREEN: INTRO (L3, jogo novo — 1ª abertura só; ver src/ui-intro.js) -->
+  <div class="intro-screen" id="intro-screen" hidden>
+    <div class="intro-card">
+      <div class="intro-card__eyebrow">Éclats of Lumière</div>
+      <div class="intro-card__title">The Dreaming Wood</div>
+      <p class="intro-card__lore">The light broke long ago, and its pieces forgot each other's names.</p>
+      <p class="intro-card__lore">You woke in the Dreaming Wood carrying a splinter that still remembers — the Seed.</p>
+      <p class="intro-card__lore">Fight what the light left twisted. Gather the Lumens it sheds. Grow, and the Seed grows with you.</p>
+      <p class="intro-card__lore">The light remembers everything you become.</p>
+      <button class="btn btn-ornate intro-card__cta" id="intro-begin-btn">Begin</button>
+    </div>
+  </div>
+
   <script src="src/util.js"></script>
   <script src="src/data.js"></script>
   <script src="src/gear.js"></script>
@@ -413,6 +427,7 @@
   <script src="src/ui-convergence.js"></script>
   <script src="src/ui-worldmap.js"></script>
   <script src="src/ui-menu.js"></script>
+  <script src="src/ui-intro.js"></script>
   <script src="src/main.js"></script>
 </body>
 </html>

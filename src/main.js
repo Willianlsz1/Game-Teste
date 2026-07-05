@@ -21,6 +21,7 @@
     G.combat.spawn();
     G.ui.renderAll();
     G.ui.renderEnemy();
+    if (G.ui.maybeShowIntro) G.ui.maybeShowIntro();   // L3: intro de jogo novo (1x, save novo só)
 
     G.ui.log("✦ Welcome to Éclats of Lumière.", "boss");
     if (idleMsg) G.ui.log(idleMsg, "level");

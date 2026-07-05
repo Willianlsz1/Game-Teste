@@ -66,6 +66,7 @@ G.ui = {
     if (this.bindForge) this.bindForge();
     if (this.bindBattle) this.bindBattle();
     if (this.bindMenu) this.bindMenu();
+    if (this.bindIntro) this.bindIntro();
     this.bindReveals();
   },
 
@@ -184,5 +185,32 @@ G.ui = {
     line.textContent = msg;
     this.el["log"].prepend(line);
     while (this.el["log"].children.length > 30) this.el["log"].lastChild.remove();
+  },
+
+  // ---------- L3: toast — hint contextual one-shot (docs/design/LAUNCH_ITCHIO.md §L3) ----------
+  // Não-bloqueante: some sozinho em ~6s ou no clique. Sempre ecoa a MESMA linha no Chronicle
+  // (this.log) — o toast é só o destaque visual, não um canal paralelo de eventos.
+  TOAST_MS: 6000,
+
+  toast(msg) {
+    if (!msg) return;
+    this.log("✧ " + msg, "level");
+    let wrap = document.getElementById("toast-wrap");
+    if (!wrap) {
+      wrap = document.createElement("div");
+      wrap.id = "toast-wrap";
+      wrap.className = "toast-wrap";
+      document.body.appendChild(wrap);
+    }
+    const el = document.createElement("div");
+    el.className = "toast";
+    el.textContent = msg;
+    const dismiss = () => {
+      el.classList.add("is-leaving");
+      setTimeout(() => el.remove(), 300);
+    };
+    el.addEventListener("click", dismiss);
+    wrap.appendChild(el);
+    setTimeout(dismiss, this.TOAST_MS);
   },
 };
