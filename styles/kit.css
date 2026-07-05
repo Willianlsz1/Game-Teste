@@ -61,16 +61,17 @@
 .kit-btn2--gold:hover { filter: brightness(1.08) saturate(1.05); border-color: #fff0bd; }
 
 /* ---- botão cerimonial (arte, só 1 por tela — ação climática) ----
-   Usa btn_gold.png inteiro (1412x315, já trimado) como fundo, grande.
+   AZUL cel-shaded (btn_ceremonial.png 1474x296, celestial: navy + filigrana
+   prata + gema teal). Substitui o dourado (dono jul/05). Texto CLARO.
    NÃO usar em botões de formulário/linha — só CTA único de tela. */
 .kit-btn-ceremonial {
-  display: block; width: min(320px, 92%); height: 80px; margin: 0 auto;
+  display: block; width: min(360px, 92%); height: 74px; margin: 0 auto;
   border: none; cursor: pointer; background: transparent;
-  background-image: url("../assets/ui/kit/btn_gold.png");
+  background-image: url("../assets/ui/kit/btn_ceremonial.png");
   background-repeat: no-repeat; background-size: 100% 100%; background-position: center;
-  color: #23180a; font-family: "Cormorant Garamond", serif; font-weight: 700;
-  font-size: 20px; letter-spacing: 1px; text-transform: uppercase;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+  color: #eaf2ff; font-family: "Cormorant Garamond", serif; font-weight: 700;
+  font-size: 21px; letter-spacing: 2px; text-transform: uppercase;
+  text-shadow: 0 1px 4px rgba(4, 8, 20, 0.85), 0 0 1px rgba(4, 8, 20, 0.9);
   transition: filter 0.12s, transform 0.08s;
 }
 .kit-btn-ceremonial:hover { filter: brightness(1.08) saturate(1.05); }

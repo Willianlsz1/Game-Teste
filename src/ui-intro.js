@@ -57,6 +57,8 @@ Object.assign(G.ui, {
       document.getElementById("intro-beat-3"),
     ];
     beats.forEach((b, i) => { if (b) b.hidden = i !== 0; });
+    const hint = document.getElementById("intro-skip-hint");
+    if (hint) hint.classList.remove("is-hidden");
   },
 
   _introClearTimers() {
@@ -71,6 +73,10 @@ Object.assign(G.ui, {
       const el = document.getElementById("intro-beat-" + i);
       if (el) el.hidden = i !== n;
     }
+    // beat 3 é a "ordem de missão" + Accept — o CTA "click to continue" some, pois o
+    // Accept passa a ser a única ação (clicar fora do botão só reforça o clique, não fecha).
+    const hint = document.getElementById("intro-skip-hint");
+    if (hint) hint.classList.toggle("is-hidden", n >= 3);
   },
 
   // clique na cena: pula direto pro próximo tempo (impaciente pula a encenação).

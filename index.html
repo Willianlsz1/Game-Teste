@@ -179,7 +179,7 @@
       <div class="forge-npc">
         <div class="forge-npc__name">Maël Lefèvre</div>
         <div class="forge-npc__title">Forgemaster of the Ordre des Éclairés</div>
-        <div class="forge-npc__quote">"The Ordre gathers the light. Here, I give it form — and an edge."</div>
+        <div class="forge-npc__quote">"The Ordre gathers the light. Here, I give it form, and an edge."</div>
       </div>
   </div>
 
@@ -262,7 +262,7 @@
       </div>
 
       <div class="menu-footer">
-        Éclats of Lumière — v0.9 (Map 1)<br />
+        Éclats of Lumière · v0.9 (Map 1)<br />
         <a href="#" onclick="return false;">itch.io page (soon)</a>
       </div>
       </div>
@@ -276,7 +276,7 @@
       <button class="screen-close" title="Close" aria-label="Close" onclick="G.ui.closeScreens()">&times;</button>
       <div class="conv-modal__pad">
         <h3 class="conv-modal__title">Convergence</h3>
-        <p class="conv-desc">Break the Seeker and begin anew — sacrifice this run for permanent power.</p>
+        <p class="conv-desc">Break the Seeker and begin anew. Sacrifice this run for permanent power.</p>
         <div class="conv-keep">
           <span class="conv-keep__label">You keep</span>
           <div class="conv-keep__items">
@@ -394,32 +394,32 @@
   </div>
 
   <!-- SCREEN: INTRO (L3b, jogo novo — 1ª abertura só; ver src/ui-intro.js) -->
-  <!-- Cena em 3 tempos sobre assets/ui/intro_bg.png (fallback awaken_bg.png). Textos ficam
-       numa faixa lateral (metade direita) pra não cobrir o pedestal central da arte. -->
+  <!-- Cena em 3 tempos sobre assets/ui/intro_bg.png (fallback awaken_bg.png). Cada tempo
+       ocupa uma posição diferente da cena (beat 1 esquerda-baixo, beat 2 direita-meio,
+       beat 3 baixo-centro) — nenhuma delas cobre o pedestal/Éclat central da arte. -->
   <div class="intro-screen" id="intro-screen" hidden>
     <div class="intro-header">
       <div class="intro-header__title">Éclats of Lumière</div>
       <div class="intro-header__subtitle">L'Ordre des Éclairés</div>
     </div>
-    <div class="intro-panel">
-      <div class="intro-beat" id="intro-beat-1" data-beat="1">
+    <div class="intro-stage">
+      <div class="intro-beat intro-beat--pos-1" id="intro-beat-1" data-beat="1">
         <p class="intro-beat__eyebrow">The Ordre</p>
-        <p class="intro-beat__text">Since the light broke, the Ordre des Éclairés has kept the roads. Its Seekers hunt what the light left twisted — and the world sleeps safer for it.</p>
+        <p class="intro-beat__text">Since the light broke, the Ordre des Éclairés has kept the roads. Its Seekers hunt what the light left twisted, and the world sleeps safer for it.</p>
       </div>
-      <div class="intro-beat" id="intro-beat-2" data-beat="2" hidden>
+      <div class="intro-beat intro-beat--pos-2" id="intro-beat-2" data-beat="2" hidden>
         <p class="intro-beat__eyebrow">The Oath</p>
-        <p class="intro-beat__text">Today you take the oath. An Éclat is set into your hands — routine, they say. Yet something in its light seems to remember you.</p>
+        <p class="intro-beat__text">Today you take the oath. An Éclat is set into your hands. Routine, they say. Yet something in its light seems to remember you.</p>
       </div>
-      <div class="intro-beat intro-beat--order" id="intro-beat-3" data-beat="3" hidden>
+      <div class="intro-beat intro-beat--order intro-beat--pos-3" id="intro-beat-3" data-beat="3" hidden>
         <div class="intro-order">
-          <div class="intro-order__seal">✦</div>
-          <div class="intro-order__head">First Assignment — The Dreaming Wood</div>
+          <div class="intro-order__head">First Assignment: The Dreaming Wood</div>
           <p class="intro-order__text">The forest that stole the Moon. Villages at its edge report shades among the trees. Hunt them. Gather the Lumens they shed. Return stronger.</p>
         </div>
         <button class="kit-btn-ceremonial intro-card__cta" id="intro-begin-btn">Accept</button>
       </div>
     </div>
-    <div class="intro-skip-hint">Click to continue</div>
+    <div class="intro-skip-hint" id="intro-skip-hint">Click to continue</div>
   </div>
 
   <script src="src/util.js"></script>
