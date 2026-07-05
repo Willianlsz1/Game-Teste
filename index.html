@@ -50,29 +50,34 @@
   <div class="hud hud-topleft">
     <div class="toolbar">
       <button class="icon-btn icon-btn--active" id="btn-pause" title="Pause" onclick="G.ui.togglePause(this)">⏸</button>
-      <button class="icon-btn" title="World Map" onclick="G.ui.openModal('modal-worldmap')">
+      <button class="icon-btn" id="btn-worldmap" data-reveal="worldmap" title="World Map" onclick="G.ui.openModal('modal-worldmap')">
         <span class="ico-ph">🌐</span>
         <img class="ico-img" src="assets/ui/icon_world.png" alt="" onerror="this.remove()" />
+        <span class="icon-btn__beacon"></span>
       </button>
       <button class="icon-btn" title="Equipment" onclick="G.ui.openModal('modal-gear')">
         <span class="ico-ph">🎒</span>
         <img class="ico-img" src="assets/ui/icon_gear.png" alt="" onerror="this.remove()" />
       </button>
-      <button class="icon-btn" title="Convergence" onclick="G.ui.openModal('modal-convergence')">
+      <button class="icon-btn" id="btn-convergence" data-reveal="convergence" title="Convergence" onclick="G.ui.openModal('modal-convergence')">
         <span class="ico-ph">✦</span>
         <img class="ico-img" src="assets/ui/icon_convergence.png" alt="" onerror="this.remove()" />
+        <span class="icon-btn__beacon"></span>
       </button>
-      <button class="icon-btn" title="Forge" onclick="G.ui.openModal('modal-forge')">
+      <button class="icon-btn" id="btn-forge" data-reveal="forge" title="Forge" onclick="G.ui.openModal('modal-forge')">
         <span class="ico-ph">🔨</span>
         <img class="ico-img" src="assets/ui/icon_forge.png" alt="" onerror="this.remove()" />
+        <span class="icon-btn__beacon"></span>
       </button>
-      <button class="icon-btn" title="Passives" onclick="G.ui.openModal('modal-passives')">
+      <button class="icon-btn" id="btn-passives" data-reveal="passives" title="Passives" onclick="G.ui.openModal('modal-passives')">
         <span class="ico-ph">❉</span>
         <img class="ico-img" src="assets/ui/icon_passives.png" alt="" onerror="this.remove()" />
+        <span class="icon-btn__beacon"></span>
       </button>
-      <button class="icon-btn" title="Awaken" onclick="G.ui.openModal('modal-awaken')">
+      <button class="icon-btn" id="btn-awaken" data-reveal="awaken" title="Awaken" onclick="G.ui.openModal('modal-awaken')">
         <span class="ico-ph">✷</span>
         <img class="ico-img" src="assets/ui/icon_awaken.png" alt="" onerror="this.remove()" />
+        <span class="icon-btn__beacon"></span>
       </button>
       <button class="icon-btn icon-btn--reset" title="Reset game" onclick="G.ui.resetGame()">🔄</button>
       <button class="icon-btn" id="btn-settings" title="Settings" onclick="G.ui.openModal('modal-menu')">
@@ -393,6 +398,7 @@
   <script src="src/enemyFactory.js"></script>
   <script src="src/income.js"></script>
   <script src="src/progression.js"></script>
+  <script src="src/reveals.js"></script>
   <script src="src/combat.js"></script>
   <script src="src/convergence.js"></script>
   <script src="src/awaken.js"></script>

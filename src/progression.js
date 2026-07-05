@@ -36,6 +36,7 @@ G.progression = {
       if (G.ui && G.ui.log) G.ui.log(`★ Level ${G.state.data.level}!`, "level");
     }
     this.checkGroupUnlock();
+    if (G.reveals) G.reveals.checkLevelGated();
   },
 
   // Dentro de um grupo, a próxima área destrava por NÍVEL DE PORTA (P9: levelGateFor — dial

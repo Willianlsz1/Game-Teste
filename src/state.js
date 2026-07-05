@@ -43,6 +43,9 @@ G.state = {
       awakenMaterials:   { firstLight: 0 },
       equipped:        G.gear.freshSet(),
       lastSeen:        Date.now(),
+      // ---- L2: revelação progressiva das HUDs (docs/design/LAUNCH_ITCHIO.md §L2) ----
+      reveals:         G.reveals ? G.reveals.freshFlags() : {},
+      hints:           G.reveals ? G.reveals.freshHints() : {},
     };
   },
 
@@ -230,6 +233,9 @@ G.state = {
     this.data = Object.assign(this.fresh(), loaded || {});
     this.data.equipped = G.gear.reconcile(this.data.equipped);
     if (G.economy) G.economy.reconcile(this.data);
+    // L2: flags de revelação — saves antigos (sem d.reveals) são migrados e derivados do
+    // estado já alcançado (jogador veterano nunca vê uma tela sumir); saves novos ficam ocultos.
+    if (G.reveals) G.reveals.reconcile(this.data);
 
     // Mapa 1 cresceu de 9 → 18 áreas (P1). Saves antigos podem trazer mapOneCleared=true
     // (mapa velho de 9 áreas concluído), mas o mapa novo (Okhra, última área) não foi batido.

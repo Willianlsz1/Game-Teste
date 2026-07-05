@@ -104,6 +104,31 @@
 .toolbar { display: flex; gap: 8px; flex-wrap: wrap; }
 .hud-topleft .icon-btn { width: 54px; height: 54px; font-size: 24px; }
 
+/* ---- L2: revelação progressiva (docs/design/LAUNCH_ITCHIO.md §L2) ----
+   [data-reveal] nasce oculto; .is-hidden some sem afetar o layout (display:none, não
+   reserva espaço) até G.reveals liberar a tela. O beacon é um anel dourado pulsando por
+   cima do botão — nunca bloqueia clique (pointer-events:none), some no 1º clique ou
+   sozinho depois de alguns segundos. Padrão ÚNICO reusado por Forge/World Map/Convergence/
+   Passives/Awaken. */
+[data-reveal].is-hidden { display: none; }
+.icon-btn__beacon {
+  position: absolute; inset: -4px; border-radius: 12px; pointer-events: none;
+  border: 2px solid var(--gold);
+  box-shadow: 0 0 10px 2px color-mix(in srgb, var(--gold) 70%, transparent);
+  animation: reveal-beacon 1.4s ease-in-out infinite;
+}
+.icon-btn.is-beacon { animation: reveal-beacon-shake 3.5s ease-in-out; }
+@keyframes reveal-beacon {
+  0%, 100% { opacity: 0.45; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.08); }
+}
+@keyframes reveal-beacon-shake {
+  0%, 92%, 100% { transform: translateX(0); }
+  94% { transform: translateX(-2px); }
+  96% { transform: translateX(2px); }
+  98% { transform: translateX(-2px); }
+}
+
 /* ---- pílula de recurso ---- */
 .res-pill {
   display: inline-flex; align-items: center; gap: 8px;

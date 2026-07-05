@@ -297,6 +297,7 @@ G.combat = {
     const d = G.state.data;
     d.lumens    += lumens + overkillLumens;
     d.xp        += xp;
+    if (G.reveals) G.reveals.checkGearHint();
     if (G.ui) G.rates._gains.push({ t: G.rates._clock, lumens: lumens + overkillLumens, xp });
     d.totalKills = (d.totalKills || 0) + 1;
     d.runKills   = (d.runKills  || 0) + 1;
@@ -313,6 +314,7 @@ G.combat = {
 
     const drops = G.economy ? G.economy.rollDrops(e) : {};
     if (G.ui && G.ui.materialDrop && Object.keys(drops).length) G.ui.materialDrop(drops);
+    if (G.reveals) G.reveals.checkMaterialDrops(drops);
     const healFrac = G.data.balance.healOnKillFrac + (s.healOnKill || 0) / 100;
     G.state.data.hp = Math.min(G.state.maxHp(), G.state.data.hp + G.state.maxHp() * healFrac);
 

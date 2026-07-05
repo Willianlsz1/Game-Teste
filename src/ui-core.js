@@ -66,6 +66,43 @@ G.ui = {
     if (this.bindForge) this.bindForge();
     if (this.bindBattle) this.bindBattle();
     if (this.bindMenu) this.bindMenu();
+    this.bindReveals();
+  },
+
+  // ---------- L2: revelação progressiva das HUDs ----------
+  // botões marcados com [data-reveal] nascem ocultos (display:none via classe is-hidden) e
+  // só aparecem quando G.reveals.isRevealed(key) vira true. O beacon (anel pulsando) some
+  // no 1º clique do botão OU sozinho depois de alguns segundos (nunca bloqueia input).
+  bindReveals() {
+    document.querySelectorAll("[data-reveal]").forEach((btn) => {
+      btn.addEventListener("click", () => this._dismissBeacon(btn), { once: false });
+    });
+  },
+
+  _dismissBeacon(btn) {
+    const b = btn.querySelector(".icon-btn__beacon");
+    if (b) b.remove();
+    btn.classList.remove("is-beacon");
+  },
+
+  // chamado por G.reveals.reveal() na 1ª vez que uma tela é destravada nesta sessão.
+  onReveal(key) {
+    const btn = document.querySelector(`[data-reveal="${key}"]`);
+    if (btn) {
+      btn.classList.add("is-beacon");
+      setTimeout(() => this._dismissBeacon(btn), 4000);   // beacon expira sozinho em 4s
+    }
+    this.renderReveals();
+  },
+
+  // aplica visibilidade atual de cada botão [data-reveal] conforme G.reveals.isRevealed().
+  // idempotente — chamado em renderAll() e após cada checagem de gatilho.
+  renderReveals() {
+    if (!G.reveals) return;
+    document.querySelectorAll("[data-reveal]").forEach((btn) => {
+      const key = btn.getAttribute("data-reveal");
+      btn.classList.toggle("is-hidden", !G.reveals.isRevealed(key));
+    });
   },
 
   openModal(id) {
@@ -130,6 +167,7 @@ G.ui = {
     this.renderStats();
     this.renderGear();
     this.renderHud();
+    this.renderReveals();
   },
 
   toggleLog() {

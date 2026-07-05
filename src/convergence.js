@@ -90,6 +90,9 @@ G.convergence = {
       if (G.ui.onAreaChange) G.ui.onAreaChange();
       if (G.ui.renderAll) G.ui.renderAll();
     }
+    // L2: 1ª Convergence concluída revela as Passivas — a tela abre SOZINHA na 1ª vez
+    // (o prêmio é a revelação); daí em diante o botão só fica visível.
+    if (G.reveals) G.reveals.onConvergenceComplete();
     G.state.save();
     return true;
   },
