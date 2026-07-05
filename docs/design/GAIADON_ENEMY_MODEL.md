@@ -54,6 +54,38 @@ gear/prestige) — o feel do gênero (Gaiadon), "sempre dando trabalho", que o
 dono escolheu explicitamente. **P2b (curva TTK entra-derrete) fica marcado como
 superado por este modelo.**
 
+## ESCOPO AMPLIADO — adoção TOTAL da Gaiadon math (dono jul/05)
+
+O dono pediu: incorporar o documento INTEIRO (`GAIADON_MATH.md`) — economia,
+materiais, gear, XP — adaptando onde a fórmula deles tem algo que não usamos.
+E **tirar o cap/alvo de relógio**: nada de perseguir "First Light em 16–22h".
+Modo DESCOBERTA — adota a math fiel, mede, e REPORTA o que emergir pra limpar
+o Mapa 1 (HP dos mobs, dano necessário, custos, materiais, tempo).
+
+Sistemas a ancorar (todos na família paramétrica; adaptar à escala do Éclats,
+NUNCA copiar os x,y crus):
+
+- **Inimigo (HP/ATK):** `(mob_level/x)^y`, buckets, gap de expoente. (Fase 1)
+- **Economia (Lumens):** `(mob_level/x_gold)^y_gold`, y_gold crescente/acelera
+  no fim (P3 estrutural), rank dos acesos por cima (P5). (Fase 1)
+- **XP (§3.1 + §2.3):** curva do herói na forma potência invertível (a nossa
+  ancorada nisso, cap nível 6000 do Mapa 1, não 1M); XP do mob paramétrico com
+  a penalidade de backtrack (P7). Cuidar da cascata (P4 nua).
+- **Gear (§4):** custo de level-up quadrático (JÁ temos, P6); salto
+  front-loaded na promoção de raridade; nº de afixo cresce por raridade;
+  promoção por material. Adaptar às NOSSAS raridades de gear (não confundir com
+  os tiers de luz Ember/Lumen/Corona, que são dos acesos/mobs).
+- **Materiais (§4.6):** drop escalado por RANK (aceso = fonte da chave), boss
+  com token garantido. Adaptar à nossa estrutura (material comum ×50 +
+  incomum-chave dos acesos) — ancorar as TAXAS na banda deles (mob 5% / elite
+  15–45% / boss 100%, que já medimos estar na banda).
+
+## Entregável: PROJEÇÃO do Mapa 1 (sem cap de relógio)
+Sim rodando até o clear NATURAL (First Light/Okhra), SEM `--hours` cortando.
+Reportar por área/grupo: mob HP · dano/DPS necessário · Lumens/custos de gear ·
+materiais · TTK · tempo do grupo · tempo TOTAL de clear. É o que o dono quer
+ver antes de decidir se as magnitudes agradam (e antes do design/polimento).
+
 ## Re-fit (Fase 2) — alvos do dono
 - Hook de economia inicial: primeiros ~3-4 upgrades de gear em segundos (o tune
   que estava rodando — reintegrar ao novo modelo).
