@@ -6,7 +6,12 @@ G.gear = {
   // A média é idêntica ao ganho liso; muda só a sensação (pop perceptível vs gota invisível).
   affixValue(item, af) {
     const r = G.data.rarities.find(r => r.id === item.rarity);
-    const mult = r ? (r.statMult || 1) : 1;
+    let mult = r ? (r.statMult || 1) : 1;
+    // FASE 2 R2 (fitter jul/05): critDmg NÃO recebe o statMult da promoção — senão a promoção Uncommon (×8)
+    //   inflava o critMult a ~818× (one-shot que fazia gear-só-vence). O poder da promoção mora no FLAT
+    //   atk/hp (×8); crit fica um modificador modesto (~2×), não o dano inteiro. Assim uncommon ~×8-11 sobre
+    //   common (banda Gaiadon §4.2), não ×67000. — DIAL (estrutural)
+    if (af.stat === 'critDmg') mult = 1;
     // Rarity Find (P8.1): valor em DEGRAUS — sobe perStep a cada `step` níveis (nível 50 = 1 degrau).
     // Sem multiplicador de raridade (os valores já são calibrados p/ encher o teto no gear realista).
     if (af.perStep != null) {
@@ -16,7 +21,17 @@ G.gear = {
     }
     const lv = (item.level || 1) - 1;
     const eff = af.step ? Math.floor(lv / af.step) * af.step : lv;
-    const val = af.base + af.perLevel * mult * eff;
+    let per = af.perLevel;
+    // FASE 2 R2 (fitter jul/05, dono OPÇÃO 1): gearPowerScale reduz a MAGNITUDE do ATK do gear (flat+pct)
+    //   — o gear maxado (comum e uncommon ×8) dava ATK enorme e o baseline SEM prestige alcançava a área 18,
+    //   quebrando o canon "gear sozinho não vence". Com o ATK escalado + a promoção sendo o salto (×8 flat,
+    //   gateada por material), o baseline no-prestige vira death-grind de horas no G1-G2 e o prestige
+    //   (passivas: flat firstSpark + pct% + crown) volta a ser o caminho real. — DIAL
+    const scale = G.data.balance.gearPowerScale;
+    // FASE 2 R2: escala só o ATK (poder de matar = a parede). HP do jogador fica intacto — a parede é
+    //   TTK/HTK (não sobrevivência), e mexer no HP do gear quebra a magnitude esperada por outros sistemas.
+    if (scale != null && af.stat === 'atk') per = per * scale;
+    const val = af.base + per * mult * eff;
     return af.cap != null ? Math.min(val, af.cap) : val;
   },
 

@@ -70,7 +70,7 @@ G.data = {
       name: "Worn Gloves",
       affixes: [
         { id: "crit",    label: "Bare Hand's Instinct", stat: "crit",    layer: "flat", base: 0.05, perLevel: 0.0022 },  // perLevel P9 v8: tools/p9 (era 0.025)
-        { id: "critDmg", label: "Crackfinder",          stat: "critDmg", layer: "flat", base: 0,    perLevel: 1     },
+        { id: "critDmg", label: "Crackfinder",          stat: "critDmg", layer: "flat", base: 0,    perLevel: 0.1   },  // FASE 2 R2: 1→0.1 — crit vira modificador modesto (critMult ~2×), não o dano inteiro (era one-shot no uncommon)
       ],
       uncommonAffixes: [
         { id: "critDmgP", label: "Fracture Sense", stat: "critDmg", layer: "pct", base: 0, perLevel: 0.01 },  // P9 v8: overcrit SAI do Mapa 1; uncommonAffix vira crit dmg % (engine do overcrit intacto no combat, sem fonte)
@@ -131,7 +131,7 @@ G.data = {
         //   de Lumens (consumida no rito) — sink temático de fim de mapa (devolver a luz colhida).
         //   Na casa do acumulado da fase final de UMA run (P3 acelera renda × P6 desacelera custo).
         //   PROVISÓRIO — o fit final ancora no Lumens acumulado medido no fim do mapa. — DIAL
-        lumens: 1.5e13,  // FASE 2 (fitter jul/05): 1e16→1.5e13 — re-ancorado à economia nova (Lumens do late ~1e9/kill, bem abaixo do fit anterior). G6 fica ~2.9h de combate+coleta (não parede-de-farm); consome a fatia dominante de UMA run sem farm extra
+        lumens: 6.0e13,  // FASE 2 (fitter jul/05): 1e16→6e13 — re-ancorado à economia nova (goldY late 3.95 acelera os Lumens; renda G6 ~47B/min). É a fatia dominante do acumulado de UMA run no G6, consumida no rito — sink temático, NÃO gate de farm (não atrasa o clear além do nível 6000+crown+material)
       },
       // P9 rodada 4 (§9): piso ×5 ATK / ×3 HP (fitado EM PAR com o Okhra hpMult).
       // lumensBonus flat REMOVIDO. As mecânicas de revelação/re-subida/escudo do rito:
@@ -539,19 +539,23 @@ G.data = {
     //   expoente do jogador ao subir por bucket e (b) o gap hpY = atkY + 0.5 no dano recebido.
     //   HTK pré-gear sobe ~2→37+ ao longo do mapa → gear/prestige obrigatórios. Escala: HP(1)~13,
     //   HP(6000)~1.5e9. Baseline NU alcança o 1º gate e converge; a parede endurece no pós-prestige.
-    // FASE 2 (fitter jul/05): buckets CONTÍNUOS (x resolvido p/ HP contínuo nas fronteiras — sem os
-    //   cliffs de 232×/6.9×/9.8×/12.5× do fit anterior). hpY RAMPA gentil→íngreme (1.32→2.55): a área 1-2
-    //   é beatável com pouco gear (parede nua sobe só ~3-4 no early), e a parede se constrói gradual
-    //   pro late (HTK nua ~19-92 no fim). O gap y_hp = y_atk + 0.50 é preservado bucket a bucket.
-    //   HP(1)~13, HP(6000)~4e7. Serrote de TTK constante ancorado em ~1s dentro da área (ver relatório
-    //   da Fase 2 §sawtooth). NB: a parede estrutural "gear-só-não-vence" está LIMITADA pela magnitude
-    //   do gear ATK (weapon perLevel 55 × cap) — ver PENDENTE do relatório. — DIAL
+    // FASE 2 (fitter jul/05, RÉGUA = HTK): buckets CONTÍNUOS (x resolvido p/ HP contínuo nas fronteiras —
+    //   sem os cliffs de 232×/6.9×/9.8×/12.5× do fit anterior). hpY RAMPA 1.55→3.92, fitado (tools/genbuckets)
+    //   ao HP-alvo de HTK-entrada ~8 no frontier E que faz o gear COMUM maxado NÃO vencer sozinho:
+    //     HTK comum sobe 1.2→11→65→241 nas áreas 6/11/15/18 = PAREDE real do baseline (gear-só-perde ✓);
+    //     HTK nua sobe 1→9→96→600→2076 (parede estrutural via gap de expoente);
+    //     área 1-2 beatável com pouco gear (HTK nua entrada ~1-9, cai com os 1ºs upgrades).
+    //   hpY late alto (3.9) casa a magnitude do HP com a explosão de dano do prestige (~×247 ATK das
+    //   passivas+Convergence Legacy) — sem isso o frontier one-shota (HTK<1). Top HP ~1e9. Gap y_hp = y_atk
+    //   + 0.50 preservado. ⚠ PENDENTE: a promoção Uncommon ×8 (rarities.statMult) e o crown são CLIFFS
+    //   discretos de poder — onde caem, derrubam o HTK localmente (o frontier vira <1 hit). Um serrote de
+    //   HTK CONSTANTE nas 18 áreas exige suavizar esses cliffs (fora dos levers desta fase). — DIAL
     enemyBuckets: [
-      { maxLevel:  200, hpX: 0.1433, hpY: 1.32, atkX: 0.6634, atkY: 0.82 },  // gap 0.50
-      { maxLevel:  600, hpX: 0.4717, hpY: 1.58, atkX: 2.6221, atkY: 1.08 },  // gap 0.50
-      { maxLevel: 1600, hpX: 1.5721, hpY: 1.90, atkX: 9.0774, atkY: 1.40 },  // gap 0.50
-      { maxLevel: 3200, hpX: 4.6168, hpY: 2.25, atkX: 25.5384, atkY: 1.75 },  // gap 0.50
-      { maxLevel: Infinity, hpX: 9.9668, hpY: 2.55, atkX: 51.7860, atkY: 2.05 },  // gap 0.50 (topo)
+      { maxLevel:  200, hpX: 0.14325, hpY: 1.32, atkX: 0.66343, atkY: 0.82 },  // gap 0.50
+      { maxLevel:  600, hpX: 1.68027, hpY: 2.00, atkX: 8.82500, atkY: 1.50 },  // gap 0.50
+      { maxLevel: 1600, hpX: 13.52699, hpY: 3.10, atkX: 52.59887, atkY: 2.60 },  // gap 0.50
+      { maxLevel: 3200, hpX: 47.21809, hpY: 4.20, atkX: 145.18141, atkY: 3.70 },  // gap 0.50
+      { maxLevel: Infinity, hpX: 73.94351, hpY: 4.70, atkX: 209.80721, atkY: 4.20 },  // gap 0.50 (topo)
     ],
     // P3 via P10 (gold math do Gaiadon §2.2): Lumens/kill = (mob_level / goldX)^goldY, MESMA
     //   família paramétrica, com buckets PRÓPRIOS. Regra-chave: y_gold SOBE por bucket e
@@ -562,11 +566,11 @@ G.data = {
     // FASE 2 (fitter jul/05): gold contínuo, y_gold RAMPA acima de y_hp no late (P3: Lumens aceleram
     //   no fim). goldBase(1)~2.93 (âncora do early hook). — DIAL
     goldBuckets: [
-      { maxLevel:  200, x: 0.4429, y: 1.32 },  // = y_hp (early)
-      { maxLevel:  600, x: 1.4598, y: 1.64 },  // > y_hp (1.64 vs 1.58)
-      { maxLevel: 1600, x: 4.3132, y: 2.00 },  // > y_hp (2.00 vs 1.90)
-      { maxLevel: 3200, x: 11.5616, y: 2.40 },  // > y_hp (2.40 vs 2.25)
-      { maxLevel: Infinity, x: 23.6502, y: 2.75 },  // >> y_hp (2.75 vs 2.55) — o espetáculo do fim
+      { maxLevel:  200, x: 0.44291, y: 1.32 },  // = y_hp (early)
+      { maxLevel:  600, x: 3.90527, y: 2.05 },  // > y_hp (2.05 vs 2.00)
+      { maxLevel: 1600, x: 22.65639, y: 3.15 },  // > y_hp (3.15 vs 3.10)
+      { maxLevel: 3200, x: 68.19258, y: 4.25 },  // > y_hp (4.25 vs 4.20)
+      { maxLevel: Infinity, x: 102.25282, y: 4.75 },  // > y_hp (4.75 vs 4.70) — o espetáculo do fim
     ],
     // [LEGADO/FALLBACK P1-P9] ATK do mob POR ÁREA (idx 0-17). Substituído pela fórmula
     //   paramétrica (enemyBuckets.atk); mantido como fallback e p/ compat de save/sim até o
@@ -657,6 +661,11 @@ G.data = {
     //   nível × o costMult da raridade × a raridade do mob (rewardMult). Antes o 1º upgrade custava
     //   ~850 kills (~23min) — o oposto do hook. O relógio macro re-emerge sob o modelo novo (modo
     //   descoberta, sem cap de relógio) — reportado na PROJEÇÃO. — DIAL
+    // FASE 2 R2 (fitter jul/05, dono OPÇÃO 1 — desafio por ciclo): gearPowerScale reduz a magnitude de
+    //   poder do gear (atk/hp flat+pct, critDmg) — ver gear.affixValue. Sem isto o gear maxado (comum e,
+    //   sobretudo, uncommon ×8) vence o Mapa 1 SEM prestige (quebra o canon). Escalado, o baseline no-prestige
+    //   TRAVA no meio (~G2-G4) e as passivas (prêmio da Convergence) voltam a ser obrigatórias. — DIAL
+    gearPowerScale:    0.25,
     gearCostBase:      8,
     // P6 + FASE 2 (custo de gear SUPER-LINEAR, map-long): custo(N) = base × (1 + linear × (N-1)^exp) × costMult.
     //   A renda de Lumens cresce ~nível^2.1 (goldBuckets); com um custo LINEAR (exp=1) o gear maxa NA HORA
@@ -671,8 +680,8 @@ G.data = {
     //   commonMaterial (massa) + uncommonMaterial (chave). Ver gear.promoteCost.
     promoteCommonCost:      50,  // common material (massa) por promoção Common→Uncommon
     promoteUncommonCost:     8,  // uncommon material (chave) por promoção Common→Uncommon (a fitar)
-    convLegacyAtkPct:     2,    // P9: tools/p9 — não editar à mão, re-fitar (+atk% direto POR convergence; era 8)
-    convLegacyHpPct:      2,    // P9: tools/p9 — não editar à mão, re-fitar (+hp%  direto POR convergence; era 8)
+    convLegacyAtkPct:     0,    // FASE 2 R2 (dono jul/05): Convergence = SÓ pontos, ZERO bônus direto (100% do poder vem das passivas compradas com os pontos; era 2)
+    convLegacyHpPct:      0,    // FASE 2 R2 (dono jul/05): idem — sem resíduo de %/conv (era 2)
     convGateBase:       130,    // re-fit único: gate₁ = 130 (era 276) — 1ª Convergence aos ~44min (alvo ~40min)
     convGateGrowth:     1.32,   // re-fit único: razão de pontos 1.63 (banda 1.4-1.7); 1.35 dava 1.70, 1.30 colapsava (10 convs)
     convPointsBase:     400,    // P5.3: pontos = convPointsBase × (nível/convGateBase)^convPointsExp

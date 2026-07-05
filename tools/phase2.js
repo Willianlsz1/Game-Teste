@@ -118,16 +118,20 @@ for(let i=0;i<18;i++){
     f.ttkEntry.toFixed(2)+'s',f.ttkExit.toFixed(2)+'s',f.gearRar,f.gearLv.toFixed(0)],W));
 }
 console.log(`  crit-overflow (crit>100 ⇒ multi-golpe do gênero): critRaw MÁX no mapa = ${(sim.maxCritRaw||0).toFixed(1)}% → ${(sim.maxCritRaw||0)>100?'PASSA de 100 (registrar)':'não chega a 100 no Mapa 1 (candidato futuro)'}`);
-// SOLVER: dmgHit do jogador na entrada do frontier (p/ back-out do HP-alvo que dá HTK=8 entrada / 2 saída)
+// SOLVER: back-out do dmgHit do jogador na entrada do frontier via o htkEntry gravado (dmg = mobHP_baked/htk).
+//   HP-alvo pra HTK entrada 8 = dmg×8. Emite os pares (level, HP-alvo) pra fitar as curvas de HP.
 if(process.env.SOLVE){
-  console.log('\n── SOLVER: dmgHit frontier vs HP-alvo (HTK entrada 8, saída 2) ──');
-  console.log(row(['área','level','dmgHit_ent','mobHP_atual','HTK_ent_atual','HP p/ HTK8','HP p/ HTK2saí'],[5,7,12,12,12,12,12]));
+  console.log('\n── SOLVER: HP-alvo por frontier (HTK entrada = 8) ──');
+  const pairs=[];
   for(let i=0;i<18;i++){ const f=firstPass[i]; if(!f)continue;
     const lvl=G.data.areas[i].levelRange[0];
-    // dmgHit = htkEntry-derived: mobHP/htk = dmgHit
-    const dmg=(f.htkEntry>0? G.data.mobHpParam(lvl)/f.htkEntry : 0);
-    console.log(row([i+1,lvl,fmtN(dmg),fmtN(G.data.mobHpParam(lvl)),f.htkEntry.toFixed(1),fmtN(dmg*8),fmtN(dmg*2)],[5,7,12,12,12,12,12]));
+    const dmg=(f.htkEntry>0? G.data.mobHpParam(lvl)/f.htkEntry : null);
+    if(dmg==null)continue;
+    const hpTarget=dmg*8;
+    pairs.push([lvl,hpTarget]);
+    console.log(`área ${i+1} L${lvl}: dmgHit=${fmtN(dmg)} · HP-alvo(HTK8)=${fmtN(hpTarget)}`);
   }
+  console.log('SOLVE_PAIRS='+JSON.stringify(pairs));
 }
 console.log('\n── decomposição do ATK na entrada do frontier (por que TTK trivial?) ──');
 const WD=[5,7,10,10,10,8,8];
