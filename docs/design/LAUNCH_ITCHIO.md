@@ -50,7 +50,12 @@ ajustável por playtest):
 - Textos do rito do Awaken (First Light) e da 1ª Convergence.
 - Fonte: docs/LORE_COMPLETE.md + eclats_lore.md — adaptar, não inventar.
 
-### L5 — Empacotamento itch.io
+### L5 — Empacotamento itch.io — **🔒 CONGELADA PELO DONO (jul/04)**
+
+> **Não executar em nenhuma sessão.** O dono sente que o nível de polimento
+> ainda não é o que ele quer; a L5 só destrava quando ELE declarar
+> explicitamente "pode empacotar/lançar". Nenhum agente prepara zip, página
+> ou upload antes disso — nem como "adiantamento".
 - Zip do jogo (index.html raiz + assets; sem node) · teste no iframe do itch
   (localStorage funciona; export/import do L1 é o seguro contra limpeza).
 - Título/favicon/meta · página itch (cover, GIF, descrição) — arte do dono.
