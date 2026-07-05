@@ -34,7 +34,7 @@
       const now = Date.now();
       const dt  = (now - last) / 1000;
       last = now;
-      if (!G.combat.paused) G.combat.tick(dt);
+      if (!G.combat.paused && !G.combat.frozen) G.combat.tick(dt);
       G.ui.renderEnemy();
       G.ui.renderHeroHp();
     }, 100);

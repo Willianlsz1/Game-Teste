@@ -39,6 +39,10 @@ Object.assign(G.ui, {
     if (!G.reveals || G.reveals.hintSeen("introSeen")) return;
     const el = document.getElementById("intro-screen");
     if (!el) return;
+    // L6 (dono jul/05): a intro CONGELA o jogo por completo — zero tick enquanto o jogador
+    // lê a cena (save novo). O combate só arranca no Accept (dismissIntro libera). Sem isto,
+    // o loop rodava por baixo e o jogador chegava ~nível 7 antes de aceitar.
+    if (G.combat) G.combat.frozen = true;
     el.hidden = false;
     this._introStart();
   },
@@ -82,5 +86,7 @@ Object.assign(G.ui, {
     if (G.state && G.state.save) G.state.save();
     const el = document.getElementById("intro-screen");
     if (el) el.hidden = true;
+    // L6: libera o START — o combate arranca AGORA (do nível 1, nada morto), não antes.
+    if (G.combat) G.combat.frozen = false;
   },
 });

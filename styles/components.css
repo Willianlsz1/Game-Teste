@@ -142,7 +142,7 @@
    some sozinho (G.ui.TOAST_MS) ou no clique. Reusa a paleta dourado/teal das demais telas. */
 .toast-wrap {
   position: fixed; top: 90px; left: 50%; transform: translateX(-50%);
-  z-index: 200; display: flex; flex-direction: column; gap: 8px; align-items: center;
+  z-index: 300; display: flex; flex-direction: column; gap: 8px; align-items: center;   /* L6: acima das telas .screen (200) — hints devem aparecer sobre a tela ativa */
   pointer-events: none;
 }
 .toast {

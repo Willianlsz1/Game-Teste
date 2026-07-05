@@ -101,6 +101,19 @@ contador de Harbinger só nas áreas de Harbinger (comportamento correto).
 **Pendente de aprovação (item 6):** placa única do Seeker (nome+Lv+barras
 numa moldura) com marcador da porta da próxima área na barra de XP.
 
+### L6 — Navegação: telas próprias, não modais (dono, jul/05)
+
+Virada estrutural: **acabar com os modais-overlay**. Toda tela (Gear/Equipment,
+Forge, Awaken, Convergence, Settings) vira uma VIEW de tela cheia consistente
+com as que já são full-screen (Passives, World Map): viewport inteiro, arte de
+fundo própria onde existe, um **X** consistente no topo pra voltar ao combate.
+Combate/idle continua rodando por baixo (não pausa). Uma tela por vez; X (ou
+ESC) volta ao combate. **Todos os ícones LIBERADOS** por enquanto — o sistema
+de revelação progressiva (L2) + spotlight (L2.5) + beacons fica DORMENTE (não
+apaga o código; o dono vai repensar o onboarding). A intro do juramento
+(introSeen) permanece. L4 (lore/cartões) foi pausado e será relançado SOBRE
+esta estrutura nova. [[ui-art-decal-principle]]
+
 ### Botões secundários — 🅿️ REENCAMINHAMENTO PENDENTE (dono, jul/05)
 
 O dono reprovou a arte de botão-barra ESCURA (`btn_frame.png`) e pediu "outro

@@ -17,7 +17,7 @@ Object.assign(G.ui, {
         if (this._infoArea != null) this.travelTo(this._infoArea);
       });
     const wback = document.getElementById("wmap-back");
-    if (wback) wback.addEventListener("click", () => { document.getElementById("modal-worldmap").hidden = true; });
+    if (wback) wback.addEventListener("click", () => { if (G.ui.closeScreens) G.ui.closeScreens(); });
 
     // World Map: navegação entre atos (A = Floresta / B = Porto Afundado). Não muda a área do jogador.
     if (this.el["wmap-act-down"])

@@ -32,12 +32,10 @@ Object.assign(G.ui, {
   bindMenu() {
     const $ = (id) => document.getElementById(id);
 
-    // ESC fecha o modal aberto (qualquer overlay .modal-overlay ou .passives-screen visível)
+    // L6: ESC volta ao combate — fecha a tela aberta (via closeScreens; uma tela por vez).
     document.addEventListener("keydown", (e) => {
       if (e.key !== "Escape") return;
-      document.querySelectorAll(".modal-overlay, .passives-screen").forEach((m) => {
-        if (!m.hidden) m.hidden = true;
-      });
+      if (this.closeScreens) this.closeScreens();
     });
 
     const saveBtn = $("menu-save-now");

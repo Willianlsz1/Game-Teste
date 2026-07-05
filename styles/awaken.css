@@ -1,12 +1,10 @@
 /* =============================================================
    awaken.css — Modal Awaken (split: sidebar + preview)
    ============================================================= */
-.modal.awk-modal {
+/* L6: tela cheia (era .modal.awk-modal card centrado). Container .screen dá o
+   fixed inset:0; aqui só a pintura de fundo + layout interno. */
+.awk-modal {
   --awk-c: #9d7bff;
-  width: 96vw; height: 92vh; max-width: 1100px; max-height: 820px;
-  padding: 0; overflow: hidden; position: relative; border-radius: 18px;
-  border: 1px solid color-mix(in srgb, var(--awk-c) 40%, transparent);
-  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.7), 0 0 50px -16px var(--awk-c);
   background:
     linear-gradient(180deg, rgba(6, 8, 20, 0.34) 0%, rgba(6, 8, 20, 0.70) 100%),
     url('../assets/ui/awaken_bg.png') center / cover no-repeat,

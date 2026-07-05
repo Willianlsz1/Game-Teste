@@ -98,3 +98,36 @@
 }
 .kit-close:hover { transform: scale(1.06); filter: brightness(1.12); }
 .kit-close:active { transform: scale(0.96); }
+
+/* =============================================================
+   L6 — TELAS CHEIAS (docs/design/LAUNCH_ITCHIO.md §L6, dono jul/05)
+   Toda tela (Gear/Forge/Awaken/Convergence/Settings/Passives/WorldMap)
+   é uma VIEW full-viewport, não um modal-overlay. Sem backdrop, sem
+   fechar-por-clique-fora: uma tela por vez, o combate segue por baixo.
+   Cada tela específica ainda traz seu próprio fundo (bg art) e layout —
+   .screen só garante o container full-viewport e o empilhamento.
+   ============================================================= */
+.screen {
+  position: fixed; inset: 0; z-index: 200;
+  width: 100vw; height: 100vh;
+  overflow: hidden;
+  border: 0; border-radius: 0;
+}
+.screen[hidden] { display: none; }
+
+/* ---- X de fechar CONSISTENTE (glifo "×" sóbrio, CSS puro — sem arte
+   recortada). Um só padrão pra TODAS as telas, inclusive Passives e
+   World Map. Volta ao combate (G.ui.closeScreens). ---- */
+.screen-close {
+  position: absolute; top: 16px; right: 16px; z-index: 60;
+  width: 40px; height: 40px; padding: 0; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  font-family: "Outfit", sans-serif; font-size: 26px; font-weight: 400;
+  color: #cdd6e6; cursor: pointer;
+  background: rgba(8, 10, 22, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  transition: color 0.12s, border-color 0.12s, background 0.12s, transform 0.08s;
+}
+.screen-close:hover { color: #fff; border-color: rgba(255, 255, 255, 0.5); background: rgba(20, 26, 46, 0.8); }
+.screen-close:active { transform: scale(0.94); }

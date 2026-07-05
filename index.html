@@ -135,12 +135,9 @@
     </div>
   </div>
 
-  <!-- MODAL: EQUIPMENT -->
-  <div class="modal-overlay" id="modal-gear" hidden onclick="if(event.target===this)this.hidden=true">
-    <div class="modal modal--gear kit-panel">
-      <span class="kit-corner kit-corner--bl"></span>
-      <span class="kit-corner kit-corner--br"></span>
-      <button class="kit-close" title="Close" onclick="this.closest('.modal-overlay,.passives-screen').hidden=true"></button>
+  <!-- SCREEN: EQUIPMENT -->
+  <div class="screen modal--gear" id="modal-gear" hidden>
+      <button class="screen-close" title="Close" aria-label="Close" onclick="G.ui.closeScreens()">&times;</button>
       <div class="modal__title">EQUIPMENT</div>
       <aside class="gear-stats-panel">
         <h3 class="sub-title">Stats</h3>
@@ -162,15 +159,11 @@
         <div class="gear-npc__quote">"The Ordre lends the steel. The light within is yours alone, Seeker."</div>
       </div>
       <div id="gear-tooltip" hidden></div>
-    </div>
   </div>
 
-  <!-- MODAL: FORGE -->
-  <div class="modal-overlay" id="modal-forge" hidden onclick="if(event.target===this)this.hidden=true">
-    <div class="modal modal--forge kit-panel">
-      <span class="kit-corner kit-corner--bl"></span>
-      <span class="kit-corner kit-corner--br"></span>
-      <button class="kit-close" title="Close" onclick="this.closest('.modal-overlay,.passives-screen').hidden=true"></button>
+  <!-- SCREEN: FORGE -->
+  <div class="screen modal--forge" id="modal-forge" hidden>
+      <button class="screen-close" title="Close" aria-label="Close" onclick="G.ui.closeScreens()">&times;</button>
       <div class="modal__title">FORGE</div>
       <aside class="forge-panel forge-panel--left">
         <h3 class="sub-title">Materials</h3>
@@ -188,15 +181,11 @@
         <div class="forge-npc__title">Forgemaster of the Ordre des Éclairés</div>
         <div class="forge-npc__quote">"The Ordre gathers the light. Here, I give it form — and an edge."</div>
       </div>
-    </div>
   </div>
 
-  <!-- MODAL: SETTINGS -->
-  <div class="modal-overlay" id="modal-menu" hidden onclick="if(event.target===this)this.hidden=true">
-    <div class="modal modal--menu kit-panel">
-      <span class="kit-corner kit-corner--bl"></span>
-      <span class="kit-corner kit-corner--br"></span>
-      <button class="kit-close" title="Close" onclick="this.closest('.modal-overlay,.passives-screen').hidden=true"></button>
+  <!-- SCREEN: SETTINGS -->
+  <div class="screen modal--menu" id="modal-menu" hidden>
+      <button class="screen-close" title="Close" aria-label="Close" onclick="G.ui.closeScreens()">&times;</button>
       <div class="modal--menu__scroll">
       <div class="modal__title">SETTINGS</div>
 
@@ -277,18 +266,14 @@
         <a href="#" onclick="return false;">itch.io page (soon)</a>
       </div>
       </div>
-    </div>
   </div>
 
   <!-- stat breakdown popup (matriz Fonte × Camada) -->
   <div class="stat-pop" id="stat-pop" hidden></div>
 
-  <!-- MODAL: CONVERGENCE (prestige) -->
-  <div class="modal-overlay" id="modal-convergence" hidden onclick="if(event.target===this)this.hidden=true">
-    <div class="modal conv-modal kit-panel">
-      <span class="kit-corner kit-corner--bl"></span>
-      <span class="kit-corner kit-corner--br"></span>
-      <button class="kit-close" onclick="this.closest('.modal-overlay,.passives-screen').hidden=true" title="Close"></button>
+  <!-- SCREEN: CONVERGENCE (prestige) -->
+  <div class="screen conv-modal" id="modal-convergence" hidden>
+      <button class="screen-close" title="Close" aria-label="Close" onclick="G.ui.closeScreens()">&times;</button>
       <div class="conv-modal__pad">
         <h3 class="conv-modal__title">Convergence</h3>
         <p class="conv-desc">Break the Seeker and begin anew — sacrifice this run for permanent power.</p>
@@ -314,15 +299,11 @@
         <button class="kit-btn-ceremonial conv-modal__cta" id="btn-converge">Converge</button>
         <div class="conv-foot">Points <b id="conv-points">0</b> · Convergences <b id="conv-count">0</b> · Highest Lv <b id="conv-highest">1</b></div>
       </div>
-    </div>
   </div>
 
-  <!-- MODAL: AWAKEN (3rd power source) -->
-  <div class="modal-overlay" id="modal-awaken" hidden onclick="if(event.target===this)this.hidden=true">
-    <div class="modal awk-modal kit-panel">
-      <span class="kit-corner kit-corner--bl"></span>
-      <span class="kit-corner kit-corner--br"></span>
-      <button class="kit-close" onclick="this.closest('.modal-overlay,.passives-screen').hidden=true" title="Close"></button>
+  <!-- SCREEN: AWAKEN (3rd power source) -->
+  <div class="screen awk-modal" id="modal-awaken" hidden>
+      <button class="screen-close" title="Close" aria-label="Close" onclick="G.ui.closeScreens()">&times;</button>
       <div class="awk-split">
         <div class="awk-sidebar">
           <div class="awk-sidebar__head">
@@ -336,12 +317,11 @@
         </div>
         <div class="awk-preview" id="awaken-preview"></div>
       </div>
-    </div>
   </div>
 
   <!-- SCREEN: PASSIVES (World-Tree) -->
-  <div class="passives-screen" id="modal-passives" hidden>
-    <button class="kit-close" title="Close" onclick="this.closest('.modal-overlay,.passives-screen').hidden=true"></button>
+  <div class="screen passives-screen" id="modal-passives" hidden>
+    <button class="screen-close" title="Close" aria-label="Close" onclick="G.ui.closeScreens()">&times;</button>
     <div class="pv-body" id="pv-body"></div>
     <div class="pv-lock" id="pv-lock" hidden>
       <div class="glyph">✦</div>
@@ -351,7 +331,8 @@
   </div>
 
   <!-- SCREEN: WORLD MAP -->
-  <div class="worldmap-screen" id="modal-worldmap" hidden>
+  <div class="screen worldmap-screen" id="modal-worldmap" hidden>
+    <button class="screen-close" title="Close" aria-label="Close" onclick="G.ui.closeScreens()">&times;</button>
     <button class="wmap-back" id="wmap-back" title="Back">◀ World</button>
     <div class="wmap" id="wmap">
       <div class="wmap__inner">

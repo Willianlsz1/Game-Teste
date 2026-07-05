@@ -2,9 +2,10 @@
    forge.css — Tela da Forge (NPC ferreiro: promoção, materiais, conversão)
    Fundo temporário (escuro + brasa); trocar por assets/ui/forge_bg.png depois.
    ============================================================= */
+/* L6: tela cheia (era .modal--forge card centrado). Container .screen dá o
+   fixed inset:0; aqui só a pintura de fundo + layout interno. */
 .modal--forge {
-  width: min(1500px, 96vw); height: 92vh; position: relative;
-  display: flex; flex-direction: column; overflow: hidden;
+  display: flex; flex-direction: column;
   background:
     linear-gradient(rgba(8, 6, 10, 0.18), rgba(8, 6, 10, 0.42)),
     url("../assets/ui/forge_bg.png") center / cover no-repeat;

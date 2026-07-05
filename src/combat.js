@@ -14,6 +14,11 @@ G.combat = {
   respawnTimer:     0,
   pendingHits:      [],
   paused:           false,
+  // L6 (dono jul/05): congelamento TOTAL do jogo durante a cena de intro do juramento
+  // (save novo). Diferente de `paused` (botão manual do jogador): `frozen` é o gate de
+  // START — nenhum tick roda até dismissIntro (Accept). Mantido separado pra não corromper
+  // o estado do botão de pause. Só a intro usa isto; todas as outras telas rodam por baixo.
+  frozen:           false,
   projectileTravel: 0.5,    // bolt do Seeker
   mobProjectileTravel: 0.9, // bolt do mob — mais lento/telegrafado (decisão do dono)
   enemyInterval:    0.99,

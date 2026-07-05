@@ -4,18 +4,20 @@
    define só o que é específico da tela de Settings.
    ============================================================= */
 
+/* L6: tela cheia de Settings. Sem arte de fundo própria — fundo escuro sóbrio
+   (mesma laca navy da casa) com um leve realce radial ao centro; o conteúdo
+   vive numa COLUNA legível centrada (.modal--menu__scroll), não esticada de
+   ponta a ponta. Container .screen dá o fixed inset:0. */
 .modal--menu {
-  width: min(560px, 94vw); max-height: 88vh;
-  display: flex; flex-direction: column;
-  padding: 0; border-radius: 0;
+  display: flex; flex-direction: column; align-items: center;
+  background:
+    radial-gradient(ellipse 900px 620px at 50% 42%, rgba(28, 40, 66, 0.55) 0%, transparent 72%),
+    #070b16;
 }
-/* os decalques de canto (.kit-corner / ::before / ::after) são filhos
-   absolutos do .modal--menu — se o SCROLL ficasse no mesmo elemento eles
-   rolariam junto com o conteúdo. Por isso o scroll vive num wrapper
-   interno (.modal--menu__scroll) e os cantos ficam pinados no painel. */
 .modal--menu__scroll {
+  width: min(560px, 94vw); max-height: 100vh;
   overflow-y: auto; display: flex; flex-direction: column; gap: 4px;
-  padding: 8px 14px 14px;
+  padding: 64px 20px 40px;
 }
 
 .menu-section {

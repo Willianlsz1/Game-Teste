@@ -74,11 +74,11 @@ G.ui = {
   // botões marcados com [data-reveal] nascem ocultos (display:none via classe is-hidden) e
   // só aparecem quando G.reveals.isRevealed(key) vira true. O beacon (anel pulsando) some
   // no 1º clique do botão OU sozinho depois de alguns segundos (nunca bloqueia input).
-  bindReveals() {
-    document.querySelectorAll("[data-reveal]").forEach((btn) => {
-      btn.addEventListener("click", () => this._dismissBeacon(btn), { once: false });
-    });
-  },
+  // L6 (dono jul/05): revelação progressiva DORMENTE — todos os ícones liberados desde o
+  // save novo. Os módulos (reveals.js, spotlight.js) continuam no lugar (o dono vai repensar
+  // o onboarding), mas o fluxo de esconder/beacon/spotlight fica inerte aqui: bindReveals não
+  // pendura nada, renderReveals não esconde nada, onReveal não acende beacon nem spotlight.
+  bindReveals() { /* dormente: nenhum botão nasce oculto, nada a re-bindar */ },
 
   _dismissBeacon(btn) {
     const b = btn.querySelector(".icon-btn__beacon");
@@ -86,31 +86,34 @@ G.ui = {
     btn.classList.remove("is-beacon");
   },
 
-  // chamado por G.reveals.reveal() na 1ª vez que uma tela é destravada nesta sessão.
-  onReveal(key) {
-    const btn = document.querySelector(`[data-reveal="${key}"]`);
-    if (btn) {
-      btn.classList.add("is-beacon");
-      setTimeout(() => this._dismissBeacon(btn), 4000);   // beacon expira sozinho em 4s
-    }
-    this.renderReveals();
-    // L2.5 (docs/design/LAUNCH_ITCHIO.md §L2.5): spotlight guiado de passo 1 sobre o botão
-    // recém-revelado. Passives não tem passo 1 (a tela abre sozinha — ver onConvergenceComplete
-    // em reveals.js) então G.spotlight.onReveal() é um no-op pra essa chave (cfg.step1 ausente).
-    if (G.spotlight) G.spotlight.onReveal(key);
-  },
+  // dormente (L6): reveal continua marcando a flag no estado (reveals.js), mas a UI não
+  // reage — sem beacon, sem spotlight. Todos os ícones já estão visíveis.
+  onReveal(key) { /* no-op visual: ícones sempre visíveis, sem beacon/spotlight */ },
 
-  // aplica visibilidade atual de cada botão [data-reveal] conforme G.reveals.isRevealed().
-  // idempotente — chamado em renderAll() e após cada checagem de gatilho.
+  // dormente (L6): garante TODOS os botões [data-reveal] visíveis (remove qualquer is-hidden/
+  // is-beacon residual de um save/estado antigo). Idempotente.
   renderReveals() {
-    if (!G.reveals) return;
     document.querySelectorAll("[data-reveal]").forEach((btn) => {
-      const key = btn.getAttribute("data-reveal");
-      btn.classList.toggle("is-hidden", !G.reveals.isRevealed(key));
+      btn.classList.remove("is-hidden", "is-beacon");
+      const b = btn.querySelector(".icon-btn__beacon");
+      if (b) b.remove();
     });
   },
 
+  // L6: fecha QUALQUER tela aberta (uma tela por vez). Volta ao combate — o combate/idle
+  // segue rodando por baixo (não pausa; só a intro congela, via G.combat.frozen). Usado pelo
+  // X de cada tela e pelo ESC. `.screen` cobre as telas convertidas; o seletor legado
+  // .modal-overlay/.passives-screen fica por segurança (nenhuma sobra hoje, mas inócuo).
+  closeScreens() {
+    document.querySelectorAll(".screen, .modal-overlay, .passives-screen").forEach((m) => {
+      if (!m.hidden) m.hidden = true;
+    });
+    this.syncActiveScreen();
+  },
+
   openModal(id) {
+    // L6: uma tela por vez — abrir uma troca (não empilha). Fecha o que estiver aberto antes.
+    this.closeScreens();
     this.renderAll();
     // World Map renderiza só ao abrir (não a cada tick); painel começa fechado
     if (id === "modal-worldmap") {
@@ -130,11 +133,9 @@ G.ui = {
     // Re-fita agora que .hidden=false já tirou o display:none do layout.
     if (id === "modal-passives" && this.el["pv-body"]) this._pvFitStage(this.el["pv-body"]);
     this.syncActiveScreen();   // marca o botão como "tela aberta" sem esperar o tick de 1s
-    // L2.5: passo 2 do spotlight guiado, se este modal tiver um guia pendente (ver
-    // MODAL_SPOTLIGHT_KEY). Passives entra aqui tanto no auto-open (1ª Convergence) quanto
-    // em aberturas manuais seguintes — maybeStartStep2 já é idempotente (hintSeen guarda).
-    const skey = this.MODAL_SPOTLIGHT_KEY[id];
-    if (skey && G.spotlight) G.spotlight.maybeStartStep2(skey);
+    // L6: spotlight guiado DORMENTE (dono jul/05) — não dispara passo 2 ao abrir a tela.
+    // O módulo G.spotlight continua carregado (o dono vai repensar o onboarding), só não é
+    // acionado. MODAL_SPOTLIGHT_KEY fica como referência/estado morto.
   },
 
   // modal id -> chave de G.spotlight.CONFIG (mesmas chaves de G.reveals.KEYS).

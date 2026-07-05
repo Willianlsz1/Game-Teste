@@ -1,9 +1,10 @@
 /* =============================================================
    gear.css — Tela de Equipment (6 peças fixas em torno do NPC)
    ============================================================= */
+/* L6: tela cheia (era .modal--gear card centrado). O container .screen já dá
+   fixed inset:0; aqui só a pintura de fundo + layout interno. */
 .modal--gear {
-  width: min(1500px, 96vw); height: 92vh; position: relative;
-  display: flex; flex-direction: column; overflow: hidden;
+  display: flex; flex-direction: column;
   background:
     linear-gradient(rgba(8, 10, 22, 0.18), rgba(8, 10, 22, 0.40)),
     url("../assets/ui/gear_bg.png") center / cover no-repeat;
@@ -147,8 +148,12 @@
 .stat-row--section .stat-row__hint { font-weight: 400; opacity: 0.6; text-transform: none; letter-spacing: 0; }
 .stat-row--light b { color: #cfd8ea; }
 
+/* L6: o breakdown de stat é um overlay full-viewport SOLTO no <body> (irmão das
+   telas .screen, agora z-index:200). Precisa ficar ACIMA da tela ativa — o jogador
+   clica o bônus DENTRO do Gear aberto e o breakdown deve subir na hora. 300 > 200
+   garante isso pra Gear e qualquer outra tela que abra este popover. */
 .stat-pop {
-  position: fixed; inset: 0; z-index: 120;
+  position: fixed; inset: 0; z-index: 300;
   display: flex; align-items: center; justify-content: center;
   background: rgba(4, 6, 12, 0.55); backdrop-filter: blur(2px);
 }
