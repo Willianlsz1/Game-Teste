@@ -124,6 +124,25 @@ Converge, Awaken, Promote) — aprovado por contexto na cena do juramento. Botõ
 comuns seguem em CSS sóbrio (`.kit-btn2`) até o dono definir o novo rumo da
 arte de botão secundário. **Não regenerar btn-bar escura sem o dono reabrir.**
 
+### Fila de UI (ordem do dono, jul/05)
+
+Ordem de implementação definida pelo dono:
+1. **Ícones da toolbar** (EM ANDAMENTO — dono gera a arte). Frameless (só o
+   símbolo, sem moldura baked), **cel-shading**, **cores variadas por sistema**
+   (Gear=aço/azul · World Map=bússola teal · Convergence=violeta · Forge=âmbar
+   · Passives=verde · Awaken=dourado). Fundo transparente, silhueta que lê a
+   40px. Orquestrador: instalar + montar chip de CSS neutro + estados
+   hover/ativo (sai a moldura baked). Ver `combat-hud`/`ui-art-decal-principle`.
+2. **Mover Passivas PARA DENTRO da Convergence** (DECISÃO DO DONO, na fila — só
+   implementar quando ele sinalizar). Tela combinada: ação de convergir +
+   saldo de pontos no TOPO, a **World Tree** no CORPO (gasta os pontos ali). O
+   **ícone de Passivas SAI** da toolbar (Convergence abre a tela combinada).
+   Cuidados: o fit de stage da árvore recalcula embutido; o spotlight/reveal
+   das passivas passa a apontar dentro da Convergence. Layout default =
+   empilhado (topo converge + corpo árvore); alternativa = abas Converge/Tree.
+3. **Distribuição/posição dos mobs + mover o Seeker pra direita** (dono faz o
+   layout; orquestrador ajusta o que for código quando pedido).
+
 ### L5 — Empacotamento itch.io — **🔒 CONGELADA PELO DONO (jul/04)**
 
 > **Não executar em nenhuma sessão.** O dono sente que o nível de polimento
