@@ -30,32 +30,10 @@
     0 20px 60px rgba(0, 0, 0, 0.6);
 }
 
-/* decalques de canto — fixos, nunca esticam; escala uniforme ~64px de lado.
-   Offset 0 (não negativo): alguns modais (.modal--forge/.modal--gear/
-   .awk-modal/.conv-modal) têm overflow:hidden no próprio elemento (recorte
-   do bg-art) — um offset negativo cortaria o decalque pela metade. */
-.kit-panel::before,
-.kit-panel::after,
-.kit-panel .kit-corner {
-  content: ""; position: absolute; width: 64px; height: 64px;
-  background-repeat: no-repeat; background-size: contain; pointer-events: none; z-index: 5;
-}
-.kit-panel::before {
-  top: 0; left: 0;
-  background-image: url("../assets/ui/kit/corner_tl.png");
-}
-.kit-panel::after {
-  top: 0; right: 0;
-  background-image: url("../assets/ui/kit/corner_tr.png");
-}
-.kit-panel .kit-corner--bl {
-  bottom: 0; left: 0;
-  background-image: url("../assets/ui/kit/corner_bl.png");
-}
-.kit-panel .kit-corner--br {
-  bottom: 0; right: 0;
-  background-image: url("../assets/ui/kit/corner_br.png");
-}
+/* decalques de canto REMOVIDOS (dono, jul/05: "as pontas da borda ficam
+   ridículas — remova tudo sobre isso"). O painel fica só na laca + borda fina.
+   Assets kit/corner_*.png e kit/crest_*.png ficam órfãos (limpeza posterior);
+   spans .kit-corner--bl/br no HTML tornam-se inertes (sem CSS). */
 
 /* ---- botão padrão (sóbrio, CSS puro) ---- */
 .kit-btn2 {
