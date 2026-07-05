@@ -22,12 +22,12 @@ G.spotlight = {
   CONFIG: {
     forge: {
       hintKey: "guide_forge",
-      step1: { targetSel: "#btn-forge", text: "The Forge has awakened — open it.", modalId: "modal-forge" },
-      step2: { targetSel: "#forge-promote", text: "Promotion awaits — rarity is power." },
+      step1: { targetSel: "#btn-forge", text: "The Forge has awakened. Open it.", modalId: "modal-forge" },
+      step2: { targetSel: "#forge-promote", text: "Promotion awaits. Rarity is power." },
     },
     worldmap: {
       hintKey: "guide_worldmap",
-      step1: { targetSel: "#btn-worldmap", text: "New paths call — open the map.", modalId: "modal-worldmap" },
+      step1: { targetSel: "#btn-worldmap", text: "New paths call. Open the map.", modalId: "modal-worldmap" },
       // "next area" = a fronteira do progresso (maxAreaUnlocked), não necessariamente a área
       // ATUAL (d.areaIndex pode já ter avançado até lá). resolve() escolhe o nó certo pelo
       // índice em vez de depender de qual classe CSS o primeiro nó do DOM tem.
@@ -44,8 +44,8 @@ G.spotlight = {
     },
     convergence: {
       hintKey: "guide_convergence",
-      step1: { targetSel: "#btn-convergence", text: "The light can converge now — see how.", modalId: "modal-convergence" },
-      step2: { targetSel: "#btn-converge", text: "Convergence resets the climb — and pays in permanent power." },
+      step1: { targetSel: "#btn-convergence", text: "The light can converge now. See how.", modalId: "modal-convergence" },
+      step2: { targetSel: "#btn-converge", text: "Convergence resets the climb, and pays in permanent power." },
     },
     passives: {
       hintKey: "guide_passives",
@@ -55,7 +55,7 @@ G.spotlight = {
     },
     awaken: {
       hintKey: "guide_awaken",
-      step1: { targetSel: "#btn-awaken", text: "A distant light calls — answer it.", modalId: "modal-awaken" },
+      step1: { targetSel: "#btn-awaken", text: "A distant light calls. Answer it.", modalId: "modal-awaken" },
       step2: { targetSel: "#awaken-preview", text: "The rite asks four proofs. Gather them." },
     },
   },

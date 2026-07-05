@@ -153,7 +153,7 @@ G.reveals = {
       if (!item || (G.gear.isMaxed && G.gear.isMaxed(item))) continue;
       if (d.lumens >= G.gear.cost(item)) {
         this.markHintSeen("gearUpgrade");
-        if (G.ui && G.ui.log) G.ui.log("✧ You have enough Lumens — upgrade your gear.", "level");
+        if (G.ui && G.ui.log) G.ui.log("✧ You have enough Lumens to upgrade your gear.", "level");
         break;
       }
     }
@@ -196,7 +196,7 @@ G.reveals = {
   checkHarbingerHint() {
     if (this.hintSeen("harbinger")) return;
     this.markHintSeen("harbinger");
-    if (G.ui && G.ui.toast) G.ui.toast("Something stirs beneath the grove — count the kills.");
+    if (G.ui && G.ui.toast) G.ui.toast("Something stirs beneath the grove. Count the kills.");
   },
 
   // progression.js:checkGroupUnlock/unlockNext — World Map: porta da área 2 batida.
@@ -214,7 +214,7 @@ G.reveals = {
     if (!d || this.isRevealed("convergence")) return;
     const gate = G.convergence.currentGate();
     if (d.level >= gate * this.CONVERGENCE_GATE_FRAC)
-      this.reveal("convergence", "A threshold nears — something in you could break, and begin anew.");
+      this.reveal("convergence", "A threshold nears. Something in you could break, and begin anew.");
   },
 
   // convergence.js:converge() — Passives: 1ª Convergence concluída, tela ABRE SOZINHA 1x.
