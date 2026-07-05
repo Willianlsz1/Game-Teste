@@ -137,10 +137,15 @@ P0–P8.5b divergirem do `P9_REBALANCE.md`, o P9 vence. Histórico completo das
    no G4–G6? · quando entendeu que 100k era a missão? · nós restantes da
    árvore pareciam alcançáveis? (Nota: rodada 3 valida o v8; a rodada 4 já
    tem pauta própria — não misturar.)
-2. **Fase de UI (zero balance, pode rodar em paralelo):** tooltip de gear v2
-   · Forja vende promoção (assinatura 🔒 + ×8 + N/50) · onboarding do Awaken
-   · contador de material visível · Corona invisível pré-awaken · UI copy de
-   fronteira (item antigo) · formatação % (feita no P9.6).
+2. **TRILHA DE LANÇAMENTO ITCH.IO (jul/04, dono) — SPEC:
+   `docs/design/LAUNCH_ITCHIO.md`** (absorve a antiga "fase de UI"). Fases:
+   L1 menu/settings/export-import (EM EXECUÇÃO, agente Sonnet) → L2
+   revelação progressiva das HUDs (tabela de gatilhos ✅ aprovada) → L3
+   onboarding primeiros minutos → L4 lore in-game (cartões de área + ritos +
+   Harbingers ✅; SÓ depois do fit bakear — data.js) → L5 empacotamento
+   itch. Itens antigos da fase de UI (tooltip v2, Forja vende promoção,
+   onboarding do Awaken, Corona invisível, contador de material) entram no
+   L2/L3/L4 correspondente.
 3. **P8.6 — reabrir balance pós-design:** escolta mecânica (diff pronto em
    `docs/balance/PATCH_P8.6_boss_last_mecanico.patch`) + Okhra invocando
    Harbingers (aprovado em conceito) — pode fundir com a rodada 4.
