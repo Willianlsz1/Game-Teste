@@ -55,7 +55,7 @@ Project skills (`.claude/skills/<name>/SKILL.md` — migradas de `.claude/comman
 | `/retomar` | start of session | read fable-mode + HANDOFF + active track doc, canon check injetado, report position in ≤10 lines |
 | `/handoff` | end of session | rewrite HANDOFF, verify definition-of-done, run canon check, commit+push (só o dono invoca) |
 | `/travar <decisão>` | a decision is made | record it in the right SPEC + HANDOFF, with sim validation if numeric (só o dono invoca) |
-| `/balance <pergunta>` | any balance question | answer ONLY via `tools/sim.js` (never from theory); in-memory overrides for candidates |
+| `/balance <pergunta>` | any balance question | answer ONLY via `tools/sim.js` (never from theory); in-memory overrides for candidates. **Método de decisão: `docs/design/COMO_BALANCEAR.md`** (ordem de dependência, ciclo de 4 passos, as 5 formas, checklist de sistema novo) |
 | `/canon` | doc hygiene | roda isolado (fork, modelo barato): fix live drift (superseded terms), extend TERMS list |
 
 **Doc discipline:** SPEC (living, one per system) vs LOG (dated audit — act on it, then delete or banner). A doc that contradicts the code gets fixed or bannered within the session that notices it. `node tools/check_canon.js` exits 1 on live drift (docs only; `src/` is exempt until renames are ordered by the balance work).

@@ -213,7 +213,9 @@ P0–P8.5b divergirem do `P9_REBALANCE.md`, o P9 vence. Histórico completo das
   nas versões anteriores deste doc).
 - **Comandos de sessão** (`.claude/commands/`): `/retomar` · `/handoff` ·
   `/travar` · `/balance` · `/canon`.
-- **Docs de design vivos:** `P9_REBALANCE.md` (trilha + pauta rodada 4) ·
+- **Docs de design vivos:** `COMO_BALANCEAR.md` (**o MÉTODO de decisão de
+  balance — ler quando o dono pedir "como balancear X" ou abrir sistema
+  novo**) · `P9_REBALANCE.md` (trilha + pauta rodada 4) ·
   `GAIADON_NUMBERS.md` (referência do gênero, §5b–5e mineração completa) ·
   `GEAR_BONUS_CATALOG.md` · `MOB_MECHANICS_CATALOG.md` · `CONTEXT.md`
   (glossário canônico).
