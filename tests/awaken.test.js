@@ -28,6 +28,7 @@ function satisfyAll() {
   d.maxAreaUnlocked = req.area - 1;          // area (1-based) alcançada
   lightCrown();                              // coroa acesa (crownActive)
   d.awakenMaterials.firstLight = req.materials.firstLight;
+  if (req.lumens != null) d.lumens = req.lumens;   // P8: oferenda de Lumens
   G.state.invalidateStats();
 }
 
@@ -35,14 +36,16 @@ function satisfyAll() {
 store = {}; G.state.data = null; G.state.load();
 const req = G.awaken.def(FL).requirements;
 ok(req && "area" in req && "crown" in req && "materials" in req,
-  "requirements tem area/crown/materials (as três provas)");
+  "requirements tem area/crown/materials (as provas)");
+ok("lumens" in req && req.lumens >= 1, "P8: requirements tem a Oferenda de Lumens");
 ok(!("level" in req) && !("convergences" in req) && !("kills" in req),
   "requisitos crus removidos: level/convergences/kills fora");
 ok(req.area === 18 && req.crown === true && req.materials.firstLight >= 1,
   "área 18 + coroa exigida + N≥1 material");
 const reqList = G.awaken.requirements(FL);
-ok(reqList.length === 3, "requirements(id) lista exatamente as três provas");
+ok(reqList.length === 4, "requirements(id) lista as quatro provas (área/coroa/oferenda/material)");
 ok(reqList.some((r) => r.key === "crown"), "requirements(id) inclui a prova da coroa");
+ok(reqList.some((r) => r.key === "lumens"), "requirements(id) inclui a Oferenda de Lumens (P8)");
 ok(!reqList.some((r) => r.key === "level" || r.key === "convergences" || r.key === "kills"),
   "requirements(id) NÃO exige campos ausentes (level/convergences/kills)");
 
@@ -79,11 +82,13 @@ G.state.data.maxAreaUnlocked = req.area - 2;   // uma área abaixo do limiar do 
 ok(G.awaken.canAwaken(FL) === false, "área abaixo da 18 -> não pode");
 G.state.data.maxAreaUnlocked = req.area - 1;
 
-// 5) realizar Awaken consome material, marca concluído, sobe tier
+// 5) realizar Awaken consome material + oferenda de Lumens, marca concluído, sobe tier
 const beforeMat = G.state.data.awakenMaterials.firstLight;
+G.state.data.lumens = req.lumens + 123;   // sobra pra ver o consumo exato da oferenda (P8)
 const did = G.awaken.awaken(FL);
 ok(did === true, "awaken() executou");
 ok(G.state.data.awakenMaterials.firstLight === beforeMat - req.materials.firstLight, "consumiu Awaken Material");
+ok(G.state.data.lumens === 123, "P8: consumiu a Oferenda de Lumens (sobra o excedente)");
 ok(G.awaken.isDone(FL) === true, "First Light marcado como concluído");
 ok(G.state.data.awakens.indexOf(FL) !== -1 && G.state.data.awakenTier === 1, "awakens[] e awakenTier atualizados");
 ok(G.awaken.canAwaken(FL) === false, "não pode realizar o mesmo Awaken duas vezes");

@@ -106,7 +106,8 @@ function gearAvgLevel() {
 function combatSnapshot() {
   const d = G.state.data, s = G.state.stats();
   const area = G.data.currentArea();
-  const lvl = G.util.clamp(d.level, area.levelRange[0], area.levelRange[1]);
+  // P1: HP do mob usa o NÍVEL DA ÁREA (fixo), não o do Seeker — TTK reflete a dificuldade de zona.
+  const lvl = G.enemyFactory.mobLevelFor(d.areaIndex);
   const mobHp = G.data.mobHpAt(lvl, area);
   const dmgHit = s.atk * (1 + (s.crit / 100) * (s.critMult - 1));
   const eDps = dmgHit / G.state.attackInterval();
@@ -117,11 +118,13 @@ function combatSnapshot() {
 }
 
 // ---------- políticas do jogador ----------
+// P9 (porta dupla): a persona avança quando bate o NÍVEL DE PORTA (dial levelGateByArea via
+// progression.levelGateFor) — não mais o levelRange do mob (que agora é SÓ stat do mob).
 function bestAreaFor(level) {
   const d = G.state.data;
   let best = 0;
   for (let i = 0; i <= (d.maxAreaUnlocked || 0) && i < G.data.areas.length; i++)
-    if (G.data.areas[i].levelRange[0] <= level) best = i;
+    if (G.progression.levelGateFor(i) <= level) best = i;
   return best;
 }
 
@@ -142,6 +145,9 @@ function policyTick(sim) {
     const snap = combatSnapshot();
     sim.areaEntries.push({ area: best + 1, t: sim.t, run: (d.convergences || 0) + 1, level: d.level, ...snap });
   }
+  // P2 (âncora TTK): amostra ROLANTE de TTK na área atual — a última leitura antes de sair vira
+  // o "TTK de SAÍDA" (o mob é fixo, o jogador cresce → TTK derrete da entrada pra saída).
+  if (sim.areaExit) { const ex = combatSnapshot(); sim.areaExit[d.areaIndex] = { ttk: ex.ttk, level: d.level }; }
 
   // 2. gastar Lumens em gear (greedy: peça mais barata primeiro)
   for (let i = 0; i < 500; i++) {
@@ -227,7 +233,7 @@ function freshSim(opts) {
     push: opts.push || 1,
     allowAwaken: !!opts.allowAwaken,
     onConverge: opts.onConverge || null,
-    milestones: [], areaEntries: [], runs: [],
+    milestones: [], areaEntries: [], runs: [], areaExit: {},
     lastAreaEntered: -1, lastConvT: 0, nodeLevelsBought: 0, firstLightAt: null,
     promotions: [], awakenMatAt: null, crownAt: null,
   };
@@ -275,12 +281,17 @@ function scenarioBaseline() {
     console.log(row([m.level, fmtT(m.t), m.kills, m.gear, fmtN(m.income), m.deaths], W1));
 
   const gs = G.data.balance.groupSize || 3;
-  const W2 = [6, 6, 9, 7, 10, 9, 9, 10, 10];
-  console.log('\n' + row(['área', 'grupo', 'entrada', 'nível', 'mobHP', 'TTK', 'TTD', 'ATK', 'HP'], W2));
+  // P2 (âncora TTK): TTK em SEGUNDOS na ENTRADA (mob fresco, jogador sob-nível) e na SAÍDA
+  //   (última leitura antes de avançar: jogador cresceu, mob fixo → derrete). O par entrada→saída
+  //   é o sinal de zona (entra difícil, sai fácil) do paradigma novo.
+  const W2 = [6, 6, 9, 7, 10, 10, 10, 9, 10, 10];
+  console.log('\n' + row(['área', 'grupo', 'entrada', 'nível', 'mobHP', 'TTK ent', 'TTK saí', 'TTD', 'ATK', 'HP'], W2));
   for (const a of sim.areaEntries) {
     const flag = a.ttk > 60 ? ' ⛔ WALL' : a.ttk > 15 ? ' ⚠' : '';
     const grp = 'G' + (Math.floor((a.area - 1) / gs) + 1);
-    console.log(row([a.area, grp, fmtT(a.t), a.level, fmtN(a.mobHp), a.ttk.toFixed(1) + 's', a.ttd.toFixed(1) + 's', fmtN(a.atk), fmtN(a.hp)], W2) + flag);
+    const ex = sim.areaExit[a.area - 1];
+    const ttkExit = (ex && ex.level > a.level) ? ex.ttk.toFixed(1) + 's' : '—';
+    console.log(row([a.area, grp, fmtT(a.t), a.level, fmtN(a.mobHp), a.ttk.toFixed(1) + 's', ttkExit, a.ttd.toFixed(1) + 's', fmtN(a.atk), fmtN(a.hp)], W2) + flag);
   }
   if (sim.timedOut) console.log(`\n⚠ timeout em ${hours}h — nível final ${G.state.data.level} (área ${G.state.data.areaIndex + 1})`);
 

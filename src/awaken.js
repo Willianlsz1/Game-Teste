@@ -47,6 +47,11 @@ G.awaken = {
       const lit = !!(G.passives && G.passives.crownActive());
       out.push({ key: "crown", need: 1, have: lit ? 1 : 0, met: lit });
     }
+    // P8 (Oferenda de Lumens): sink one-time de fim de mapa. Consumida no rito (awaken()).
+    if (r.lumens != null) {
+      const have = (G.state.data.lumens || 0);
+      out.push({ key: "lumens", need: r.lumens, have, met: have >= r.lumens });
+    }
     if (r.materials) {
       for (const mk of Object.keys(r.materials)) {
         const have = G.economy ? G.economy.getAwaken(mk) : 0;
@@ -66,6 +71,8 @@ G.awaken = {
     const a = this.def(id), d = G.state.data;
     const mats = (a.requirements && a.requirements.materials) || {};
     for (const mk of Object.keys(mats)) if (G.economy) G.economy.addAwaken(mk, -mats[mk]);
+    // P8 (Oferenda de Lumens): consome a oferenda one-time do rito.
+    if (a.requirements && a.requirements.lumens != null) d.lumens = Math.max(0, (d.lumens || 0) - a.requirements.lumens);
     if (!Array.isArray(d.awakens)) d.awakens = [];
     d.awakens.push(id);
     d.awakensUnlocked = d.awakens;

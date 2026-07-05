@@ -85,6 +85,8 @@ Object.assign(G.ui, {
     const reqName = { area: "Area", level: "Lv", kills: "Kills", convergences: "Convergences" };
     const reqs = G.awaken.requirements(a.id).map((r) => {
       if (r.key === "crown") return { label: "The Ring Closes (crown lit)", met: r.met };
+      // P8: Oferenda de Lumens (one-time) — rótulo em inglês "Offering".
+      if (r.key === "lumens") return { label: `Offering ${G.util.fmt(r.have)}/${G.util.fmt(r.need)} ✦`, met: r.met };
       const base = r.key.indexOf("material:") === 0 ? "Awaken Mat" : (reqName[r.key] || r.key);
       return { label: `${base} ${G.util.fmt(r.have)}/${G.util.fmt(r.need)}`, met: r.met };
     });

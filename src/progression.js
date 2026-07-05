@@ -2,6 +2,17 @@
 // combat.onKill chama G.progression.checkLevelUp; combat.markBossCleared chama G.progression.unlockNext.
 
 G.progression = {
+  // P9 corrigida (porta dupla): NÍVEL DE PORTA por área — a liberação da ENTRADA (meta visível
+  // pro jogador). Lê o DIAL levelGateByArea[idx] (data.js); fallback = levelRange[0] da área.
+  // A porta libera a entrada; a PERMANÊNCIA quem regula é a parede de entrada (P2b: TTK/TTD do
+  // mob fixo — entrou fraco, apanha e volta). levelRange segue sendo a definição de stat do mob.
+  levelGateFor(idx) {
+    const b = G.data.balance;
+    idx = G.util.clamp(idx || 0, 0, G.data.areas.length - 1);
+    const ovr = (Array.isArray(b.levelGateByArea) && b.levelGateByArea[idx] != null) ? b.levelGateByArea[idx] : null;
+    return (ovr != null) ? ovr : G.data.areas[idx].levelRange[0];
+  },
+
   unlockNext() {
     const d = G.state.data;
     if (typeof d.maxAreaUnlocked !== "number") d.maxAreaUnlocked = d.areaIndex;
@@ -27,9 +38,10 @@ G.progression = {
     this.checkGroupUnlock();
   },
 
-  // Dentro de um grupo, a próxima área destrava por NÍVEL (a fronteira de grupo continua
-  // travada pelo Harbinger via unlockNext). Estende a fronteira desbloqueada enquanto o
-  // nível qualificar e a área seguinte for do MESMO grupo.
+  // Dentro de um grupo, a próxima área destrava por NÍVEL DE PORTA (P9: levelGateFor — dial
+  // levelGateByArea, não mais o levelRange do mob). A fronteira de grupo continua travada pelo
+  // Harbinger via unlockNext. Estende a fronteira desbloqueada enquanto o nível qualificar e a
+  // área seguinte for do MESMO grupo.
   checkGroupUnlock() {
     const d  = G.state.data;
     const gs = G.data.balance.groupSize;
@@ -38,7 +50,7 @@ G.progression = {
       const idx = d.maxAreaUnlocked, nextIdx = idx + 1;
       if (nextIdx >= G.data.areas.length) return;
       if (Math.floor(idx / gs) !== Math.floor(nextIdx / gs)) return;   // fronteira de grupo → gate do Harbinger
-      if (d.level < G.data.areas[nextIdx].levelRange[0]) return;
+      if (d.level < this.levelGateFor(nextIdx)) return;                // P9: porta = DIAL levelGateByArea
       d.maxAreaUnlocked = nextIdx;
       if (G.ui && G.ui.log) G.ui.log(`✦ ${G.data.areas[nextIdx].name} unlocked, the grove deepens.`, "good");
       if (G.ui && G.ui.renderResources) G.ui.renderResources();

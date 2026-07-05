@@ -8,29 +8,25 @@
 
 ## Onde o trabalho está AGORA
 
-**⏸️ SESSÃO jul/04 (noite) — RE-FIT DO PARADIGMA INTERROMPIDO POR LIMITE DE
-USO (reseta 22:10 SP). Estado exato pra retomar:**
+**✅ SESSÃO jul/04 (noite) — ESTRUTURA DO PARADIGMA P1–P9 COMMITADA.**
+Ciclo completo: Opus implementou → Sonnet reprovou (bloqueante gate nv 81)
+→ dono corrigiu P9 (porta dupla) → Opus consertou → Sonnet re-aprovou →
+orquestrador revisou e commitou. Estado:
 
-- **Conjunto P1–P9 FECHADO pelo dono** — `docs/design/DECISOES_DONO.md` Parte I
-  (P7 backtrack invisível · P8 Oferenda · P2b curva TTK 5–8s→1s · atk speed
-  cap 15 global · P4 só na curva nua · P5 escada por tier · **P9 porta dupla:
-  nível LIBERA a entrada da área, dificuldade regula permanência — níveis de
-  porta viram dial re-derivado no fit**).
-- **Working tree (NÃO commitado):** implementação P1–P8 do Opus (testes 100%,
-  campaign roda; dials em `data.js`) **+ um conserto ERRADO de P9** em
-  `src/progression.js` (removeu a chave de nível dentro do grupo — era a
-  proposta do orquestrador que o dono CORRIGIU depois; a correção não chegou
-  a ser aplicada porque o agente bateu no limite).
-- **PRÓXIMO PASSO (1º da fila ao retomar):** relançar o executor (Opus) com a
-  instrução que já está pronta no fim do transcript do agente a1f99c257f31ccc55
-  e no livro-razão P9: REVERTER a remoção da chave de nível em progression.js,
-  expor `levelGateByArea` como dial, derivar níveis de porta provisórios
-  alcançáveis no relógio de cada área (G1 ~1h; o v9-r7 exigia nv 81 na área 1
-  = 6h58 medido — o bloqueante do review adversarial), re-rodar tests +
-  baseline + campaign 3 seeds. Depois: review adversarial de novo (Sonnet) →
-  revisão do orquestrador → commit.
-- Review adversarial nº1 (Sonnet): REPROVOU só pelo bloqueante P1×P4/gate de
-  nível; P1,P2,P3,P5,P6,P7,P8 fiéis à spec, testes verdes, 3 seeds sãos.
+- **No código (com dials provisórios):** P1 mob=área (`mobLevelFor`) · P2 cap
+  atk speed 15 global · P2b TTK entrada>saída confirmado · P3 Lumens curva
+  própria (`lumensBaseFor`, accel G6) · P4 curva nua ok · P5 rewardMult por
+  tier (Ember 3×/Lumen 6×/Corona 13× do hpMult) · P6 gear custo quadrático ·
+  P7 backtrack (ref = TOPO da banda, floor 2%, invisível) · P8 Oferenda
+  (`requirements.lumens`, UI "Offering") · P9 porta dupla (`levelGateByArea`,
+  porta área 2 = 22; era 81). Tests 6/6 · campaign 3 seeds 17–25h ponta a
+  ponta · baseline G1 0.67h.
+- **PRÓXIMA FASE = O FIT ÚNICO** (tools/p9, medindo TTK, sem gate de relógio),
+  matando os pendentes medidos: serrote XP ×81 na fronteira 1→2 (candidato:
+  `mobLevelByArea` rampando) · baseline no-prestige trava no G2 (canon = G4)
+  · Okhra 206–220 golpes (banda 60–120) · G2 ~5–6h · Oferenda 5e11 chutada ·
+  tabelas mid-map provisórias (calibrate 1-run suavizado; salto do Porto ~×10
+  vs canon ~×300). Roteamento do dono: Opus julga o fit, Sonnet roda batches.
 
 
 

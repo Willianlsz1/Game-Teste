@@ -173,10 +173,24 @@ G.state = {
   },
 
   maxHp()              { return this.stats().hp; },
-  currentAtkSpeedCap() { return this.data.mapOneCleared ? G.data.balance.map2AtkSpeedCap : G.data.balance.map1AtkSpeedCap; },
+  // P2 (âncora TTK): cadência sem teto por mapa — cap GLOBAL de 15 golpes/s pro jogo inteiro.
+  //   Cada golpe dá dano cheio; DPS = ATK × golpes/s. atkSpeedCapGlobal é o dial (aliases
+  //   map1/map2AtkSpeedCap agora batem nele — compat de leitura antiga).
+  currentAtkSpeedCap() { return G.data.balance.atkSpeedCapGlobal || G.data.balance.map1AtkSpeedCap; },
   currentAtkSpeedSoft() { return this.currentAtkSpeedCap() * G.data.balance.atkSpeedSoftFrac; },
   attackInterval()     { return G.util.clamp(1 / this.stats().atkSpeed, 1 / this.currentAtkSpeedCap(), 5); },
-  xpToNext()           { return Math.ceil(G.data.balance.xpCurveBase * Math.pow(this.data.level, G.data.balance.xpCurveExp)); },
+  // P4 (custo de XP encarpado no início): expoente MAIOR (xpCurveExpEarly) nos primeiros níveis,
+  //   transição linear até xpCurveExp em xpCurveEarlyUntil. Alvo NU (dono): nenhum kill dá 2+ níveis
+  //   sem bônus de XP; com bônus, cascata é feature. Fallback ao expoente único se early ausente.
+  xpToNext() {
+    const b = G.data.balance, lvl = this.data.level;
+    let exp = b.xpCurveExp;
+    if (b.xpCurveExpEarly != null && b.xpCurveEarlyUntil > 1) {
+      const t = G.util.clamp((lvl - 1) / (b.xpCurveEarlyUntil - 1), 0, 1);   // 0 no nível 1 → 1 no fim do early
+      exp = b.xpCurveExpEarly + (b.xpCurveExp - b.xpCurveExpEarly) * t;      // interpola early→cruzeiro
+    }
+    return Math.ceil(b.xpCurveBase * Math.pow(lvl, exp));
+  },
 
   // save/load — fallback em memória quando localStorage está bloqueado (file://)
   _mem: {},

@@ -9,7 +9,8 @@ G.income = {
     const areas = G.data.areas;
     idx = G.util.clamp(idx || 0, 0, areas.length - 1);
     const area  = areas[idx];
-    const lvl   = G.util.clamp(G.state.data.level, area.levelRange[0], area.levelRange[1]);
+    // P1: nível do mob = nível FIXO da área (não do Seeker) → HP/XP de zona.
+    const lvl   = G.enemyFactory.mobLevelFor(idx);
 
     const mobHp  = G.data.mobHpAt(lvl, area);
     const mobAtk = b.mobAtkByArea[G.util.clamp(idx, 0, b.mobAtkByArea.length - 1)];
@@ -43,14 +44,16 @@ G.income = {
     }
     tierProbs.push({ p: remaining, hpMult: 1, rewardMult: 1 });   // mob comum
 
-    // valor esperado por kill (rare = mais HP = mais lumens E mais tempo de TTK)
+    // valor esperado por kill. P3: Lumens = curva própria da área × rewardMult (não HP × goldRatio).
+    //   rare = mais HP (mais TTK) E MUITO mais reward (P5: ratio reward/hp cresce por tier).
+    const lumensBase = G.data.lumensBaseFor(idx);
     let eLumensPerKill = 0, eXpPerKill = 0, eTtk = 0;
     for (const t of tierProbs) {
       const hpT   = mobHp * t.hpMult;
       const hitsT = Math.ceil(hpT / dmgPerHit);
       // flight = projectileTravel do Seeker (o par no tick: pendingHits.push({..., travel: this.projectileTravel}))
       const ttkT  = hitsT * interval + G.combat.projectileTravel;
-      eLumensPerKill += t.p * hpT * b.goldRatio;
+      eLumensPerKill += t.p * lumensBase * t.rewardMult;
       eXpPerKill     += t.p * baseXpPerKill * t.rewardMult;
       eTtk           += t.p * ttkT;
     }

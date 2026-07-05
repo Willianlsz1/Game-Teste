@@ -28,12 +28,19 @@ G.gear = {
 
   isMaxed(item) { return (item.level || 1) >= this.cap(item); },
 
-  // custo geométrico: base × growth^(nível-1) × multiplicador da raridade
+  // P6 (custo QUADRÁTICO): custo do próximo nível cresce LINEARMENTE no nível →
+  //   custo(N) = base × (1 + gearCostLinear × (N-1)) × costMult; o ACUMULADO Σ1..N é quadrático
+  //   (grind confortável logo após promover). Fallback geométrico (gearCostGrowth) só se
+  //   gearCostLinear === null. (Gaiadon §4.3.)
   cost(item) {
     const b = G.data.balance;
     const r = G.data.rarities.find(r => r.id === item.rarity);
     const costMult = r ? (r.costMult || 1) : 1;
-    return Math.ceil(b.gearCostBase * Math.pow(b.gearCostGrowth, (item.level || 1) - 1) * costMult);
+    const lvl = (item.level || 1) - 1;
+    const factor = (b.gearCostLinear != null)
+      ? (1 + b.gearCostLinear * lvl)                 // P6: linear no nível → acumulado quadrático
+      : Math.pow(b.gearCostGrowth, lvl);             // legado geométrico
+    return Math.ceil(b.gearCostBase * factor * costMult);
   },
 
   // sobe 1 nível; devolve true se conseguiu

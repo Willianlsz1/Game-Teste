@@ -237,13 +237,16 @@ Object.assign(G.ui, {
     }
     this.el["wmap-info-res"].innerHTML = res;
 
-    // unlock (área travada): condição + barra de progresso por nível
+    // unlock (área travada): condição + barra de progresso por nível.
+    // P9 (porta dupla): a porta lê o DIAL levelGateByArea (progression.levelGateFor), não mais
+    // o levelRange do mob — a porta libera a ENTRADA; a permanência quem regula é a parede (P2b).
+    const gateLv = G.progression.levelGateFor(i);
     const unlockRow = this.el["wmap-info-unlock-row"];
     if (locked) {
       unlockRow.hidden = false;
-      const pct = G.util.clamp((d.level / a.levelRange[0]) * 100, 0, 100);
+      const pct = G.util.clamp((d.level / gateLv) * 100, 0, 100);
       this.el["wmap-info-unlock"].innerHTML =
-        `Reach level ${a.levelRange[0]}` +
+        `Reach level ${gateLv}` +
         `<div class="wmap-info__unlock-bar"><div class="wmap-info__unlock-fill" style="width:${pct}%"></div></div>`;
     } else {
       unlockRow.hidden = true;
@@ -251,7 +254,7 @@ Object.assign(G.ui, {
 
     const tbtn = this.el["wmap-info-travel"];
     if (isCurrent) { tbtn.disabled = true; tbtn.textContent = "You are here"; }
-    else if (locked) { tbtn.disabled = true; tbtn.textContent = `🔒 Reach Lv ${a.levelRange[0]}`; }
+    else if (locked) { tbtn.disabled = true; tbtn.textContent = `🔒 Reach Lv ${gateLv}`; }
     else { tbtn.disabled = false; tbtn.textContent = `Travel to ${a.name}`; }
 
     this.el["wmap-info"].hidden = false;
