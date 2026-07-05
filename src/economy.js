@@ -64,11 +64,11 @@ G.economy = {
   dropTable: {
     common:   {
       commonMaterial: { chance: 0.05, min: 1, max: 1, minAreaIndex: 2 },
-      awakenMaterial: { chance: 1, min: 1, max: 1, minAreaIndex: 12, qtyAreaMult: { 15: 1.7, 16: 2.3, 17: 3.2 } },  // P9 r4: tools/p9 (v7 {1,2} × scale extra 0.56) — não editar à mão, re-fitar
+      awakenMaterial: { chance: 0.5, min: 1, max: 1, minAreaIndex: 12, qtyAreaMult: { 15: 1.7, 16: 2.3, 17: 3.2 } },  // FASE 2 (fitter jul/05): chance 1→0.5 — material pinga (não em todo kill) pro G6 ser combate+coleta
     },
     rare:     {
       commonMaterial:   { chance: 0.15, min: 1, max: 2, minAreaIndex: 2 },
-      awakenMaterial:   { chance: 1, min: 1, max: 3, minAreaIndex: 12, qtyAreaMult: { 15: 1.7, 16: 2.3, 17: 3.2 } },  // P9 r4: tools/p9 (v7 {2,5} × scale extra 0.56) — não editar à mão, re-fitar
+      awakenMaterial:   { chance: 0.6, min: 1, max: 3, minAreaIndex: 12, qtyAreaMult: { 15: 1.7, 16: 2.3, 17: 3.2 } },  // FASE 2 (fitter jul/05): chance 1→0.6 — aceso pinga um pouco mais que comum
       // P9 r4 (§9 item 4): material INCOMUM (chave da promoção) — SÓ mobs acesos (Ember/Lumen/Corona) o dropam.
       // chance/qtd a fitar (tools/p9). rare = qualquer mob com .rarity (aceso).
       uncommonMaterial: { chance: 0.10, min: 1, max: 1, minAreaIndex: 0 },
@@ -82,7 +82,7 @@ G.economy = {
     },
     boss:     {
       commonMaterial:   { chance: 0.45, min: 2, max: 4, minAreaIndex: 2 },
-      awakenMaterial:   { chance: 1, min: 181, max: 454, minAreaIndex: 12, qtyAreaMult: { 15: 1.7, 16: 2.3, 17: 3.2 } },  // P9 r4: tools/p9 (v7 {324,810} × scale extra 0.56) — não editar à mão, re-fitar
+      awakenMaterial:   { chance: 1, min: 40, max: 90, minAreaIndex: 12, qtyAreaMult: { 15: 1.7, 16: 2.3, 17: 3.2 } },  // FASE 2 (fitter jul/05): {181,454}→{40,90} — token de boss garantido, re-ancorado ao requisito 40000 do FL
       uncommonMaterial: { chance: 1, min: 2, max: 4, minAreaIndex: 0 },  // P9 r4 (§9 item 4): Harbingers dropam a chave (massa por boss); qtd a fitar
     },
   },

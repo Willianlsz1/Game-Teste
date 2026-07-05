@@ -389,6 +389,24 @@ function scenarioCampaign() {
     G.economy.dropTable.rare.commonMaterial.chance = +commonChance * 3;
   }
   if (uncCap != null) { const r = G.data.rarities.find(r => r.id === 'uncommon'); if (r) r.cap = +uncCap; }
+  // FASE 2 (fitter): override JSON genérico via env SIM_OVERRIDE — injeta qualquer dial de balance
+  //   sem editar o sim. { "balance": {...}, "areasHp": [[hp0,hp1],...], "drop": {"path":val} }
+  if (process.env.SIM_OVERRIDE) {
+    try {
+      const ov = JSON.parse(process.env.SIM_OVERRIDE);
+      if (ov.balance) for (const k in ov.balance) G.data.balance[k] = ov.balance[k];
+      if (ov.uncCap != null) { const r = G.data.rarities.find(r => r.id === 'uncommon'); if (r) r.cap = ov.uncCap; }
+      if (ov.commonCap != null) { const r = G.data.rarities.find(r => r.id === 'common'); if (r) r.cap = ov.commonCap; }
+      if (ov.drop) for (const p in ov.drop) {   // p ex "boss.awakenMaterial.min"
+        const parts = p.split('.'); let o = G.economy.dropTable;
+        for (let i = 0; i < parts.length - 1; i++) o = o[parts[i]];
+        o[parts[parts.length - 1]] = ov.drop[p];
+      }
+      if (ov.awakenMat != null) G.data.awakens[0].requirements.materials.firstLight = ov.awakenMat;
+      if (ov.offering != null) G.data.awakens[0].requirements.lumens = ov.offering;
+      console.log('  [SIM_OVERRIDE applied]', JSON.stringify(ov).slice(0, 400));
+    } catch (e) { console.error('SIM_OVERRIDE parse error:', e.message); }
+  }
   const ovr = (promoteCost != null || commonChance != null || uncCap != null)
     ? ` · override[cost ${G.data.balance.promoteCommonCost}, chance ${G.economy.dropTable.common.commonMaterial.chance}, uncCap ${G.data.rarities.find(r=>r.id==='uncommon').cap}]` : '';
   console.log(`\n═══ CAMPAIGN — Mapa 1 completo · gate escalonado ×${G.data.balance.convGateGrowth} · push ${push} · seed ${SEED} · ${uncapped ? 'UNCAPPED (clear natural)' : 'cap ' + maxHours + 'h'}${ovr} ═══\n`);

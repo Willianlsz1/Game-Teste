@@ -126,12 +126,12 @@ G.data = {
       requirements: {
         area: 18,
         crown: true,
-        materials: { firstLight: 100000 },  // P9: tools/p9 — não editar à mão, re-fitar
+        materials: { firstLight: 40000 },  // FASE 2 (fitter jul/05): 100000→40000 — re-ancorado ao G6 novo (material pinga do boss/comum sem virar parede-de-farm; ver drops em economy.js)
         // P8 (Oferenda de Lumens): além dos materiais, o First Light exige uma oferenda ONE-TIME
         //   de Lumens (consumida no rito) — sink temático de fim de mapa (devolver a luz colhida).
         //   Na casa do acumulado da fase final de UMA run (P3 acelera renda × P6 desacelera custo).
         //   PROVISÓRIO — o fit final ancora no Lumens acumulado medido no fim do mapa. — DIAL
-        lumens: 1.0e16,  // re-fit único: ~74% do ~13.5Qi acumulado no G6 pré-rito (consome a fatia dominante de UMA run; não exige farm extra)
+        lumens: 1.5e13,  // FASE 2 (fitter jul/05): 1e16→1.5e13 — re-ancorado à economia nova (Lumens do late ~1e9/kill, bem abaixo do fit anterior). G6 fica ~2.9h de combate+coleta (não parede-de-farm); consome a fatia dominante de UMA run sem farm extra
       },
       // P9 rodada 4 (§9): piso ×5 ATK / ×3 HP (fitado EM PAR com o Okhra hpMult).
       // lumensBonus flat REMOVIDO. As mecânicas de revelação/re-subida/escudo do rito:
@@ -539,12 +539,19 @@ G.data = {
     //   expoente do jogador ao subir por bucket e (b) o gap hpY = atkY + 0.5 no dano recebido.
     //   HTK pré-gear sobe ~2→37+ ao longo do mapa → gear/prestige obrigatórios. Escala: HP(1)~13,
     //   HP(6000)~1.5e9. Baseline NU alcança o 1º gate e converge; a parede endurece no pós-prestige.
+    // FASE 2 (fitter jul/05): buckets CONTÍNUOS (x resolvido p/ HP contínuo nas fronteiras — sem os
+    //   cliffs de 232×/6.9×/9.8×/12.5× do fit anterior). hpY RAMPA gentil→íngreme (1.32→2.55): a área 1-2
+    //   é beatável com pouco gear (parede nua sobe só ~3-4 no early), e a parede se constrói gradual
+    //   pro late (HTK nua ~19-92 no fim). O gap y_hp = y_atk + 0.50 é preservado bucket a bucket.
+    //   HP(1)~13, HP(6000)~4e7. Serrote de TTK constante ancorado em ~1s dentro da área (ver relatório
+    //   da Fase 2 §sawtooth). NB: a parede estrutural "gear-só-não-vence" está LIMITADA pela magnitude
+    //   do gear ATK (weapon perLevel 55 × cap) — ver PENDENTE do relatório. — DIAL
     enemyBuckets: [
-      { maxLevel:  200, hpX: 0.130, hpY: 1.24, atkX: 0.66, atkY: 0.74 },  // gap 0.50
-      { maxLevel:  600, hpX: 0.100, hpY: 1.34, atkX: 0.58, atkY: 0.84 },  // gap 0.50
-      { maxLevel: 1600, hpX: 0.070, hpY: 1.46, atkX: 0.50, atkY: 0.96 },  // gap 0.50
-      { maxLevel: 3200, hpX: 0.048, hpY: 1.60, atkX: 0.43, atkY: 1.10 },  // gap 0.50
-      { maxLevel: Infinity, hpX: 0.032, hpY: 1.74, atkX: 0.37, atkY: 1.24 },  // gap 0.50 (topo)
+      { maxLevel:  200, hpX: 0.1433, hpY: 1.32, atkX: 0.6634, atkY: 0.82 },  // gap 0.50
+      { maxLevel:  600, hpX: 0.4717, hpY: 1.58, atkX: 2.6221, atkY: 1.08 },  // gap 0.50
+      { maxLevel: 1600, hpX: 1.5721, hpY: 1.90, atkX: 9.0774, atkY: 1.40 },  // gap 0.50
+      { maxLevel: 3200, hpX: 4.6168, hpY: 2.25, atkX: 25.5384, atkY: 1.75 },  // gap 0.50
+      { maxLevel: Infinity, hpX: 9.9668, hpY: 2.55, atkX: 51.7860, atkY: 2.05 },  // gap 0.50 (topo)
     ],
     // P3 via P10 (gold math do Gaiadon §2.2): Lumens/kill = (mob_level / goldX)^goldY, MESMA
     //   família paramétrica, com buckets PRÓPRIOS. Regra-chave: y_gold SOBE por bucket e
@@ -552,12 +559,14 @@ G.data = {
     //   late game — o espetáculo do P3 vira o expoente de gold crescente (não mais lumensByArea).
     //   rewardMult dos acesos (P5 Ember/Lumen/Corona) MULTIPLICA por cima disto (igual ao gold×40
     //   do FIEND no Gaiadon: "caçar raro" é a fonte real de riqueza). PROVISÓRIO — fit Fase 2. — DIAL
+    // FASE 2 (fitter jul/05): gold contínuo, y_gold RAMPA acima de y_hp no late (P3: Lumens aceleram
+    //   no fim). goldBase(1)~2.93 (âncora do early hook). — DIAL
     goldBuckets: [
-      { maxLevel:  200, x: 0.42, y: 1.24 },  // = y_hp (early)
-      { maxLevel:  600, x: 0.38, y: 1.42 },  // > y_hp (1.42 vs 1.34)
-      { maxLevel: 1600, x: 0.34, y: 1.60 },  // > y_hp (1.60 vs 1.46)
-      { maxLevel: 3200, x: 0.30, y: 1.82 },  // > y_hp (1.82 vs 1.60)
-      { maxLevel: Infinity, x: 0.26, y: 2.08 },  // >> y_hp (2.08 vs 1.74) — o espetáculo do fim
+      { maxLevel:  200, x: 0.4429, y: 1.32 },  // = y_hp (early)
+      { maxLevel:  600, x: 1.4598, y: 1.64 },  // > y_hp (1.64 vs 1.58)
+      { maxLevel: 1600, x: 4.3132, y: 2.00 },  // > y_hp (2.00 vs 1.90)
+      { maxLevel: 3200, x: 11.5616, y: 2.40 },  // > y_hp (2.40 vs 2.25)
+      { maxLevel: Infinity, x: 23.6502, y: 2.75 },  // >> y_hp (2.75 vs 2.55) — o espetáculo do fim
     ],
     // [LEGADO/FALLBACK P1-P9] ATK do mob POR ÁREA (idx 0-17). Substituído pela fórmula
     //   paramétrica (enemyBuckets.atk); mantido como fallback e p/ compat de save/sim até o
@@ -629,8 +638,14 @@ G.data = {
     //   LINEARMENTE até o floor. Lumens e material INTACTOS (só XP). Invisível em UI. Nunca
     //   morde a re-subida pós-Convergence (herói renasce abaixo da área — por construção).
     //   redução = clamp(1 - backtrackPerLevel × (seekerLvl - bandaTopo), backtrackFloor, 1). — DIAL
-    backtrackFloor:      0.02,  // P7: piso da XP em backtrack (2%, ref. Gaiadon §2.3) — DIAL
-    backtrackPerLevel:   0.01,  // P7: queda de XP por nível acima do nível da área — DIAL
+    // FASE 2 (fitter jul/05): floor 0.02→0.0 + perLevel 0.01→0.05. O cap de nível 6000 estava sendo
+    //   batido na ÁREA ~12-15 (cedo) — o jogador SOBRE-nivelava enquanto parado numa área (grindando o
+    //   Harbinger), pinando o mob_level no cap e ACHATANDO a parede do late (áreas 15-18 no mesmo nível 6000).
+    //   Com floor 0 + queda 5×, a XP MORRE acima do topo da banda da área → o nível trava na banda de cada
+    //   área até avançar → mob_level acompanha a área → o cap 6000 cai perto do FIM (área ~18) e a parede do
+    //   late fica graduada. NB: nunca morde a re-subida pós-Convergence (herói renasce abaixo da área). — DIAL
+    backtrackFloor:      0.0,   // FASE 2: piso 0 — XP morre acima do topo da banda (trava o nível na área) — DIAL
+    backtrackPerLevel:   0.05,  // FASE 2: queda de XP por nível acima do topo da banda (5× mais rápida) — DIAL
     // P9 r7 (§9 var 22): threshold do Harbinger em ESCADA GEOMÉTRICA por grupo (G1→G6),
     //   indexado por Math.floor(areaIndex/groupSize). Substitui o antigo base+perGroup (200,220..320).
     //   Morte zera o contador (bossRegrindFrac 1.0 = re-farm do threshold inteiro).
@@ -643,13 +658,14 @@ G.data = {
     //   ~850 kills (~23min) — o oposto do hook. O relógio macro re-emerge sob o modelo novo (modo
     //   descoberta, sem cap de relógio) — reportado na PROJEÇÃO. — DIAL
     gearCostBase:      8,
-    // P6 (custo de gear QUADRÁTICO): troca o crescimento GEOMÉTRICO (gearCostGrowth^(N-1),
-    //   que dispara logo após promover) pela SOMA ARITMÉTICA do Gaiadon §4.3:
-    //     custo(N) = gearCostBase × (1 + gearCostLinear × (N-1)) × costMult(raridade).
-    //   O custo cresce LINEARMENTE no nível → o custo ACUMULADO Σ1..N é quadrático (grind
-    //   mais confortável logo após uma promoção). gearCostGrowth fica INERTE (fallback só se
-    //   gearCostLinear for null). — DIAL
-    gearCostLinear:    0.06,    // P6: inclinação linear do custo por nível (quadrático no acumulado) — DIAL
+    // P6 + FASE 2 (custo de gear SUPER-LINEAR, map-long): custo(N) = base × (1 + linear × (N-1)^exp) × costMult.
+    //   A renda de Lumens cresce ~nível^2.1 (goldBuckets); com um custo LINEAR (exp=1) o gear maxa NA HORA
+    //   (o oposto do desejado). gearCostExp=2.2 faz o custo por nível crescer ~nível^2.2 → acompanha a renda,
+    //   e o gear COMPLETO (Common→promover→Uncommon maxed, 6 slots) só fecha ~área 16-18 (progressão MAP-LONG,
+    //   dono jul/05). Os PRIMEIROS 3-4 upgrades continuam ~base (hook de segundos). gearCostGrowth inerte
+    //   (fallback geométrico só se gearCostLinear=null); gearCostExp=null cai no linear puro do P6. — DIAL
+    gearCostExp:       2.2,     // FASE 2: expoente do custo por nível (super-linear → gear dura o mapa) — DIAL
+    gearCostLinear:    0.05,    // FASE 2: inclinação do custo (par com gearCostExp 2.2) — DIAL
     gearCostGrowth:    1.022,   // P2.2: freio principal — testado no sim
     // P9 r4 (§9 item 4): promoção em DOIS materiais. Common→Uncommon consome
     //   commonMaterial (massa) + uncommonMaterial (chave). Ver gear.promoteCost.

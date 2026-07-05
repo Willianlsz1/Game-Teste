@@ -37,8 +37,15 @@ G.gear = {
     const r = G.data.rarities.find(r => r.id === item.rarity);
     const costMult = r ? (r.costMult || 1) : 1;
     const lvl = (item.level || 1) - 1;
+    // FASE 2 (fitter): gear é progressão MAP-LONG. A renda de Lumens cresce ~nível^2.1 (goldBuckets),
+    //   então um custo LINEAR no nível fica pra trás e o gear maxa na hora. gearCostExp faz o custo
+    //   por nível crescer como nível^exp (exp~2 → custo/nível acompanha a renda; acumulado ~nível^(exp+1)):
+    //     custo(N) = base × (1 + linear × (N-1)^exp) × costMult.
+    //   Os PRIMEIROS níveis ficam ~base (hook rápido); a curva sobe forte só depois — o gear completo
+    //   (Common→promover→Uncommon maxed, todos slots) só fecha ~área 17/18. gearCostExp=null = P6 (linear).
+    const exp = (b.gearCostExp != null) ? b.gearCostExp : 1;
     const factor = (b.gearCostLinear != null)
-      ? (1 + b.gearCostLinear * lvl)                 // P6: linear no nível → acumulado quadrático
+      ? (1 + b.gearCostLinear * Math.pow(lvl, exp))  // FASE 2: super-linear no nível (acompanha a renda ~nível^2.1)
       : Math.pow(b.gearCostGrowth, lvl);             // legado geométrico
     return Math.ceil(b.gearCostBase * factor * costMult);
   },
