@@ -84,11 +84,16 @@ G.state.data.maxAreaUnlocked = req.area - 1;
 
 // 5) realizar Awaken consome material + oferenda de Lumens, marca concluído, sobe tier
 const beforeMat = G.state.data.awakenMaterials.firstLight;
-G.state.data.lumens = req.lumens + 123;   // sobra pra ver o consumo exato da oferenda (P8)
+// A Oferenda é GRANDE por design (P8, re-fit único: ~1e16, na casa do acumulado do G6).
+// Acima de 2^53≈9e15 o double espaça de 2 em 2 (ULP=2 em 1e16): +123 arredonda pra +124,
+// então igualdade exata com somas pequenas deixa de ser confiável — usa-se um excedente
+// proporcional (1% da oferenda) e comparação com tolerância relativa.
+const excess = req.lumens * 0.01;
+G.state.data.lumens = req.lumens + excess;   // sobra pra ver o consumo exato da oferenda (P8)
 const did = G.awaken.awaken(FL);
 ok(did === true, "awaken() executou");
 ok(G.state.data.awakenMaterials.firstLight === beforeMat - req.materials.firstLight, "consumiu Awaken Material");
-ok(G.state.data.lumens === 123, "P8: consumiu a Oferenda de Lumens (sobra o excedente)");
+ok(Math.abs(G.state.data.lumens - excess) <= req.lumens * 1e-9, "P8: consumiu a Oferenda de Lumens (sobra o excedente)");
 ok(G.awaken.isDone(FL) === true, "First Light marcado como concluído");
 ok(G.state.data.awakens.indexOf(FL) !== -1 && G.state.data.awakenTier === 1, "awakens[] e awakenTier atualizados");
 ok(G.awaken.canAwaken(FL) === false, "não pode realizar o mesmo Awaken duas vezes");

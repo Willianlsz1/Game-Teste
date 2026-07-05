@@ -95,7 +95,33 @@ Fit validado em 3 seeds, clear ~38h30. Detalhe e âncoras em `P9_REBALANCE.md §
 
 ## Como fechar
 
-✅ **Declarado fechado em 2026-07-04 (grill).** Roda-se UM re-fit implementando
+✅ **RE-FIT ÚNICO EXECUTADO E BAKEADO em 2026-07-04 (FITTER).** Dials em `src/data.js`
+(hp[] das 18 áreas · mobAtkByArea · levelGateByArea[1]=40 · convGateBase 130 ·
+convGateGrowth 1.32 · 6 boss hpMult · Okhra 320 · Oferenda 1e16). Validação em
+10 seeds (todas completam): **First Light/Okhra 16h18–21h52** (relógio DESCOBERTO,
+não gated) · Okhra 69–102 golpes (banda 60–120) · 1ª conv 43.9min · coroa conv 10 ·
+árvore 100% conv 15 · razão de pontos 1.63 · TTK entrada 5–8s derretendo no
+caminho COM prestige (no baseline nu só o G1 fica na banda; G2+ entra a 14–19s
+— coerente com "mid-map exige prestige", medição do crítico) · G5–G6
+pós-awaken 1.5s · 0 mortes na área 18 · P4 nua 1.37 lvls/kill (era 2.30).
+Tests 6/6 · canon 0 drift. **NÃO commitado** (aguarda revisão do dono).
+
+**✅ RATIFICAÇÕES DO DONO (jul/04, pós-fit):**
+- **Relógio do First Light: banda descoberta 16–22h ACEITA** (a âncora antiga
+  36h±2 era do paradigma velho; esticar futuro = conteúdo, não grind).
+- **Teto sem prestige: G2 ACEITO como teto honesto** (supera o canon antigo
+  "baseline trava em G4"; coerente com "gear sozinho NÃO vence" — todo jogador
+  real converge aos ~44min, muito antes de sentir o teto).
+
+**Julgamento do orquestrador nos 4 pendentes:** (a) resolvido pela ratificação
+acima; (b) serrote XP ×81 cru na fronteira 1→2 ACEITO como tolerância
+estrutural do levelRange (o critério sentido — P4, ≤2 níveis/kill — está
+cumprido: 1.37); (c) H2/H3 HTK bimodal ACEITO (tolerância pré-existente do
+cliff de prestígio); (d) leak de backtrack G2→G3 ACEITO (janela de ~17 níveis
+que a persona não explora; apertar o freio globalmente machucaria a progressão
+normal — reavaliar só se playtest real mostrar exploit).
+
+**[histórico] Plano original:** Roda-se UM re-fit implementando
 a Parte I (P1–P8) + Parte II sobrevivente, medindo em TTK, sem gate de relógio
 (descoberta) → bake → travar. **Roteamento do dono: Opus implementa a
 estrutura e julga o fitting; Sonnet roda os testes e os batches de sim.**

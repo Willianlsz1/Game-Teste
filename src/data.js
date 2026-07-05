@@ -125,7 +125,7 @@ G.data = {
         //   de Lumens (consumida no rito) — sink temático de fim de mapa (devolver a luz colhida).
         //   Na casa do acumulado da fase final de UMA run (P3 acelera renda × P6 desacelera custo).
         //   PROVISÓRIO — o fit final ancora no Lumens acumulado medido no fim do mapa. — DIAL
-        lumens: 5.0e11,
+        lumens: 1.0e16,  // re-fit único: ~74% do ~13.5Qi acumulado no G6 pré-rito (consome a fatia dominante de UMA run; não exige farm extra)
       },
       // P9 rodada 4 (§9): piso ×5 ATK / ×3 HP (fitado EM PAR com o Okhra hpMult).
       // lumensBonus flat REMOVIDO. As mecânicas de revelação/re-subida/escudo do rito:
@@ -213,7 +213,7 @@ G.data = {
       lore: "The Seeker wakes here because the forest allows it. The oldest boughs remember the Lumiere whole, and they dream it still, aurora dripping like sap. Nothing here wants to hurt you. That is what makes it a lie.",
       img: "assets/areas/dreaming_wood.png",
       levelRange: [1, 80],
-      hp: [195, 585],  // PROVISÓRIO (re-fit P1-P8): calibrate + suavização monótona G3-G6 — não editar à mão, recalibrar
+      hp: [114, 342],  // re-fit único P1-P9: hp[0] dimensionado ao envelope de poder do jogador (TTK entrada ~6.5s -> derrete). hp[1] = hp[0]×3 (headroom; mob usa hp[0] fixo)
       enemies: [
         { name: "Candlewisp Shade",  sprite: "🔥", img: "assets/enemies/candlewisp_shade.png"  },
         { name: "Mothlight Herald",  sprite: "🦋", img: "assets/enemies/mothlight_herald.png"  },
@@ -226,7 +226,7 @@ G.data = {
       lore: "Every lantern in the bog was lit by a Fragmented soul that believed the light would lead it home. The bog kept the lanterns and the souls both. They gutter, but they refuse to go out.",
       img: "assets/areas/lantern_mire.png",
       levelRange: [81, 171],
-      hp: [1998, 5994],  // PROVISÓRIO (re-fit P1-P8): calibrate + suavização monótona G3-G6 — não editar à mão, recalibrar
+      hp: [3456, 10368],  // re-fit único P1-P9
       enemies: [
         { name: "Mirelight Drifter", sprite: "🏮", img: "assets/enemies/mirelight_drifter.png" },
         { name: "Candlewisp Shade",  sprite: "🔥", img: "assets/enemies/candlewisp_shade.png"  },
@@ -239,13 +239,13 @@ G.data = {
       lore: "The hollow trees sing because light is trapped inside them, and trapped light does not stay quiet. Pilgrims once pressed their ears to the bark to hear it. Some are still listening. The Hollow Cantor conducts them.",
       img: "assets/areas/whispering_hollows.png",
       levelRange: [172, 276],
-      hp: [30476, 91428],  // PROVISÓRIO (re-fit P1-P8): calibrate + suavização monótona G3-G6 — não editar à mão, recalibrar
+      hp: [29562, 88686],  // re-fit único P1-P9
       enemies: [
         { name: "Husklight Murmur",  sprite: "🌳", img: "assets/enemies/husklight_murmur.png"  },
         { name: "Dreamhorn Warden",  sprite: "🦌", img: "assets/enemies/dreamhorn_warden.png"  },
         { name: "Mirelight Drifter", sprite: "🏮", img: "assets/enemies/mirelight_drifter.png" },
       ],
-      boss: { name: "The Hollow Cantor", sprite: "🎶", hpMult: 21.81, dmgMult: 2.0, signature: ["lightshell"], img: "assets/enemies/hollow_cantor.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H1 = Lightshell. hpMult P9 r4: tools/p9 — não editar à mão, re-fitar
+      boss: { name: "The Hollow Cantor", sprite: "🎶", hpMult: 41, dmgMult: 2.0, signature: ["lightshell"], img: "assets/enemies/hollow_cantor.png" }, // P8.3 H1 = Lightshell. hpMult re-fit único: 22-25 HTK no 1º contato (banda 20-40)
     },
     {
       id: 4, name: "The Moonlit Canopy", theme: "forest",
@@ -253,7 +253,7 @@ G.data = {
       lore: "Closest to the aurora, the canopy is where the forest touches what it lost. Moths carry flecks of pale light between the branches like offerings. The wardens do not guard the canopy. They guard the way down.",
       img: "assets/areas/moonlit_canopy.png",
       levelRange: [277, 396],
-      hp: [685351, 973274],  // PROVISÓRIO (re-fit P1-P8): calibrate + suavização monótona G3-G6 — não editar à mão, recalibrar
+      hp: [444903, 1334709],  // re-fit único P1-P9
       enemies: [
         { name: "Boughlight Creeper", sprite: "🍃", img: "assets/enemies/boughlight_creeper.png" },
         { name: "Mothlight Herald",   sprite: "🦋", img: "assets/enemies/mothlight_herald.png"   },
@@ -266,7 +266,7 @@ G.data = {
       lore: "The pools do not reflect the sky. They reflect the Mist, patient and creeping, wearing the faces of things that once drank here. The Seeker's own reflection arrives a moment late.",
       img: "assets/areas/sunken_grove.png",
       levelRange: [397, 534],
-      hp: [1622124, 2108761],  // PROVISÓRIO (re-fit P1-P8): calibrate + suavização monótona G3-G6 — não editar à mão, recalibrar
+      hp: [1362792, 4088376],  // re-fit único P1-P9
       enemies: [
         { name: "Glasswater Wraith",  sprite: "💧", img: "assets/enemies/glasswater_wraith.png"  },
         { name: "Mirelight Drifter",  sprite: "🏮", img: "assets/enemies/mirelight_drifter.png"  },
@@ -279,13 +279,13 @@ G.data = {
       lore: "Here the gold began. It climbed the thorns like a beautiful infection, gilding everything it touched and hollowing everything it gilded. The Bramble King wears the first crown it ever made.",
       img: "assets/areas/gilded_thicket.png",
       levelRange: [535, 693],
-      hp: [3447795, 10343385],  // PROVISÓRIO (re-fit P1-P8): calibrate + suavização monótona G3-G6 — não editar à mão, recalibrar
+      hp: [3859515, 11578545],  // re-fit único P1-P9
       enemies: [
         { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
         { name: "Candlewisp Shade",   sprite: "🔥", img: "assets/enemies/candlewisp_shade.png"   },
         { name: "Glasswater Wraith",  sprite: "💧", img: "assets/enemies/glasswater_wraith.png"  },
       ],
-      boss: { name: "The Bramble King", sprite: "🥀", hpMult: 33, dmgMult: 2.0, signature: ["escorted"], img: "assets/enemies/bramble_king.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H2 = Escorted. hpMult PROVISÓRIO (re-fit P1-P8): amostra do calibrate (1398) era artefato de timing de conv — suavizado pro meio geométrico dos vizinhos sãos (H1 21.8 · H3 48.8); re-fitar
+      boss: { name: "The Bramble King", sprite: "🥀", hpMult: 40, dmgMult: 2.0, signature: ["escorted"], img: "assets/enemies/bramble_king.png" }, // P8.3 H2 = Escorted. hpMult re-fit único: H2 é INSTÁVEL por natureza (1º contato salta de estado no cliff de prestígio G2/G3; HTK 1-224 entre seeds) — valor mediano aceito
     },
     {
       id: 7, name: "The Hollow Cathedral", theme: "forest",
@@ -293,7 +293,7 @@ G.data = {
       lore: "No one built the cathedral. The wood grew it around the kneeling Fragmented, arch by arch, as if the forest wanted to keep their worship. The captured light burns on the altar, and it is not grateful.",
       img: "assets/areas/hollow_cathedral.png",
       levelRange: [694, 876],
-      hp: [2985076273, 3880599155],  // PROVISÓRIO (re-fit P1-P8): calibrate + suavização monótona G3-G6 — não editar à mão, recalibrar
+      hp: [3922344502, 11767033506],  // re-fit único P1-P9 (G3 = plateau ~4B; o cliff de poder do prestígio começa aqui)
       enemies: [
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
         { name: "Husklight Murmur",   sprite: "🌳", img: "assets/enemies/husklight_murmur.png"   },
@@ -306,7 +306,7 @@ G.data = {
       lore: "The deep roots bleed raw light where the corruption cut them. The forest mourns loudly here, sap and glow running together. Everything that grieves eventually comes down to drink.",
       img: "assets/areas/weeping_roots.png",
       levelRange: [877, 1086],
-      hp: [3432837714, 4462689028],  // PROVISÓRIO (re-fit P1-P8): calibrate + suavização monótona G3-G6 — não editar à mão, recalibrar
+      hp: [4118461727, 12355385181],  // re-fit único P1-P9
       enemies: [
         { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
         { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
@@ -319,13 +319,13 @@ G.data = {
       lore: "The heart of the Dreaming, hushed like a held breath. The Gilded Hollow waits at the center with its stolen radiance, the forest's whole sickness gathered into one patient shape. Beyond it, the land smells of salt.",
       img: "assets/areas/hollow_sanctum.png",
       levelRange: [1087, 1328],
-      hp: [3947763371, 11843290114],  // PROVISÓRIO (re-fit P1-P8): calibrate + suavização monótona G3-G6 — não editar à mão, recalibrar
+      hp: [4324384813, 12973154439],  // re-fit único P1-P9
       enemies: [
         { name: "Rootbound Weeper",   sprite: "🌱", img: "assets/enemies/rootbound_weeper.png"   },
         { name: "Hollowed Acolyte",   sprite: "⛪", img: "assets/enemies/hollowed_acolyte.png"   },
         { name: "Thornlight Stalker", sprite: "🌵", img: "assets/enemies/thornlight_stalker.png" },
       ],
-      boss: { name: "The Gilded Hollow", sprite: "👁", hpMult: 48.79, dmgMult: 2.0, signature: ["siphoning"], img: "assets/enemies/gilded_hollow.png" }, // PLACEHOLDER (lore): titular do grupo a confirmar. P8.3 H3 = Siphoning. hpMult P9 r4: tools/p9 — não editar à mão, re-fitar
+      boss: { name: "The Gilded Hollow", sprite: "👁", hpMult: 80, dmgMult: 2.0, signature: ["siphoning"], img: "assets/enemies/gilded_hollow.png" }, // P8.3 H3 = Siphoning. hpMult re-fit único: mediana ~30 HTK (instável no cliff de prestígio; 1-293 entre seeds)
     },
     {
       id: 10, name: "The Salt-Eaten Quay", theme: "port",
@@ -333,7 +333,7 @@ G.data = {
       lore: "The wave stopped mid-bite the day the tide learned patience. The quay lives dry inside its shadow, salt falling like slow snow. The dockfolk never left. They just stopped being folk.",
       img: "assets/areas/salt_eaten_quay.png",
       levelRange: [1329, 1606],
-      hp: [40000000000, 52000000000],  // PROVISÓRIO (re-fit P1-P8): calibrate + suavização monótona G3-G6 — não editar à mão, recalibrar
+      hp: [53892960850, 161678882550],  // re-fit único P1-P9: Porto = ×12 sobre G3 (pré-awaken). O grande salto de HP (×230) é G4->G5, casado com o cliff de poder do First Light
       enemies: [
         { name: "Saltmarrow Wader",  sprite: "🧂", img: "assets/enemies/saltmarrow_wader.png"  },
         { name: "Lanternjaw Angler", sprite: "🏮", img: "assets/enemies/lanternjaw_angler.png" },
@@ -346,7 +346,7 @@ G.data = {
       lore: "Trade never ended, it only drowned. The lanterns burn under the water because the tide likes them lit, and the pale shoals make their rounds of the stalls, browsing for what is left of the sellers.",
       img: "assets/areas/drowned_market.png",
       levelRange: [1607, 1926],
-      hp: [83437652086, 108468947712],  // PROVISÓRIO (re-fit P1-P8): calibrate + suavização monótona G3-G6 — não editar à mão, recalibrar
+      hp: [56587608893, 169762826679],  // re-fit único P1-P9
       enemies: [
         { name: "Lanternjaw Angler", sprite: "🏮", img: "assets/enemies/lanternjaw_angler.png" },
         { name: "The Pale Shoal",    sprite: "🐟", img: "assets/enemies/pale_shoal.png"        },
@@ -359,13 +359,13 @@ G.data = {
       lore: "The bell was rung to warn the port. The tide swallowed the tower mid-toll and kept the sound. Now the Drowned Bell tolls a count of drownings that have not happened yet. Yours has a number.",
       img: "assets/areas/sunken_belfry.png",
       levelRange: [1927, 2294],
-      hp: [174046044642, 226259858034],  // PROVISÓRIO (re-fit P1-P8): calibrate + suavização monótona G3-G6 — não editar à mão, recalibrar
+      hp: [59416989338, 178250968014],  // re-fit único P1-P9
       enemies: [
         { name: "Mooring Strangler", sprite: "⚓", img: "assets/enemies/mooring_strangler.png" },
         { name: "Saltmarrow Wader",  sprite: "🧂", img: "assets/enemies/saltmarrow_wader.png"  },
         { name: "Hollowed Diver",    sprite: "🤿", img: "assets/enemies/hollowed_diver.png"    },
       ],
-      boss: { name: "The Drowned Bell", sprite: "🔔", hpMult: 48, dmgMult: 2.0, signature: ["quickened"], img: "assets/enemies/drowned_bell.png" }, // P8.3 H4 = Quickened. hpMult PROVISÓRIO (re-fit P1-P8): amostra do calibrate (2107) era artefato — bloqueava a seed 3 (stall na área 12); nivelado ao H3 (48.8); re-fitar
+      boss: { name: "The Drowned Bell", sprite: "🔔", hpMult: 2057, dmgMult: 2.0, signature: ["quickened"], img: "assets/enemies/drowned_bell.png" }, // P8.3 H4 = Quickened. hpMult re-fit único: MUITO alto porque H4 é alcançado super over-geared (pós-cliff de prestígio na área 12) — 21-38 HTK; cavalga o mob HP baixo do G4 (~59B)
     },
     {
       id: 13, name: "The Wreckfields", theme: "port",
@@ -373,7 +373,7 @@ G.data = {
       lore: "A graveyard where nothing is allowed to finish dying. The hulls hang frozen mid-fall, chains straining toward a surface the tide keeps only as a memory. Divers move between the wrecks, tending them.",
       img: "assets/areas/wreckfields.png",
       levelRange: [2295, 2717],
-      hp: [363049832995, 471964782894],  // PROVISÓRIO (re-fit P1-P8): calibrate + suavização monótona G3-G6 — não editar à mão, recalibrar
+      hp: [13529504392471, 40588513177413],  // re-fit único P1-P9: G5 pós-First Light (×230 sobre G4 — o cliff do rito ×5 ATK)
       enemies: [
         { name: "Wrackwood Hulk",  sprite: "🚢", img: "assets/enemies/wrackwood_hulk.png"  },
         { name: "Hollowed Diver",  sprite: "🤿", img: "assets/enemies/hollowed_diver.png"  },
@@ -386,7 +386,7 @@ G.data = {
       lore: "The shipwrights fled and the water took up their tools. It finishes the half-built hulls in coral and verdigris, patient and wrong, building ships for a fleet that no one living will sail.",
       img: "assets/areas/drowned_shipyard.png",
       levelRange: [2718, 3203],
-      hp: [757300641385, 984490833801],  // PROVISÓRIO (re-fit P1-P8): calibrate + suavização monótona G3-G6 — não editar à mão, recalibrar
+      hp: [14205979612095, 42617938836285],  // re-fit único P1-P9
       enemies: [
         { name: "Coralbone Creeper", sprite: "🦀", img: "assets/enemies/coralbone_creeper.png" },
         { name: "Wrackwood Hulk",    sprite: "🚢", img: "assets/enemies/wrackwood_hulk.png"    },
@@ -399,13 +399,13 @@ G.data = {
       lore: "The port's great fleet never sailed. The tide fused it into a single vast body, masts for ribs, sails for skin, and lit the deck-lights itself. The Hollow Fleet answers no flag. It answers the hunger.",
       img: "assets/areas/hollow_armada.png",
       levelRange: [3204, 3762],
-      hp: [1579684686015, 2053590091820],  // PROVISÓRIO (re-fit P1-P8): calibrate + suavização monótona G3-G6 — não editar à mão, recalibrar
+      hp: [14916278592700, 44748835778100],  // re-fit único P1-P9
       enemies: [
         { name: "Depthlight Lure", sprite: "🪼", img: "assets/enemies/depthlight_lure.png" },
         { name: "Wrackwood Hulk",  sprite: "🚢", img: "assets/enemies/wrackwood_hulk.png"  },
         { name: "Hollowed Diver",  sprite: "🤿", img: "assets/enemies/hollowed_diver.png"  },
       ],
-      boss: { name: "The Hollow Fleet", sprite: "🚢", hpMult: 42, dmgMult: 2.0, signature: ["lightshell", "quickened"], img: "assets/enemies/hollow_fleet.png" }, // PLACEHOLDER (lore): Harbinger do grupo a confirmar. P8.3 H5 = par Lightshell+Quickened (burst→velocidade; sem stacking de dano recebido). hpMult PROVISÓRIO (re-fit P1-P8): amostra do calibrate (4.88) era artefato baixo — subido pra escada H3-H4 (~42); re-fitar
+      boss: { name: "The Hollow Fleet", sprite: "🚢", hpMult: 9.4, dmgMult: 2.0, signature: ["lightshell", "quickened"], img: "assets/enemies/hollow_fleet.png" }, // P8.3 H5 = par Lightshell+Quickened. hpMult re-fit único: BAIXO porque cavalga o mob HP alto do G5 pós-awaken (~15T); 28-39 HTK (banda 20-40)
     },
     {
       id: 16, name: "The Abyssal Shelf", theme: "port",
@@ -413,7 +413,7 @@ G.data = {
       lore: "The last shelf of stone before the dark goes all the way down. The surface hangs far above like a dead sky. What passes beneath the shelf is too large to fight and too slow to flee, and it knows you are on the edge.",
       img: "assets/areas/abyssal_shelf.png",
       levelRange: [3763, 4405],
-      hp: [3295129530943, 4283668390226],  // PROVISÓRIO (re-fit P1-P8): calibrate + suavização monótona G3-G6 — não editar à mão, recalibrar
+      hp: [15662092522335, 46986277567005],  // re-fit único P1-P9
       enemies: [
         { name: "Siltveil Shade",    sprite: "🧜", img: "assets/enemies/siltveil_shade.png"    },
         { name: "Depthlight Lure",   sprite: "🪼", img: "assets/enemies/depthlight_lure.png"   },
@@ -426,7 +426,7 @@ G.data = {
       lore: "The trench pulses like a throat swallowing. Light bends toward the mouth, wreckage bends, even the water leans. The port was not sunk. It is being digested.",
       img: "assets/areas/starving_trench.png",
       levelRange: [4406, 5144],
-      hp: [6873446784549, 8935480819914],  // PROVISÓRIO (re-fit P1-P8): calibrate + suavização monótona G3-G6 — não editar à mão, recalibrar
+      hp: [16445197148452, 49335591445356],  // re-fit único P1-P9
       enemies: [
         { name: "Tidespawn Husk",  sprite: "🌀", img: "assets/enemies/tidespawn_husk.png"  },
         { name: "Siltveil Shade",  sprite: "🧜", img: "assets/enemies/siltveil_shade.png"  },
@@ -440,7 +440,7 @@ G.data = {
       img: "assets/areas/tides_maw.png",
       imgFinale: "assets/areas/tides_maw_finale.png",
       levelRange: [5145, 6000],
-      hp: [14337606536065, 28675213072130],  // PROVISÓRIO (re-fit P1-P8): calibrate + suavização monótona G3-G6 — não editar à mão, recalibrar
+      hp: [19253529045173, 57760587135519],  // re-fit único P1-P9
       enemies: [
         { name: "Tidespawn Husk",    sprite: "🌀", img: "assets/enemies/tidespawn_husk.png"    },
         { name: "Siltveil Shade",    sprite: "🧜", img: "assets/enemies/siltveil_shade.png"    },
@@ -448,8 +448,8 @@ G.data = {
       ],
       // P8.4 — o finale encenado (dois estágios): H6 (Harbinger, ungated) → Okhra (mapBoss, gated pelo First Light).
       // Matar H6 pela 1ª vez fecha os Marcos 6/6. Okhra manifesta após o H6 SÓ com First Light desperto.
-      boss:    { name: "The Tidebound Choir", sprite: "🎼", hpMult: 1201.57, dmgMult: 2.0, signature: ["siphoning", "escorted"], img: "assets/enemies/tidebound_choir.png" }, // PLACEHOLDER (lore): Harbinger H6 do Porto Afundado. P8.3 par Siphoning+Escorted (ensaio geral do Okhra: cura + onda, sem acelerar ataque). hpMult P9 r4: tools/p9 — não editar à mão, re-fitar
-      mapBoss: { name: "Okhra, the Starving Tide", sprite: "🌊", hpMult: 1240, dmgMult: 2.5, signature: ["siphoning"] }, // PLACEHOLDER (lore): chefe de Mapa — Siphoning + The Tide Rises; matar Okhra completa o Mapa 1. hpMult P9 r4: tools/p9 — não editar à mão, re-fitar
+      boss:    { name: "The Tidebound Choir", sprite: "🎼", hpMult: 15.5, dmgMult: 2.0, signature: ["siphoning", "escorted"], img: "assets/enemies/tidebound_choir.png" }, // P8.3 par Siphoning+Escorted. hpMult re-fit único: 26-35 HTK (banda 20-40); H6 é PRÉ-awaken (gate do rito), por isso mult baixo sobre o mob HP alto do G6
+      mapBoss: { name: "Okhra, the Starving Tide", sprite: "🌊", hpMult: 320, dmgMult: 2.5, signature: ["siphoning"] }, // chefe de Mapa — Siphoning + The Tide Rises. hpMult re-fit único: 91-102 golpes PÓS-awaken (banda 60-120, ~90 no centro); Okhra é POST-awaken (god mode), por isso mult alto
     },
   ],
 
@@ -483,7 +483,7 @@ G.data = {
   balance: {
     // ATK do mob POR ÁREA (idx 0-17), as 18 áreas. P9: gerado pela família de expoentes
     // (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar.
-    mobAtkByArea:      [3, 9, 86, 1201, 3365, 5030, 8187, 8596, 9026, 8983678, 10361786, 11951298, 13784642, 15899225, 18338187, 21151289, 24395924, 28138291],
+    mobAtkByArea:      [2, 9, 86, 1201, 3365, 5030, 8187, 8596, 9026, 59880, 59512, 71520, 13784642, 15899225, 18338187, 13398117, 13877907, 18830237],  // re-fit único P1-P9: TTD do envelope pior por seed (G4 baixado ~100× p/ matar death-loop; G6 ~0.6× p/ TTD ~30s)
     groupSize:         3,     // Harbinger (boss) a cada 3 áreas — fronteira de grupo
     packByGroup:       [1, 2, 2, 3, 4, 5],   // P9 r4 (§9 item 2): onda cresce a 4 (G5) e 5 (G6); UI de batalha suporta 5
     atkSpeedBase:      0.9,
@@ -520,7 +520,7 @@ G.data = {
     //   pra 22 (o bloqueante morto); das áreas 3+ o pool de XP da área anterior estoura o teto
     //   da banda → o cap (levelRange[1] da área farmada, pra P7 não morder antes da porta) prende
     //   os valores ≈ nos antigos. O serrote real é a fronteira 1→2 (XP/kill ×81) — reportado.
-    levelGateByArea:   [1, 22, 171, 276, 396, 534, 693, 876, 1086, 1328, 1606, 1926, 2294, 2717, 3203, 3762, 4405, 5144],
+    levelGateByArea:   [1, 40, 171, 276, 396, 534, 693, 876, 1086, 1328, 1606, 1926, 2294, 2717, 3203, 3762, 4405, 5144],  // re-fit único: porta área 2 = 40 (era 22) — mata o cascade de níveis na fronteira 1->2 (P4 nua: 1.37 lvls/kill, era 2.30)
     // P3 (Lumens curva própria): renda de Lumens por kill DESACOPLADA do HP do mob. Curva
     //   independente por área com acelerador no fim do mapa. lumensByArea[i] = Lumens BASE do
     //   mob comum na área i (antes de bônus/raridade). Provisório = goldRatio × hp[0] de cada área
@@ -571,8 +571,8 @@ G.data = {
     promoteUncommonCost:     8,  // uncommon material (chave) por promoção Common→Uncommon (a fitar)
     convLegacyAtkPct:     2,    // P9: tools/p9 — não editar à mão, re-fitar (+atk% direto POR convergence; era 8)
     convLegacyHpPct:      2,    // P9: tools/p9 — não editar à mão, re-fitar (+hp%  direto POR convergence; era 8)
-    convGateBase:       276,    // P5.1: gate₁ = fim do G1. gateₙ₊₁ = gateₙ × convGateGrowth (escada)
-    convGateGrowth:     1.35,   // P9: tools/p9 — não editar à mão, re-fitar (era 1.30)
+    convGateBase:       130,    // re-fit único: gate₁ = 130 (era 276) — 1ª Convergence aos ~44min (alvo ~40min)
+    convGateGrowth:     1.32,   // re-fit único: razão de pontos 1.63 (banda 1.4-1.7); 1.35 dava 1.70, 1.30 colapsava (10 convs)
     convPointsBase:     400,    // P5.3: pontos = convPointsBase × (nível/convGateBase)^convPointsExp
     convPointsExp:      1.55,   // P5.3: α = ln1.5/ln1.3 → cada convergence no gate rende ~×1.5 a anterior
     dmgReductionCap:      75,   // teto de damageReduction, bulwark e da SOMA dos dois (combat.applyHitToHero)

@@ -106,7 +106,9 @@ P0–P8.5b divergirem do `P9_REBALANCE.md`, o P9 vence. Histórico completo das
   (dial limpo).
 - **F3 histórico** ("sem parede") resolvido pela família de expoentes com gap
   ~0.5 (lição central do Gaiadon §10) — a Wall é ESTRUTURAL.
-- Baseline sem prestige TRAVA em G4 por design (meio-mapa exige Convergence).
+- Baseline sem prestige TRAVA em **G2** por design (ratificado pelo dono
+  jul/04 pós-fit; supera o "G4" do paradigma velho — mid-map exige prestige,
+  e todo jogador real converge aos ~44min).
 
 ## Decisões travadas (canon) — NÃO reabrir
 
@@ -123,6 +125,10 @@ P0–P8.5b divergirem do `P9_REBALANCE.md`, o P9 vence. Histórico completo das
   sistema por vez · decisão travada não reabre sem número novo · 10-80-10.
 
 ## Pendências conhecidas (ordenadas)
+
+-1. **Bug menor de infra:** `node tools/sim.js campaign` retorna exit code
+   255 com output válido (achado do crítico jul/04) — investigar antes de
+   qualquer gate de CI que cheque exit code.
 
 0. **PRÓXIMO DA FILA (dono anunciou ao fechar o grill): definir as VARIÁVEIS
    do sim pra rodada 4** — traduzir a pauta do P9 §4 em dials/candidato

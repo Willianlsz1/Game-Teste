@@ -22,27 +22,27 @@ function ok(c, m) { console.log((c ? "PASS" : "FAIL") + " — " + m); if (!c) fa
 
 const b = G.data.balance;
 
-// 1) escada exata — gate(n) = round(convGateBase × convGateGrowth^n). P9 (tools/p9) mudou
-//    convGateGrowth de 1.30 para 1.35 — escada atualizada: 276·373·503·679·917·1238·1671·2256·3045·4111·5549·7492
-const LADDER = [276, 373, 503, 679, 917, 1238, 1671, 2256, 3045, 4111, 5549, 7492];
+// 1) escada exata — gate(n) = round(convGateBase × convGateGrowth^n). Re-fit único mudou
+//    convGateBase 276->130 (1ª conv ~44min) e convGateGrowth 1.35->1.32 (razão de pontos 1.63).
+const LADDER = [130, 172, 227, 299, 395, 521, 688, 908, 1198, 1582, 2088, 2756];
 store = {}; G.state.data = null; G.state.load();
 for (let n = 0; n < LADDER.length; n++) {
   G.state.data.convergences = n;
   ok(G.convergence.currentGate() === LADDER[n], `currentGate() na convergence ${n} = ${LADDER[n]} (round(${b.convGateBase}×${b.convGateGrowth}^${n}))`);
 }
 
-// 2) convergences=0 → gate exato de fim de G1 (276), sem off-by-one
+// 2) convergences=0 → gate exato da 1ª convergence (convGateBase=130), sem off-by-one
 G.state.data.convergences = 0;
-ok(G.convergence.currentGate() === b.convGateBase, "convergence 0: gate === convGateBase (276), fim do G1");
+ok(G.convergence.currentGate() === b.convGateBase, "convergence 0: gate === convGateBase (130)");
 
-// 3) rawPoints/pointsFor — fórmula travada: 400 × (nível/276)^1.55
+// 3) rawPoints/pointsFor — fórmula: convPointsBase × (nível/convGateBase)^convPointsExp
 store = {}; G.state.data = null; G.state.load();
 G.state.data.convergences = 0;
-const expAt276 = b.convPointsBase * Math.pow(276 / b.convGateBase, b.convPointsExp);
-ok(Math.abs(G.convergence.pointsFor(276) - expAt276) < 1e-9, "pointsFor(276) == convPointsBase × (276/276)^exp == convPointsBase");
-ok(G.convergence.pointsFor(276) === b.convPointsBase, "pointsFor no gate 1 é exatamente convPointsBase (400) — sem passivas");
+const expAtBase = b.convPointsBase * Math.pow(b.convGateBase / b.convGateBase, b.convPointsExp);
+ok(Math.abs(G.convergence.pointsFor(b.convGateBase) - expAtBase) < 1e-9, "pointsFor(convGateBase) == convPointsBase × 1^exp == convPointsBase");
+ok(G.convergence.pointsFor(b.convGateBase) === b.convPointsBase, "pointsFor no gate 1 é exatamente convPointsBase (400) — sem passivas");
 
-G.state.data.level = 276;
+G.state.data.level = b.convGateBase;
 ok(G.convergence.rawPoints() === Math.floor(b.convPointsBase), "rawPoints() no nível do gate 1 == floor(convPointsBase)");
 
 // razão entre convergences sucessivas no gate deve ficar perto de ×1.5 (spec: "cada convergence
@@ -59,7 +59,7 @@ ok(avgRatio > 1.4 && avgRatio < 1.75, `razão média de pontos entre gates suces
 // 4) points() com multiplicadores de passiva empilhando por cima da base (P5 spec)
 store = {}; G.state.data = null; G.state.load();
 G.state.data.convergences = 0;
-G.state.data.level = 276; // == gate 1, rawPoints == 400
+G.state.data.level = b.convGateBase; // == gate 1, rawPoints == 400
 const realEffect = G.passives.effect.bind(G.passives);
 G.passives.effect = (key) => {
   if (key === "convPointsPct")   return 20;  // +20%
@@ -85,8 +85,8 @@ G.passives.effect = realEffect;
 // terminou, não o próximo) e a UI (currentGate) já reflete o próximo ciclo logo depois
 store = {}; G.state.data = null; G.state.load();
 ok(G.state.data.convergences === 0, "estado fresco: 0 convergences");
-const gate1 = G.convergence.currentGate(); // 276
-ok(gate1 === 276, "gate da 1ª convergence é 276");
+const gate1 = G.convergence.currentGate(); // 130
+ok(gate1 === b.convGateBase, "gate da 1ª convergence é convGateBase (130)");
 G.state.data.level = gate1;
 const expectedGain = Math.floor(b.convPointsBase * Math.pow(gate1 / b.convGateBase, b.convPointsExp));
 const gained = G.convergence.pending();
@@ -113,13 +113,13 @@ ok(G.convergence.canConverge() === true, "canConverge() verdadeiro exatamente no
 // o teste apenas fixa o comportamento observável, não impõe um hard-stop que não existe no código.
 store = {}; G.state.data = null; G.state.load();
 const mapCap = G.data.areas[G.data.areas.length - 1].levelRange[1];
-G.state.data.convergences = 12;
-const gate13 = G.convergence.currentGate();
-ok(gate13 > mapCap, `gate da convergence 13 (${gate13}) excede o teto de nível do Mapa 1 (${mapCap}) — próxima convergence é inatingível em jogo normal`);
+G.state.data.convergences = 14;   // re-fit único: gate cruza o teto de nível (6000) na convergence 14 (6338)
+const gateCap = G.convergence.currentGate();
+ok(gateCap > mapCap, `gate da convergence 14 (${gateCap}) excede o teto de nível do Mapa 1 (${mapCap}) — próxima convergence é inatingível em jogo normal`);
 G.state.data.level = mapCap;
-ok(G.convergence.canConverge() === false, `no teto de nível do mapa (${mapCap}), canConverge() é false pós-cap (gate ${gate13})`);
-G.state.data.level = gate13; // nível hipotético/fora do mapa
-ok(G.convergence.canConverge() === true, "canConverge() não tem trava de hard-cap: um nível hipotético igual ao gate 13 ainda converge (decisão aceita, não um bug)");
+ok(G.convergence.canConverge() === false, `no teto de nível do mapa (${mapCap}), canConverge() é false pós-cap (gate ${gateCap})`);
+G.state.data.level = gateCap; // nível hipotético/fora do mapa
+ok(G.convergence.canConverge() === true, "canConverge() não tem trava de hard-cap: um nível hipotético igual ao gate ainda converge (decisão aceita, não um bug)");
 
 // 8) Legacy (+atk%/+hp% por convergence) intacto e independente da mudança de fórmula de pontos
 store = {}; G.state.data = null; G.state.load();
@@ -135,7 +135,7 @@ ok(G.convergence.legacyHpPct() === 3 * b.convLegacyHpPct, "legacyHpPct() escala 
 store = {}; G.state.data = null; G.state.load();
 G.state.data.convergences = 1;
 G.state.data.convergencePoints = 1e9;
-G.state.data.level = 276; // == gate 1
+G.state.data.level = b.convGateBase; // == gate 1
 ok(G.passives.nodes[9].key === "convPointsPct", "nó 9 é mesmo Deep Memory (key convPointsPct)");
 const rawAtGate1 = G.convergence.rawPoints();
 ok(G.convergence.points() === rawAtGate1, "sem Deep Memory comprado: points() == rawPoints() (convPointsPct inerte)");
