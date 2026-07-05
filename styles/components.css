@@ -30,7 +30,7 @@
 .bar-fill { height: 100%; width: 0%; transition: width 0.12s linear; }
 .xp-bar { margin-top: 6px; }
 .xp-bar .bar-fill { background: linear-gradient(90deg, var(--violet), var(--cyan)); }
-.enemy-fill { background: linear-gradient(90deg, #b0344f, var(--orange)); }
+.enemy-fill { background: var(--bad); }
 .hp-fill { background: linear-gradient(90deg, var(--teal), var(--cyan)); }
 .bar-label {
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
@@ -109,15 +109,23 @@
    reserva espaço) até G.reveals liberar a tela. O beacon é um anel dourado pulsando por
    cima do botão — nunca bloqueia clique (pointer-events:none), some no 1º clique ou
    sozinho depois de alguns segundos. Padrão ÚNICO reusado por Forge/World Map/Convergence/
-   Passives/Awaken. */
+   Passives/Awaken. P-UI-1 item 5: o <span> do beacon é permanente no HTML, mas só deve
+   RENDERAR enquanto o botão-pai tiver .is-beacon (revelação nova, ainda não vista/clicada) —
+   sem isso, um save veterano (tudo revelado, nenhum onReveal() disparou nesta sessão) ficava
+   com o anel dourado aceso pra sempre. Fora do .is-beacon o span fica invisível (não custa
+   layout: display:none). */
 [data-reveal].is-hidden { display: none; }
-.icon-btn__beacon {
+.icon-btn__beacon { display: none; }
+.icon-btn.is-beacon .icon-btn__beacon {
+  display: block;
   position: absolute; inset: -4px; border-radius: 12px; pointer-events: none;
   border: 2px solid var(--gold);
   box-shadow: 0 0 10px 2px color-mix(in srgb, var(--gold) 70%, transparent);
   animation: reveal-beacon 1.4s ease-in-out infinite;
 }
 .icon-btn.is-beacon { animation: reveal-beacon-shake 3.5s ease-in-out; }
+/* estado "tela atualmente aberta" (item 5): marcação discreta, não o brilho do beacon */
+.icon-btn.is-open { border-color: color-mix(in srgb, var(--gold) 55%, var(--card-border)); }
 @keyframes reveal-beacon {
   0%, 100% { opacity: 0.45; transform: scale(1); }
   50%      { opacity: 1;    transform: scale(1.08); }

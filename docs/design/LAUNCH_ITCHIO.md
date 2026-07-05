@@ -50,6 +50,26 @@ Nunca repete (flags `d.hints` do sistema existente). O beacon dourado
 continua existindo APENAS como fallback se o jogador pular o passo 1.
 Rodar APÓS o lote P-UI-1 (mesmos arquivos de HUD).
 
+### L3b — Intro v2: o juramento da Ordre (dono, jul/04 — substitui o card genérico)
+
+Reframe canônico (LORE_COMPLETE: "O Seeker entra na Ordre como qualquer
+iniciante… absorve Le Premier Éclat sem saber"): a intro vira uma CENA em 3
+tempos (fade-in encadeado, mesma tela, skippável):
+1. **A Ordre** — "Since the light broke, the Ordre des Éclairés has kept the
+   roads. Its Seekers hunt what the light left twisted — and the world
+   sleeps safer for it."
+2. **O juramento** — "Today you take the oath. An Éclat is set into your
+   hands — routine, they say. Yet something in its light seems to remember
+   you." (NUNCA revelar que é a Semente/importância — mistério é canon.)
+3. **A primeira missão** (bloco estilizado como ordem de missão com selo da
+   Ordre) — "FIRST ASSIGNMENT — THE DREAMING WOOD · The forest that stole
+   the Moon. Villages at its edge report shades among the trees. Hunt them.
+   Gather the Lumens they shed. Return stronger." Botão: **"Accept"**.
+Arte dedicada `assets/ui/intro_bg.png` (dono gera; fallback = awaken_bg até
+chegar). Área 1 = primeira missão TAMBÉM no jogo: o cartão de área do L4
+para a área 1 usa o registro de missão ("First assignment"), amarrando
+intro→gameplay.
+
 ### L3 — Onboarding dos primeiros minutos
 - Intro curta (1 tela, skippável): 3–4 linhas de lore situando o Seeker no
   bosque + o verbo do jogo ("fight, gather Lumens, grow").

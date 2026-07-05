@@ -125,6 +125,7 @@ G.ui = {
     // instante a tela ainda está hidden (display:none) — getBoundingClientRect() dá 0×0.
     // Re-fita agora que .hidden=false já tirou o display:none do layout.
     if (id === "modal-passives" && this.el["pv-body"]) this._pvFitStage(this.el["pv-body"]);
+    this.syncActiveScreen();   // marca o botão como "tela aberta" sem esperar o tick de 1s
   },
 
   resetGame() {
@@ -169,6 +170,28 @@ G.ui = {
     this.renderGear();
     this.renderHud();
     this.renderReveals();
+    this.syncActiveScreen();
+  },
+
+  // P-UI-1 item 5: marcação sutil (não o brilho do beacon) no botão da toolbar cuja tela
+  // está aberta agora. Botão <-> modal são 1:1; roda no mesmo tick de renderAll (barato:
+  // 1 lookup por botão, sem observers). Único estado com pulso dourado continua sendo
+  // .is-beacon (revelação nova do L2) — isto aqui é só uma borda levemente mais clara.
+  _SCREEN_BTN_MODAL: {
+    "btn-worldmap":    "modal-worldmap",
+    "btn-convergence": "modal-convergence",
+    "btn-forge":       "modal-forge",
+    "btn-passives":    "modal-passives",
+    "btn-awaken":      "modal-awaken",
+    "btn-settings":    "modal-menu",
+  },
+  syncActiveScreen() {
+    for (const btnId in this._SCREEN_BTN_MODAL) {
+      const btn = document.getElementById(btnId);
+      if (!btn) continue;
+      const modal = document.getElementById(this._SCREEN_BTN_MODAL[btnId]);
+      btn.classList.toggle("is-open", !!modal && !modal.hidden);
+    }
   },
 
   toggleLog() {
@@ -185,6 +208,30 @@ G.ui = {
     line.textContent = msg;
     this.el["log"].prepend(line);
     while (this.el["log"].children.length > 30) this.el["log"].lastChild.remove();
+    // P-UI-1: qualquer linha que NÃO seja de kill agrupável quebra a sequência (drop,
+    // revelação, Harbinger, área, morte, level up ecoam aqui via toast/log direto).
+    this._lastKillLine = null;
+  },
+
+  // P-UI-1 (item 4): kills comuns repetidos e consecutivos do MESMO mob agrupam numa única
+  // linha que atualiza a contagem ("Defeated X ×3 · +264 ✦") em vez de spammar o Chronicle.
+  // groupKey identifica "mesmo evento repetível" (nome do mob); qualquer G.ui.log() normal
+  // entre dois kills iguais (drop, revelação, Harbinger, morte, área, level up) zera o grupo
+  // porque log() acima limpa _lastKillLine. Bosses NUNCA agrupam (chamador não usa logKill).
+  logKill(groupKey, label, lumensGained, cls) {
+    const g = this._lastKillLine;
+    if (g && g.key === groupKey && g.el && g.el.parentNode) {
+      g.count += 1;
+      g.lumens += lumensGained;
+      g.el.textContent = `${label} ×${g.count} · +${G.util.fmt(g.lumens)} ✦`;
+      return;
+    }
+    const line = document.createElement("div");
+    line.className = "log-line " + (cls || "");
+    line.textContent = `${label} · +${G.util.fmt(lumensGained)} ✦`;
+    this.el["log"].prepend(line);
+    while (this.el["log"].children.length > 30) this.el["log"].lastChild.remove();
+    this._lastKillLine = { key: groupKey, count: 1, lumens: lumensGained, el: line };
   },
 
   // ---------- L3: toast — hint contextual one-shot (docs/design/LAUNCH_ITCHIO.md §L3) ----------

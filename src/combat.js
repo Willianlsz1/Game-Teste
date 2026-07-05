@@ -310,8 +310,17 @@ G.combat = {
     if (!e.isBoss) this._bossKills++;   // progresso rumo ao Boss de Área (mortes de boss não contam)
     if ((d.runMaxAreaIndex || 0) < d.areaIndex) d.runMaxAreaIndex = d.areaIndex;
 
-    if (G.ui && G.ui.log)
-      G.ui.log((e.isBoss ? "👑 " : "") + `Defeated ${e.name} · +${G.util.fmt(lumens)} ✦`, e.isBoss ? "boss" : "good");
+    if (G.ui && G.ui.log) {
+      if (e.isBoss) {
+        G.ui.log(`👑 Defeated ${e.name} · +${G.util.fmt(lumens)} ✦`, "boss");
+      } else if (G.ui.logKill) {
+        // agrupa kills comuns repetidos e consecutivos do mesmo mob (P-UI-1 item 4);
+        // qualquer outra linha (drop/revelação/Harbinger/área/morte/level up) quebra o grupo.
+        G.ui.logKill(e.name, `Defeated ${e.name}`, lumens, "good");
+      } else {
+        G.ui.log(`Defeated ${e.name} · +${G.util.fmt(lumens)} ✦`, "good");
+      }
+    }
 
     const drops = G.economy ? G.economy.rollDrops(e) : {};
     if (G.ui && G.ui.materialDrop && Object.keys(drops).length) G.ui.materialDrop(drops);
