@@ -57,6 +57,19 @@ Object.assign(G.ui, {
     });
   },
 
+  // ganho efetivo por nível (ou por degrau) de um afixo, já com o multiplicador de raridade
+  // aplicado — a MESMA regra de G.gear.affixValue, pra "+X /lv" bater com o que o level-up realmente dá.
+  gearAffixGain(item, a) {
+    const r = G.data.rarities.find((r) => r.id === item.rarity);
+    let mult = r ? (r.statMult || 1) : 1;
+    if (a.stat === 'critDmg') mult = 1; // mesma exceção de affixValue
+    if (a.perStep != null) return a.perStep * mult;
+    let per = a.perLevel || 0;
+    const scale = G.data.balance.gearPowerScale;
+    if (scale != null && a.stat === 'atk') per = per * scale;
+    return per * mult;
+  },
+
   gearTipHtml(item) {
     const lvl = item.level || 1;
     const cap = G.gear.cap(item);
@@ -67,17 +80,24 @@ Object.assign(G.ui, {
       const sign = a.pct ? "%" : "";
       const name = this.STAT_NAMES[a.stat] || a.label;
       const rarityTag = uncommonIds.indexOf(a.id) !== -1 ? `<span class="tip-rarity">Uncommon</span>` : "";
+      const atCap = a.cap != null && v >= a.cap;
       let note = "";
-      if (a.perStep != null) {
-        // Rarity Find (P8.1): mostra o degrau atual e o próximo (valor + nível)
+      if (atCap) {
+        // afixo maxado: não há mais ganho a mostrar
+        note = `<span class="tip-perlv">(max)</span>`;
+      } else if (a.perStep != null) {
+        // Rarity Find (P8.1): degrau explícito — ganho a cada N níveis
         const step = a.step || 50;
-        const atCap = a.cap != null && v >= a.cap;
-        const nextLv = (Math.floor(lvl / step) + 1) * step;
-        note = atCap
-          ? `<span class="tip-perlv">max ${this.fmtStat(a.cap)}${sign}</span>`
-          : `<span class="tip-perlv">next step: +${this.fmtStat(a.perStep)}${sign} at Lv ${nextLv}</span>`;
+        const gain = this.gearAffixGain(item, a);
+        note = `<span class="tip-perlv">+${this.fmtStat(gain)}${sign} per ${step} lv</span>`;
+      } else if (a.perLevel && a.step) {
+        // perLevel "em degraus" (ex.: atk speed, lumens) — o valor só sobe a cada `step` níveis,
+        // de uma vez, em vez de gotejar todo nível.
+        const gain = this.gearAffixGain(item, a) * a.step;
+        note = `<span class="tip-perlv">+${this.fmtStat(gain)}${sign} per ${a.step} lv</span>`;
       } else if (a.perLevel) {
-        note = `<span class="tip-perlv">+${this.fmtStat(a.perLevel)}${sign} per level</span>`;
+        const gain = this.gearAffixGain(item, a);
+        note = `<span class="tip-perlv">+${this.fmtStat(gain)}${sign} /lv</span>`;
       }
       return `<div class="tip-affix"><span class="tip-affix__main">+${this.fmtStat(v)}${sign} ${name}</span>${rarityTag}${note}</div>`;
     }).join("");
