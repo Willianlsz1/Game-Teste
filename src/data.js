@@ -131,7 +131,7 @@ G.data = {
         //   de Lumens (consumida no rito) — sink temático de fim de mapa (devolver a luz colhida).
         //   Na casa do acumulado da fase final de UMA run (P3 acelera renda × P6 desacelera custo).
         //   PROVISÓRIO — o fit final ancora no Lumens acumulado medido no fim do mapa. — DIAL
-        lumens: 6.0e16,  // FASE 2 R3 (fitter jul/05, dono OPÇÃO A): 6e13→6e16 — escalado ×S=1000 em par com goldBuckets/gearCostBase (renda e custo do jogo inteiro sobem ×1000; a Oferenda tem que subir junto pra continuar a MESMA fatia do acumulado de UMA run no G6). É a fatia dominante do acumulado de UMA run no G6, consumida no rito — sink temático, NÃO gate de farm (não atrasa o clear além do nível 6000+crown+material)
+        lumens: 5.0e15,  // FASE 2 R4 (fitter jul/05, dono): 6e16→5e15 — escalado ÷F=12 em par com goldBuckets/gearCostBase (renda e custo caíram ÷12; a Oferenda cai junto pra continuar a MESMA fatia do acumulado de UMA run no G6). R3 tinha subido 6e13→6e16 (×1000). É a fatia dominante do acumulado de UMA run no G6, consumida no rito — sink temático, NÃO gate de farm (não atrasa o clear além do nível 6000+crown+material)
       },
       // P9 rodada 4 (§9): piso ×5 ATK / ×3 HP (fitado EM PAR com o Okhra hpMult).
       // lumensBonus flat REMOVIDO. As mecânicas de revelação/re-subida/escudo do rito:
@@ -564,19 +564,24 @@ G.data = {
     //   rewardMult dos acesos (P5 Ember/Lumen/Corona) MULTIPLICA por cima disto (igual ao gold×40
     //   do FIEND no Gaiadon: "caçar raro" é a fonte real de riqueza). PROVISÓRIO — fit Fase 2. — DIAL
     // FASE 2 (fitter jul/05): gold contínuo, y_gold RAMPA acima de y_hp no late (P3: Lumens aceleram
-    //   no fim). goldBase(1)~2930 pós-escala R3 (era ~2.93 pré-escala; âncora do early hook). — DIAL
+    //   no fim). goldBase(1)~244 pós-R4 (era ~2930 na R3, ~2.93 pré-escala; renda efetiva/kill ~1K com rewardMult+lumensBonus). — DIAL
     // FASE 2 R3 (fitter jul/05, dono OPÇÃO A — "sensação de milhares"): escala S=1000× aplicada em
     //   TODOS os dials de Lumens (renda + custos + Oferenda) pra sair de dezenas ("estranho/pequeno")
     //   pra milhares no minuto zero, igual ao Gaiadon. Proporcional por construção: x_novo = x /
     //   S^(1/y) por bucket (mobGoldParam(nível)×S EXATO em qualquer nível, curva/forma preservada,
-    //   fronteiras entre buckets continuam sem cliff). y_gold intocado. Renda nível 1 vira ~2930
-    //   Lumens/kill (era ~2.93). — DIAL
+    //   fronteiras entre buckets continuam sem cliff). y_gold intocado.
+    // FASE 2 R4 (fitter jul/05, dono — custo começando MENOR): gearCostBase 60000→5000 (1º upgrade
+    //   custa ~5K, não 60K). Pra MANTER o ritmo ~14s/5 kills, a renda cai no MESMO fator F=12
+    //   (60000/5000): x_novo = x_R3 × F^(1/y) por bucket. A razão custo:renda fica IDÊNTICA à R3
+    //   (14s/5 kills preservado). mobGoldParam(1) base vira ~244; a renda EFETIVA por kill (com
+    //   rewardMult dos acesos + lumensBonus) fica ~1K/kill medida no sim — a "sensação de milhares"
+    //   sobrevive. y_gold intocado; forma/aceleração da curva preservadas. — DIAL
     goldBuckets: [
-      { maxLevel:  200, x: 0.0023637, y: 1.32 },  // = y_hp (early)
-      { maxLevel:  600, x: 0.1343496, y: 2.05 },  // > y_hp (2.05 vs 2.00)
-      { maxLevel: 1600, x: 2.5281903, y: 3.15 },  // > y_hp (3.15 vs 3.10)
-      { maxLevel: 3200, x: 13.4231601, y: 4.25 },  // > y_hp (4.25 vs 4.20)
-      { maxLevel: Infinity, x: 23.8834107, y: 4.75 },  // > y_hp (4.75 vs 4.70) — o espetáculo do fim
+      { maxLevel:  200, x: 0.0155294, y: 1.32 },  // = y_hp (early)
+      { maxLevel:  600, x: 0.4515088, y: 2.05 },  // > y_hp (2.05 vs 2.00)
+      { maxLevel: 1600, x: 5.5642544, y: 3.15 },  // > y_hp (3.15 vs 3.10)
+      { maxLevel: 3200, x: 24.0868367, y: 4.25 },  // > y_hp (4.25 vs 4.20)
+      { maxLevel: Infinity, x: 40.2988264, y: 4.75 },  // > y_hp (4.75 vs 4.70) — o espetáculo do fim
     ],
     // [LEGADO/FALLBACK P1-P9] ATK do mob POR ÁREA (idx 0-17). Substituído pela fórmula
     //   paramétrica (enemyBuckets.atk); mantido como fallback e p/ compat de save/sim até o
@@ -674,10 +679,12 @@ G.data = {
     gearPowerScale:    0.25,
     // FASE 2 R3 (fitter jul/05, dono OPÇÃO A): re-ancorado 8→60000 — sweep anterior achou que a
     //   RAZÃO custo:renda equivalente a gearCostBase=60 (na renda de ENTÃO) dá o 1º upgrade em
-    //   ~14s/5 kills ("rápido mas sentido"); escalado por S=1000 junto com goldBuckets, o 1º upgrade
-    //   continua ~14s/5 kills (ratio custo/renda idêntico), só que agora em 60000 Lumens (a sensação
-    //   de milhares) em vez de 60. Medido no sim: t=14.1s, kills=5, custo pago=60000. — DIAL
-    gearCostBase:      60000,
+    //   ~14s/5 kills ("rápido mas sentido"); escalado por S=1000 junto com goldBuckets.
+    // FASE 2 R4 (fitter jul/05, dono — custo começando MENOR): 60000→5000 (1º upgrade custa ~5K,
+    //   não 60K). A renda caiu no MESMO fator F=12 (ver goldBuckets), então a razão custo:renda fica
+    //   IDÊNTICA à R3 e o 1º upgrade continua ~14s/5 kills. Medido no sim: t=14.1s, kills=5, custo
+    //   pago=5000, renda efetiva ~1K/kill. — DIAL
+    gearCostBase:      5000,
     // P6 + FASE 2 (custo de gear SUPER-LINEAR, map-long): custo(N) = base × (1 + linear × (N-1)^exp) × costMult.
     //   A renda de Lumens cresce ~nível^2.1 (goldBuckets); com um custo LINEAR (exp=1) o gear maxa NA HORA
     //   (o oposto do desejado). gearCostExp=2.2 faz o custo por nível crescer ~nível^2.2 → acompanha a renda,
