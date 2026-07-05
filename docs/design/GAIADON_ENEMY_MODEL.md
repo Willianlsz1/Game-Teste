@@ -91,10 +91,20 @@ ver antes de decidir se as magnitudes agradam (e antes do design/polimento).
 A projeção crua mostrou combate trivial (gear maxa instantâneo → invencível na
 área 12) + 6,5h de farm de material no G6. O dono decidiu: **o Mapa 1 inteiro
 tem que ser mais CONSTANTE — se o player ficar forte, ok, mas a PRÓXIMA área já
-é um desafio maior.** Alvo = **serrote de HTK constante pelas 18 áreas**: entra
-desafiado (HTK/TTK alto na entrada), derrete até o fim da área ("ficar forte,
-ok"), e a área seguinte RE-DESAFIA (degrau) — mesma intensidade em todas, não
-decaindo pra trivial.
+é um desafio maior.**
+
+**ÂNCORA PRECISA (dono jul/05): TTK-alvo = 1 SEGUNDO.** Dentro de cada área o
+TTK CONVERGE pra ~1s (o "cruise"); ao ENTRAR numa área nova o TTK SOBE acima de
+1s (a parede — mob mais forte que o poder carregado); os upgrades (gear +
+passivas/awaken/convergence) trazem o TTK de volta pra ~1s. Serrote ancorado em
+1s, repetido nas 18 áreas — a saída de TODA área deve convergir pra ~1s, a
+entrada spike. **Consequências que encaixam:** spike de entrada MAIOR nas áreas
+tardias → mais kills pra puxar o TTK de volta → **tempo por área ESCALA** (área
+1 ~40min, cada área mais longa, com alívio dos upgrades DENTRO da área; ex.:
+área 2 bruto ~2h cai pra ~1h20m); e o **gear é a escada MAP-LONG** que faz o
+"trazer de volta" — custo por nível sobe pra o gear (Common→promover→Uncommon
+maxed) só COMPLETAR ~área 17/18 (nunca "pronto" antes do finale; primeiros 3-4
+upgrades rápidos = hook).
 
 **Mecanismo (razão de duas curvas, NÃO cortar bônus):**
 1. **Gear maxa ~AO LONGO de uma área, não instantâneo** — manter os primeiros
