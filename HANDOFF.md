@@ -8,6 +8,24 @@
 
 ## Onde o trabalho está AGORA
 
+**🔨 TRACK ATIVO (jul/05): MODELO DE INIMIGO GAIADON** — spec
+`docs/design/GAIADON_ENEMY_MODEL.md` (decisão P10 no DECISOES_DONO). O dono
+jogou a fatia inicial, o "mob congelado Lv 1" incomodou, e a Gaiadon math
+mostrou o caminho: o nível do mob ACOMPANHA o jogador dentro da banda da área
+(`clamp(player, area.min, area.max)`) + stats pela fórmula `(nível/x)^y` com
+gap de expoente = a parede. Revisa a IMPLEMENTAÇÃO do P1 (não o espírito) e
+SUPERA o P2b. Multi-sessão: Fase 1 estrutura (Opus) → Fase 2 re-fit (Opus fita,
+Sonnet roda) → review → bake. **O tune de começo (gate área2=80 + hook de
+economia) foi PAUSADO e absorvido pela Fase 2 deste modelo** (agente
+a48a87124a3411bba parado; progresso no transcript). O jogo COMMITADO (0e2ce51 +
+o fit anterior) segue jogável com o modelo antigo até este re-fit bakear.
+
+**Trilha de LANÇAMENTO (L1–L6 commitadas; L4 lore pendente):** intacta, roda em
+paralelo — é UI, não colide com o modelo de inimigo. Ver `LAUNCH_ITCHIO.md`.
+
+---
+
+
 **✅ SESSÃO jul/04 (noite) — ESTRUTURA DO PARADIGMA P1–P9 COMMITADA.**
 Ciclo completo: Opus implementou → Sonnet reprovou (bloqueante gate nv 81)
 → dono corrigiu P9 (porta dupla) → Opus consertou → Sonnet re-aprovou →
