@@ -28,7 +28,12 @@
 
 G.reveals = {
   KEYS: ["forge", "worldmap", "convergence", "passives", "awaken"],
-  HINT_KEYS: ["gearUpgrade", "introSeen", "death", "promotion", "harbinger"],
+  HINT_KEYS: ["gearUpgrade", "introSeen", "death", "promotion", "harbinger",
+    // L2.5 (docs/design/LAUNCH_ITCHIO.md §L2.5) — onboarding guiado de 2 passos por sistema
+    // (src/spotlight.js). Mesma disciplina one-shot dos hints acima: save novo = tudo false
+    // (guias disparam na hora certa); save veterano = tudo true via _deriveFromLegacyState
+    // (loop abaixo já cobre HINT_KEYS inteiro, nenhuma mudança extra necessária ali).
+    "guide_forge", "guide_worldmap", "guide_convergence", "guide_passives", "guide_awaken"],
 
   // ~80% do 1º gate de Convergence (dial isolado, não mexe em balance real de Convergence)
   CONVERGENCE_GATE_FRAC: 0.8,

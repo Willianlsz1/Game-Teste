@@ -1,0 +1,100 @@
+/* spotlight.css — L2.5: onboarding guiado de 2 passos por desbloqueio (src/spotlight.js).
+   Técnica do "furo": .spotlight-overlay escurece a tela inteira por baixo de tudo relevante
+   (z-index alto, mas o jogo continua rodando — idle não para, nada aqui pausa G.combat).
+   O alvo (.spotlight-hole) fica ACIMA do overlay (z-index maior) e ganha um box-shadow
+   gigante e invertido: como o box-shadow nasce da borda do próprio elemento e se estende
+   por uma distância maior que a tela, o resultado visual é "tudo ao redor do alvo escurece,
+   o alvo em si fica limpo e iluminado" — sem clip-path, sem máscara SVG, funciona em
+   qualquer formato de alvo (botão redondo, retângulo, nó de mapa). */
+
+.spotlight-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(4, 6, 12, 0.5);
+  pointer-events: auto;   /* clique no overlay (fora do alvo) = pular/dispensar o guia */
+  cursor: pointer;
+  animation: spotlight-fade-in 0.25s ease-out;
+}
+.spotlight-overlay--step2 { background: rgba(4, 6, 12, 0.55); }
+
+/* o "furo": eleva o alvo acima do overlay e usa um box-shadow enorme como o escurecimento
+   inverso (o alvo fica de fora do sombreamento, tudo o resto por baixo escurece).
+   z-index só empilha acima do overlay se o alvo tiver `position != static` — a maioria dos
+   alvos já é posicionada (.icon-btn é position:relative; .wmap-node/.pv-node são absolute),
+   MAS alguns alvos do passo 2 (#forge-promote, #btn-converge, #awaken-preview) são elementos
+   estáticos de layout normal (flex/grid). `position: relative` só entra em vigor quando o
+   elemento NÃO já tinha um positioning scheme próprio: como .wmap-node/.pv-node fixam
+   `position: absolute` numa regra de MAIOR especificidade (id-less mas com left/top inline
+   feitos via style attribute, que sempre vence classe), o `relative` abaixo nunca os afeta
+   na prática — inline `style="left:...;top:..."` não inclui `position`, então a cascata
+   normal decide, e por isso a MESMA especificidade poderia colidir; para não arriscar,
+   escopamos explicitamente position:relative aos 3 alvos estáticos do passo 2 (ver seção
+   abaixo) em vez de aplicar no `.spotlight-hole` genérico. */
+.spotlight-hole {
+  /* !important: alvos de telas próprias (ex. .wmap-node.is-current) já fixam seu PRÓPRIO
+     z-index (2) numa regra de duas classes, que vence a nossa de uma classe só por
+     especificidade — sem isso o nó "iluminado" ficava atrás do overlay visualmente mesmo
+     com o clique já funcionando (captura no document, ver spotlight.js). O spotlight
+     precisa sempre vencer, não importa que outra classe de estado o alvo já tenha. */
+  z-index: 501 !important;
+  box-shadow: 0 0 0 4000px rgba(4, 6, 12, 0.72);
+  animation: spotlight-pulse 1.6s ease-in-out infinite;
+}
+/* alvos do passo 2 que são elementos estáticos de layout normal (sem position próprio) —
+   precisam de position:relative pra o z-index acima ter efeito. Alvos já posicionados
+   (.icon-btn, .wmap-node, .pv-node) NÃO entram aqui de propósito (evita conflito de cascata). */
+#forge-promote.spotlight-hole,
+#btn-converge.spotlight-hole,
+#awaken-preview.spotlight-hole {
+  position: relative;
+}
+.spotlight-hole--step2 { box-shadow: 0 0 0 4000px rgba(4, 6, 12, 0.78); }
+
+/* z-index só vence DENTRO do mesmo contexto de empilhamento. Todo container de tela/modal
+   (.hud, .modal-overlay, .worldmap-screen, .passives-screen) já fixa seu PRÓPRIO z-index —
+   sem isto, o alvo do spotlight (um descendente) nunca consegue aparecer visualmente acima
+   do .spotlight-overlay (z-index:500 solto em <body>), mesmo com z-index:501 local, porque
+   o ancestral inteiro já está pregado num z-index menor no contexto do body. `:has()` eleva
+   o CONTAINER inteiro acima do overlay só enquanto ele contém o alvo iluminado — escopado a
+   cada container que hospeda um alvo real de passo 1 ou passo 2 (ver G.spotlight.CONFIG),
+   então não há efeito colateral fora da janela em que o spotlight está ativo. */
+.hud:has(.spotlight-hole),
+.modal-overlay:has(.spotlight-hole),
+.worldmap-screen:has(.spotlight-hole),
+.passives-screen:has(.spotlight-hole) {
+  z-index: 501;
+}
+
+@keyframes spotlight-pulse {
+  0%, 100% { box-shadow: 0 0 0 4000px rgba(4, 6, 12, 0.72), 0 0 18px 3px color-mix(in srgb, var(--gold) 65%, transparent); }
+  50%      { box-shadow: 0 0 0 4000px rgba(4, 6, 12, 0.72), 0 0 28px 6px color-mix(in srgb, var(--gold) 85%, transparent); }
+}
+@keyframes spotlight-fade-in {
+  from { opacity: 0; } to { opacity: 1; }
+}
+
+/* legenda: caixa flutuante ancorada perto do alvo (posicionada via JS em top/left inline,
+   já clampada à viewport por G.spotlight._positionCaption). */
+.spotlight-caption {
+  position: fixed; z-index: 502;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  text-align: center; pointer-events: auto; cursor: pointer;
+  font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 17px;
+  color: #fff7e6;
+  padding: 10px 16px; border-radius: 10px;
+  background: linear-gradient(180deg, rgba(16, 22, 40, 0.95), rgba(8, 10, 22, 0.95));
+  border: 1px solid color-mix(in srgb, var(--gold) 60%, transparent);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55), 0 0 18px -4px var(--gold);
+  animation: spotlight-caption-in 0.25s ease-out;
+}
+.spotlight-caption--step1 .spotlight-arrow {
+  color: var(--gold); font-size: 20px; line-height: 1;
+  animation: spotlight-arrow-bounce 1.1s ease-in-out infinite;
+}
+@keyframes spotlight-arrow-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+@keyframes spotlight-caption-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

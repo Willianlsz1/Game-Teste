@@ -94,6 +94,10 @@ G.ui = {
       setTimeout(() => this._dismissBeacon(btn), 4000);   // beacon expira sozinho em 4s
     }
     this.renderReveals();
+    // L2.5 (docs/design/LAUNCH_ITCHIO.md §L2.5): spotlight guiado de passo 1 sobre o botão
+    // recém-revelado. Passives não tem passo 1 (a tela abre sozinha — ver onConvergenceComplete
+    // em reveals.js) então G.spotlight.onReveal() é um no-op pra essa chave (cfg.step1 ausente).
+    if (G.spotlight) G.spotlight.onReveal(key);
   },
 
   // aplica visibilidade atual de cada botão [data-reveal] conforme G.reveals.isRevealed().
@@ -126,6 +130,20 @@ G.ui = {
     // Re-fita agora que .hidden=false já tirou o display:none do layout.
     if (id === "modal-passives" && this.el["pv-body"]) this._pvFitStage(this.el["pv-body"]);
     this.syncActiveScreen();   // marca o botão como "tela aberta" sem esperar o tick de 1s
+    // L2.5: passo 2 do spotlight guiado, se este modal tiver um guia pendente (ver
+    // MODAL_SPOTLIGHT_KEY). Passives entra aqui tanto no auto-open (1ª Convergence) quanto
+    // em aberturas manuais seguintes — maybeStartStep2 já é idempotente (hintSeen guarda).
+    const skey = this.MODAL_SPOTLIGHT_KEY[id];
+    if (skey && G.spotlight) G.spotlight.maybeStartStep2(skey);
+  },
+
+  // modal id -> chave de G.spotlight.CONFIG (mesmas chaves de G.reveals.KEYS).
+  MODAL_SPOTLIGHT_KEY: {
+    "modal-forge": "forge",
+    "modal-worldmap": "worldmap",
+    "modal-convergence": "convergence",
+    "modal-passives": "passives",
+    "modal-awaken": "awaken",
   },
 
   resetGame() {
