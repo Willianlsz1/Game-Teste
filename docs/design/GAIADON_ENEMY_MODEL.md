@@ -38,6 +38,14 @@ fluxo normal), P8 (Oferenda), P9 (porta por nível = teto da faixa da área).
    ≈ seu nível, o HP cresce mais rápido que o seu dano (linear em nível + gear),
    então HTK sobe como `nível^(y_HP−1)` → Gear/Convergence/Awaken continuam
    OBRIGATÓRIOS por construção. Um dial de gap em vez de 18 tabelas.
+4. **Economia de Lumens ancorada na gold math do Gaiadon (§2.2), dono jul/05:**
+   Lumens/kill = `(mob_level / x_gold)^y_gold` — MESMA família paramétrica, com
+   buckets próprios de gold. **O expoente do gold SOBE por bucket e ultrapassa o
+   do HP no late game** (Gaiadon: ~2.82 vs ~2.33) → Lumens ACELERAM no fim = o
+   P3 (espetáculo) vira estrutural (o expoente de gold crescente SUBSTITUI o
+   `lumensByArea`, que fica fallback). Os multiplicadores de rank dos acesos (P5)
+   multiplicam por cima ("caçar raro > grindar", = gold×40 do FIEND). Provisório;
+   fit na Fase 2.
 
 **Consequência de feel (aceita pelo dono):** o "entra difícil → derrete →
 avança" do P2b é SUPERADO. Com mob ≈ seu nível, o combate vira desafio
