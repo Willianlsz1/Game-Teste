@@ -94,7 +94,7 @@ Object.assign(G.ui, {
     const stateClass = unlocked ? " is-done" : can ? " is-ready" : "";
     const action = unlocked
       ? `<div class="awk-preview__done">✦ Awakened, the light endures</div>`
-      : `<button class="btn btn-ornate awk-preview__btn" data-awaken="${a.id}"${can ? "" : " disabled"}>${can ? "◈ Awaken" : "Requirements not met"}</button>`;
+      : `<button class="kit-btn-ceremonial awk-preview__btn" data-awaken="${a.id}"${can ? "" : " disabled"}>${can ? "◈ Awaken" : "Requirements not met"}</button>`;
 
     panel.innerHTML = `<div class="awk-preview__inner${stateClass}">
       <div class="awk-preview__head">

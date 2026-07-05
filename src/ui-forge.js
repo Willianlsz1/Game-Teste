@@ -115,7 +115,7 @@ Object.assign(G.ui, {
       <div class="anvil-rar"><b style="color:${item.color}">${item.rarityName}</b> <em>→</em> <b style="color:${nextRar.color}">${nextRar.name}</b></div>
       <div class="anvil-affixes">${rows}</div>
       ${costHtml}
-      <button class="forge-btn forge-btn--up" data-promote="${item.slot}" ${can ? "" : "disabled"}>Promote</button>
+      <button class="kit-btn-ceremonial forge-btn--up" data-promote="${item.slot}" ${can ? "" : "disabled"}>Promote</button>
     </div>`;
     anvil.hidden = false;
     anvil.querySelectorAll("[data-promote]").forEach((b) =>

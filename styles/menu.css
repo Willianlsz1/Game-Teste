@@ -5,8 +5,17 @@
    ============================================================= */
 
 .modal--menu {
-  width: min(560px, 94vw); max-height: 88vh; overflow-y: auto;
-  display: flex; flex-direction: column; gap: 4px;
+  width: min(560px, 94vw); max-height: 88vh;
+  display: flex; flex-direction: column;
+  padding: 0; border-radius: 0;
+}
+/* os decalques de canto (.kit-corner / ::before / ::after) são filhos
+   absolutos do .modal--menu — se o SCROLL ficasse no mesmo elemento eles
+   rolariam junto com o conteúdo. Por isso o scroll vive num wrapper
+   interno (.modal--menu__scroll) e os cantos ficam pinados no painel. */
+.modal--menu__scroll {
+  overflow-y: auto; display: flex; flex-direction: column; gap: 4px;
+  padding: 8px 14px 14px;
 }
 
 .menu-section {

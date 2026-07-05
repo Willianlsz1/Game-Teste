@@ -173,10 +173,9 @@
 
 /* action area */
 .awk-preview__action { margin-top: auto; padding-top: 4px; }
-.awk-preview__btn {
-  width: 100%; font-size: 18px; padding: 14px 28px;
-  --btn-c: var(--awk-c);
-}
+/* .awk-preview__btn agora é .kit-btn-ceremonial (arte, tamanho fixo) — não
+   forçar width:100% nela; centralizar dentro da área de ação. */
+.awk-preview__action .kit-btn-ceremonial { margin: 0 auto; }
 .awk-preview__inner.is-done .awk-preview__btn { --btn-c: var(--gold); }
 .awk-preview__done {
   text-align: center; font-family: "Cormorant Garamond", serif; font-style: italic;

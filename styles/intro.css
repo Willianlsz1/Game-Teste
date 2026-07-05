@@ -1,51 +1,129 @@
 /* =============================================================
-   intro.css — Tela de intro de jogo novo (L3, docs/design/LAUNCH_ITCHIO.md §L3)
-   Full-screen, 1ª abertura de um save novo só. Fecha SÓ pelo botão Begin
-   (clique fora NÃO fecha — ver bindIntro em ui-intro.js). Acento dourado/teal,
-   fundo azul astral (reusa assets/ui/awaken_bg.png — mesma família visual do jogo).
+   intro.css — Intro v2, "o juramento da Ordre" (L3b, docs/design/LAUNCH_ITCHIO.md §L3b)
+   Cena em 3 tempos sobre assets/ui/intro_bg.png (fallback awaken_bg.png se faltar o
+   arquivo — background-image encadeado, o 2º só aparece se o 1º 404 na resolução do
+   navegador... como isso não é confiável em CSS puro, ui-intro.js testa o arquivo via
+   Image() e troca a var --intro-bg-url se preciso). Full-screen, 1ª abertura de um save
+   novo só. Fecha SÓ pelo botão Accept (clique fora NÃO fecha — ver bindIntro em
+   ui-intro.js). O pedestal central da arte fica LIVRE: os textos vivem numa faixa lateral
+   (metade direita da tela), nunca no centro.
    ============================================================= */
 
 .intro-screen {
   position: fixed; inset: 0; z-index: 500;
-  display: flex; align-items: center; justify-content: center;
-  padding: 24px;
+  display: flex; flex-direction: column;
+  padding: 0;
+  cursor: pointer;
   background:
-    linear-gradient(180deg, rgba(4, 5, 12, 0.62) 0%, rgba(4, 5, 12, 0.88) 100%),
-    url('../assets/ui/awaken_bg.png') center / cover no-repeat,
+    linear-gradient(90deg, rgba(4, 5, 12, 0.15) 0%, rgba(4, 5, 12, 0.30) 38%, rgba(4, 5, 12, 0.82) 58%, rgba(4, 5, 12, 0.92) 100%),
+    linear-gradient(180deg, rgba(4, 5, 12, 0.55) 0%, rgba(4, 5, 12, 0.15) 16%, rgba(4, 5, 12, 0.15) 78%, rgba(4, 5, 12, 0.75) 100%),
+    var(--intro-bg-url, url('../assets/ui/intro_bg.png')) center / cover no-repeat,
     #05060f;
 }
 .intro-screen[hidden] { display: none; }
 
-.intro-card {
-  width: min(620px, 94vw);
-  padding: 40px 36px 32px;
+/* topo: título do jogo + subtítulo da cena, centralizados, discretos */
+.intro-header {
+  flex: 0 0 auto;
   text-align: center;
-  border-radius: 18px;
-  background: rgba(6, 8, 20, 0.55);
-  border: 1px solid color-mix(in srgb, var(--gold) 42%, transparent);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.65), 0 0 60px -20px var(--teal, #5ee0d2);
-  animation: intro-rise 0.5s ease-out;
+  padding: 28px 24px 0;
 }
-@keyframes intro-rise {
-  from { opacity: 0; transform: translateY(14px); }
+.intro-header__title {
+  font-family: "Outfit", sans-serif; font-weight: 600;
+  font-size: 13px; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--teal, #5ee0d2);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+}
+.intro-header__subtitle {
+  font-family: "Cormorant Garamond", serif; font-style: italic; font-weight: 600;
+  font-size: 22px; color: #fff7e6; margin-top: 4px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+}
+
+/* painel lateral direito: onde os 3 tempos entram, um de cada vez */
+.intro-panel {
+  flex: 1 1 auto;
+  display: flex; align-items: center;
+  justify-content: flex-end;
+  padding: 24px 6vw 24px 24px;
+}
+
+.intro-beat {
+  width: min(440px, 92vw);
+  animation: intro-beat-in 0.9s ease-out;
+}
+.intro-beat[hidden] { display: none; }
+@keyframes intro-beat-in {
+  from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.intro-card__eyebrow {
+.intro-beat__eyebrow {
   font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
-  color: var(--teal, #5ee0d2); margin-bottom: 14px;
+  color: var(--teal, #5ee0d2); margin: 0 0 12px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
 }
 
-.intro-card__title {
-  font-family: "Cormorant Garamond", serif; font-style: italic; font-weight: 600;
-  font-size: 30px; color: #fff7e6; margin-bottom: 20px;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+.intro-beat__text {
+  font-family: "Cormorant Garamond", serif; font-size: 22px; line-height: 1.6;
+  color: #f1f2fa; margin: 0;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
 }
 
-.intro-card__lore {
-  font-family: "Cormorant Garamond", serif; font-size: 19px; line-height: 1.55;
-  color: #e7e9f5; margin: 0 0 12px;
-}
-.intro-card__lore:last-of-type { margin-bottom: 26px; }
+/* Tempo 3: bloco "ordem de missão" — moldura dourada fina + selo CSS */
+.intro-beat--order { width: min(460px, 92vw); }
 
-.intro-card__cta { margin-top: 6px; }
+.intro-order {
+  position: relative;
+  padding: 26px 26px 22px;
+  border: 1px solid color-mix(in srgb, var(--gold) 55%, transparent);
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(10, 9, 18, 0.72), rgba(6, 5, 12, 0.82));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--gold) 18%, transparent) inset,
+    0 20px 60px rgba(0, 0, 0, 0.6);
+}
+/* moldura dupla — friso fino a 5px da borda, estilo "ordem oficial" */
+.intro-order::before {
+  content: ""; position: absolute; inset: 6px;
+  border: 1px solid color-mix(in srgb, var(--gold) 28%, transparent);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.intro-order__seal {
+  position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; color: #05060f;
+  background: radial-gradient(circle at 35% 30%, #ffe9b8, var(--gold) 70%);
+  box-shadow: 0 0 0 3px #05060f, 0 0 18px -2px var(--gold), 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.intro-order__head {
+  font-family: "Outfit", sans-serif; font-weight: 700;
+  font-size: 13px; letter-spacing: 1.6px; text-transform: uppercase;
+  color: var(--gold); text-align: center;
+  margin: 8px 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--gold) 30%, transparent);
+}
+
+.intro-order__text {
+  font-family: "Cormorant Garamond", serif; font-size: 19px; line-height: 1.6;
+  color: #e7e9f5; margin: 0;
+  text-align: center;
+}
+
+.intro-card__cta {
+  display: block; margin: 22px auto 0;
+  cursor: pointer;
+}
+
+.intro-skip-hint {
+  flex: 0 0 auto;
+  text-align: center;
+  padding: 0 0 18px;
+  font-family: "Outfit", sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(231, 233, 245, 0.45);
+}

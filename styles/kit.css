@@ -1,0 +1,122 @@
+/* =============================================================
+   kit.css — UI-KIT v2 (painel CSS sóbrio + decalques de canto fixos +
+   botões CSS + botão cerimonial de arte). v1 (nine-slice border-image
+   esticando a moldura inteira) foi REPROVADA — ornamento grande não
+   aguenta esticar em paineis fora de ~3:2 (virava trilho deformado) e
+   os botões dourados de barra completa ficavam gigantes em linhas de
+   formulário. Ver HANDOFF/relatório do lote UI-KIT p/ contexto completo.
+
+   Fonte dos decalques (recortados do panel_frame.png trimado, cada um
+   com seu próprio alpha-trim — ver assets/ui/kit/*.png):
+     corner_tl.png  258x154   corner_tr.png  257x154
+     corner_bl.png  262x176   corner_br.png  262x176
+   (crest_top.png/crest_bottom.png 350x153/350x151 foram recortados mas
+   NÃO usados nesta v2 — vários modais têm overflow:hidden + título no
+   topo; risco de colisão/corte em 6 layouts diferentes não valia o
+   ganho decorativo. Guardados em assets/ui/kit/ como reserva.)
+   Corners ficam em tamanho FIXO na tela (nunca esticam) — só a laca do
+   painel entre eles é elástica.
+   ============================================================= */
+
+/* ---- painel: laca navy + borda dupla dourada fina ---- */
+.kit-panel {
+  position: relative;
+  background: rgba(13, 27, 42, 0.97);
+  border: 1px solid #d4af37;
+  border-radius: 6px;
+  box-shadow:
+    0 0 0 3px rgba(4, 8, 16, 0.9),
+    0 0 0 4px rgba(192, 200, 216, 0.55),
+    0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+/* decalques de canto — fixos, nunca esticam; escala uniforme ~64px de lado.
+   Offset 0 (não negativo): alguns modais (.modal--forge/.modal--gear/
+   .awk-modal/.conv-modal) têm overflow:hidden no próprio elemento (recorte
+   do bg-art) — um offset negativo cortaria o decalque pela metade. */
+.kit-panel::before,
+.kit-panel::after,
+.kit-panel .kit-corner {
+  content: ""; position: absolute; width: 64px; height: 64px;
+  background-repeat: no-repeat; background-size: contain; pointer-events: none; z-index: 5;
+}
+.kit-panel::before {
+  top: 0; left: 0;
+  background-image: url("../assets/ui/kit/corner_tl.png");
+}
+.kit-panel::after {
+  top: 0; right: 0;
+  background-image: url("../assets/ui/kit/corner_tr.png");
+}
+.kit-panel .kit-corner--bl {
+  bottom: 0; left: 0;
+  background-image: url("../assets/ui/kit/corner_bl.png");
+}
+.kit-panel .kit-corner--br {
+  bottom: 0; right: 0;
+  background-image: url("../assets/ui/kit/corner_br.png");
+}
+
+/* ---- botão padrão (sóbrio, CSS puro) ---- */
+.kit-btn2 {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 9px 20px; border-radius: 7px; cursor: pointer;
+  background: linear-gradient(180deg, rgba(30, 42, 62, 0.9), rgba(14, 22, 38, 0.95));
+  border: 1px solid #d4af37;
+  color: var(--text, #eaf2ff);
+  font-family: "Outfit", sans-serif; font-weight: 600; font-size: 13px;
+  letter-spacing: 0.5px;
+  transition: border-color 0.1s, filter 0.1s, transform 0.08s;
+}
+.kit-btn2:hover  { filter: brightness(1.15); border-color: #f0cf6a; }
+.kit-btn2:active { transform: translateY(1px); }
+.kit-btn2:disabled { opacity: 0.4; cursor: not-allowed; filter: none; }
+
+/* primário: fundo dourado gradiente, texto navy */
+.kit-btn2--gold {
+  background: linear-gradient(180deg, #e8c968 0%, #d4af37 48%, #b8912e 100%);
+  border-color: #f0d886;
+  color: #0d1b2a;
+  font-weight: 700;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+.kit-btn2--gold:hover { filter: brightness(1.08) saturate(1.05); border-color: #fff0bd; }
+
+/* ---- botão cerimonial (arte, só 1 por tela — ação climática) ----
+   Usa btn_gold.png inteiro (1412x315, já trimado) como fundo, grande.
+   NÃO usar em botões de formulário/linha — só CTA único de tela. */
+.kit-btn-ceremonial {
+  display: block; width: min(320px, 92%); height: 80px; margin: 0 auto;
+  border: none; cursor: pointer; background: transparent;
+  background-image: url("../assets/ui/kit/btn_gold.png");
+  background-repeat: no-repeat; background-size: 100% 100%; background-position: center;
+  color: #23180a; font-family: "Cormorant Garamond", serif; font-weight: 700;
+  font-size: 20px; letter-spacing: 1px; text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: filter 0.12s, transform 0.08s;
+}
+.kit-btn-ceremonial:hover { filter: brightness(1.08) saturate(1.05); }
+.kit-btn-ceremonial:active { transform: translateY(2px); }
+.kit-btn-ceremonial:disabled { filter: grayscale(0.6) brightness(0.75); cursor: not-allowed; }
+
+/* ---- divisor (mantido da v1 — background contain, nunca estica) ----
+   flex-shrink:0 é necessário pq alguns donos são flex column (ex.: o
+   scroll wrapper do Settings) e um <div> vazio sem conteúdo pode ser
+   espremido a 0px de altura pelos vizinhos senão. */
+.kit-divider {
+  width: min(320px, 80%);
+  height: 22px; min-height: 22px; flex-shrink: 0;
+  margin: 10px auto;
+  background: url("../assets/ui/kit/divider.png") center / contain no-repeat;
+  border: none;
+}
+
+/* ---- botão fechar (mantido da v1 — medalhão redondo, nunca estica) ---- */
+.kit-close {
+  position: absolute; top: 10px; right: 10px; z-index: 10;
+  width: 34px; height: 34px; padding: 0; border: none; cursor: pointer;
+  background: url("../assets/ui/kit/close.png") center / contain no-repeat;
+  transition: transform 0.12s, filter 0.12s;
+}
+.kit-close:hover { transform: scale(1.06); filter: brightness(1.12); }
+.kit-close:active { transform: scale(0.96); }

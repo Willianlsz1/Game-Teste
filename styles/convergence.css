@@ -48,6 +48,7 @@
 .conv-transition__cell small { font-size: 13px; text-transform: uppercase; letter-spacing: 1.2px; color: #b0bcd0; text-shadow: 0 1px 4px #000; }
 .conv-transition__cell b { font-size: 20px; color: #eaf0fb; text-shadow: 0 1px 8px #000, 0 2px 10px #000; }
 .conv-transition__arrow { font-size: 30px; color: var(--conv-c); text-shadow: 0 0 14px var(--conv-c), 0 1px 6px #000; }
-.conv-modal__cta { width: 100%; font-size: 21px; padding: 16px 30px; }
+/* .conv-modal__cta agora é .kit-btn-ceremonial (arte, tamanho fixo) — centraliza, não estica */
+.conv-modal__cta.kit-btn-ceremonial { margin: 0 auto; }
 .conv-foot { margin: 0; font-size: 14px; color: #a8b4c8; text-shadow: 0 1px 4px #000; }
 .conv-foot b { color: #d0daee; }

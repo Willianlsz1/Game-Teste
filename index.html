@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles/base.css" />
   <link rel="stylesheet" href="styles/components.css" />
+  <link rel="stylesheet" href="styles/kit.css" />
   <link rel="stylesheet" href="styles/hud.css" />
   <link rel="stylesheet" href="styles/gear.css" />
   <link rel="stylesheet" href="styles/forge.css" />
@@ -136,8 +137,10 @@
 
   <!-- MODAL: EQUIPMENT -->
   <div class="modal-overlay" id="modal-gear" hidden onclick="if(event.target===this)this.hidden=true">
-    <div class="modal modal--gear">
-      <button class="modal-close" title="Close" onclick="this.closest('.modal-overlay,.passives-screen').hidden=true">✕</button>
+    <div class="modal modal--gear kit-panel">
+      <span class="kit-corner kit-corner--bl"></span>
+      <span class="kit-corner kit-corner--br"></span>
+      <button class="kit-close" title="Close" onclick="this.closest('.modal-overlay,.passives-screen').hidden=true"></button>
       <div class="modal__title">EQUIPMENT</div>
       <aside class="gear-stats-panel">
         <h3 class="sub-title">Stats</h3>
@@ -164,8 +167,10 @@
 
   <!-- MODAL: FORGE -->
   <div class="modal-overlay" id="modal-forge" hidden onclick="if(event.target===this)this.hidden=true">
-    <div class="modal modal--forge">
-      <button class="modal-close" title="Close" onclick="this.closest('.modal-overlay,.passives-screen').hidden=true">✕</button>
+    <div class="modal modal--forge kit-panel">
+      <span class="kit-corner kit-corner--bl"></span>
+      <span class="kit-corner kit-corner--br"></span>
+      <button class="kit-close" title="Close" onclick="this.closest('.modal-overlay,.passives-screen').hidden=true"></button>
       <div class="modal__title">FORGE</div>
       <aside class="forge-panel forge-panel--left">
         <h3 class="sub-title">Materials</h3>
@@ -188,8 +193,11 @@
 
   <!-- MODAL: SETTINGS -->
   <div class="modal-overlay" id="modal-menu" hidden onclick="if(event.target===this)this.hidden=true">
-    <div class="modal modal--menu">
-      <button class="modal-close" title="Close" onclick="this.closest('.modal-overlay,.passives-screen').hidden=true">✕</button>
+    <div class="modal modal--menu kit-panel">
+      <span class="kit-corner kit-corner--bl"></span>
+      <span class="kit-corner kit-corner--br"></span>
+      <button class="kit-close" title="Close" onclick="this.closest('.modal-overlay,.passives-screen').hidden=true"></button>
+      <div class="modal--menu__scroll">
       <div class="modal__title">SETTINGS</div>
 
       <div class="menu-section">
@@ -201,7 +209,7 @@
         <div class="menu-row">
           <span class="menu-row__label">Manual save</span>
           <span>
-            <button class="menu-btn" id="menu-save-now">Save now</button>
+            <button class="kit-btn2 kit-btn2--gold" id="menu-save-now">Save now</button>
             <span class="menu-feedback" id="menu-save-feedback">Saved!</span>
           </span>
         </div>
@@ -219,6 +227,8 @@
         </div>
       </div>
 
+      <div class="kit-divider"></div>
+
       <div class="menu-section">
         <div class="menu-section__title">Export save</div>
         <textarea class="menu-textarea" id="menu-export-text" readonly rows="3"></textarea>
@@ -229,11 +239,13 @@
         </div>
       </div>
 
+      <div class="kit-divider"></div>
+
       <div class="menu-section">
         <div class="menu-section__title">Import save</div>
         <textarea class="menu-textarea" id="menu-import-text" rows="3" placeholder="Paste your exported save string here"></textarea>
         <div class="menu-actions-row">
-          <button class="menu-btn menu-btn--gold" id="menu-import-btn">Import</button>
+          <button class="kit-btn2 kit-btn2--gold" id="menu-import-btn">Import</button>
           <label class="menu-btn menu-file-label">
             Upload .txt
             <input type="file" id="menu-import-file" accept=".txt" style="display:none" />
@@ -241,6 +253,8 @@
         </div>
         <div class="menu-import-msg" id="menu-import-msg"></div>
       </div>
+
+      <div class="kit-divider"></div>
 
       <div class="menu-section">
         <div class="menu-section__title">Display</div>
@@ -262,6 +276,7 @@
         Éclats of Lumière — v0.9 (Map 1)<br />
         <a href="#" onclick="return false;">itch.io page (soon)</a>
       </div>
+      </div>
     </div>
   </div>
 
@@ -270,8 +285,10 @@
 
   <!-- MODAL: CONVERGENCE (prestige) -->
   <div class="modal-overlay" id="modal-convergence" hidden onclick="if(event.target===this)this.hidden=true">
-    <div class="modal conv-modal">
-      <button class="conv-modal__x" onclick="this.closest('.modal-overlay,.passives-screen').hidden=true" title="Close">✕</button>
+    <div class="modal conv-modal kit-panel">
+      <span class="kit-corner kit-corner--bl"></span>
+      <span class="kit-corner kit-corner--br"></span>
+      <button class="kit-close" onclick="this.closest('.modal-overlay,.passives-screen').hidden=true" title="Close"></button>
       <div class="conv-modal__pad">
         <h3 class="conv-modal__title">Convergence</h3>
         <p class="conv-desc">Break the Seeker and begin anew — sacrifice this run for permanent power.</p>
@@ -294,7 +311,7 @@
           <span class="conv-transition__arrow">→</span>
           <div class="conv-transition__cell"><small>Return to</small><b id="conv-return">Lv 1</b></div>
         </div>
-        <button class="btn btn-ornate conv-modal__cta" id="btn-converge" style="--btn-c:#7fb0ff">Converge</button>
+        <button class="kit-btn-ceremonial conv-modal__cta" id="btn-converge">Converge</button>
         <div class="conv-foot">Points <b id="conv-points">0</b> · Convergences <b id="conv-count">0</b> · Highest Lv <b id="conv-highest">1</b></div>
       </div>
     </div>
@@ -302,8 +319,10 @@
 
   <!-- MODAL: AWAKEN (3rd power source) -->
   <div class="modal-overlay" id="modal-awaken" hidden onclick="if(event.target===this)this.hidden=true">
-    <div class="modal awk-modal">
-      <button class="awk-modal__x" onclick="this.closest('.modal-overlay,.passives-screen').hidden=true" title="Close">✕</button>
+    <div class="modal awk-modal kit-panel">
+      <span class="kit-corner kit-corner--bl"></span>
+      <span class="kit-corner kit-corner--br"></span>
+      <button class="kit-close" onclick="this.closest('.modal-overlay,.passives-screen').hidden=true" title="Close"></button>
       <div class="awk-split">
         <div class="awk-sidebar">
           <div class="awk-sidebar__head">
@@ -322,7 +341,7 @@
 
   <!-- SCREEN: PASSIVES (World-Tree) -->
   <div class="passives-screen" id="modal-passives" hidden>
-    <button class="modal-close" title="Close" onclick="this.closest('.modal-overlay,.passives-screen').hidden=true">✕</button>
+    <button class="kit-close" title="Close" onclick="this.closest('.modal-overlay,.passives-screen').hidden=true"></button>
     <div class="pv-body" id="pv-body"></div>
     <div class="pv-lock" id="pv-lock" hidden>
       <div class="glyph">✦</div>
@@ -345,7 +364,9 @@
       </div>
     </div>
     <div class="wmap-info" id="wmap-info" hidden>
-      <div class="wmap-info__card">
+      <div class="wmap-info__card kit-panel">
+        <span class="kit-corner kit-corner--bl"></span>
+        <span class="kit-corner kit-corner--br"></span>
         <header class="wmap-info__head">
           <img class="wmap-info__emblem" id="wmap-info-emblem" alt="" onerror="this.style.visibility='hidden'" />
           <div class="wmap-info__head-txt">
@@ -391,17 +412,33 @@
     </div>
   </div>
 
-  <!-- SCREEN: INTRO (L3, jogo novo — 1ª abertura só; ver src/ui-intro.js) -->
+  <!-- SCREEN: INTRO (L3b, jogo novo — 1ª abertura só; ver src/ui-intro.js) -->
+  <!-- Cena em 3 tempos sobre assets/ui/intro_bg.png (fallback awaken_bg.png). Textos ficam
+       numa faixa lateral (metade direita) pra não cobrir o pedestal central da arte. -->
   <div class="intro-screen" id="intro-screen" hidden>
-    <div class="intro-card">
-      <div class="intro-card__eyebrow">Éclats of Lumière</div>
-      <div class="intro-card__title">The Dreaming Wood</div>
-      <p class="intro-card__lore">The light broke long ago, and its pieces forgot each other's names.</p>
-      <p class="intro-card__lore">You woke in the Dreaming Wood carrying a splinter that still remembers — the Seed.</p>
-      <p class="intro-card__lore">Fight what the light left twisted. Gather the Lumens it sheds. Grow, and the Seed grows with you.</p>
-      <p class="intro-card__lore">The light remembers everything you become.</p>
-      <button class="btn btn-ornate intro-card__cta" id="intro-begin-btn">Begin</button>
+    <div class="intro-header">
+      <div class="intro-header__title">Éclats of Lumière</div>
+      <div class="intro-header__subtitle">L'Ordre des Éclairés</div>
     </div>
+    <div class="intro-panel">
+      <div class="intro-beat" id="intro-beat-1" data-beat="1">
+        <p class="intro-beat__eyebrow">The Ordre</p>
+        <p class="intro-beat__text">Since the light broke, the Ordre des Éclairés has kept the roads. Its Seekers hunt what the light left twisted — and the world sleeps safer for it.</p>
+      </div>
+      <div class="intro-beat" id="intro-beat-2" data-beat="2" hidden>
+        <p class="intro-beat__eyebrow">The Oath</p>
+        <p class="intro-beat__text">Today you take the oath. An Éclat is set into your hands — routine, they say. Yet something in its light seems to remember you.</p>
+      </div>
+      <div class="intro-beat intro-beat--order" id="intro-beat-3" data-beat="3" hidden>
+        <div class="intro-order">
+          <div class="intro-order__seal">✦</div>
+          <div class="intro-order__head">First Assignment — The Dreaming Wood</div>
+          <p class="intro-order__text">The forest that stole the Moon. Villages at its edge report shades among the trees. Hunt them. Gather the Lumens they shed. Return stronger.</p>
+        </div>
+        <button class="kit-btn-ceremonial intro-card__cta" id="intro-begin-btn">Accept</button>
+      </div>
+    </div>
+    <div class="intro-skip-hint">Click to continue</div>
   </div>
 
   <script src="src/util.js"></script>

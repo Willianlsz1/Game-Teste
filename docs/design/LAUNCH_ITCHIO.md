@@ -101,6 +101,16 @@ contador de Harbinger só nas áreas de Harbinger (comportamento correto).
 **Pendente de aprovação (item 6):** placa única do Seeker (nome+Lv+barras
 numa moldura) com marcador da porta da próxima área na barra de XP.
 
+### Botões secundários — 🅿️ REENCAMINHAMENTO PENDENTE (dono, jul/05)
+
+O dono reprovou a arte de botão-barra ESCURA (`btn_frame.png`) e pediu "outro
+encaminhamento" pro tratamento de botões secundários/comuns. Assets mortos
+removidos (`btn_frame.png` + `kit/btn.png`). **MANTIDO e em uso:** botão
+CERIMONIAL dourado (`kit/btn_gold.png` → `.kit-btn-ceremonial`: Accept,
+Converge, Awaken, Promote) — aprovado por contexto na cena do juramento. Botões
+comuns seguem em CSS sóbrio (`.kit-btn2`) até o dono definir o novo rumo da
+arte de botão secundário. **Não regenerar btn-bar escura sem o dono reabrir.**
+
 ### L5 — Empacotamento itch.io — **🔒 CONGELADA PELO DONO (jul/04)**
 
 > **Não executar em nenhuma sessão.** O dono sente que o nível de polimento
