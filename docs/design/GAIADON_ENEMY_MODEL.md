@@ -86,6 +86,29 @@ Reportar por área/grupo: mob HP · dano/DPS necessário · Lumens/custos de gea
 materiais · TTK · tempo do grupo · tempo TOTAL de clear. É o que o dono quer
 ver antes de decidir se as magnitudes agradam (e antes do design/polimento).
 
+## ALVO CENTRAL DO FIT (Fase 2) — DESAFIO CONSTANTE (dono jul/05, pós-projeção)
+
+A projeção crua mostrou combate trivial (gear maxa instantâneo → invencível na
+área 12) + 6,5h de farm de material no G6. O dono decidiu: **o Mapa 1 inteiro
+tem que ser mais CONSTANTE — se o player ficar forte, ok, mas a PRÓXIMA área já
+é um desafio maior.** Alvo = **serrote de HTK constante pelas 18 áreas**: entra
+desafiado (HTK/TTK alto na entrada), derrete até o fim da área ("ficar forte,
+ok"), e a área seguinte RE-DESAFIA (degrau) — mesma intensidade em todas, não
+decaindo pra trivial.
+
+**Mecanismo (razão de duas curvas, NÃO cortar bônus):**
+1. **Gear maxa ~AO LONGO de uma área, não instantâneo** — manter os primeiros
+   upgrades rápidos (o hook), mas a curva de custo sobe pra o gear completo levar
+   ~uma área. Você cresce DENTRO da área, não entra no talo.
+2. **Degrau do inimigo por área firme** (gap de expoente calibrado) — o salto de
+   HP por transição de área supera o poder carregado → cada entrada re-walla.
+3. **NÃO mexer nos bônus de passiva/awaken** — são poder de prestige (derretem a
+   re-subida pós-Convergence); cortá-los machuca isso sem resolver o desafio
+   por-área (que é gear-vs-inimigo).
+4. Re-ancorar o drop de material do First Light (G6 não pode ser 6,5h de farm).
+5. Re-checar o cap de nível 6000 (batido na área 12 — cedo demais) e as portas.
+Clear-time = emergente; reportar, o dono dial-a depois.
+
 ## Re-fit (Fase 2) — alvos do dono
 - Hook de economia inicial: primeiros ~3-4 upgrades de gear em segundos (o tune
   que estava rodando — reintegrar ao novo modelo).
