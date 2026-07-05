@@ -8,6 +8,32 @@
 
 ## Onde o trabalho está AGORA
 
+**⏸️ SESSÃO jul/04 (noite) — RE-FIT DO PARADIGMA INTERROMPIDO POR LIMITE DE
+USO (reseta 22:10 SP). Estado exato pra retomar:**
+
+- **Conjunto P1–P9 FECHADO pelo dono** — `docs/design/DECISOES_DONO.md` Parte I
+  (P7 backtrack invisível · P8 Oferenda · P2b curva TTK 5–8s→1s · atk speed
+  cap 15 global · P4 só na curva nua · P5 escada por tier · **P9 porta dupla:
+  nível LIBERA a entrada da área, dificuldade regula permanência — níveis de
+  porta viram dial re-derivado no fit**).
+- **Working tree (NÃO commitado):** implementação P1–P8 do Opus (testes 100%,
+  campaign roda; dials em `data.js`) **+ um conserto ERRADO de P9** em
+  `src/progression.js` (removeu a chave de nível dentro do grupo — era a
+  proposta do orquestrador que o dono CORRIGIU depois; a correção não chegou
+  a ser aplicada porque o agente bateu no limite).
+- **PRÓXIMO PASSO (1º da fila ao retomar):** relançar o executor (Opus) com a
+  instrução que já está pronta no fim do transcript do agente a1f99c257f31ccc55
+  e no livro-razão P9: REVERTER a remoção da chave de nível em progression.js,
+  expor `levelGateByArea` como dial, derivar níveis de porta provisórios
+  alcançáveis no relógio de cada área (G1 ~1h; o v9-r7 exigia nv 81 na área 1
+  = 6h58 medido — o bloqueante do review adversarial), re-rodar tests +
+  baseline + campaign 3 seeds. Depois: review adversarial de novo (Sonnet) →
+  revisão do orquestrador → commit.
+- Review adversarial nº1 (Sonnet): REPROVOU só pelo bloqueante P1×P4/gate de
+  nível; P1,P2,P3,P5,P6,P7,P8 fiéis à spec, testes verdes, 3 seeds sãos.
+
+
+
 **SESSÃO jul/04 (tarde) — `/grill-with-docs` do Gaiadon ✅ COMPLETO.** O dono
 percorreu TODOS os sistemas (wall, mobs, gear, passivas, awaken, drops,
 pacing) contra o `GAIADON_NUMBERS.md` e o v8. Resultado: **nada implementado,
