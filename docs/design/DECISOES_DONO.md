@@ -113,6 +113,15 @@ Tests 6/6 · canon 0 drift. **NÃO commitado** (aguarda revisão do dono).
   "baseline trava em G4"; coerente com "gear sozinho NÃO vence" — todo jogador
   real converge aos ~44min, muito antes de sentir o teto).
 
+**✅ RATIFICAÇÃO ADICIONAL (jul/05, pós-playtest do começo):**
+- **Gate da área 2 = nível 80** (era 40 no fit). O dono alinha o gate ao TETO
+  da faixa da área (`levelRange[1]`), fechando o padrão que todos os outros
+  gates já seguiam (só o da área 2 estava solto em 40). Melhora a cascata de
+  XP da fronteira 1→2 (entra mais forte). Valida no sim.
+- **Hook de economia inicial:** os primeiros ~3-4 upgrades de gear devem vir
+  em segundos (hoje: 1 upgrade em ~3.6min/64 kills — medido). Tune de curva de
+  custo/renda inicial SEM mexer no relógio macro (First Light 16-22h). Via sim.
+
 **Julgamento do orquestrador nos 4 pendentes:** (a) resolvido pela ratificação
 acima; (b) serrote XP ×81 cru na fronteira 1→2 ACEITO como tolerância
 estrutural do levelRange (o critério sentido — P4, ≤2 níveis/kill — está
