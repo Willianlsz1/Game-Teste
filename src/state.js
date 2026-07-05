@@ -182,17 +182,28 @@ G.state = {
   currentAtkSpeedCap() { return G.data.balance.atkSpeedCapGlobal || G.data.balance.map1AtkSpeedCap; },
   currentAtkSpeedSoft() { return this.currentAtkSpeedCap() * G.data.balance.atkSpeedSoftFrac; },
   attackInterval()     { return G.util.clamp(1 / this.stats().atkSpeed, 1 / this.currentAtkSpeedCap(), 5); },
-  // P4 (custo de XP encarpado no início): expoente MAIOR (xpCurveExpEarly) nos primeiros níveis,
-  //   transição linear até xpCurveExp em xpCurveEarlyUntil. Alvo NU (dono): nenhum kill dá 2+ níveis
-  //   sem bônus de XP; com bônus, cascata é feature. Fallback ao expoente único se early ausente.
+  // ═══ P10 fase1b (modelo Gaiadon §3.1) — curva de XP na forma INVERTÍVEL ═══
+  //   XP CUMULATIVO pra alcançar o nível L: xpCumulative(L) = ((L-1)/k)^e (forma do Gaiadon,
+  //   cap xpCurveCap=6000). xpToNext(L) = xpCumulative(L+1) - xpCumulative(L) (o delta), que
+  //   preserva a semântica incremental do engine (xp acumula por nível). levelForXp inverte a
+  //   cumulativa (nível_de(xp) = (xp^(1/e))×k + 1), reservada pra Light Remembers / re-subida.
+  //   Alvo NU (dono, P4): mob≈jogador → nenhum kill nu dá 2+ níveis (pico 1.49 no L1, flat ~0.75).
+  xpCumulative(lvl) {
+    const b = G.data.balance;
+    const k = (b.xpCurveK != null) ? b.xpCurveK : 0.078;
+    const e = b.xpCurveExp || 2.0;
+    return Math.pow(Math.max(0, lvl - 1) / k, e);
+  },
+  levelForXp(totalXp) {
+    const b = G.data.balance;
+    const k = (b.xpCurveK != null) ? b.xpCurveK : 0.078;
+    const e = b.xpCurveExp || 2.0;
+    const cap = b.xpCurveCap || 6000;
+    return G.util.clamp(Math.floor(Math.pow(Math.max(0, totalXp), 1 / e) * k + 1), 1, cap);
+  },
   xpToNext() {
-    const b = G.data.balance, lvl = this.data.level;
-    let exp = b.xpCurveExp;
-    if (b.xpCurveExpEarly != null && b.xpCurveEarlyUntil > 1) {
-      const t = G.util.clamp((lvl - 1) / (b.xpCurveEarlyUntil - 1), 0, 1);   // 0 no nível 1 → 1 no fim do early
-      exp = b.xpCurveExpEarly + (b.xpCurveExp - b.xpCurveExpEarly) * t;      // interpola early→cruzeiro
-    }
-    return Math.ceil(b.xpCurveBase * Math.pow(lvl, exp));
+    const lvl = this.data.level;
+    return Math.ceil(this.xpCumulative(lvl + 1) - this.xpCumulative(lvl));
   },
 
   // save/load — fallback em memória quando localStorage está bloqueado (file://)

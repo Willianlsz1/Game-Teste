@@ -137,12 +137,39 @@ function policyTick(sim) {
     G.combat.enemies = []; G.combat.enemy = null;
     G.combat.pendingHits = []; G.combat.respawnTimer = 0;
   }
+  // P10 fase1b (PROJEÇÃO por ÁREA): amostra o estado do jogador NA área corrente a cada tick,
+  //   guardando a ÚLTIMA leitura de CADA área (cobertura completa — o areaEntries só registra
+  //   a entrada quando o "best" AVANÇA, o que pula áreas na re-subida). Read-only.
+  if (sim.areaProj) {
+    const inc = G.income.estimateAreaIncome(d.areaIndex);
+    const s = G.state.stats();
+    const dpsHit = s.atk * (1 + (s.crit / 100) * (s.critMult - 1));
+    const dps = dpsHit / G.state.attackInterval();
+    let cheapGear = Infinity, allMaxed = true;
+    for (const slot of G.data.slots) { const it = d.equipped[slot.id]; if (!G.gear.isMaxed(it)) { allMaxed = false; cheapGear = Math.min(cheapGear, G.gear.cost(it)); } }
+    const lvl = G.enemyFactory.mobLevelFor(d.areaIndex);
+    const pack = G.enemyFactory.packSizeFor(d.areaIndex);
+    const dpsIn = G.data.mobAtkParam(lvl) * ((pack + 1) / 2) / G.combat.enemyInterval;
+    sim.areaProj[d.areaIndex] = { t: sim.t, level: d.level, mobHp: G.data.mobHpParam(lvl),
+      dps, ttk: inc.ttk, ttd: s.hp / Math.max(1e-9, dpsIn),
+      lumensPerMin: inc.lumensPerMin, xpPerMin: inc.xpPerMin, gearCost: allMaxed ? 0 : cheapGear, gearMaxed: allMaxed,
+      matCommon: G.economy.getGear('common'), matUncommon: G.economy.getGear('uncommon'), matAwaken: G.economy.getAwaken('firstLight'), hp: s.hp, atk: s.atk };
+  }
   // registra a entrada (inclusive área 1 — pós-converge best === areaIndex === 0,
   // e a re-subida precisa da amostra), com o nº da run p/ a métrica de re-subida.
   if (best > (sim.lastAreaEntered != null ? sim.lastAreaEntered : -1)) {
     sim.lastAreaEntered = best;
     const snap = combatSnapshot();
-    sim.areaEntries.push({ area: best + 1, t: sim.t, run: (d.convergences || 0) + 1, level: d.level, ...snap });
+    // P10 fase1b (PROJEÇÃO): income read-only na entrada da área (Lumens/min, XP/min, DPS, gear cost).
+    const inc = G.income.estimateAreaIncome(best);
+    const s = G.state.stats();
+    const dpsHit = s.atk * (1 + (s.crit / 100) * (s.critMult - 1));
+    const dps = dpsHit / G.state.attackInterval();
+    let cheapGear = Infinity;
+    for (const slot of G.data.slots) { const it = d.equipped[slot.id]; if (!G.gear.isMaxed(it)) cheapGear = Math.min(cheapGear, G.gear.cost(it)); }
+    sim.areaEntries.push({ area: best + 1, t: sim.t, run: (d.convergences || 0) + 1, level: d.level, ...snap,
+      lumensPerMin: inc.lumensPerMin, xpPerMin: inc.xpPerMin, dps, gearCost: (cheapGear === Infinity ? 0 : cheapGear),
+      matCommon: G.economy.getGear('common'), matUncommon: G.economy.getGear('uncommon'), matAwaken: G.economy.getAwaken('firstLight') });
   }
   // P2 (âncora TTK): amostra ROLANTE de TTK na área atual — a última leitura antes de sair vira
   // o "TTK de SAÍDA" (o mob é fixo, o jogador cresce → TTK derrete da entrada pra saída).
@@ -235,6 +262,7 @@ function freshSim(opts) {
     milestones: [], areaEntries: [], runs: [], areaExit: {},
     lastAreaEntered: -1, lastConvT: 0, nodeLevelsBought: 0, firstLightAt: null,
     promotions: [], awakenMatAt: null, crownAt: null,
+    areaProj: opts.areaProj ? {} : null,   // P10 fase1b: sampler de projeção por área (só quando pedido)
   };
 }
 
@@ -345,7 +373,12 @@ function scenarioGates() {
 
 function scenarioCampaign() {
   const push = +arg('push', 1.0);
-  const maxHours = +arg('max-hours', 200);
+  // P10 fase1b (modo DESCOBERTA, dono jul/05): --uncapped roda até o clear NATURAL do Mapa 1
+  //   (First Light/Okhra) SEM o relógio cortar. Sem a flag, o cap de segurança é 200h (evita
+  //   loop infinito se um dial impedir o clear). Com --uncapped o teto sobe pra 100000h (efetivo
+  //   ∞) — a run só para em mapOneCleared. NÃO se fita pra alvo de relógio; mede-se e reporta-se.
+  const uncapped = argv.includes('--uncapped');
+  const maxHours = uncapped ? 100000 : +arg('max-hours', 200);
   // overrides em memória p/ testar candidatos do P3 (custo de promoção × chance de material)
   const promoteCost = arg('promote-cost', null);
   const commonChance = arg('common-chance', null);
@@ -358,11 +391,11 @@ function scenarioCampaign() {
   if (uncCap != null) { const r = G.data.rarities.find(r => r.id === 'uncommon'); if (r) r.cap = +uncCap; }
   const ovr = (promoteCost != null || commonChance != null || uncCap != null)
     ? ` · override[cost ${G.data.balance.promoteCommonCost}, chance ${G.economy.dropTable.common.commonMaterial.chance}, uncCap ${G.data.rarities.find(r=>r.id==='uncommon').cap}]` : '';
-  console.log(`\n═══ CAMPAIGN — Mapa 1 completo · gate escalonado ×${G.data.balance.convGateGrowth} · push ${push} · seed ${SEED} · cap ${maxHours}h${ovr} ═══\n`);
+  console.log(`\n═══ CAMPAIGN — Mapa 1 completo · gate escalonado ×${G.data.balance.convGateGrowth} · push ${push} · seed ${SEED} · ${uncapped ? 'UNCAPPED (clear natural)' : 'cap ' + maxHours + 'h'}${ovr} ═══\n`);
 
   // P5: sem parada artificial — o gate escalonado (× convGateGrowth) ultrapassa o cap de nível
   // após ~12 convergences, então a convergência PÁRA sozinha e o jogador empurra até Okhra.
-  const sim = freshSim({ converge: true, push, allowAwaken: true });
+  const sim = freshSim({ converge: true, push, allowAwaken: true, areaProj: true });
 
   // P7.4/P8.4: conta os GOLPES na luta do Okhra (mapBoss) COM a maré ativa — banda 60–120.
   // P8.3: conta os golpes de cada Harbinger H1–H6 (1ª queda de cada) — banda 20–40.
@@ -440,6 +473,43 @@ function scenarioCampaign() {
   else console.log(`⚠ Okhra NÃO derrotado em ${fmtT(sim.t)} — área ${d.areaIndex + 1}, nível ${d.level}${sim.timedOut ? ' (timeout)' : ''} · mortes na área 18: ${area18Deaths}`);
   const s = G.state.stats();
   console.log(`  final: ATK ${fmtN(s.atk)} · HP ${fmtN(s.hp)} · gear médio ${gearAvgLevel()} · passivas ${sim.nodeLevelsBought} níveis de nó`);
+
+  // ═══ P10 fase1b — PROJEÇÃO do Mapa 1 (por ÁREA e por GRUPO) ═══════════════════════════
+  //   Modo DESCOBERTA: mede-se e reporta-se o que o modelo Gaiadon produz — mob HP · DPS do
+  //   jogador · Lumens/min · custo de gear · materiais acumulados · TTK entrada/saída · tempo.
+  //   Por área usa a ÚLTIMA amostra do sampler areaProj (estado com que o jogador de fato passou
+  //   pela área na última vez — cobertura completa das 18 áreas, incl. as puladas na re-subida).
+  const AP = sim.areaProj || {};
+  const gsP = G.data.balance.groupSize || 3;
+  console.log('\n── PROJEÇÃO por ÁREA (última passagem amostrada) ──');
+  const WA = [5, 4, 8, 7, 10, 10, 9, 9, 11, 11, 10];
+  console.log(row(['área', 'grp', 'entrada', 'nível', 'mobHP', 'DPS jog', 'TTK', 'TTD', 'Lumens/min', 'custo gear', 'HP jog'], WA));
+  for (let i = 0; i < G.data.areas.length; i++) {
+    const a = AP[i];
+    if (!a) { console.log(row([i + 1, 'G' + (Math.floor(i / gsP) + 1), '—', '—', '—', '—', '—', '—', '—', '—', '—'], WA)); continue; }
+    console.log(row([i + 1, 'G' + (Math.floor(i / gsP) + 1), fmtT(a.t), a.level, fmtN(a.mobHp), fmtN(a.dps),
+      a.ttk.toFixed(1) + 's', a.ttd > 1e6 ? '∞' : a.ttd.toFixed(0) + 's', fmtN(a.lumensPerMin),
+      a.gearMaxed ? 'maxed' : fmtN(a.gearCost), fmtN(a.hp)], WA));
+  }
+  console.log('\n── PROJEÇÃO por GRUPO (duração · materiais acumulados no fim do grupo) ──');
+  const WG = [6, 10, 10, 12, 12, 13];
+  console.log(row(['grupo', 'entrada', 'duração', 'common mat', 'awaken mat', 'Lumens/min'], WG));
+  // duração de grupo pela 1ª entrada de cada grupo (areaEntries), materiais/renda do sampler areaProj
+  const groupEntryP = {};
+  for (const a of sim.areaEntries) { const g = Math.floor((a.area - 1) / gsP); if (groupEntryP[g] === undefined) groupEntryP[g] = a.t; }
+  const gseenP = Object.keys(groupEntryP).map(Number).sort((x, y) => x - y);
+  for (let gi = 0; gi < gseenP.length; gi++) {
+    const g = gseenP[gi], start = groupEntryP[g], nextG = gseenP[gi + 1];
+    const end = (nextG === undefined) ? sim.t : groupEntryP[nextG];
+    const durH = (end - start) / 3600;
+    // pega a amostra da ÚLTIMA área do grupo (maior índice amostrado dentro do grupo)
+    let gl = null;
+    for (let ai = g * gsP + gsP - 1; ai >= g * gsP; ai--) { if (AP[ai]) { gl = AP[ai]; break; } }
+    console.log(row(['G' + (g + 1), fmtT(start), durH.toFixed(2) + 'h', gl ? fmtN(gl.matCommon) : '—',
+      gl ? fmtN(gl.matAwaken) : '—', gl ? fmtN(gl.lumensPerMin) : '—'], WG));
+  }
+  const clearT = d.mapOneCleared ? sim.t : null;
+  console.log(`\n  ✦ TEMPO TOTAL de clear do Mapa 1: ${clearT != null ? fmtT(clearT) : 'NÃO clarou'} · First Light ${sim.firstLightAt != null ? fmtT(sim.firstLightAt) : '—'} · ${d.convergences} convergences · ${fmtN(d.totalKills)} kills · ${M.deaths} mortes`);
 
   // ---- P8.3: HTK da 1ª (e única) queda de cada Harbinger H1–H6 na campanha ----
   // NB: cada Harbinger é lutado 1× (maxAreaUnlocked sobrevive à Convergence). Este HTK reflete

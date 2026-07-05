@@ -102,9 +102,15 @@ G.data = {
     },
   },
 
+  // P10 fase1b (modelo Gaiadon §4.2 — salto front-loaded de raridade): o poder do gear mora na
+  //   PROMOÇÃO, não no level-up dentro do tier. Common → Uncommon = statMult ×8 (o salto grande na
+  //   1ª promoção), NA BANDA do ×11.5 do Gaiadon (Common 1.5 → Uncommon 17.25). Adaptado às NOSSAS
+  //   raridades (Common/Uncommon — NÃO os tiers de luz Ember/Lumen/Corona, que são dos acesos/mobs).
+  //   Mantido em 8 (não subido pra 11.5) porque a Wall (gap de expoente) está fitada em par com este
+  //   salto — subir aqui exigiria re-fitar os buckets de HP. Fase 2 re-ancora se o feel pedir.
   rarities: [
     { id: "common",   name: "Common",   color: "#9aa7bd", cap: 500,  statMult: 1.0, costMult: 1.0 },
-    { id: "uncommon", name: "Uncommon", color: "#7ec8a0", cap: 3000, statMult: 8, costMult: 2.0 }, // statMult P9: tools/p9 (era 1.5) — P4 dimensiona caps raridade→grupo
+    { id: "uncommon", name: "Uncommon", color: "#7ec8a0", cap: 3000, statMult: 8, costMult: 2.0 }, // statMult ×8 = salto front-loaded (§4.2, banda do ×11.5 Gaiadon); costMult 2.0 = level-up mais caro no tier alto
     // Rare volta no Mapa 2 (diretriz do dono jul/2026)
   ],
 
@@ -602,19 +608,21 @@ G.data = {
     lumensEndAccel:    2.5,     // P3: multiplicador de aceleração da renda no G6 (áreas 16–18) — o espetáculo do fim — DIAL
     baseXp:            245,     // valor P5/P8.5b mantido pelo P9; o relógio agora é ~36h (First Light 36h13 seed 1, banda 36±2 nas seeds 1/3/7) — ver docs/design/P9_REBALANCE.md §7
     xpMultByGroup:     [1, 1.7, 2.3, 0.6, 0.6, 1],  // P9 r4: tools/p9 — não editar à mão, re-fitar
-    // P4 (custo de XP encarpado no início): XP p/ próximo nível = xpCurveBase × nível^exp,
-    //   com xpCurveExpEarly (expoente MAIOR) valendo até xpCurveEarlyUntil e transição suave
-    //   pro xpCurveExp normal. Critério (dono): na curva NUA (zero bônus de XP), nenhum kill
-    //   concede 2+ níveis; com bônus, cascata é FEATURE. state.xpToNext() lê estes dials. — DIAL
-    // P4 provisório: com P1 (mob de nível FIXO por área) o XP/kill NÃO cresce dentro da área,
-    //   então o expoente da curva tem de ser SUAVE (senão a cauda de cada banda fica inalcançável
-    //   farmando o mob fixo). base ≥ baseXp garante o critério NU no nível 1 (cost(1)=base ≥ 245 =
-    //   XP/kill nu → <2 níveis/kill). expEarly>expN mantém o "encarpado" relativo do começo.
-    //   O EXPOENTE FINAL sai do fit (a Wall agora vem de HP/gear, não do XP). — DIAL
-    xpCurveBase:       250,     // P4: cost(1)=250 ≥ XP/kill nu (245) → nenhum kill nu dá 2+ níveis — DIAL
-    xpCurveExp:        1.10,    // P4: expoente de cruzeiro SUAVE (mob fixo → cauda alcançável) — DIAL
-    xpCurveExpEarly:   1.20,    // P4: expoente um degrau maior no começo (custo pesa cedo) — DIAL
-    xpCurveEarlyUntil: 40,      // P4: nível até o qual o expoente early vale (transição linear até xpCurveExp) — DIAL
+    // ═══ P10 fase1b (modelo Gaiadon §3.1) — curva de XP na FORMA INVERTÍVEL deles ═══
+    //   Gaiadon: XP_para(nível) = ((nível-1)/k)^e  (XP CUMULATIVO pra alcançar o nível), invertível
+    //     nível_de(xp) = (xp^(1/e)) × k + 1. Adaptado à escala do Éclats: cap 6000 (NÃO 1M),
+    //     e = xpCurveExp, k = xpCurveK. state.xpToNext() = delta da cumulativa (XP(L+1) - XP(L)),
+    //     preservando a família Gaiadon E a semântica incremental do engine (xp/xpToNext por nível).
+    //   Por que e = 2.0 (não os 2.6 do Gaiadon): o XP/kill do Éclats é baseXp × mob_level ≈ LINEAR
+    //     no nível (mob acompanha o jogador — P10). O delta de uma cumulativa e=2 cresce ~linear
+    //     também → lvls/kill fica ~CONSTANTE (a Wall NÃO é o XP; ela mora em HP/gear). e>2 faria o
+    //     XP virar parede secundária; e<2 faria a cauda cascatear. e=2 é o ponto onde "XP não é o
+    //     muro" — exatamente a intenção do gênero. k dimensiona a magnitude (lvls/kill nua ~0.75).
+    //   CRITÉRIO P4 (nua, mob≈jogador): pico de lvls/kill = 1.49 no L1 (< 2 ✓); flat ~0.745 depois.
+    //     cum(6000) ≈ 5.9e9 (invertível, bem abaixo dos 1e12 do Éclats). — DIAL
+    xpCurveK:          0.078,   // P10 fase1b: k da forma invertível ((L-1)/k)^e — dimensiona a magnitude — DIAL
+    xpCurveExp:        2.00,    // P10 fase1b: e da forma invertível (2.0 = XP não é a Wall; lvls/kill ~constante) — DIAL
+    xpCurveCap:        6000,    // P10 fase1b: nível-cap do Mapa 1 (Gaiadon usa 1M; nós 6000) — DIAL
     respawnDelay:      0.5,     // respawn mais ágil → kills/min sem precisar de one-shot
     // P7 (freio de backtrack): se o nível do Seeker passa do TOPO da banda da área
     //   (levelRange[1] — referência: dentro da própria banda NÃO morde), o XP do mob cai
@@ -628,7 +636,13 @@ G.data = {
     //   Morte zera o contador (bossRegrindFrac 1.0 = re-farm do threshold inteiro).
     bossKillThresholdByGroup: [200, 500, 1000, 2000, 4000, 8000],
     bossRegrindFrac:           1.0,  // re-grind CHEIO — matar o Harbinger zera o contador; re-invocar = re-farmar o threshold inteiro (decisão do dono, P8.5b; 0 = respawn direto era o bug pré-P8.5)
-    gearCostBase:      2500,
+    // P10 fase1b (hook de começo, dono jul/05): gearCostBase re-ancorado de 2500 → 8 pra que os
+    //   PRIMEIROS upgrades venham em SEGUNDOS (custo Lv.1→2 = 8 Lumens ≈ 3 kills ≈ 5s no mob lvl 1,
+    //   que rende ~2.9 Lumens/kill). A curva ALCANÇA depois via o linear (Σ quadrático) × o cap de
+    //   nível × o costMult da raridade × a raridade do mob (rewardMult). Antes o 1º upgrade custava
+    //   ~850 kills (~23min) — o oposto do hook. O relógio macro re-emerge sob o modelo novo (modo
+    //   descoberta, sem cap de relógio) — reportado na PROJEÇÃO. — DIAL
+    gearCostBase:      8,
     // P6 (custo de gear QUADRÁTICO): troca o crescimento GEOMÉTRICO (gearCostGrowth^(N-1),
     //   que dispara logo após promover) pela SOMA ARITMÉTICA do Gaiadon §4.3:
     //     custo(N) = gearCostBase × (1 + gearCostLinear × (N-1)) × costMult(raridade).

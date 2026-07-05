@@ -56,6 +56,11 @@ G.economy = {
   // dropTable POR TIPO de inimigo. Cada material: { chance, min, max, minAreaIndex }.
   // P3: Mapa 1 só tem Common + Awaken. uncommonMaterial/Forge = Mapa 2 (fora daqui).
   // Common mat: G1 3ª área+ (idx≥2). Awaken mat: G5+ (idx≥12). Harbinger SEM garantia (chance<1).
+  // P10 fase1b (modelo Gaiadon §4.6 — drop escalado por RANK): as TAXAS estão ANCORADAS na banda
+  //   do gênero — mob comum ~5% (commonMaterial 0.05 ✓), aceso/elite 15% (rare commonMaterial 0.15,
+  //   aceso é a FONTE do material-chave uncommonMaterial ✓), boss token GARANTIDO 100% (boss
+  //   awakenMaterial/uncommonMaterial chance 1 ✓). Estrutura do Éclats preservada (comum ×50 = massa
+  //   + incomum-chave dos acesos); só as taxas seguem a banda. Provisório — fit final na Fase 2.
   dropTable: {
     common:   {
       commonMaterial: { chance: 0.05, min: 1, max: 1, minAreaIndex: 2 },

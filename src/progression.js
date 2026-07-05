@@ -27,7 +27,10 @@ G.progression = {
   },
 
   checkLevelUp() {
-    while (G.state.data.xp >= G.state.xpToNext()) {
+    // P10 fase1b: cap de nível do Mapa 1 (xpCurveCap=6000) — o nível não sobe além; XP excedente
+    //   fica retido (harmless). O gate está aqui (não no xpToNext), pra o HUD exibir um custo finito.
+    const cap = G.data.balance.xpCurveCap || 6000;
+    while (G.state.data.level < cap && G.state.data.xp >= G.state.xpToNext()) {
       G.state.data.xp -= G.state.xpToNext();
       G.state.data.level += 1;
       if (G.state.data.level > (G.state.data.highestLevel || 0)) G.state.data.highestLevel = G.state.data.level;
