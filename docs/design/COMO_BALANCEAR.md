@@ -58,28 +58,34 @@ early) — mesmo movimento do nosso "custo começa em 5K, deriva o income".
 ## As 5 formas que resolvem ~90% do gênero (cardápio fechado)
 
 Da autópsia do Gaiadon — quando um sistema novo aparecer, a PRIMEIRA
-pergunta é "qual destas formas ele usa?", e o fit vira rotina:
+pergunta é "qual destas formas ele usa?", e o fit vira rotina.
+**Âncora numérica de cada forma: `GAIADON_STEAM_PLAYTEST.md` (medido, não
+teoria) — seções F1–F7 referenciadas abaixo.**
 
 1. **Linear** → o que o jogador toca toda hora (stat por nível de gear:
-   +15, +15, +15... legível e honesto; sem retorno decrescente).
+   +15, +15, +15... legível e honesto; sem retorno decrescente). [→ F3]
 2. **Linear→exponencial** → custos: `(base + slope·N) × r^N` (generoso no
-   early — no Gaiadon medimos +0.73K/nível constante; sink no late —
-   r≈1.0014, dobra a cada ~495 níveis).
+   early — no Gaiadon medimos +0.73K/nível constante, slope/base ≈ 0.68;
+   sink no late — r≈1.0014, dobra a cada ~495 níveis). [→ F2]
 3. **Exponencial com gap** → HP do inimigo acima do dano "de nível" do
    jogador (gap ≈ 0.5 de expoente): a Wall é ESTRUTURAL, upar nunca fecha
    o gap sozinho — gear/passiva/rito são obrigatórios por construção.
+   (Early medido: r_HP ≈ 1.12/nível; champion 3×, elite 4–5×, variância de
+   spawn ×3.) [→ F4]
 4. **Exponencial ACIMA do HP** → income (P3, o espetáculo): o gold cresce
-   mais rápido que a dificuldade; no endgame do Gaiadon, gold/min cresce
-   ordens de magnitude acima do HP por World Tier.
+   mais rápido que a dificuldade (gold/min ×138 em 48min de run; gold crit
+   5% de chance ×10). [→ F5]
 5. **Escada geométrica** → gates de prestige (Gaiadon: Lv150→300→590→1000→
-   1500; Oferenda 10M→30M; recompensa DOBRA por rito). Nossa escada de
-   Convergence é a mesma forma.
+   1500; Oferenda 10M→30M ×3 por rito; recompensa DOBRA por rito; gear
+   atravessa ~82%). Nossa escada de Convergence é a mesma forma. [→ F6]
 
 Regra estrutural que amarra tudo (medida no save do Gaiadon, cadeia
 verificada com 3 dígitos contra a tela): **dentro de um sistema, o
 crescimento é linear/aditivo; ENTRE sistemas (fontes), os fatores se
-MULTIPLICAM** — total = flat × (1+%) × mult × (camadas novas de update).
-É o nosso flat/pct/mult do gear.js e o nosso Gear × Convergence × Awaken.
+MULTIPLICAM** — `total = t0 × (1+t1%) × t2 × (1+t3%) × (1+t4%) × (1+t5%)`.
+[→ F1] É o nosso flat/pct/mult do gear.js e o nosso Gear × Convergence ×
+Awaken. Relógio de pacing do early (reset→1º prestige em 64min, área 2 aos
+24min): [→ F7].
 
 ## Checklist de 5 perguntas para QUALQUER sistema novo (antes de balancear)
 
