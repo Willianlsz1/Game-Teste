@@ -2,11 +2,26 @@
 
 > **Leia isto ANTES de qualquer trabalho.** Atualizado ao fim de cada sessão (`/handoff`).
 > Regra: este doc diz ONDE o trabalho parou e O QUE está travado — não re-derive nem re-litigue.
-> Última atualização: **2026-07-04** (sessão 2 do dia: GRILL DO GAIADON completo — todos os sistemas de balance com decisão do dono; pauta da rodada 4 fechada; mineração completa do Gaiadon preservada nos docs).
+> Última atualização: **2026-07-05** (passagem de bastão Fable→Opus a 98% do limite; estudo de campo do Gaiadon STEAM completo; ícones die-cut instalados).
 
 ---
 
 ## Onde o trabalho está AGORA
+
+**🎓 ESTUDO DE CAMPO GAIADON STEAM ✅ COMPLETO (jul/05) — 3 fases, tudo no cofre `C:\Users\KABUM\Desktop\gaiadon_backup_20260705\`:**
+- **Cofre**: backup SHA256-verificado do save de endgame do dono (155 arquivos) + mineração (`mining\REPORT.md`, 4 CSVs limpos + diffs) + `OBSERVATORY_F1.md` (endgame ao vivo) + `EARLYGAME_F2.md` (run cronometrada reset→1º prestige, 64min).
+- **Fórmulas medidas** (não teoria): custo de gear = `(base + slope·N)·r^N` (linear early +0.73K/nível uniforme entre slots; exponencial late r≈1.0014) · stats de gear lineares (+15 ATK/+1% por nível, arma) · stat total = cadeia de 6 fatores multiplicativos (t0 flat × (1+t1%) × t2 mult × (1+t3%) × (1+t4%) × (1+t5%), verificado 3 dígitos vs tela) · mob trackeia player com clamp no teto da área · morte custa ~25% do gold líquido · Ascension: Lv150+10M gold (Oferenda!), zera gold+levels, MANTÉM gear (~82% do poder atravessa), dobra stats-base/level por rito (geométrico), escada 150/300/590/1000/1500, 1º rito revela sistema novo (Pets).
+- **Valida nossas decisões travadas**: P1 clamp, P2b spike de entrada, P7 backtrack, P8 Oferenda, escada multiplicativa de gates, gate de materiais na promoção (4 mats + 2B gold + peça no cap), "o prêmio é a revelação".
+- **⏳ PENDENTE 1 — RESTAURAR O SAVE DO DONO** (ele decide quando): fechar o jogo ANTES (salva ao sair) → desligar Steam Cloud do Gaiadon (Properties→General) se ainda on → copiar `cofre\savedir\*` de volta para `%APPDATA%\Godot\app_userdata\Gaiadon- Eternal Quest\` → abrir e conferir. O jogo está num save de estudo (Asc 1).
+- **⏳ PENDENTE 2 — SÍNTESE**: consolidar em `docs/design/GAIADON_STEAM_PLAYTEST.md` e confrontar com nosso modelo no sim. **Correção candidata nº1: custo de gear quadrático → linear·exponencial** (estrutura já existe em `gearCostBase/Linear/Exp` — é fit, não refactor). Candidata nº2: imposto de morte (% dos Lumens líquidos) como mecânica barata de punir overreach. Regra da casa: número só com sim.
+
+**🎨 UI — ÍCONES DA TOOLBAR (jul/05): leva 2 die-cut INSTALADA.** 6 ícones 512px transparentes em `assets/ui/icon_*.png` (backup dos antigos em `assets/ui/_icons_baked_backup/`), settings wired no index.html, chip CSS atualizado (`components.css`: ico-img 82% + drop-shadow + hover scale). Gear teve xadrez baked removido via Python (script no scratchpad). Verificado in-game via Chrome MCP. **Aguardando veredito do dono**: awaken/settings leem como "borrão" a 54px — se incomodar, regerar só esses 2 como FORMA SÓLIDA (disco-sol / 2 engrenagens; kit de prompt na conversa de jul/05). Fila do dono (LAUNCH_ITCHIO §Fila de UI): 2) passivas PARA DENTRO da Convergence (ele sinaliza quando) · 3) posição mobs/Seeker.
+
+**⚙️ LIÇÕES DE PROCESSO (jul/05, custaram tokens — não repetir):**
+- **Subagentes RECUSAM controle de desktop/jogo longo** (3 recusas seguidas, corretas: consentimento não sobrevive a delegação). Computer-use de jogo = SESSÃO PRINCIPAL, rajadas curtas, transcrever números pra disco imediatamente.
+- **Sonnet re-delega em corrente** se o briefing não proibir: 1ª linha do prompt de todo executor = "NÃO use a ferramenta Agent".
+- **Export Stats do Gaiadon abre diálogo NATIVO do Windows** — cliques cegos cancelam sem feedback; screenshot antes de assumir sucesso.
+- Botões x10/x100 do Gaiadon: cliques rápidos demais não registram no UI do Godot (0.4s+ entre cliques).
 
 **🔨 TRACK ATIVO (jul/05): MODELO DE INIMIGO GAIADON** — spec
 `docs/design/GAIADON_ENEMY_MODEL.md` (decisão P10 no DECISOES_DONO). O dono

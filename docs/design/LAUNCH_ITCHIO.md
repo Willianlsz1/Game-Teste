@@ -133,6 +133,16 @@ Ordem de implementação definida pelo dono:
    · Passives=verde · Awaken=dourado). Fundo transparente, silhueta que lê a
    40px. Orquestrador: instalar + montar chip de CSS neutro + estados
    hover/ativo (sai a moldura baked). Ver `combat-hud`/`ui-art-decal-principle`.
+   **Leva 1 (jul/05) REPROVADA tecnicamente:** os 6 vieram como ILUSTRAÇÃO com
+   fundo embutido (gradiente/glow), não die-cut. Testado com Pillow: não recorta
+   limpo — onde o assunto tem a cor do fundo (gear/forge/awaken) o corte come a
+   peça; convergence/awaken eram puro glow (sem borda pra cortar). **Decisão do
+   dono: REGERAR die-cut** (recusou a alternativa de medalhão circular c/ aro —
+   queria frameless puro). Kit de prompt apertado entregue (STYLE + NEGATIVE +
+   6 assuntos): fundo transparente forçado + toggle PNG do gerador, quadrado 1:1,
+   contorno grosso, **Convergence/Awaken viram objeto SÓLIDO** (estrela-gema /
+   disco-sol, não explosão), **Settings = 2 engrenagens** (não o astrolábio, que
+   não lê a 40px). Medalhões de fallback salvos no scratchpad (não instalados).
 2. **Mover Passivas PARA DENTRO da Convergence** (DECISÃO DO DONO, na fila — só
    implementar quando ele sinalizar). Tela combinada: ação de convergir +
    saldo de pontos no TOPO, a **World Tree** no CORPO (gasta os pontos ali). O
