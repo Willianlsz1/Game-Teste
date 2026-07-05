@@ -93,7 +93,17 @@ A projeção crua mostrou combate trivial (gear maxa instantâneo → invencíve
 tem que ser mais CONSTANTE — se o player ficar forte, ok, mas a PRÓXIMA área já
 é um desafio maior.**
 
-**ÂNCORA PRECISA (dono jul/05): TTK-alvo = 1 SEGUNDO.** Dentro de cada área o
+**MODELO DE COMBATE = GAIADON (§2.5, §3.2), dono jul/05.** A régua REAL é
+**HTK (golpes-pra-matar)**, não tempo: a parede é medida em hits (HTK cresce via
+o gap de expoente `~nível^1.33`), e o **1 segundo é a CONSEQUÊNCIA** (`TTK = HTK
+× cadência`), nunca um piso duro. Cruise ≈ **2 golpes-pra-matar** (→ ~1s na
+cadência ~2/s); entrada de área spike (HTK maior, ~9); upgrades trazem o HTK de
+volta pra ~2. **Sem cap de tempo** — os caps do Gaiadon são por-stat, não de
+kill-time. **Multi-golpe = crit-overflow** (crit >100% ⇒ `golpes=floor(crit/100)`
+garantidos + fração) — a mecânica do gênero pra "crit infinito não desperdiça";
+candidata a adotar se o crit passar de 100% no Mapa 1.
+
+**ÂNCORA PRECISA (dono jul/05): TTK-alvo = 1 SEGUNDO (= consequência do HTK~2).** Dentro de cada área o
 TTK CONVERGE pra ~1s (o "cruise"); ao ENTRAR numa área nova o TTK SOBE acima de
 1s (a parede — mob mais forte que o poder carregado); os upgrades (gear +
 passivas/awaken/convergence) trazem o TTK de volta pra ~1s. Serrote ancorado em

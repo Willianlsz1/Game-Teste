@@ -31,8 +31,10 @@ _Avoid_: MVP, demo.
 **Convergence**:
 Reset da run (nível, XP, Lumens, área) que concede **Pontos de Convergence**.
 Desbloqueada por **nível** — o gate é uma **escada**: o primeiro cai no fim do
-G1 (~40min de jogo) e cada gate seguinte sobe multiplicativamente. Não dá poder
-direto (legado residual apenas): o poder vem das Passivas compradas com os Pontos.
+G1 (~40min de jogo) e cada gate seguinte sobe multiplicativamente. **Não dá
+poder direto NENHUM — só Pontos** (decisão do dono jul/05: o legado residual de
+2%/conv foi ZERADO; `convLegacyAtkPct/HpPct = 0`). 100% do poder vem das
+Passivas compradas com os Pontos.
 _Avoid_: prestige (no chat tudo bem, mas o termo do jogo é Convergence).
 
 **Convergence Point** (Ponto de Convergence):
