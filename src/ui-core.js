@@ -65,6 +65,7 @@ G.ui = {
     if (this.bindPassives) this.bindPassives();
     if (this.bindForge) this.bindForge();
     if (this.bindBattle) this.bindBattle();
+    if (this.bindMenu) this.bindMenu();
   },
 
   openModal(id) {
@@ -79,6 +80,7 @@ G.ui = {
     if (id === "modal-convergence") this.renderConvergence();
     if (id === "modal-awaken") this.renderAwaken();
     if (id === "modal-passives") this.renderPassives();
+    if (id === "modal-menu") this.renderMenu();
     const m = document.getElementById(id);
     if (m) m.hidden = false;
     // passivas: o fit do stage roda dentro de renderPassives() (linha acima), mas nesse

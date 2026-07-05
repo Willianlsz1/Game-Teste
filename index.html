@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="styles/awaken.css" />
   <link rel="stylesheet" href="styles/worldmap.css" />
   <link rel="stylesheet" href="styles/passives.css" />
+  <link rel="stylesheet" href="styles/menu.css" />
 </head>
 <body class="game">
 
@@ -74,6 +75,9 @@
         <img class="ico-img" src="assets/ui/icon_awaken.png" alt="" onerror="this.remove()" />
       </button>
       <button class="icon-btn icon-btn--reset" title="Reset game" onclick="G.ui.resetGame()">🔄</button>
+      <button class="icon-btn" id="btn-settings" title="Settings" onclick="G.ui.openModal('modal-menu')">
+        <span class="ico-ph">⚙</span>
+      </button>
     </div>
   </div>
 
@@ -171,6 +175,85 @@
         <div class="forge-npc__name">Maël Lefèvre</div>
         <div class="forge-npc__title">Forgemaster of the Ordre des Éclairés</div>
         <div class="forge-npc__quote">"The Ordre gathers the light. Here, I give it form — and an edge."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SETTINGS -->
+  <div class="modal-overlay" id="modal-menu" hidden onclick="if(event.target===this)this.hidden=true">
+    <div class="modal modal--menu">
+      <button class="modal-close" title="Close" onclick="this.closest('.modal-overlay,.passives-screen').hidden=true">✕</button>
+      <div class="modal__title">SETTINGS</div>
+
+      <div class="menu-section">
+        <div class="menu-section__title">Save</div>
+        <div class="menu-row">
+          <span class="menu-row__label">Autosave</span>
+          <span class="menu-status"><span class="menu-status__dot"></span>on</span>
+        </div>
+        <div class="menu-row">
+          <span class="menu-row__label">Manual save</span>
+          <span>
+            <button class="menu-btn" id="menu-save-now">Save now</button>
+            <span class="menu-feedback" id="menu-save-feedback">Saved!</span>
+          </span>
+        </div>
+        <div class="menu-row">
+          <span class="menu-row__label">Reset save</span>
+          <button class="menu-btn menu-btn--danger" id="menu-reset-btn">Reset save</button>
+        </div>
+        <div class="menu-reset-confirm" id="menu-reset-confirm" hidden>
+          <span class="menu-reset-confirm__warn">This erases ALL progress permanently. Type RESET to confirm.</span>
+          <input type="text" id="menu-reset-input" placeholder="Type RESET" autocomplete="off" spellcheck="false" />
+          <div class="menu-reset-confirm__actions">
+            <button class="menu-btn" id="menu-reset-cancel">Cancel</button>
+            <button class="menu-btn menu-btn--danger" id="menu-reset-confirm-btn" disabled>Confirm reset</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-section__title">Export save</div>
+        <textarea class="menu-textarea" id="menu-export-text" readonly rows="3"></textarea>
+        <div class="menu-actions-row">
+          <button class="menu-btn" id="menu-export-copy">Copy to clipboard</button>
+          <button class="menu-btn" id="menu-export-download">Download .txt</button>
+          <span class="menu-feedback" id="menu-export-feedback">Copied!</span>
+        </div>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-section__title">Import save</div>
+        <textarea class="menu-textarea" id="menu-import-text" rows="3" placeholder="Paste your exported save string here"></textarea>
+        <div class="menu-actions-row">
+          <button class="menu-btn menu-btn--gold" id="menu-import-btn">Import</button>
+          <label class="menu-btn menu-file-label">
+            Upload .txt
+            <input type="file" id="menu-import-file" accept=".txt" style="display:none" />
+          </label>
+        </div>
+        <div class="menu-import-msg" id="menu-import-msg"></div>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-section__title">Display</div>
+        <div class="menu-row">
+          <span class="menu-row__label">Fullscreen</span>
+          <button class="menu-btn" id="menu-fullscreen">Fullscreen</button>
+        </div>
+        <div class="menu-row">
+          <span class="menu-row__label">UI scale</span>
+          <div class="menu-scale-group" id="menu-scale-group">
+            <button class="menu-btn" data-scale="small">Small</button>
+            <button class="menu-btn" data-scale="default">Default</button>
+            <button class="menu-btn" data-scale="large">Large</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-footer">
+        Éclats of Lumière — v0.9 (Map 1)<br />
+        <a href="#" onclick="return false;">itch.io page (soon)</a>
       </div>
     </div>
   </div>
@@ -323,6 +406,7 @@
   <script src="src/ui-awaken.js"></script>
   <script src="src/ui-convergence.js"></script>
   <script src="src/ui-worldmap.js"></script>
+  <script src="src/ui-menu.js"></script>
   <script src="src/main.js"></script>
 </body>
 </html>

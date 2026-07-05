@@ -1,0 +1,111 @@
+/* =============================================================
+   menu.css — Modal Settings (save/export/import/display) + botão ⚙
+   Reusa .modal/.modal-close/.btn-ornate/.forge-btn de components.css;
+   define só o que é específico da tela de Settings.
+   ============================================================= */
+
+.modal--menu {
+  width: min(560px, 94vw); max-height: 88vh; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 4px;
+}
+
+.menu-section {
+  padding: 14px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.menu-section:last-of-type { border-bottom: none; }
+.menu-section__title {
+  font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--muted); margin-bottom: 10px; font-weight: 700;
+}
+
+.menu-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; margin-bottom: 8px;
+}
+.menu-row:last-child { margin-bottom: 0; }
+.menu-row__label { font-size: 14px; color: var(--text); }
+.menu-row__hint { font-size: 12px; color: var(--muted); }
+
+.menu-status {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--teal); font-weight: 600;
+}
+.menu-status__dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--teal);
+  box-shadow: 0 0 6px var(--teal);
+  animation: menu-pulse 1.8s ease-in-out infinite;
+}
+@keyframes menu-pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+/* ---- botões pequenos reaproveitando a linguagem da forge ---- */
+.menu-btn {
+  border: 1px solid var(--card-border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text); border-radius: 8px; padding: 7px 14px;
+  font-size: 13px; font-weight: 600; letter-spacing: 0.3px; cursor: pointer;
+  transition: filter 0.1s, border-color 0.1s, transform 0.08s;
+  font-family: inherit;
+}
+.menu-btn:hover { border-color: var(--cyan); filter: brightness(1.1); }
+.menu-btn:active { transform: scale(0.96); }
+.menu-btn--gold  { border-color: var(--gold); color: var(--gold); }
+.menu-btn--danger { border-color: var(--bad); color: var(--bad); }
+.menu-btn--danger:hover { filter: brightness(1.25); }
+.menu-btn--active { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); color: var(--gold); }
+
+.menu-feedback {
+  font-size: 12px; font-weight: 600; margin-left: 8px;
+  color: var(--teal); opacity: 0; transition: opacity 0.2s;
+}
+.menu-feedback.is-shown { opacity: 1; }
+
+/* ---- reset: confirmação dupla ---- */
+.menu-reset-confirm {
+  margin-top: 10px; padding: 10px 12px; border-radius: 8px;
+  border: 1px solid var(--bad); background: rgba(255, 107, 107, 0.1);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.menu-reset-confirm[hidden] { display: none; }
+.menu-reset-confirm__warn {
+  font-size: 13px; color: var(--bad); font-weight: 600;
+}
+.menu-reset-confirm input {
+  width: 100%; padding: 8px 10px; border-radius: 6px;
+  border: 1px solid var(--bad); background: rgba(4, 6, 12, 0.6);
+  color: var(--text); font-family: inherit; font-size: 14px;
+}
+.menu-reset-confirm__actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+/* ---- export/import ---- */
+.menu-textarea {
+  width: 100%; min-height: 90px; resize: vertical;
+  background: rgba(4, 6, 12, 0.6); border: 1px solid var(--card-border);
+  border-radius: 8px; color: var(--text); font-family: monospace;
+  font-size: 11px; padding: 8px; word-break: break-all;
+}
+.menu-textarea:read-only { color: var(--muted); }
+.menu-actions-row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.menu-file-label {
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+}
+.menu-import-msg {
+  font-size: 12px; margin-top: 6px; min-height: 16px;
+}
+.menu-import-msg.ok  { color: #7ec8a0; }
+.menu-import-msg.bad { color: var(--bad); }
+
+/* ---- UI scale selector ---- */
+.menu-scale-group { display: flex; gap: 6px; }
+
+/* ---- footer ---- */
+.menu-footer {
+  text-align: center; padding-top: 14px; margin-top: 4px;
+  font-size: 12px; color: var(--muted);
+}
+.menu-footer a { color: var(--cyan); text-decoration: none; }
+.menu-footer a:hover { text-decoration: underline; }
+
+/* ---- UI scale global (aplicado no <html>) ---- */
+html.ui-scale-small  { font-size: 14px; }
+html.ui-scale-default { font-size: 16px; }
+html.ui-scale-large  { font-size: 19px; }
