@@ -50,15 +50,18 @@ G.enemyFactory = {
 
   _bossThreshold() { return this.bossThresholdFor(G.state.data.areaIndex || 0); },
 
-  // P1 (paradigma zona): nível FIXO do mob por área (não escala com o Seeker).
-  //   Default = area.levelRange[0]; mobLevelByArea[idx] sobrescreve. Clamp na banda da área
-  //   (nunca cai fora do intervalo de HP). É a fonte única do "nível do mob" da área.
+  // P10 (modelo Gaiadon): o nível do mob ACOMPANHA o jogador dentro da banda da área.
+  //   mob_level = clamp(player_level, area.levelRange[0], area.levelRange[1]) — o mob sobe junto
+  //   com o Seeker, preso à banda da área (nunca mais congela no piso, revisão da implementação
+  //   do P1). mobLevelByArea[idx] continua como FORÇAR-NÍVEL opcional (sobrescreve o clamp).
+  //   É a fonte única do "nível do mob"; alimenta a fórmula paramétrica (data.mobHpParam etc.).
   mobLevelFor(idx) {
     const b    = G.data.balance;
     idx        = G.util.clamp(idx || 0, 0, G.data.areas.length - 1);
     const area = G.data.areas[idx];
     const ovr  = (Array.isArray(b.mobLevelByArea) && b.mobLevelByArea[idx] != null) ? b.mobLevelByArea[idx] : null;
-    const lvl  = (ovr != null) ? ovr : area.levelRange[0];
+    const player = (G.state && G.state.data && G.state.data.level) ? G.state.data.level : area.levelRange[0];
+    const lvl  = (ovr != null) ? ovr : player;
     return G.util.clamp(lvl, area.levelRange[0], area.levelRange[1]);
   },
 
@@ -66,13 +69,15 @@ G.enemyFactory = {
   _buildOne(isBossSpawn, def) {
     const b     = G.data.balance;
     const area  = G.data.currentArea();
-    const aIdx  = G.util.clamp(G.state.data.areaIndex || 0, 0, b.mobAtkByArea.length - 1);
-    // P1: nível do mob vem da ÁREA (fixo), não do Seeker → dentro da área o jogador cresce e o
-    // mob não → TTK decrescente EMERGE. mobHpAt() com nível fixo dá HP fixo por área (dificuldade
-    // de zona, padrão do gênero).
+    const aIdx  = G.util.clamp(G.state.data.areaIndex || 0, 0, G.data.areas.length - 1);
+    // P10 (modelo Gaiadon): o nível do mob ACOMPANHA o jogador dentro da banda da área
+    //   (mobLevelFor = clamp(player, banda)). HP e ATK vêm da fórmula paramétrica (mob_level/x)^y
+    //   por bucket (data.mobHpParam/mobAtkParam) — as tabelas hp[]/mobAtkByArea são fallback.
+    //   A parede (gap y_hp = y_atk + 0.5) mantém Gear/Convergence/Awaken obrigatórios mesmo com
+    //   mob ≈ nível do jogador. XP segue o mob_level (curva do herói cuida da cascata).
     const level = this.mobLevelFor(aIdx);
-    const hp    = G.data.mobHpAt(level, area);
-    const atk   = b.mobAtkByArea[aIdx];
+    const hp    = G.data.mobHpParam(level);
+    const atk   = G.data.mobAtkParam(level);
     // xpMultByGroup: acelerador de XP por grupo (barateia a SUBIDA, não as provas). default 1.
     const grp   = G.util.clamp(Math.floor(aIdx / b.groupSize), 0, (b.xpMultByGroup || []).length - 1);
     const xpGroupMult = (b.xpMultByGroup && b.xpMultByGroup[grp] != null) ? b.xpMultByGroup[grp] : 1;
@@ -149,7 +154,7 @@ G.enemyFactory = {
 
     // P3 (Lumens curva própria): renda BASE por área × rewardMult (P5: aceso paga muito mais).
     //   Desacoplada do HP — a curva pode ACELERAR no fim do mapa (lumensEndAccel) sem tocar no HP.
-    let lumens = G.data.lumensBaseFor(aIdx) * rewardMult;
+    let lumens = G.data.lumensBaseFor(aIdx, level) * rewardMult;
     if (isBoss) lumens *= b.bossLumenMult;
     G.combat.spawnCount++;
 

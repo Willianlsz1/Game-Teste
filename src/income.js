@@ -9,11 +9,12 @@ G.income = {
     const areas = G.data.areas;
     idx = G.util.clamp(idx || 0, 0, areas.length - 1);
     const area  = areas[idx];
-    // P1: nível do mob = nível FIXO da área (não do Seeker) → HP/XP de zona.
+    // P10 (modelo Gaiadon): nível do mob ACOMPANHA o jogador dentro da banda da área
+    //   (mobLevelFor = clamp(player, banda)). HP/ATK/Lumens pela fórmula paramétrica (mob_level/x)^y.
     const lvl   = G.enemyFactory.mobLevelFor(idx);
 
-    const mobHp  = G.data.mobHpAt(lvl, area);
-    const mobAtk = b.mobAtkByArea[G.util.clamp(idx, 0, b.mobAtkByArea.length - 1)];
+    const mobHp  = G.data.mobHpParam(lvl);
+    const mobAtk = G.data.mobAtkParam(lvl);
 
     // XP/kill: mesma expressão do _buildOne (base × nível × xpMultByGroup[grupo])
     const grp = G.util.clamp(Math.floor(idx / b.groupSize), 0, (b.xpMultByGroup || []).length - 1);
@@ -46,7 +47,7 @@ G.income = {
 
     // valor esperado por kill. P3: Lumens = curva própria da área × rewardMult (não HP × goldRatio).
     //   rare = mais HP (mais TTK) E MUITO mais reward (P5: ratio reward/hp cresce por tier).
-    const lumensBase = G.data.lumensBaseFor(idx);
+    const lumensBase = G.data.lumensBaseFor(idx, lvl);
     let eLumensPerKill = 0, eXpPerKill = 0, eTtk = 0;
     for (const t of tierProbs) {
       const hpT   = mobHp * t.hpMult;

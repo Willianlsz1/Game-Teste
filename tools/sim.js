@@ -106,14 +106,13 @@ function gearAvgLevel() {
 function combatSnapshot() {
   const d = G.state.data, s = G.state.stats();
   const area = G.data.currentArea();
-  // P1: HP do mob usa o NÍVEL DA ÁREA (fixo), não o do Seeker — TTK reflete a dificuldade de zona.
+  // P10 (modelo Gaiadon): nível do mob ACOMPANHA o jogador na banda da área; HP/ATK paramétricos.
   const lvl = G.enemyFactory.mobLevelFor(d.areaIndex);
-  const mobHp = G.data.mobHpAt(lvl, area);
+  const mobHp = G.data.mobHpParam(lvl);
   const dmgHit = s.atk * (1 + (s.crit / 100) * (s.critMult - 1));
   const eDps = dmgHit / G.state.attackInterval();
-  const aIdx = G.util.clamp(d.areaIndex, 0, G.data.balance.mobAtkByArea.length - 1);
   const pack = G.enemyFactory._packSize();
-  const incoming = pack * G.data.balance.mobAtkByArea[aIdx] * (1 - (s.damageReduction || 0) / 100) / G.combat.enemyInterval;
+  const incoming = pack * G.data.mobAtkParam(lvl) * (1 - (s.damageReduction || 0) / 100) / G.combat.enemyInterval;
   return { ttk: mobHp / eDps, htk: mobHp / dmgHit, ttd: s.hp / incoming, mobHp, atk: s.atk, hp: s.hp };
 }
 

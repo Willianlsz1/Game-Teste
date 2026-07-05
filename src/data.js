@@ -468,11 +468,45 @@ G.data = {
     return Math.pow(hpFim / hpIni, 1 / span);
   },
 
+  // [LEGADO/FALLBACK P1-P9] HP do mob pela tabela hp[] por área. Substituído pela fórmula
+  //   paramétrica do P10 (mobHpParam). Mantido como fallback e p/ os consumidores antigos
+  //   (calibrate/persona) até o fit da Fase 2 confirmar a saída.
   mobHpAt(level, area) {
     area = area || this.areaAt(level);
     const lo = area.levelRange[0];
     const within = G.util.clamp(level, lo, area.levelRange[1]) - lo;
     return area.hp[0] * Math.pow(this.areaHpGrowth(area), within);
+  },
+
+  // ═══ P10 (modelo Gaiadon) — fórmula paramétrica de stat do mob ═══════════════════
+  // stat(mob_level) = (mob_level / x)^y, com (x,y) do bucket de nível do mob (enemyBuckets).
+  //   É a fonte PRIMÁRIA de HP e ATK do mob (mobHpAt/mobAtkByArea viram fallback). A parede
+  //   é o gap y_hp = y_atk + 0.5 dialado nos buckets.
+  _enemyBucketFor(level) {
+    const arr = this.balance.enemyBuckets;
+    level = Math.max(1, level || 1);
+    for (const b of arr) if (level < b.maxLevel) return b;
+    return arr[arr.length - 1];
+  },
+  // HP paramétrico do mob comum no nível dado. Fonte primária (P10).
+  mobHpParam(level) {
+    const b = this._enemyBucketFor(level);
+    return Math.pow(Math.max(1, level || 1) / b.hpX, b.hpY);
+  },
+  // ATK paramétrico do mob comum no nível dado. Fonte primária (P10).
+  mobAtkParam(level) {
+    const b = this._enemyBucketFor(level);
+    return Math.pow(Math.max(1, level || 1) / b.atkX, b.atkY);
+  },
+  // Gold/Lumens BASE paramétrico (gold math do Gaiadon §2.2): (mob_level / goldX)^goldY, buckets
+  //   próprios (goldBuckets) com y_gold crescente que ultrapassa y_hp no fim → Lumens aceleram.
+  //   ANTES do rewardMult dos acesos (P5), que multiplica por cima. Fonte primária (P3 via P10).
+  mobGoldParam(level) {
+    const arr = this.balance.goldBuckets;
+    level = Math.max(1, level || 1);
+    let b = arr[arr.length - 1];
+    for (const g of arr) if (level < g.maxLevel) { b = g; break; }
+    return Math.pow(level / b.x, b.y);
   },
 
   currentArea() {
@@ -481,8 +515,47 @@ G.data = {
   },
 
   balance: {
-    // ATK do mob POR ÁREA (idx 0-17), as 18 áreas. P9: gerado pela família de expoentes
-    // (tools/p9) — ver docs/design/P9_REBALANCE.md; não editar à mão, re-fitar.
+    // ═══ P10 (modelo Gaiadon) — DIAL da fórmula paramétrica de inimigo ═══════════════
+    // stat(mob_level) = (mob_level / x)^y, selecionando (x,y) por BUCKET de nível do mob
+    //   (mob_level < maxLevel). Substitui as tabelas hp[]/mobAtkByArea como fonte PRIMÁRIA
+    //   de HP/ATK do mob (elas viram FALLBACK — ver mobStatAt()). Buckets seguem a FORMA da
+    //   tabela do GAIADON_MATH §2.1, mas os (x,y) são PROVISÓRIOS, fitados à ESCALA do Éclats
+    //   (player nasce ATK 15/HP 50; mob lvl 1 ~HP 90/ATK 2; topo lvl 6000 ~HP 2e12/ATK 2e7).
+    //   NÃO são os x,y crus do Gaiadon. O fit da Fase 2 re-ancora.
+    // A PAREDE (P10.3): em cada bucket y_hp = y_atk + 0.5 (gap de expoente). HTK cresce como
+    //   ~level^(y_hp-1) → Gear/Convergence/Awaken OBRIGATÓRIOS por construção, mesmo com mob ≈
+    //   nível do jogador. Um dial de gap no lugar de 18 tabelas de HP na mão. — DIAL
+    // Princípio do fit provisório: hpY nasce logo ABAIXO/perto do expoente de crescimento do
+    //   jogador (playerAtkExp 1.30) no 1º bucket e SOBE bucket-a-bucket (1.24→1.74) — a parede se
+    //   constrói GRADUAL e chega DEPOIS da 1ª Convergence (bucket1 cobre até nv 200, HTK pré-gear
+    //   ~2 até o gate ~130; se a parede batesse dentro da área 1 o loop morria no 1º kill, quando
+    //   1 kill = 1 nível). O mob acompanha o jogador; a parede vem de (a) hpY ultrapassando o
+    //   expoente do jogador ao subir por bucket e (b) o gap hpY = atkY + 0.5 no dano recebido.
+    //   HTK pré-gear sobe ~2→37+ ao longo do mapa → gear/prestige obrigatórios. Escala: HP(1)~13,
+    //   HP(6000)~1.5e9. Baseline NU alcança o 1º gate e converge; a parede endurece no pós-prestige.
+    enemyBuckets: [
+      { maxLevel:  200, hpX: 0.130, hpY: 1.24, atkX: 0.66, atkY: 0.74 },  // gap 0.50
+      { maxLevel:  600, hpX: 0.100, hpY: 1.34, atkX: 0.58, atkY: 0.84 },  // gap 0.50
+      { maxLevel: 1600, hpX: 0.070, hpY: 1.46, atkX: 0.50, atkY: 0.96 },  // gap 0.50
+      { maxLevel: 3200, hpX: 0.048, hpY: 1.60, atkX: 0.43, atkY: 1.10 },  // gap 0.50
+      { maxLevel: Infinity, hpX: 0.032, hpY: 1.74, atkX: 0.37, atkY: 1.24 },  // gap 0.50 (topo)
+    ],
+    // P3 via P10 (gold math do Gaiadon §2.2): Lumens/kill = (mob_level / goldX)^goldY, MESMA
+    //   família paramétrica, com buckets PRÓPRIOS. Regra-chave: y_gold SOBE por bucket e
+    //   ULTRAPASSA y_hp nos buckets altos (1.55→2.60 vs hp 1.55→2.22) → os Lumens ACELERAM no
+    //   late game — o espetáculo do P3 vira o expoente de gold crescente (não mais lumensByArea).
+    //   rewardMult dos acesos (P5 Ember/Lumen/Corona) MULTIPLICA por cima disto (igual ao gold×40
+    //   do FIEND no Gaiadon: "caçar raro" é a fonte real de riqueza). PROVISÓRIO — fit Fase 2. — DIAL
+    goldBuckets: [
+      { maxLevel:  200, x: 0.42, y: 1.24 },  // = y_hp (early)
+      { maxLevel:  600, x: 0.38, y: 1.42 },  // > y_hp (1.42 vs 1.34)
+      { maxLevel: 1600, x: 0.34, y: 1.60 },  // > y_hp (1.60 vs 1.46)
+      { maxLevel: 3200, x: 0.30, y: 1.82 },  // > y_hp (1.82 vs 1.60)
+      { maxLevel: Infinity, x: 0.26, y: 2.08 },  // >> y_hp (2.08 vs 1.74) — o espetáculo do fim
+    ],
+    // [LEGADO/FALLBACK P1-P9] ATK do mob POR ÁREA (idx 0-17). Substituído pela fórmula
+    //   paramétrica (enemyBuckets.atk); mantido como fallback e p/ compat de save/sim até o
+    //   fit da Fase 2 confirmar a saída. Não é mais a fonte primária de ATK do mob.
     mobAtkByArea:      [2, 9, 86, 1201, 3365, 5030, 8187, 8596, 9026, 59880, 59512, 71520, 13784642, 15899225, 18338187, 13398117, 13877907, 18830237],  // re-fit único P1-P9: TTD do envelope pior por seed (G4 baixado ~100× p/ matar death-loop; G6 ~0.6× p/ TTD ~30s)
     groupSize:         3,     // Harbinger (boss) a cada 3 áreas — fronteira de grupo
     packByGroup:       [1, 2, 2, 3, 4, 5],   // P9 r4 (§9 item 2): onda cresce a 4 (G5) e 5 (G6); UI de batalha suporta 5
@@ -503,12 +576,12 @@ G.data = {
     bossRewardMult:    6,
     bossLumenMult:     5,
     goldRatio:         0.35,   // P3 LEGADO: só usado como FALLBACK (área sem lumensByArea) e p/ Overkill Echo. A renda principal vem da curva própria de Lumens (lumensByArea) — DIAL
-    // P1 (paradigma zona): NÍVEL do mob fixado pela ÁREA, não pelo Seeker. Antes _buildOne
-    //   clampava o nível do JOGADOR na banda da área → mob escalava com você. Agora cada área
-    //   define a força do mob (default = levelRange[0] da área, i.e. HP fixo em hp[0]). Dentro
-    //   da área o jogador cresce e o mob NÃO → TTK decrescente EMERGE. mobLevelByArea[i] permite
-    //   sobrescrever por área (ex. subir dentro do grupo); null/ausente = base da área. — DIAL
-    mobLevelByArea:    [],      // vazio = usa area.levelRange[0] por área (provisório: dificuldade = HP inicial da área)
+    // P10 (modelo Gaiadon): o NÍVEL do mob ACOMPANHA o jogador dentro da banda da área:
+    //   mob_level = clamp(player_level, area.levelRange[0], area.levelRange[1]). O mob sobe junto
+    //   com você, preso à banda da área (nunca mais congela no piso — revisão da implementação do
+    //   P1). mobLevelByArea[i] continua como FORÇAR-NÍVEL opcional (sobrescreve o clamp por área);
+    //   null/ausente = clamp do nível do jogador. Ver enemyFactory.mobLevelFor. — DIAL
+    mobLevelByArea:    [],      // vazio = clamp(player_level) na banda da área (P10). Preencher só p/ forçar nível fixo numa área
     // P9 corrigida (porta dupla): NÍVEL DE PORTA por área — a liberação da ENTRADA (meta visível
     //   pro jogador), DESACOPLADA do levelRange do mob (que agora é SÓ definição de stat). Com P1
     //   o XP/kill é FIXO por área → os níveis do v9-r7 (levelRange[0]) ficaram inalcançáveis
@@ -521,12 +594,11 @@ G.data = {
     //   da banda → o cap (levelRange[1] da área farmada, pra P7 não morder antes da porta) prende
     //   os valores ≈ nos antigos. O serrote real é a fronteira 1→2 (XP/kill ×81) — reportado.
     levelGateByArea:   [1, 40, 171, 276, 396, 534, 693, 876, 1086, 1328, 1606, 1926, 2294, 2717, 3203, 3762, 4405, 5144],  // re-fit único: porta área 2 = 40 (era 22) — mata o cascade de níveis na fronteira 1->2 (P4 nua: 1.37 lvls/kill, era 2.30)
-    // P3 (Lumens curva própria): renda de Lumens por kill DESACOPLADA do HP do mob. Curva
-    //   independente por área com acelerador no fim do mapa. lumensByArea[i] = Lumens BASE do
-    //   mob comum na área i (antes de bônus/raridade). Provisório = goldRatio × hp[0] de cada área
-    //   × acelerador do fim (lumensEndAccel aplicado no G6). Se ausente p/ uma área → fallback
-    //   goldRatio × maxHp (comportamento antigo). Gerado em data.js:_lumensByAreaProvisional(). — DIAL
-    lumensByArea:      null,    // preenchido logo após o objeto balance (curva provisória por área)
+    // [LEGADO/FALLBACK P3] Lumens por ÁREA. Substituído pela gold math paramétrica do Gaiadon
+    //   (goldBuckets, ver mobGoldParam / lumensBaseFor): a aceleração do P3 no late game agora vem do
+    //   y_gold crescente por bucket (ultrapassa y_hp no fim), não de uma curva por área. Mantido
+    //   como fallback (área sem bucket / compat) até o fit da Fase 2 confirmar a saída. — DIAL
+    lumensByArea:      null,    // [legado] curva provisória por área; agora fonte primária = goldBuckets
     lumensEndAccel:    2.5,     // P3: multiplicador de aceleração da renda no G6 (áreas 16–18) — o espetáculo do fim — DIAL
     baseXp:            245,     // valor P5/P8.5b mantido pelo P9; o relógio agora é ~36h (First Light 36h13 seed 1, banda 36±2 nas seeds 1/3/7) — ver docs/design/P9_REBALANCE.md §7
     xpMultByGroup:     [1, 1.7, 2.3, 0.6, 0.6, 1],  // P9 r4: tools/p9 — não editar à mão, re-fitar
@@ -599,16 +671,24 @@ G.data = {
     playerHpExp:        1.30,   // P9 r4: tools/p9 — não editar à mão, re-fitar (era 1.4)
   },
 
-  // P3 (Lumens curva própria) — renda BASE de Lumens do mob comum por área, DESACOPLADA do HP.
-  //   Retorna o valor de balance.lumensByArea[idx] se definido; senão o provisório
-  //   goldRatio × hp[0] da área × (lumensEndAccel se G6). enemyFactory._buildOne lê daqui.
-  //   Curva independente = o fit pode acelerar o fim sem tocar no HP (P3: "Lumens > HP no endgame").
-  lumensBaseFor(idx) {
+  // P3 via P10 (gold math do Gaiadon §2.2) — renda BASE de Lumens do mob comum.
+  //   FONTE PRIMÁRIA: fórmula paramétrica mobGoldParam(mob_level) — buckets de gold com y_gold
+  //     crescente que ultrapassa y_hp no fim → Lumens ACELERAM no late game (o espetáculo do P3).
+  //   FALLBACK (legado): lumensByArea[idx] se definido; senão goldRatio × hp[0] × lumensEndAccel.
+  //   ANTES do rewardMult dos acesos (P5), aplicado no _buildOne. enemyFactory._buildOne e
+  //   income.estimateAreaIncome leem daqui. `level` = nível do mob (clamp do jogador na banda);
+  //   se ausente, cai no default da área (levelRange[0]) só p/ compat.
+  lumensBaseFor(idx, level) {
     const b = this.balance;
     idx = G.util.clamp(idx || 0, 0, this.areas.length - 1);
+    const area = this.areas[idx];
+    if (Array.isArray(b.goldBuckets) && b.goldBuckets.length) {
+      const lvl = (level != null) ? level : area.levelRange[0];
+      return this.mobGoldParam(lvl);
+    }
+    // ---- fallback legado (só se goldBuckets sumir) ----
     const tbl = b.lumensByArea;
     if (Array.isArray(tbl) && tbl[idx] != null) return tbl[idx];
-    const area  = this.areas[idx];
     const accel = (idx >= (this.areas.length - 3)) ? (b.lumensEndAccel || 1) : 1;   // G6 = 3 últimas áreas
     return area.hp[0] * b.goldRatio * accel;
   },
