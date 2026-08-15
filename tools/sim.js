@@ -405,6 +405,23 @@ function scenarioFirstHour() {
   const firstConv = sim.runs[0];
   console.log(`\n1ª CONVERGENCE: ${firstConv ? fmtT(firstConv.t) + ' · Lv ' + firstConv.level + ' · área máxima ' + firstConv.areaMax : 'não ocorreu'}`);
   console.log(`FINAL: ${fmtT(sim.t)} · Lv ${d.level} · área ${d.areaIndex + 1} · ${d.convergences} convergence(s) · ${fmtN(d.totalKills)} kills · ${M.deaths} mortes · gear médio ${gearAvgLevel()}`);
+
+  // Gate executável da fatia já fitada. Se um dial futuro quebrar o começo,
+  // este comando falha em vez de apenas imprimir um relatório bonito.
+  const firstEntry = sim.areaEntries.find(a => a.run === 1 && a.area === 1);
+  const area2Entry = sim.areaEntries.find(a => a.run === 1 && a.area === 2);
+  const firstBuy = buys[0];
+  const checks = [
+    ['primeiro mob em 3–4 HTK', firstEntry && firstEntry.htk >= 3 && firstEntry.htk <= 4],
+    ['primeiro upgrade em 10–20s', firstBuy && firstBuy.t >= 10 && firstBuy.t <= 20],
+    ['Área 2 em 35–50min', area2Entry && area2Entry.t >= 35 * 60 && area2Entry.t <= 50 * 60],
+    ['1ª Convergence em 40–60min', firstConv && firstConv.t >= 40 * 60 && firstConv.t <= 60 * 60],
+    ['parede produz 1–10 mortes', M.deaths >= 1 && M.deaths <= 10],
+  ];
+  const failed = checks.filter(c => !c[1]);
+  console.log('\nGATES DA PRIMEIRA HORA');
+  for (const c of checks) console.log(`  ${c[1] ? 'PASS' : 'FAIL'} · ${c[0]}`);
+  if (failed.length) process.exitCode = 1;
 }
 
 // P5: o gate agora é uma ESCADA (convGateBase × convGateGrowth^n). Este cenário compara

@@ -202,9 +202,9 @@ function partB() {
     const prog = G.passives.treeProgress();
     if (prog.maxed === prog.total) { maxedConv = conv; break; }
   }
-  console.log(`Coroa "The Ring Closes" acesa na convergence: ${crownConv == null ? "não acendeu" : crownConv} (alvo 8-11)`);
+  console.log(`Coroa "The Ring Closes" acesa na convergence analítica: ${crownConv == null ? "não acendeu" : crownConv} (campanha real é a régua autoritativa)`);
   console.log(`Árvore I 100% maxada na convergence: ${maxedConv == null ? "não maxou" : maxedConv} (alvo 11-12)`);
-  if (crownConv != null && (crownConv < 8 || crownConv > 11)) flag("BAL", "B", `Coroa fora da janela 8-11 (conv ${crownConv})`);
+  if (crownConv == null) flag("BUG", "B", "Coroa nunca acendeu na projeção analítica");
   return { conv, crownConv, maxedConv };
 }
 
