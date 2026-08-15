@@ -22,18 +22,18 @@ function ok(c, m) { console.log((c ? "PASS" : "FAIL") + " — " + m); if (!c) fa
 
 const b = G.data.balance;
 
-// 1) escada exata — gate(n) = round(convGateBase × convGateGrowth^n). Re-fit único mudou
-//    convGateBase 276->130 (1ª conv ~44min) e convGateGrowth 1.35->1.32 (razão de pontos 1.63).
-const LADDER = [130, 172, 227, 299, 395, 521, 688, 908, 1198, 1582, 2088, 2756];
+// 1) escada exata — gate(n) = round(convGateBase × convGateGrowth^n).
+//    O fit da primeira hora ancora gate 1 em 100 (~58min); growth preserva a razão de pontos.
+const LADDER = [100, 132, 174, 230, 304, 401, 529, 698, 922, 1217, 1606, 2120];
 store = {}; G.state.data = null; G.state.load();
 for (let n = 0; n < LADDER.length; n++) {
   G.state.data.convergences = n;
   ok(G.convergence.currentGate() === LADDER[n], `currentGate() na convergence ${n} = ${LADDER[n]} (round(${b.convGateBase}×${b.convGateGrowth}^${n}))`);
 }
 
-// 2) convergences=0 → gate exato da 1ª convergence (convGateBase=130), sem off-by-one
+// 2) convergences=0 → gate exato da 1ª convergence (convGateBase=100), sem off-by-one
 G.state.data.convergences = 0;
-ok(G.convergence.currentGate() === b.convGateBase, "convergence 0: gate === convGateBase (130)");
+ok(G.convergence.currentGate() === b.convGateBase, "convergence 0: gate === convGateBase (100)");
 
 // 3) rawPoints/pointsFor — fórmula: convPointsBase × (nível/convGateBase)^convPointsExp
 store = {}; G.state.data = null; G.state.load();
@@ -85,8 +85,8 @@ G.passives.effect = realEffect;
 // terminou, não o próximo) e a UI (currentGate) já reflete o próximo ciclo logo depois
 store = {}; G.state.data = null; G.state.load();
 ok(G.state.data.convergences === 0, "estado fresco: 0 convergences");
-const gate1 = G.convergence.currentGate(); // 130
-ok(gate1 === b.convGateBase, "gate da 1ª convergence é convGateBase (130)");
+const gate1 = G.convergence.currentGate(); // 100
+ok(gate1 === b.convGateBase, "gate da 1ª convergence é convGateBase (100)");
 G.state.data.level = gate1;
 const expectedGain = Math.floor(b.convPointsBase * Math.pow(gate1 / b.convGateBase, b.convPointsExp));
 const gained = G.convergence.pending();
@@ -113,9 +113,9 @@ ok(G.convergence.canConverge() === true, "canConverge() verdadeiro exatamente no
 // o teste apenas fixa o comportamento observável, não impõe um hard-stop que não existe no código.
 store = {}; G.state.data = null; G.state.load();
 const mapCap = G.data.areas[G.data.areas.length - 1].levelRange[1];
-G.state.data.convergences = 14;   // re-fit único: gate cruza o teto de nível (6000) na convergence 14 (6338)
+G.state.data.convergences = 15;   // fit da primeira hora: gate cruza o teto na convergence 15 (6436)
 const gateCap = G.convergence.currentGate();
-ok(gateCap > mapCap, `gate da convergence 14 (${gateCap}) excede o teto de nível do Mapa 1 (${mapCap}) — próxima convergence é inatingível em jogo normal`);
+ok(gateCap > mapCap, `gate da convergence 15 (${gateCap}) excede o teto de nível do Mapa 1 (${mapCap}) — próxima convergence é inatingível em jogo normal`);
 G.state.data.level = mapCap;
 ok(G.convergence.canConverge() === false, `no teto de nível do mapa (${mapCap}), canConverge() é false pós-cap (gate ${gateCap})`);
 G.state.data.level = gateCap; // nível hipotético/fora do mapa

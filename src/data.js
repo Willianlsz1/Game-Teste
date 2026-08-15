@@ -551,11 +551,11 @@ G.data = {
     //   discretos de poder — onde caem, derrubam o HTK localmente (o frontier vira <1 hit). Um serrote de
     //   HTK CONSTANTE nas 18 áreas exige suavizar esses cliffs (fora dos levers desta fase). — DIAL
     enemyBuckets: [
-      { maxLevel:  200, hpX: 0.14325, hpY: 1.32, atkX: 0.66343, atkY: 0.82 },  // gap 0.50
-      { maxLevel:  600, hpX: 1.68027, hpY: 2.00, atkX: 8.82500, atkY: 1.50 },  // gap 0.50
-      { maxLevel: 1600, hpX: 13.52699, hpY: 3.10, atkX: 52.59887, atkY: 2.60 },  // gap 0.50
-      { maxLevel: 3200, hpX: 47.21809, hpY: 4.20, atkX: 145.18141, atkY: 3.70 },  // gap 0.50
-      { maxLevel: Infinity, hpX: 73.94351, hpY: 4.70, atkX: 209.80721, atkY: 4.20 },  // gap 0.50 (topo)
+      { maxLevel:  200, hpX: 0.04583916, hpY: 1.32, atkX: 0.66343, atkY: 0.82 },  // first-hour R1: HP ×4.5; gap 0.50
+      { maxLevel:  600, hpX: 0.79208687, hpY: 2.00, atkX: 8.82500, atkY: 1.50 },
+      { maxLevel: 1600, hpX: 8.32697872, hpY: 3.10, atkX: 52.59887, atkY: 2.60 },
+      { maxLevel: 3200, hpX: 33.00514360, hpY: 4.20, atkX: 145.18141, atkY: 3.70 },
+      { maxLevel: Infinity, hpX: 53.69312439, hpY: 4.70, atkX: 209.80721, atkY: 4.20 },
     ],
     // P3 via P10 (gold math do Gaiadon §2.2): Lumens/kill = (mob_level / goldX)^goldY, MESMA
     //   família paramétrica, com buckets PRÓPRIOS. Regra-chave: y_gold SOBE por bucket e
@@ -577,11 +577,11 @@ G.data = {
     //   rewardMult dos acesos + lumensBonus) fica ~1K/kill medida no sim — a "sensação de milhares"
     //   sobrevive. y_gold intocado; forma/aceleração da curva preservadas. — DIAL
     goldBuckets: [
-      { maxLevel:  200, x: 0.0155294, y: 1.32 },  // = y_hp (early)
-      { maxLevel:  600, x: 0.4515088, y: 2.05 },  // > y_hp (2.05 vs 2.00)
-      { maxLevel: 1600, x: 5.5642544, y: 3.15 },  // > y_hp (3.15 vs 3.10)
-      { maxLevel: 3200, x: 24.0868367, y: 4.25 },  // > y_hp (4.25 vs 4.20)
-      { maxLevel: Infinity, x: 40.2988264, y: 4.75 },  // > y_hp (4.75 vs 4.70) — o espetáculo do fim
+      { maxLevel:  200, x: 0.00399619, y: 1.32 },  // first-hour R1: renda ×6 preservando os expoentes
+      { maxLevel:  600, x: 0.18839972, y: 2.05 },
+      { maxLevel: 1600, x: 3.15046627, y: 3.15 },
+      { maxLevel: 3200, x: 15.80102850, y: 4.25 },
+      { maxLevel: Infinity, x: 27.63573902, y: 4.75 },
     ],
     // [LEGADO/FALLBACK P1-P9] ATK do mob POR ÁREA (idx 0-17). Substituído pela fórmula
     //   paramétrica (enemyBuckets.atk); mantido como fallback e p/ compat de save/sim até o
@@ -623,7 +623,7 @@ G.data = {
     //   pra 22 (o bloqueante morto); das áreas 3+ o pool de XP da área anterior estoura o teto
     //   da banda → o cap (levelRange[1] da área farmada, pra P7 não morder antes da porta) prende
     //   os valores ≈ nos antigos. O serrote real é a fronteira 1→2 (XP/kill ×81) — reportado.
-    levelGateByArea:   [1, 40, 171, 276, 396, 534, 693, 876, 1086, 1328, 1606, 1926, 2294, 2717, 3203, 3762, 4405, 5144],  // re-fit único: porta área 2 = 40 (era 22) — mata o cascade de níveis na fronteira 1->2 (P4 nua: 1.37 lvls/kill, era 2.30)
+    levelGateByArea:   [1, 80, 171, 276, 396, 534, 693, 876, 1086, 1328, 1606, 1926, 2294, 2717, 3203, 3762, 4405, 5144],  // first-hour R1: Área 2 abre em ~45min
     // [LEGADO/FALLBACK P3] Lumens por ÁREA. Substituído pela gold math paramétrica do Gaiadon
     //   (goldBuckets, ver mobGoldParam / lumensBaseFor): a aceleração do P3 no late game agora vem do
     //   y_gold crescente por bucket (ultrapassa y_hp no fim), não de uma curva por área. Mantido
@@ -644,7 +644,7 @@ G.data = {
     //     muro" — exatamente a intenção do gênero. k dimensiona a magnitude (lvls/kill nua ~0.75).
     //   CRITÉRIO P4 (nua, mob≈jogador): pico de lvls/kill = 1.49 no L1 (< 2 ✓); flat ~0.745 depois.
     //     cum(6000) ≈ 5.9e9 (invertível, bem abaixo dos 1e12 do Éclats). — DIAL
-    xpCurveK:          0.078,   // P10 fase1b: k da forma invertível ((L-1)/k)^e — dimensiona a magnitude — DIAL
+    xpCurveK:          0.045,   // first-hour R1: Área 1 ~45min com mob acompanhando o jogador — DIAL
     xpCurveExp:        2.00,    // P10 fase1b: e da forma invertível (2.0 = XP não é a Wall; lvls/kill ~constante) — DIAL
     xpCurveCap:        6000,    // P10 fase1b: nível-cap do Mapa 1 (Gaiadon usa 1M; nós 6000) — DIAL
     respawnDelay:      0.5,     // respawn mais ágil → kills/min sem precisar de one-shot
@@ -700,7 +700,7 @@ G.data = {
     promoteUncommonCost:     8,  // uncommon material (chave) por promoção Common→Uncommon (a fitar)
     convLegacyAtkPct:     0,    // FASE 2 R2 (dono jul/05): Convergence = SÓ pontos, ZERO bônus direto (100% do poder vem das passivas compradas com os pontos; era 2)
     convLegacyHpPct:      0,    // FASE 2 R2 (dono jul/05): idem — sem resíduo de %/conv (era 2)
-    convGateBase:       130,    // re-fit único: gate₁ = 130 (era 276) — 1ª Convergence aos ~44min (alvo ~40min)
+    convGateBase:       100,    // first-hour R1: 1ª Convergence em ~58min, após a parede da Área 2
     convGateGrowth:     1.32,   // re-fit único: razão de pontos 1.63 (banda 1.4-1.7); 1.35 dava 1.70, 1.30 colapsava (10 convs)
     convPointsBase:     400,    // P5.3: pontos = convPointsBase × (nível/convGateBase)^convPointsExp
     convPointsExp:      1.55,   // P5.3: α = ln1.5/ln1.3 → cada convergence no gate rende ~×1.5 a anterior
