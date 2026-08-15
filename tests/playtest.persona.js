@@ -76,11 +76,12 @@ function partA() {
   // sanity inicial
   const s0 = G.state.stats();
   if (!finite(s0.atk) || !finite(s0.hp)) flag("BUG", "A", "Stats iniciais não-finitos");
-  const firstMobHp = G.data.mobHpAt(1, G.data.areas[0]);
-  const ttk0 = firstMobHp / (s0.atk / G.state.attackInterval());
-  console.log(`Início: ATK ${num(s0.atk)} | HP ${num(s0.hp)} | atkSpeed ${s0.atkSpeed} | 1º mob HP ${num(firstMobHp)} | TTK ${ttk0.toFixed(2)}s`);
-  if (ttk0 < 0.5) flag("BAL", "A", `TTK do 1º mob baixo demais (${ttk0.toFixed(2)}s) — one-shot logo de cara`);
-  if (ttk0 > 6)   flag("BAL", "A", `TTK do 1º mob alto demais (${ttk0.toFixed(2)}s) — early lento`);
+  const firstMobHp = G.data.mobHpParam(1);
+  const htk0 = firstMobHp / s0.atk;
+  const ttk0 = Math.ceil(htk0) * G.state.attackInterval();
+  console.log(`Início: ATK ${num(s0.atk)} | HP ${num(s0.hp)} | atkSpeed ${s0.atkSpeed} | 1º mob HP ${num(firstMobHp)} | HTK ${htk0.toFixed(2)} | TTK ${ttk0.toFixed(2)}s`);
+  if (htk0 < 3) flag("BAL", "A", `1º mob exige só ${htk0.toFixed(2)} golpe(s) — alvo pelado é 3-4`);
+  if (htk0 > 4) flag("BAL", "A", `1º mob exige ${htk0.toFixed(2)} golpes — acima do alvo pelado 3-4`);
 
   // simula até ~25 min de jogo OU subir de área
   let t = 0, kills0 = d.totalKills, deaths = 0, dropEvents = 0, maxAtkSpeed = 0;
@@ -125,7 +126,7 @@ function partA() {
     // verifica one-shot recorrente: se mob morre em 1 swing consistentemente em nível alto
     if (!oneShotReported && d.totalKills - kills0 > 50) {
       const s = G.state.stats();
-      const mhp = G.data.mobHpAt(d.level, G.data.currentArea());
+      const mhp = G.data.mobHpParam(G.enemyFactory.mobLevelFor(d.areaIndex));
       const dmgPerSwing = s.atk * (1 + s.critDmg / 100 * (s.crit / 100));
       if (dmgPerSwing > mhp * 3) { flag("BAL", "A", `One-shot fácil: dano/golpe (${num(dmgPerSwing)}) >> HP do mob (${num(mhp)}) por volta do nível ${d.level}`); oneShotReported = true; }
     }
@@ -219,10 +220,10 @@ function partC() {
   for (let i = 0; i < G.data.areas.length; i++) {
     const a = G.data.areas[i];
     d.level = a.levelRange[0];
-    const hpLo = G.data.mobHpAt(a.levelRange[0], a);
-    const hpHi = G.data.mobHpAt(a.levelRange[1], a);
+    const hpLo = G.data.mobHpParam(a.levelRange[0]);
+    const hpHi = G.data.mobHpParam(a.levelRange[1]);
     const bossHp = hpHi * G.data.balance.bossHpMult;
-    const mobAtk = G.data.balance.mobAtkByArea[i];   // ATK do mob agora é por área
+    const mobAtk = G.data.mobAtkParam(a.levelRange[1]);
     if (![hpLo, hpHi, bossHp, mobAtk].every(finite)) flag("BUG", "C", `Valores não-finitos na área ${i + 1}`);
     if (hpHi < hpLo) flag("BAL", "C", `Área ${i + 1}: HP do teto (${num(hpHi)}) < HP do início (${num(hpLo)})`);
     console.log(`  ${String(i+1).padStart(2)} | ${num(hpLo)} → ${num(hpHi)} | ${num(bossHp)} | ${num(Math.ceil(mobAtk))}`);
@@ -230,8 +231,8 @@ function partC() {
 
   // salto de dificuldade entre áreas (paradox of power): HP início da área N vs teto da N-1
   for (let i = 1; i < G.data.areas.length; i++) {
-    const prevHi = G.data.mobHpAt(G.data.areas[i-1].levelRange[1], G.data.areas[i-1]);
-    const curLo  = G.data.mobHpAt(G.data.areas[i].levelRange[0],  G.data.areas[i]);
+    const prevHi = G.data.mobHpParam(G.data.areas[i-1].levelRange[1]);
+    const curLo  = G.data.mobHpParam(G.data.areas[i].levelRange[0]);
     const ratio  = curLo / prevHi;
     if (ratio > 1.0) {} // esperado subir
     if (ratio < 0.3) flag("BAL", "C", `Área ${i+1} começa com HP ${(ratio*100).toFixed(0)}% do teto anterior — queda de dificuldade`);
@@ -255,15 +256,22 @@ function partC() {
   const weapon = G.state.data.equipped.weapon;
   weapon.level = G.gear.cap(weapon); // maxa
   G.economy.addGear("common", G.data.balance.promoteCommonCost);
-  const lvlBefore = weapon.level, matBefore = G.economy.getGear("common");
+  G.economy.addGear("uncommon", G.data.balance.promoteUncommonCost);
+  const lvlBefore = weapon.level;
+  const matsBefore = {
+    common: G.economy.getGear("common"),
+    uncommon: G.economy.getGear("uncommon"),
+  };
   const promoted = G.gear.promote(weapon);
   const w2 = G.state.data.equipped.weapon;
   if (!promoted) flag("BUG", "C", "Promote common→uncommon falhou mesmo com material e nível máximo");
   else {
     if (w2.rarity !== "uncommon") flag("BUG", "C", "Promote não mudou a raridade para uncommon");
     if (w2.level !== lvlBefore)   flag("BUG", "C", `Promote não preservou o nível (${lvlBefore} → ${w2.level})`);
-    if (G.economy.getGear("common") !== matBefore - G.data.balance.promoteCommonCost)
-      flag("BUG", "C", "Promote não consumiu a quantidade certa de material");
+    if (G.economy.getGear("common") !== matsBefore.common - G.data.balance.promoteCommonCost)
+      flag("BUG", "C", "Promote não consumiu a quantidade certa de material Common");
+    if (G.economy.getGear("uncommon") !== matsBefore.uncommon - G.data.balance.promoteUncommonCost)
+      flag("BUG", "C", "Promote não consumiu a quantidade certa de material Uncommon");
   }
   console.log(`Promote weapon: ${promoted ? "OK" : "FALHOU"} (raridade ${w2.rarity}, nível ${w2.level})`);
 

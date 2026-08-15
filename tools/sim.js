@@ -7,6 +7,7 @@
 //   node tools/sim.js baseline  [--hours 40] [--to-level 1150] [--seed 1]
 //   node tools/sim.js gates     [--gates 80,150,200,351] [--seed 1]
 //   node tools/sim.js campaign  [--gate 150] [--push 1.0] [--max-hours 200] [--seed 1]
+//   node tools/sim.js first-hour [--hours 1] [--seed 1]
 //
 // baseline  = uma run sem Convergence: tempo até níveis/áreas, TTK/TTD por área.
 // gates     = para cada gate candidato: tempo ativo até o gate, pontos da 1ª
@@ -97,6 +98,29 @@ const fmtN = (n) => G.util.fmt(n);
 function pad(v, w) { v = String(v); return v.length >= w ? v : v + ' '.repeat(w - v.length); }
 function row(cols, widths) { return cols.map((c, i) => pad(c, widths[i])).join(' '); }
 
+// Override genérico em memória. Vale para TODOS os cenários, inclusive first-hour.
+// Nunca grava data.js; serve para comparar candidatos antes de travar um dial.
+function applySimOverride() {
+  if (!process.env.SIM_OVERRIDE) return;
+  try {
+    const ov = JSON.parse(process.env.SIM_OVERRIDE);
+    if (ov.balance) for (const k in ov.balance) G.data.balance[k] = ov.balance[k];
+    if (ov.uncCap != null) { const r = G.data.rarities.find(r => r.id === 'uncommon'); if (r) r.cap = ov.uncCap; }
+    if (ov.commonCap != null) { const r = G.data.rarities.find(r => r.id === 'common'); if (r) r.cap = ov.commonCap; }
+    if (ov.drop) for (const p in ov.drop) {
+      const parts = p.split('.'); let o = G.economy.dropTable;
+      for (let i = 0; i < parts.length - 1; i++) o = o[parts[i]];
+      o[parts[parts.length - 1]] = ov.drop[p];
+    }
+    if (ov.awakenMat != null) G.data.awakens[0].requirements.materials.firstLight = ov.awakenMat;
+    if (ov.offering != null) G.data.awakens[0].requirements.lumens = ov.offering;
+    console.log('  [SIM_OVERRIDE applied]', JSON.stringify(ov).slice(0, 400));
+  } catch (e) {
+    console.error('SIM_OVERRIDE parse error:', e.message);
+    process.exit(1);
+  }
+}
+
 function gearAvgLevel() {
   const d = G.state.data; let s = 0, n = 0;
   for (const slot of G.data.slots) { s += d.equipped[slot.id].level || 1; n++; }
@@ -167,7 +191,7 @@ function policyTick(sim) {
     const dps = dpsHit / G.state.attackInterval();
     let cheapGear = Infinity;
     for (const slot of G.data.slots) { const it = d.equipped[slot.id]; if (!G.gear.isMaxed(it)) cheapGear = Math.min(cheapGear, G.gear.cost(it)); }
-    sim.areaEntries.push({ area: best + 1, t: sim.t, run: (d.convergences || 0) + 1, level: d.level, ...snap,
+    sim.areaEntries.push({ area: best + 1, t: sim.t, run: (d.convergences || 0) + 1, level: d.level, gear: gearAvgLevel(), ...snap,
       lumensPerMin: inc.lumensPerMin, xpPerMin: inc.xpPerMin, dps, gearCost: (cheapGear === Infinity ? 0 : cheapGear),
       matCommon: G.economy.getGear('common'), matUncommon: G.economy.getGear('uncommon'), matAwaken: G.economy.getAwaken('firstLight') });
   }
@@ -185,7 +209,12 @@ function policyTick(sim) {
       if (c < cost) { cost = c; cheapest = item; }
     }
     if (!cheapest || d.lumens < cost) break;
+    const paid = cost, beforeLevel = cheapest.level || 1;
     G.gear.levelUp(cheapest);
+    if (sim.gearPurchases) sim.gearPurchases.push({
+      t: sim.t, area: d.areaIndex + 1, slot: cheapest.slot,
+      from: beforeLevel, to: cheapest.level, cost: paid,
+    });
   }
 
   // 3. promover raridade quando possível (registra o beat: peça · tempo · grupo)
@@ -261,7 +290,7 @@ function freshSim(opts) {
     onConverge: opts.onConverge || null,
     milestones: [], areaEntries: [], runs: [], areaExit: {},
     lastAreaEntered: -1, lastConvT: 0, nodeLevelsBought: 0, firstLightAt: null,
-    promotions: [], awakenMatAt: null, crownAt: null,
+    promotions: [], gearPurchases: [], awakenMatAt: null, crownAt: null,
     areaProj: opts.areaProj ? {} : null,   // P10 fase1b: sampler de projeção por área (só quando pedido)
   };
 }
@@ -345,6 +374,39 @@ function scenarioBaseline() {
   console.log('  * grupo não fechado no fim da run (duração parcial)');
 }
 
+// Recorte de lançamento: mede somente a primeira hora usando a política real da campanha.
+// É o cenário autoritativo para o hook, Área 1 e 1ª Convergence.
+function scenarioFirstHour() {
+  const hours = +arg('hours', 1);
+  console.log(`\n═══ FIRST HOUR — seed ${SEED} · cap ${hours}h ═══\n`);
+  const sim = freshSim({ converge: true, allowAwaken: false, areaProj: true });
+  run(sim, { maxHours: hours });
+
+  const d = G.state.data;
+  const W1 = [6, 9, 8, 8, 9, 9];
+  console.log(row(['área', 'entrada', 'nível', 'HTK ent', 'TTD ent', 'gear méd'], W1));
+  for (const a of sim.areaEntries.filter(a => a.run === 1))
+    console.log(row([a.area, fmtT(a.t), a.level, a.htk.toFixed(2), a.ttd.toFixed(1) + 's', a.gear], W1));
+
+  const buys = sim.gearPurchases;
+  console.log('\nUPGRADES DE GEAR');
+  if (!buys.length) console.log('  nenhum upgrade comprado');
+  else {
+    const first = buys.slice(0, 4);
+    for (let i = 0; i < first.length; i++) {
+      const prevT = i ? first[i - 1].t : 0;
+      console.log(`  #${i + 1} ${first[i].slot} ${first[i].from}→${first[i].to} · ${fmtT(first[i].t)} · espera ${fmtT(first[i].t - prevT)} · custo ${fmtN(first[i].cost)}`);
+    }
+    const byArea = {};
+    for (const b of buys) byArea[b.area] = b;
+    console.log('  última compra observada por área: ' + Object.keys(byArea).map(k => `A${k} ${fmtT(byArea[k].t)} (${fmtN(byArea[k].cost)})`).join(' · '));
+  }
+
+  const firstConv = sim.runs[0];
+  console.log(`\n1ª CONVERGENCE: ${firstConv ? fmtT(firstConv.t) + ' · Lv ' + firstConv.level + ' · área máxima ' + firstConv.areaMax : 'não ocorreu'}`);
+  console.log(`FINAL: ${fmtT(sim.t)} · Lv ${d.level} · área ${d.areaIndex + 1} · ${d.convergences} convergence(s) · ${fmtN(d.totalKills)} kills · ${M.deaths} mortes · gear médio ${gearAvgLevel()}`);
+}
+
 // P5: o gate agora é uma ESCADA (convGateBase × convGateGrowth^n). Este cenário compara
 // candidatos de convGateGrowth: nº de convergences no mapa, 1ª conv, spread por grupo, razões.
 function scenarioGates() {
@@ -389,24 +451,6 @@ function scenarioCampaign() {
     G.economy.dropTable.rare.commonMaterial.chance = +commonChance * 3;
   }
   if (uncCap != null) { const r = G.data.rarities.find(r => r.id === 'uncommon'); if (r) r.cap = +uncCap; }
-  // FASE 2 (fitter): override JSON genérico via env SIM_OVERRIDE — injeta qualquer dial de balance
-  //   sem editar o sim. { "balance": {...}, "areasHp": [[hp0,hp1],...], "drop": {"path":val} }
-  if (process.env.SIM_OVERRIDE) {
-    try {
-      const ov = JSON.parse(process.env.SIM_OVERRIDE);
-      if (ov.balance) for (const k in ov.balance) G.data.balance[k] = ov.balance[k];
-      if (ov.uncCap != null) { const r = G.data.rarities.find(r => r.id === 'uncommon'); if (r) r.cap = ov.uncCap; }
-      if (ov.commonCap != null) { const r = G.data.rarities.find(r => r.id === 'common'); if (r) r.cap = ov.commonCap; }
-      if (ov.drop) for (const p in ov.drop) {   // p ex "boss.awakenMaterial.min"
-        const parts = p.split('.'); let o = G.economy.dropTable;
-        for (let i = 0; i < parts.length - 1; i++) o = o[parts[i]];
-        o[parts[parts.length - 1]] = ov.drop[p];
-      }
-      if (ov.awakenMat != null) G.data.awakens[0].requirements.materials.firstLight = ov.awakenMat;
-      if (ov.offering != null) G.data.awakens[0].requirements.lumens = ov.offering;
-      console.log('  [SIM_OVERRIDE applied]', JSON.stringify(ov).slice(0, 400));
-    } catch (e) { console.error('SIM_OVERRIDE parse error:', e.message); }
-  }
   const ovr = (promoteCost != null || commonChance != null || uncCap != null)
     ? ` · override[cost ${G.data.balance.promoteCommonCost}, chance ${G.economy.dropTable.common.commonMaterial.chance}, uncCap ${G.data.rarities.find(r=>r.id==='uncommon').cap}]` : '';
   console.log(`\n═══ CAMPAIGN — Mapa 1 completo · gate escalonado ×${G.data.balance.convGateGrowth} · push ${push} · seed ${SEED} · ${uncapped ? 'UNCAPPED (clear natural)' : 'cap ' + maxHours + 'h'}${ovr} ═══\n`);
@@ -843,9 +887,11 @@ function scenarioCalibrate() {
 
 // ---------- main ----------
 const t0 = Date.now();
+applySimOverride();
 if (cmd === 'baseline') scenarioBaseline();
+else if (cmd === 'first-hour') scenarioFirstHour();
 else if (cmd === 'gates') scenarioGates();
 else if (cmd === 'campaign') scenarioCampaign();
 else if (cmd === 'calibrate') scenarioCalibrate();
-else { console.error(`comando desconhecido: ${cmd} (use baseline | gates | campaign | calibrate)`); process.exit(1); }
+else { console.error(`comando desconhecido: ${cmd} (use baseline | first-hour | gates | campaign | calibrate)`); process.exit(1); }
 console.log(`\n(sim real: ${((Date.now() - t0) / 1000).toFixed(1)}s wall-clock)`);
