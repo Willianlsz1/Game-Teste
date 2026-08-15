@@ -185,3 +185,23 @@
   0%, 100% { opacity: 0.75; }
   50%      { opacity: 1; }
 }
+
+/* 720p é a menor altura de lançamento. A comissão retrato + CTA não cabe com
+   os tamanhos desktop; reduzimos o conjunto como uma unidade sem criar scroll
+   nem cortar o botão Accept abaixo da viewport. */
+@media (max-height: 760px) {
+  .intro-header { padding-top: 14px; }
+  .intro-header__title { font-size: 16px; }
+  .intro-header__subtitle { font-size: 25px; margin-top: 2px; }
+
+  .intro-beat--pos-3 { top: 53%; }
+  .intro-beat--order { width: min(300px, 82vw); }
+  .intro-order__head { font-size: 13px; margin-bottom: 8px; }
+  .intro-order__text { font-size: 19px; line-height: 1.35; }
+  .intro-card__cta.kit-btn-ceremonial {
+    width: min(300px, 82vw);
+    height: 60px;
+    margin-top: 8px;
+    font-size: 18px;
+  }
+}
