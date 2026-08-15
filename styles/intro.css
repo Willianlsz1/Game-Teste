@@ -205,3 +205,20 @@
     font-size: 18px;
   }
 }
+
+/* Landscape móvel: mantém o único botão de saída dentro da viewport. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .intro-header { padding-top: 4px; }
+  .intro-header__title { font-size: 12px; letter-spacing: 3px; }
+  .intro-header__subtitle { font-size: 17px; line-height: 1; }
+  .intro-beat--pos-3 { top: 51%; }
+  .intro-beat--order { width: min(180px, 42vw); }
+  .intro-order__head { font-size: 9px; letter-spacing: 0.7px; margin-bottom: 4px; }
+  .intro-order__text { font-size: 12px; line-height: 1.2; }
+  .intro-card__cta.kit-btn-ceremonial {
+    width: min(220px, 48vw);
+    height: 42px;
+    margin-top: 4px;
+    font-size: 14px;
+  }
+}
